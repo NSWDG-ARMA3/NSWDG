@@ -204,10 +204,39 @@
   document.getElementById('applicationForm').addEventListener('submit', async function(e){
     e.preventDefault();
     
-    //  PASTE YOUR ACTUAL DISCORD WEBHOOK URL BETWEEN THE QUOTES BELOW:
+    // 1. CHOOSE YOUR MINIMUM CHARACTER COUNTS HERE
+    // You can adjust these numbers to whatever limits you think fit best!
+    const minRequirements = {
+      q1: 15,  // Exclusivity details
+      q2: 5,   // Gear enthusiast
+      q3: 40,  // Dream community (Requires a bit more detail)
+      q4: 15,  // Previous experience
+      q5: 25,  // Weekly availability
+      q6: 10,  // Mic / Performance
+      q7: 3,   // Voice interview (e.g., "Yes")
+      q8: 30,  // Position and interest detail
+      q9: 2    // Discord username
+    };
+
+    // 2. Run the validation check
+    for (const [id, minLength] of Object.entries(minRequirements)) {
+      const field = document.getElementById(id);
+      const value = field.value.trim(); // removes accidental spaces at start/end
+      
+      if (value.length < minLength) {
+        const qNum = id.replace('q', ''); // extracts just the number for the alert
+        
+        alert(`⚠️ Question ${qNum} requires a more detailed answer.\n\nMinimum required: ${minLength} characters.\nYour current count: ${value.length} characters.`);
+        
+        field.focus(); // Automatically highlights the text area that needs fixing
+        return;        // CRITICAL: Stops the code right here and prevents sending to Discord
+      }
+    }
+
+    // ⚠️ PASTE YOUR ACTUAL DISCORD WEBHOOK URL BETWEEN THE QUOTES BELOW:
     const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1508359225028509707/xfoeXuWWBl8itTpP3KjN-l-SxMuVZo1ydbglw4GHPzcZHZFWoUOFSFTOho1IaNOGDBq4';
 
-    // 1. Gather all the responses from your textareas
+    // 3. Gather all the responses (guaranteed to meet your requirements now)
     const q1 = document.getElementById('q1').value.trim();
     const q2 = document.getElementById('q2').value.trim();
     const q3 = document.getElementById('q3').value.trim();
@@ -218,50 +247,23 @@
     const q8 = document.getElementById('q8').value.trim();
     const q9 = document.getElementById('q9').value.trim();
 
-    // 2. Fallback check for the Discord username
-    const usernameHandle = q9 || "Not Provided";
-
-    // 3. Build the Discord layout payload
+    // 4. Build the Discord Webhook layout
     const payload = {
       username: "NSWDG Recruitment Bot",
       embeds: [
         {
           title: "New Unit Application Received",
-          color: 12298578, // This is your theme's #bba952 gold color converted to a decimal integer!
-          description: `**Applicant Discord Username:** ${usernameHandle}`,
+          color: 12298578, // #bba952 theme gold
+          description: `**Applicant Discord Username:** ${q9}`,
           fields: [
-            { 
-              name: "1. Other units & exclusivity details:", 
-              value: q1 || "*No response provided.*" 
-            },
-            { 
-              name: "2. GWOT or DEVGRU gear/tactics enthusiast?", 
-              value: q2 || "*No response provided.*" 
-            },
-            { 
-              name: "3. Dream mil-sim community description:", 
-              value: q3 || "*No response provided.*" 
-            },
-            { 
-              name: "4. Previous Arma-3 / gaming hours experience:", 
-              value: q4 || "*No response provided.*" 
-            },
-            { 
-              name: "5. Weekly availability details:", 
-              value: q5 || "*No response provided.*" 
-            },
-            { 
-              name: "6. Working Mic, TeamSpeak, and smooth game performance?", 
-              value: q6 || "*No response provided.*" 
-            },
-            { 
-              name: "7. Willing to proceed to a voice interview?", 
-              value: q7 || "*No response provided.*" 
-            },
-            { 
-              name: "8. Applied position and special interests:", 
-              value: q8 || "*No response provided.*" 
-            }
+            { name: "1. Other units & exclusivity details:", value: q1 },
+            { name: "2. GWOT or DEVGRU gear/tactics enthusiast?", value: q2 },
+            { name: "3. Dream mil-sim community description:", value: q3 },
+            { name: "4. Previous Arma-3 / gaming hours experience:", value: q4 },
+            { name: "5. Weekly availability details:", value: q5 },
+            { name: "6. Working Mic, TeamSpeak, and smooth game performance?", value: q6 },
+            { name: "7. Willing to proceed to a voice interview?", value: q7 },
+            { name: "8. Applied position and special interests:", value: q8 }
           ],
           footer: {
             text: "NSWDG Automated Application System"
@@ -272,7 +274,7 @@
     };
 
     try {
-      // 4. Send the payload directly to Discord
+      // 5. Send payload securely to Discord
       const response = await fetch(DISCORD_WEBHOOK_URL, { 
         method: 'POST', 
         headers: { 'Content-Type': 'application/json' }, 
@@ -281,7 +283,7 @@
       
       if (!response.ok) throw new Error('Discord rejected the webhook payload');
       
-      // Success: Show the modal and clear the form
+      // Success: Clear the form fields and show your original confirmation modal
       openModal('formModal');
       this.reset();
     } catch(error) {
