@@ -201,27 +201,92 @@
   function closeModal(id){ document.getElementById(id).classList.remove('visible'); }
   function showCS(e){ e.preventDefault(); openModal('csModal'); }
 
-  
-
   document.getElementById('applicationForm').addEventListener('submit', async function(e){
     e.preventDefault();
+    
+    //  PASTE YOUR ACTUAL DISCORD WEBHOOK URL BETWEEN THE QUOTES BELOW:
+    const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1508359225028509707/xfoeXuWWBl8itTpP3KjN-l-SxMuVZo1ydbglw4GHPzcZHZFWoUOFSFTOho1IaNOGDBq4';
+
+    // 1. Gather all the responses from your textareas
+    const q1 = document.getElementById('q1').value.trim();
+    const q2 = document.getElementById('q2').value.trim();
+    const q3 = document.getElementById('q3').value.trim();
+    const q4 = document.getElementById('q4').value.trim();
+    const q5 = document.getElementById('q5').value.trim();
+    const q6 = document.getElementById('q6').value.trim();
+    const q7 = document.getElementById('q7').value.trim();
+    const q8 = document.getElementById('q8').value.trim();
+    const q9 = document.getElementById('q9').value.trim();
+
+    // 2. Fallback check for the Discord username
+    const usernameHandle = q9 || "Not Provided";
+
+    // 3. Build the Discord layout payload
     const payload = {
-      page: 'Application', submittedAt: new Date().toISOString(),
-      answers: {
-        q1: document.getElementById('q1').value.trim(), q2: document.getElementById('q2').value.trim(),
-        q3: document.getElementById('q3').value.trim(), q4: document.getElementById('q4').value.trim(),
-        q5: document.getElementById('q5').value.trim(), q6: document.getElementById('q6').value.trim(),
-        q7: document.getElementById('q7').value.trim(), q8: document.getElementById('q8').value.trim(),
-        q9: document.getElementById('q9').value.trim()
-      }
+      username: "NSWDG Recruitment Bot",
+      embeds: [
+        {
+          title: "New Unit Application Received",
+          color: 12298578, // This is your theme's #bba952 gold color converted to a decimal integer!
+          description: `**Applicant Discord Username:** ${usernameHandle}`,
+          fields: [
+            { 
+              name: "1. Other units & exclusivity details:", 
+              value: q1 || "*No response provided.*" 
+            },
+            { 
+              name: "2. GWOT or DEVGRU gear/tactics enthusiast?", 
+              value: q2 || "*No response provided.*" 
+            },
+            { 
+              name: "3. Dream mil-sim community description:", 
+              value: q3 || "*No response provided.*" 
+            },
+            { 
+              name: "4. Previous Arma-3 / gaming hours experience:", 
+              value: q4 || "*No response provided.*" 
+            },
+            { 
+              name: "5. Weekly availability details:", 
+              value: q5 || "*No response provided.*" 
+            },
+            { 
+              name: "6. Working Mic, TeamSpeak, and smooth game performance?", 
+              value: q6 || "*No response provided.*" 
+            },
+            { 
+              name: "7. Willing to proceed to a voice interview?", 
+              value: q7 || "*No response provided.*" 
+            },
+            { 
+              name: "8. Applied position and special interests:", 
+              value: q8 || "*No response provided.*" 
+            }
+          ],
+          footer: {
+            text: "NSWDG Automated Application System"
+          },
+          timestamp: new Date().toISOString()
+        }
+      ]
     };
+
     try {
-      const response = await fetch('/api/application', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-      if(!response.ok) throw new Error('Submission failed');
+      // 4. Send the payload directly to Discord
+      const response = await fetch(DISCORD_WEBHOOK_URL, { 
+        method: 'POST', 
+        headers: { 'Content-Type': 'application/json' }, 
+        body: JSON.stringify(payload) 
+      });
+      
+      if (!response.ok) throw new Error('Discord rejected the webhook payload');
+      
+      // Success: Show the modal and clear the form
       openModal('formModal');
       this.reset();
     } catch(error) {
-      alert('Application could not be sent. Check your backend webhook relay at /api/application.');
+      console.error(error);
+      alert('Application could not be sent directly to Discord. Make sure your Webhook URL inside the script is correct.');
     }
   });
 </script>
