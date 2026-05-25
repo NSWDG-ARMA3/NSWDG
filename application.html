@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Application | NSWDG</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #ebebeb; color: #222; font-family: Arial, Helvetica, sans-serif; font-size: 13px; min-height: 100vh; display: flex; flex-direction: column; }
+    a { color: #2a5f8a; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .top-strip { background: #222; padding: 4px 0; }
+    .top-strip .inner { max-width: 1060px; margin: 0 auto; padding: 0 16px; display: flex; justify-content: space-between; align-items: center; }
+    .utility-links { list-style: none; display: flex; }
+    .utility-links li a { color: #999; font-size: 11px; padding: 2px 10px; border-right: 1px solid #3a3a3a; display: block; }
+    .utility-links li:first-child a { padding-left: 0; }
+    .utility-links li a:hover { color: #ccc; text-decoration: none; }
+    .utility-links li a.cs-link { color: #666; cursor: default; }
+    .utility-links li a.cs-link:hover { color: #666; text-decoration: none; }
+    .small-date { font-size: 11px; color: #666; }
+
+    .main-header { background: #1d3f5e; color: #fff; border-bottom: 2px solid #bba952; padding: 12px 0; }
+    .main-header .inner { max-width: 1060px; margin: 0 auto; padding: 0 16px; display: flex; justify-content: space-between; align-items: center; }
+    .unit-left { display: flex; align-items: center; gap: 14px; }
+    .unit-mark { background: #bba952; color: #f0f0f0; font-size: 18px; font-weight: bold; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .unit-title-block h1 { font-size: 15px; font-weight: bold; line-height: 1.3; }
+    .unit-title-block p { font-size: 11px; color: #a0b8cc; margin-top: 2px; }
+    .header-tools { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+    .search-form { display: flex; align-items: center; gap: 6px; }
+    .search-form label { font-size: 11px; color: #a0b8cc; }
+    .search-form input { border: 1px solid #999; padding: 4px 7px; font-size: 12px; font-family: Arial; background: #fff; width: 180px; }
+    .search-form input:focus { outline: 1px solid #a0b8cc; }
+    .search-form button { background: #2a5f8a; color: #fff; border: 1px solid #1d3f5e; padding: 4px 12px; font-size: 12px; font-family: Arial; cursor: pointer; }
+    .search-form button:hover { background: #1d3f5e; }
+    .login-links { font-size: 11px; color: #a0b8cc; }
+    .login-links a { color: #a0b8cc; }
+    .login-links a:hover { color: #fff; }
+
+    .main-nav { background: #16304a; border-bottom: 1px solid #bba952; }
+    .main-nav .inner { max-width: 1060px; margin: 0 auto; padding: 0 16px; display: flex; }
+    .main-nav a { display: block; padding: 7px 14px; font-size: 12px; color: #a0b8cc; border-right: 1px solid #1d3f5e; }
+    .main-nav a:hover:not(.cs-link) { background: #1d3f5e; color: #ddd; text-decoration: none; }
+    .main-nav a.active { background: #1d3f5e; color: #ddd; font-weight: bold; }
+    .main-nav a.cs-link { color: #4a5f70; cursor: default; position: relative; }
+    .main-nav a.cs-link:hover { background: none; text-decoration: none; }
+    .cs-badge { font-size: 9px; color: #888; background: #2a3a48; border: 1px solid #3a4a58; padding: 1px 5px; margin-left: 5px; vertical-align: middle; letter-spacing: 0.5px; text-transform: uppercase; }
+
+    .main-content { max-width: 1060px; margin: 20px auto; padding: 0 16px; flex: 1; width: 100%; }
+
+    .content-box { background: #fff; border: 1px solid #ccc; padding: 20px 24px; margin-bottom: 18px; }
+    .content-box h2 { font-size: 14px; font-weight: bold; color: #1d3f5e; border-bottom: 1px solid #ddd; padding-bottom: 7px; margin-bottom: 12px; }
+    .content-box p { font-size: 13px; line-height: 1.7; margin-bottom: 10px; color: #333; }
+
+    .form-group { margin-bottom: 13px; }
+    .form-group label { display: block; font-size: 12px; font-weight: bold; margin-bottom: 4px; color: #222; }
+    .form-group textarea { width: 100%; border: 1px solid #bbb; padding: 6px 8px; font-size: 13px; font-family: Arial; background: #fafafa; resize: vertical; }
+    .form-group textarea:focus { outline: 1px solid #2a5f8a; background: #fff; }
+    .btn-submit { background: #1d3f5e; color: #e0e0e0; border: 1px solid #16304a; padding: 6px 20px; font-size: 13px; font-family: Arial; cursor: pointer; }
+    .btn-submit:hover { background: #16304a; }
+
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 100; align-items: center; justify-content: center; }
+    .modal-overlay.visible { display: flex; }
+    .modal-box { background: #fff; border: 1px solid #aaa; width: 420px; }
+    .modal-header { background: #1d3f5e; color: #ddd; padding: 8px 14px; display: flex; justify-content: space-between; align-items: center; }
+    .modal-header h4 { font-size: 13px; font-weight: bold; }
+    .modal-header .close-btn { background: none; border: none; color: #aaa; font-size: 16px; cursor: pointer; }
+    .modal-body { padding: 14px 16px; font-size: 13px; line-height: 1.6; color: #333; }
+    .modal-footer { padding: 10px 16px; border-top: 1px solid #ddd; text-align: right; }
+    .btn-sm { background: #1d3f5e; color: #ddd; border: 1px solid #16304a; padding: 4px 14px; font-size: 12px; font-family: Arial; cursor: pointer; }
+    .btn-sm:hover { background: #16304a; }
+
+    .site-footer { background: #1a1a1a; color: #888; padding: 18px 0 10px; margin-top: auto; }
+    .site-footer .inner { max-width: 1060px; margin: 0 auto; padding: 0 16px; }
+    .footer-cols { display: flex; gap: 24px; margin-bottom: 12px; }
+    .footer-col { flex: 1; }
+    .footer-col h4 { font-size: 11px; font-weight: bold; color: #bbb; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .footer-col ul { list-style: none; }
+    .footer-col ul li a { color: #888; font-size: 12px; }
+    .footer-col ul li a:hover { color: #ccc; }
+    .footer-col ul li span { color: #555; font-size: 12px; }
+    .footer-disclaimer { border-top: 1px solid #2a2a2a; padding-top: 10px; font-size: 11px; color: #555; line-height: 1.5; }
+  </style>
+</head>
+<body>
+
+<div class="top-strip">
+  <div class="inner">
+    <ul class="utility-links">
+      <li><a href="#" onclick="return false;">Unit Portal</a></li>
+      <li><a href="#" class="cs-link">Discord</a></li>
+      <li><a href="#" class="cs-link">Modpack</a></li>
+      <li><a href="#" class="cs-link">Schedule</a></li>
+      <li><a href="#" class="cs-link" onclick="showCS(event)">Contact</a></li>
+    </ul>
+    <span class="small-date">Official community information site</span>
+  </div>
+</div>
+
+<header class="main-header">
+  <div class="inner">
+    <div class="unit-left">
+      <div class="unit-mark">DG</div>
+      <div class="unit-title-block">
+        <h1>NSWDG</h1>
+        <p>Naval special warfare Development Group</p>
+      </div>
+    </div>
+    <div class="header-tools">
+      <form class="search-form" action="#" method="get">
+        <label for="siteSearch">Search</label>
+        <input id="siteSearch" type="text" placeholder="Search this site">
+        <button type="button">Search</button>
+      </form>
+      <div class="login-links">
+        <a href="#" onclick="return false;">Login</a> &nbsp;|&nbsp; <a href="application.html">Apply</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<nav class="main-nav">
+  <div class="inner">
+    <a href="#" class="cs-link" onclick="showCS(event)">Home <span class="cs-badge">Soon</span></a>
+    <a href="index.html">Overview</a>
+    <a href="#" class="cs-link" onclick="showCS(event)">Media <span class="cs-badge">Soon</span></a>
+    <a href="application.html" class="active">Application</a>
+  </div>
+</nav>
+
+<main class="main-content">
+  <section class="content-box">
+    <h2>Application Overview</h2>
+    <p>This is not a test nor selection, our application, interview, and evaluations phase is purely to find people that fit into our niche and would be at home in our group. We are simply group with a high standard for historical recreation for those who are not aligned there is no shame we have our hobbies just as others have there's. Should your application be accepted you will receive a DM with a discord link and the following interview will be simple, you will present your application and we will discuss and use it to bring up additional relevant topics. We will have a copy of your application but feel free to screenshot your application if you want to continue review post submission.</p>
+    <p>We are currently recruiting for NSWDG, OPFOR, and Zeus positions.</p>
+  </section>
+
+  <section class="content-box">
+    <h2>Application Form</h2>
+    <form id="applicationForm">
+      <div class="form-group"><label for="q1">1. Are you in any other units and you willing to provide some way to prove during your interview you are not involved in groups or experiences similar to ours or justify that a group you may be involved in provides something else?</label><textarea id="q1" name="q1" rows="3" placeholder="Type your response here"></textarea></div>
+      <div class="form-group"><label for="q2">2. Are you a GWOT or DEVGRU gear and tactics enthusiast?</label><textarea id="q2" name="q2" rows="3" placeholder="Type your response here"></textarea></div>
+      <div class="form-group"><label for="q3">3. Describe your dream mil-sim community and relate it to why you may be interested in ours.</label><textarea id="q3" name="q3" rows="4" placeholder="Type your response here"></textarea></div>
+      <div class="form-group"><label for="q4">4. What's your previous experience Arma-3 or otherwise and how many hours do you have currently?</label><textarea id="q4" name="q4" rows="4" placeholder="Type your response here"></textarea></div>
+      <div class="form-group"><label for="q5">5. What does your availability look like detail your usual available hours for each day of the week and our considerations to note?</label><textarea id="q5" name="q5" rows="4" placeholder="Type your response here"></textarea></div>
+      <div class="form-group"><label for="q6">6. Do you have a working microphone, TeamSpeak + Arma-3 installed, and can you run the game smoothly?</label><textarea id="q6" name="q6" rows="4" placeholder="Type your response here"></textarea></div>
+      <div class="form-group"><label for="q7">7. Are you willing to proceed to a voice interview should your application be accepted?</label><textarea id="q7" name="q7" rows="4" placeholder="Type your response here"></textarea></div>
+      <div class="form-group"><label for="q8">8. Which position are you applying for and why are you interested in that position? additionally do you have any special interest within said position? e.g im applying for DEVGRU assaulter and have a special interest in MFF and Explosive Breaching.</label><textarea id="q8" name="q8" rows="4" placeholder="Type your response here"></textarea></div>
+      <div class="form-group"><label for="q9">9. What's your discord username?</label><textarea id="q9" name="q9" rows="4" placeholder="Type your response here"></textarea></div>
+      <button type="submit" class="btn-submit">Submit Application</button>
+    </form>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="inner">
+    <div class="footer-cols">
+      <div class="footer-col"><h4>Overview</h4><ul><li><a href="index.html">Unit Overview</a></li></ul></div>
+      <div class="footer-col"><h4>Media</h4><ul><li><span>Gallery — Coming Soon</span></li></ul></div>
+      <div class="footer-col"><h4>Application</h4><ul><li><a href="application.html">Apply</a></li></ul></div>
+    </div>
+    <div class="footer-disclaimer">
+      <strong>Disclaimer:</strong> NSWDG is a fictional Arma 3 community project. It is not affiliated with DEVGRU, the U.S. Navy, JSOC, USSOCOM, or any real-world military organization. Names, procedures, departments, visual identity, and materials on this site are fictional community content.
+    </div>
+  </div>
+</footer>
+
+<!-- Disclaimer Modal -->
+<div class="modal-overlay" id="noticeModal">
+  <div class="modal-box">
+    <div class="modal-header"><h4>Site Disclaimer</h4><button class="close-btn" onclick="closeModal('noticeModal')">&times;</button></div>
+    <div class="modal-body"><p>This is a fictional community site. It is not affiliated with any real-world military organization.</p></div>
+    <div class="modal-footer"><button class="btn-sm" onclick="closeModal('noticeModal')">Understood</button></div>
+  </div>
+</div>
+
+<!-- Form Submitted Modal -->
+<div class="modal-overlay" id="formModal">
+  <div class="modal-box">
+    <div class="modal-header"><h4>Application Submitted</h4><button class="close-btn" onclick="closeModal('formModal')">&times;</button></div>
+    <div class="modal-body">
+      <p>Your application has been sent.</p>
+      <p>If your Discord webhook relay is configured on the backend, the answers will be forwarded there automatically.</p>
+    </div>
+    <div class="modal-footer"><button class="btn-sm" onclick="closeModal('formModal')">Close</button></div>
+  </div>
+</div>
+
+<!-- Coming Soon Modal -->
+<div class="modal-overlay" id="csModal">
+  <div class="modal-box">
+    <div class="modal-header"><h4>Coming Soon</h4><button class="close-btn" onclick="closeModal('csModal')">&times;</button></div>
+    <div class="modal-body"><p>This section is not yet available. Check back soon.</p></div>
+    <div class="modal-footer"><button class="btn-sm" onclick="closeModal('csModal')">Close</button></div>
+  </div>
+</div>
+
+<script>
+  function openModal(id){ document.getElementById(id).classList.add('visible'); }
+  function closeModal(id){ document.getElementById(id).classList.remove('visible'); }
+  function showCS(e){ e.preventDefault(); openModal('csModal'); }
+
+  
+
+  document.getElementById('applicationForm').addEventListener('submit', async function(e){
+    e.preventDefault();
+    const payload = {
+      page: 'Application', submittedAt: new Date().toISOString(),
+      answers: {
+        q1: document.getElementById('q1').value.trim(), q2: document.getElementById('q2').value.trim(),
+        q3: document.getElementById('q3').value.trim(), q4: document.getElementById('q4').value.trim(),
+        q5: document.getElementById('q5').value.trim(), q6: document.getElementById('q6').value.trim(),
+        q7: document.getElementById('q7').value.trim(), q8: document.getElementById('q8').value.trim(),
+        q9: document.getElementById('q9').value.trim()
+      }
+    };
+    try {
+      const response = await fetch('/api/application', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+      if(!response.ok) throw new Error('Submission failed');
+      openModal('formModal');
+      this.reset();
+    } catch(error) {
+      alert('Application could not be sent. Check your backend webhook relay at /api/application.');
+    }
+  });
+</script>
+</body>
+</html>
