@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Overview | NSWDG</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #ebebeb; color: #222; font-family: Arial, Helvetica, sans-serif; font-size: 13px; min-height: 100vh; display: flex; flex-direction: column; }
+    a { color: #2a5f8a; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .top-strip { background: #222; padding: 4px 0; }
+    .top-strip .inner { max-width: 1060px; margin: 0 auto; padding: 0 16px; display: flex; justify-content: space-between; align-items: center; }
+    .utility-links { list-style: none; display: flex; }
+    .utility-links li a { color: #999; font-size: 11px; padding: 2px 10px; border-right: 1px solid #3a3a3a; display: block; }
+    .utility-links li:first-child a { padding-left: 0; }
+    .utility-links li a:hover { color: #ccc; text-decoration: none; }
+    .utility-links li a.cs-link { color: #666; cursor: default; }
+    .utility-links li a.cs-link:hover { color: #666; text-decoration: none; }
+    .small-date { font-size: 11px; color: #666; }
+
+    .main-header { background: #1d3f5e; color: #fff; border-bottom: 2px solid #bba952; padding: 12px 0; }
+    .main-header .inner { max-width: 1060px; margin: 0 auto; padding: 0 16px; display: flex; justify-content: space-between; align-items: center; }
+    .unit-left { display: flex; align-items: center; gap: 14px; }
+    .unit-mark { background: #bba952; color: #f0f0f0; font-size: 18px; font-weight: bold; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .unit-title-block h1 { font-size: 15px; font-weight: bold; line-height: 1.3; }
+    .unit-title-block p { font-size: 11px; color: #a0b8cc; margin-top: 2px; }
+    .header-tools { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+    .search-form { display: flex; align-items: center; gap: 6px; }
+    .search-form label { font-size: 11px; color: #a0b8cc; }
+    .search-form input { border: 1px solid #999; padding: 4px 7px; font-size: 12px; font-family: Arial; background: #fff; width: 180px; }
+    .search-form input:focus { outline: 1px solid #a0b8cc; }
+    .search-form button { background: #2a5f8a; color: #fff; border: 1px solid #1d3f5e; padding: 4px 12px; font-size: 12px; font-family: Arial; cursor: pointer; }
+    .search-form button:hover { background: #1d3f5e; }
+    .login-links { font-size: 11px; color: #a0b8cc; }
+    .login-links a { color: #a0b8cc; }
+    .login-links a:hover { color: #fff; }
+
+    .main-nav { background: #16304a; border-bottom: 1px solid #bba952; }
+    .main-nav .inner { max-width: 1060px; margin: 0 auto; padding: 0 16px; display: flex; }
+    .main-nav a { display: block; padding: 7px 14px; font-size: 12px; color: #a0b8cc; border-right: 1px solid #1d3f5e; }
+    .main-nav a:hover:not(.cs-link) { background: #1d3f5e; color: #ddd; text-decoration: none; }
+    .main-nav a.active { background: #1d3f5e; color: #ddd; font-weight: bold; }
+    .main-nav a.cs-link { color: #4a5f70; cursor: default; }
+    .main-nav a.cs-link:hover { background: none; text-decoration: none; }
+    .cs-badge { font-size: 9px; color: #888; background: #2a3a48; border: 1px solid #3a4a58; padding: 1px 5px; margin-left: 5px; vertical-align: middle; letter-spacing: 0.5px; text-transform: uppercase; }
+
+    .main-content { max-width: 1060px; margin: 20px auto; padding: 0 16px; flex: 1; width: 100%; }
+
+    .content-box { background: #fff; border: 1px solid #ccc; padding: 20px 24px; margin-bottom: 18px; }
+    .content-box h2 { font-size: 14px; font-weight: bold; color: #1d3f5e; border-bottom: 1px solid #ddd; padding-bottom: 7px; margin-bottom: 14px; }
+    .content-box p { font-size: 13px; line-height: 1.8; margin-bottom: 12px; color: #333; }
+
+    .art-slot { border: 1px dashed #ccc; background: #f5f5f5; color: #aaa; font-size: 12px; padding: 32px; text-align: center; margin-top: 14px; }
+
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 100; align-items: center; justify-content: center; }
+    .modal-overlay.visible { display: flex; }
+    .modal-box { background: #fff; border: 1px solid #aaa; width: 420px; }
+    .modal-header { background: #1d3f5e; color: #ddd; padding: 8px 14px; display: flex; justify-content: space-between; align-items: center; }
+    .modal-header h4 { font-size: 13px; font-weight: bold; }
+    .modal-header .close-btn { background: none; border: none; color: #aaa; font-size: 16px; cursor: pointer; }
+    .modal-body { padding: 14px 16px; font-size: 13px; line-height: 1.6; color: #333; }
+    .modal-footer { padding: 10px 16px; border-top: 1px solid #ddd; text-align: right; }
+    .btn-sm { background: #1d3f5e; color: #ddd; border: 1px solid #16304a; padding: 4px 14px; font-size: 12px; font-family: Arial; cursor: pointer; }
+    .btn-sm:hover { background: #16304a; }
+
+    .site-footer { background: #1a1a1a; color: #888; padding: 18px 0 10px; margin-top: auto; }
+    .site-footer .inner { max-width: 1060px; margin: 0 auto; padding: 0 16px; }
+    .footer-cols { display: flex; gap: 24px; margin-bottom: 12px; }
+    .footer-col { flex: 1; }
+    .footer-col h4 { font-size: 11px; font-weight: bold; color: #bbb; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .footer-col ul { list-style: none; }
+    .footer-col ul li a { color: #888; font-size: 12px; }
+    .footer-col ul li a:hover { color: #ccc; }
+    .footer-col ul li span { color: #555; font-size: 12px; }
+    .footer-disclaimer { border-top: 1px solid #2a2a2a; padding-top: 10px; font-size: 11px; color: #555; line-height: 1.5; }
+  </style>
+</head>
+<body>
+
+<div class="top-strip">
+  <div class="inner">
+    <ul class="utility-links">
+      <li><a href="#" onclick="return false;">Unit Portal</a></li>
+      <li><a href="#" class="cs-link" onclick="showCS(event)">Discord</a></li>
+      <li><a href="#" class="cs-link" onclick="showCS(event)">Modpack</a></li>
+      <li><a href="#" class="cs-link" onclick="showCS(event)">Schedule</a></li>
+      <li><a href="#" class="cs-link" onclick="showCS(event)">Contact</a></li>
+    </ul>
+    <span class="small-date">Official community information site</span>
+  </div>
+</div>
+
+<header class="main-header">
+  <div class="inner">
+    <div class="unit-left">
+      <div class="unit-mark">DG</div>
+      <div class="unit-title-block">
+        <h1>NSWDG</h1>
+        <p>Naval special warfare Development Group</p>
+      </div>
+    </div>
+    <div class="header-tools">
+      <form class="search-form" action="#" method="get">
+        <label for="siteSearch">Search</label>
+        <input id="siteSearch" type="text" placeholder="Search this site">
+        <button type="button">Search</button>
+      </form>
+      <div class="login-links">
+        <a href="#" onclick="return false;">Login</a> &nbsp;|&nbsp; <a href="application.html">Apply</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<nav class="main-nav">
+  <div class="inner">
+    <a href="#" class="cs-link" onclick="showCS(event)">Home <span class="cs-badge">Soon</span></a>
+    <a href="overview.html" class="active">Overview</a>
+    <a href="#" class="cs-link" onclick="showCS(event)">Media <span class="cs-badge">Soon</span></a>
+    <a href="application.html">Application</a>
+  </div>
+</nav>
+
+<main class="main-content">
+  <section class="content-box">
+    <h1>Overview</h1><hr><br>
+  <h3>Preface</h3>
+</p>NSWDG Arma-3 Aims to be an authentic historical recreation of select components of Naval Special Warfare Development Group plus some associated support elements set in the mid to late GWOT, this is a hardcore mil-sim environment with extensive skills development. Operations will be brutally long and realistic.<p>
+<h3>Operations/Gameplay</h3>
+</p>Operations will be full spectrum and persistent meaning we aim to simulate as much of out JSOTF and associated elements as possible frequently operating out of a airbase with a realistic op tempo. heavy Zeus and player opfor/roleplay will be a core component of what we are trying to simulate we are not looking for generic Zeus made missions on deployment instead we want to simulate a JSOTFs whole area of responsibility having it be a living and breathing environment where dynamic gameplay opportunities and realistic tactics shine. almost all of your experience besides the interview will happen within Arma-3 through TeamSpeak and in game slideshows/documentation to the point where our unit discord acts as a scheduling, support, and logistics resources but is not as heavily relied upon as in other units. for those who what an even more authentic experience a operations portal/dashboard terminal is in development for unit members.</p>
+<h3>Trainings/Schduleing</h3>
+</p>Training will be extensive in the capability it provides the element however we recognize very long pipelines can be limiting for those with tight schedules as such we try to make it as efficient as possible. That being said we would like to hop on pretty frequently with the goal of 3-4 4 hours operation blocks a week on deployment phases and 3-4 main trainings with time to hop on whenever available during the week in green team and pro dev/work up phases. Should that training tempo be the case, a class of experienced Arma-3 players Can Likely complete green team in as little as a month. The group environment can be best described as focused on authentic operations we will not be doing PT or hosting ceremonies all we ask is a group of people we are dedicated to authentic recreation tactically and historically to a high degree. Dual claning is generally disallowed.</p>
+<h3>Mod Development</h3>
+</p>We have and will continue to develop custom gear and weapons to match periods we deploy and train in with exacting detail. Additionally, we have developed custom systems training assets deployments assets and vehicles to enhance the experience and realism that includes QOL, tactical stance, killhouse training systems, navigation equipment, and much more.</p>
+</p>
+    <img src="test.png" alt="Unit Overview" style="width:100%; max-width:1000px; border:1px solid #ccc; margin-top:14px; display:block;">
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="inner">
+    <div class="footer-cols">
+      <div class="footer-col"><h4>Overview</h4><ul><li><a href="overview.html">Unit Overview</a></li></ul></div>
+      <div class="footer-col"><h4>Media</h4><ul><li><span>Gallery — Coming Soon</span></li></ul></div>
+      <div class="footer-col"><h4>Application</h4><ul><li><a href="application.html">Apply</a></li></ul></div>
+    </div>
+    <div class="footer-disclaimer">
+      <strong>Disclaimer:</strong> NSWDG is a fictional Arma 3 community project. It is not affiliated with DEVGRU, the U.S. Navy, JSOC, USSOCOM, or any real-world military organization. Names, procedures, departments, visual identity, and materials on this site are fictional community content.
+    </div>
+  </div>
+</footer>
+
+<!-- Disclaimer Modal -->
+<div class="modal-overlay" id="noticeModal">
+  <div class="modal-box">
+    <div class="modal-header"><h4>Site Disclaimer</h4><button class="close-btn" onclick="closeModal('noticeModal')">&times;</button></div>
+    <div class="modal-body"><p>This is a fictional community site. It is not affiliated with any real-world military organization.</p></div>
+    <div class="modal-footer"><button class="btn-sm" onclick="closeModal('noticeModal')">Understood</button></div>
+  </div>
+</div>
+
+<!-- Coming Soon Modal -->
+<div class="modal-overlay" id="csModal">
+  <div class="modal-box">
+    <div class="modal-header"><h4>Coming Soon</h4><button class="close-btn" onclick="closeModal('csModal')">&times;</button></div>
+    <div class="modal-body"><p>This section is not yet available. Check back soon.</p></div>
+    <div class="modal-footer"><button class="btn-sm" onclick="closeModal('csModal')">Close</button></div>
+  </div>
+</div>
+
+<script>
+  function openModal(id){ document.getElementById(id).classList.add('visible'); }
+  function closeModal(id){ document.getElementById(id).classList.remove('visible'); }
+  function showCS(e){ e.preventDefault(); openModal('csModal'); }
+  
+</script>
+</body>
+</html>
