@@ -955,7 +955,7 @@
         <div class="form-section">
           <h2>Section II - Role Selection</h2>
 
-          <div class="form-group" data-min="2" data-max="40">
+          <div class="form-group" data-min="1" data-max="40" data-skip-length="true">
             <label for="roleApplied">Which role are you applying for?</label>
             <div class="field-wrap">
               <select id="roleApplied" name="roleApplied">
@@ -1301,12 +1301,12 @@
       clearError(group);
       updateCounter(group);
 
-      if (count < min) {
+      if (field.tagName !== 'SELECT' && count < min) {
         setError(group, 'This answer is too short. Minimum: ' + min + ' characters. Current: ' + count + '.');
         return false;
       }
 
-      if (count > max) {
+      if (field.tagName !== 'SELECT' && count > max) {
         setError(group, 'This answer is too long. Maximum: ' + max + ' characters. Current: ' + count + '.');
         return false;
       }
