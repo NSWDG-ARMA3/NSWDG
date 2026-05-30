@@ -325,7 +325,8 @@
     }
 
     .form-group input,
-    .form-group textarea {
+    .form-group textarea,
+    .form-group select {
       width: 100%;
       border: 1px solid #bbb;
       padding: 6px 8px;
@@ -341,7 +342,8 @@
     }
 
     .form-group input:focus,
-    .form-group textarea:focus {
+    .form-group textarea:focus,
+    .form-group select:focus {
       outline: 1px solid #2a5f8a;
       background: #fff;
     }
@@ -374,7 +376,8 @@
     }
 
     .form-group.invalid input,
-    .form-group.invalid textarea {
+    .form-group.invalid textarea,
+    .form-group.invalid select {
       border-color: #b00000;
       background: #fff7f7;
     }
@@ -383,6 +386,23 @@
       display: grid;
       grid-template-columns: 1fr 120px 160px;
       gap: 12px;
+    }
+
+    .role-help {
+      background: #f3f3f3;
+      border: 1px solid #d5d5d5;
+      padding: 8px 10px;
+      color: #555;
+      font-size: 12px;
+      line-height: 1.6;
+      margin-top: 6px;
+    }
+
+    .dynamic-question-note {
+      color: #777;
+      font-size: 11px;
+      margin-bottom: 12px;
+      line-height: 1.5;
     }
 
     .btn-submit {
@@ -933,94 +953,35 @@
         </div>
 
         <div class="form-section">
-          <h2>Section II - Unit Compatibility</h2>
+          <h2>Section II - Role Selection</h2>
 
-          <div class="form-group" data-min="15" data-max="700">
-            <label for="otherUnits">1. Are you in any other units and you willing to provide some way to prove during your interview you are not involved in groups or experiences similar to ours or justify that a group you may be involved in provides something else?</label>
+          <div class="form-group" data-min="2" data-max="40">
+            <label for="roleApplied">Which role are you applying for?</label>
             <div class="field-wrap">
-              <textarea id="otherUnits" name="otherUnits" rows="4"></textarea>
+              <select id="roleApplied" name="roleApplied">
+                <option value="">Select a role</option>
+                <option value="NSWDG Candidate">NSWDG Candidate</option>
+                <option value="OPFOR Candidate">OPFOR Candidate</option>
+                <option value="Zeus Candidate">Zeus Candidate</option>
+              </select>
               <span class="char-counter"></span>
             </div>
             <div class="field-error"></div>
-          </div>
-
-          <div class="form-group" data-min="100" data-max="500">
-            <label for="gearInterest">2. Are you a GWOT or DEVGRU gear and tactics enthusiast?</label>
-            <div class="field-wrap">
-              <textarea id="gearInterest" name="gearInterest" rows="3"></textarea>
-              <span class="char-counter"></span>
-            </div>
-            <div class="field-error"></div>
-          </div>
-
-          <div class="form-group" data-min="100" data-max="700">
-            <label for="dreamCommunity">3. Describe your dream mil-sim community and relate it to why you may be interested in ours.</label>
-            <div class="field-wrap">
-              <textarea id="dreamCommunity" name="dreamCommunity" rows="5"></textarea>
-              <span class="char-counter"></span>
-            </div>
-            <div class="field-error"></div>
+            <div class="role-help" id="roleHelp">Select a role and the application questions below will update.</div>
           </div>
         </div>
 
         <div class="form-section">
-          <h2>Section III - Experience</h2>
-
-          <div class="form-group" data-min="100" data-max="700">
-            <label for="armaExperience">4. What's your previous experience Arma-3 or otherwise and how many hours do you have currently?</label>
-            <div class="field-wrap">
-              <textarea id="armaExperience" name="armaExperience" rows="5"></textarea>
-              <span class="char-counter"></span>
-            </div>
-            <div class="field-error"></div>
-          </div>
+          <h2 id="dynamicSectionTitle">Section III - Role Questions</h2>
+          <p class="dynamic-question-note">These questions change based on the selected role. Changing the role will replace the role-specific questions.</p>
+          <div id="dynamicQuestions"></div>
         </div>
 
         <div class="form-section">
-          <h2>Section IV - Availability & Requirements</h2>
-
-          <div class="form-group" data-min="25" data-max="700">
-            <label for="availability">5. What does your availability look like detail your usual available hours for each day of the week and our considerations to note?</label>
-            <div class="field-wrap">
-              <textarea id="availability" name="availability" rows="5"></textarea>
-              <span class="char-counter"></span>
-            </div>
-            <div class="field-error"></div>
-          </div>
-
-          <div class="form-group" data-min="10" data-max="500">
-            <label for="technicalReadiness">6. Do you have a working microphone, TeamSpeak + Arma-3 installed, and can you run the game smoothly?</label>
-            <div class="field-wrap">
-              <textarea id="technicalReadiness" name="technicalReadiness" rows="4"></textarea>
-              <span class="char-counter"></span>
-            </div>
-            <div class="field-error"></div>
-          </div>
-
-          <div class="form-group" data-min="3" data-max="300">
-            <label for="voiceInterview">7. Are you willing to proceed to a voice interview should your application be accepted?</label>
-            <div class="field-wrap">
-              <textarea id="voiceInterview" name="voiceInterview" rows="3"></textarea>
-              <span class="char-counter"></span>
-            </div>
-            <div class="field-error"></div>
-          </div>
-        </div>
-
-        <div class="form-section">
-          <h2>Section V - Position Interest</h2>
-
-          <div class="form-group" data-min="100" data-max="700">
-            <label for="positionInterest">8. Which position are you applying for and why are you interested in that position? additionally do you have any special interest within said position? e.g im applying for DEVGRU assaulter and have a special interest in MFF and Explosive Breaching.</label>
-            <div class="field-wrap">
-              <textarea id="positionInterest" name="positionInterest" rows="5"></textarea>
-              <span class="char-counter"></span>
-            </div>
-            <div class="field-error"></div>
-          </div>
+          <h2>Section IV - Final Notes</h2>
 
           <div class="form-group" data-min="0" data-max="500">
-            <label for="finalNotes">9. Is there anything else we should know before reviewing your application?</label>
+            <label for="finalNotes">Is there anything else we should know before reviewing your application?</label>
             <div class="field-wrap">
               <textarea id="finalNotes" name="finalNotes" rows="4"></textarea>
               <span class="char-counter"></span>
@@ -1095,22 +1056,55 @@
   <script>
     var DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1508359225028509707/xfoeXuWWBl8itTpP3KjN-l-SxMuVZo1ydbglw4GHPzcZHZFWoUOFSFTOho1IaNOGDBq4';
 
-    var QUESTIONS = {
-      otherUnits: 'Are you in any other units and you willing to provide some way to prove during your interview you are not involved in groups or experiences similar to ours or justify that a group you may be involved in provides something else?',
-      gearInterest: 'Are you a GWOT or DEVGRU gear and tactics enthusiast?',
-      dreamCommunity: 'Describe your dream mil-sim community and relate it to why you may be interested in ours.',
-      armaExperience: "What's your previous experience Arma-3 or otherwise and how many hours do you have currently?",
-      availability: 'What does your availability look like detail your usual available hours for each day of the week and our considerations to note?',
-      technicalReadiness: 'Do you have a working microphone, TeamSpeak + Arma-3 installed, and can you run the game smoothly?',
-      voiceInterview: 'Are you willing to proceed to a voice interview should your application be accepted?',
-      positionInterest: 'Which position are you applying for and why are you interested in that position? additionally do you have any special interest within said position? e.g im applying for DEVGRU assaulter and have a special interest in MFF and Explosive Breaching.',
-      finalNotes: 'Is there anything else we should know before reviewing your application?'
+    var ROLE_QUESTIONS = {
+      'NSWDG Candidate': {
+        help: 'NSWDG applicants are reviewed for tactical maturity, GWOT/DEVGRU interest, teamwork, schedule fit, and willingness to learn unit procedures.',
+        questions: [
+          { id: 'unitConflict', min: 15, max: 700, rows: 4, text: 'Are you currently in any other Arma 3 units or communities? If yes, explain how they differ from this group and whether there are any schedule or loyalty conflicts.' },
+          { id: 'gwotInterest', min: 100, max: 700, rows: 5, text: 'Describe your interest in GWOT-era NSWDG/DEVGRU kit, tactics, atmosphere, and historical recreation. What specifically draws you to this style of unit?' },
+          { id: 'armaExperience', min: 100, max: 700, rows: 5, text: 'What is your previous Arma 3 or mil-sim experience, how many hours do you have, and what roles have you usually played?' },
+          { id: 'teamworkDiscipline', min: 75, max: 700, rows: 5, text: 'Give an example of how you handle orders, corrections, or criticism during a mission when things are stressful or not going your way.' },
+          { id: 'specialInterest', min: 50, max: 700, rows: 5, text: 'What NSWDG role or specialty interests you most, such as assaulter, breacher, medic, JTAC, marksman, MFF, or reconnaissance, and why?' },
+          { id: 'availability', min: 25, max: 700, rows: 5, text: 'What does your normal weekly availability look like? Include days, times, timezone, and any recurring limits we should know about.' },
+          { id: 'technicalReadiness', min: 10, max: 500, rows: 4, text: 'Do you have a working microphone, TeamSpeak, Arma 3 installed, required mod space, and a stable enough setup to attend operations?' },
+          { id: 'voiceInterview', min: 3, max: 300, rows: 3, text: 'Are you willing to complete a voice interview if your application is accepted?' }
+        ]
+      },
+      'OPFOR Candidate': {
+        help: 'OPFOR applicants are reviewed for immersion, restraint, independent thinking, reliability, and ability to create believable opposition without treating missions like public PvP.',
+        questions: [
+          { id: 'unitConflict', min: 15, max: 700, rows: 4, text: 'Are you currently in any other Arma 3 units or communities? If yes, explain whether this would conflict with an OPFOR campaign role.' },
+          { id: 'opforMotivation', min: 100, max: 700, rows: 5, text: 'Why do you want to play OPFOR instead of a main friendly-force role? Describe what makes opposing-force gameplay interesting to you.' },
+          { id: 'armaExperience', min: 75, max: 700, rows: 5, text: 'Describe your Arma 3 experience, including PvE, PvP, Zeus, insurgency, patrol, logistics, reconnaissance, or leadership experience if applicable.' },
+          { id: 'immersionRestraint', min: 100, max: 700, rows: 5, text: 'OPFOR must be believable and fair, not just focused on winning. How would you balance immersion, challenge, and restraint during missions?' },
+          { id: 'planningStyle', min: 75, max: 700, rows: 5, text: 'How would you approach planning an ambush, raid, reconnaissance task, or defensive action against a better-equipped force?' },
+          { id: 'availability', min: 25, max: 700, rows: 5, text: 'What does your normal weekly availability look like? Include days, times, timezone, and any recurring limits we should know about.' },
+          { id: 'technicalReadiness', min: 10, max: 500, rows: 4, text: 'Do you have a working microphone, TeamSpeak, Arma 3 installed, required mod space, and a stable enough setup to attend operations?' },
+          { id: 'voiceInterview', min: 3, max: 300, rows: 3, text: 'Are you willing to complete a voice interview if your application is accepted?' }
+        ]
+      },
+      'Zeus Candidate': {
+        help: 'Zeus applicants are reviewed for mission design judgement, technical competence, communication, consistency, restraint, and ability to support the campaign without over-controlling players.',
+        questions: [
+          { id: 'unitConflict', min: 15, max: 700, rows: 4, text: 'Are you currently in any other Arma 3 units or communities? If yes, explain whether there are schedule, staff, or mission-development conflicts.' },
+          { id: 'zeusExperience', min: 100, max: 700, rows: 5, text: 'Describe your Zeus, Eden Editor, scripting, modding, mission-making, or staff experience. Include examples if you have them.' },
+          { id: 'missionDesign', min: 100, max: 700, rows: 5, text: 'How do you design a believable operation from briefing to execution? Explain how you handle pacing, enemy placement, objectives, and player freedom.' },
+          { id: 'liveAdaptation', min: 100, max: 700, rows: 5, text: 'During a live mission, the players ignore the expected route and break your plan. What do you do to keep the mission believable and functional?' },
+          { id: 'feedbackLeadership', min: 75, max: 700, rows: 5, text: 'How do you handle feedback from leadership and players when a mission does not go well?' },
+          { id: 'availability', min: 25, max: 700, rows: 5, text: 'What does your normal weekly availability look like? Include prep time, operation attendance, timezone, and any recurring limits.' },
+          { id: 'technicalReadiness', min: 10, max: 500, rows: 4, text: 'Do you have a working microphone, TeamSpeak, Arma 3 installed, required mod space, and a stable enough setup to Zeus or build missions?' },
+          { id: 'paidPosition', min: 3, max: 500, rows: 4, text: 'This role may involve possible paid position discussions. Are you applying as a volunteer, interested in possible paid work, or open to either?' },
+          { id: 'voiceInterview', min: 3, max: 300, rows: 3, text: 'Are you willing to complete a voice interview and practical Zeus discussion if your application is accepted?' }
+        ]
+      }
     };
 
+    var DYNAMIC_FIELD_IDS = [];
+    var QUESTION_LOOKUP = {}; 
     var DRAFT_STORAGE_KEY = 'nswdgApplicationDraftV1';
 
     function getDraftFields() {
-      return Array.prototype.slice.call(document.querySelectorAll('#applicationForm input, #applicationForm textarea'));
+      return Array.prototype.slice.call(document.querySelectorAll('#applicationForm input, #applicationForm textarea, #applicationForm select'));
     }
 
     function saveDraft() {
@@ -1131,16 +1125,24 @@
     function restoreDraft() {
       try {
         var saved = localStorage.getItem(DRAFT_STORAGE_KEY);
-        if (!saved) return;
+        if (!saved) {
+          renderRoleQuestions('', null);
+          return;
+        }
 
         var draft = JSON.parse(saved);
+        var selectedRole = draft.roleApplied || '';
+        var roleField = document.getElementById('roleApplied');
+        if (roleField) roleField.value = selectedRole;
+        renderRoleQuestions(selectedRole, draft);
+
         getDraftFields().forEach(function(field) {
           if (field.id && Object.prototype.hasOwnProperty.call(draft, field.id)) {
             field.value = draft[field.id];
           }
         });
       } catch (error) {
-        // Ignore invalid stored draft data.
+        renderRoleQuestions('', null);
       }
     }
 
@@ -1176,6 +1178,86 @@
       return element ? element.value.trim() : '';
     }
 
+    function makeQuestionGroup(question, number) {
+      QUESTION_LOOKUP[question.id] = question.text;
+
+      return '' +
+        '<div class="form-group dynamic-question" data-min="' + question.min + '" data-max="' + question.max + '">' +
+          '<label for="' + question.id + '">' + number + '. ' + question.text + '</label>' +
+          '<div class="field-wrap">' +
+            '<textarea id="' + question.id + '" name="' + question.id + '" rows="' + question.rows + '"></textarea>' +
+            '<span class="char-counter"></span>' +
+          '</div>' +
+          '<div class="field-error"></div>' +
+        '</div>';
+    }
+
+    function bindGroup(group) {
+      var field = group.querySelector('input, textarea, select');
+      if (!field || group.getAttribute('data-bound') === '1') return;
+
+      group.setAttribute('data-bound', '1');
+      updateCounter(group);
+
+      field.addEventListener('input', function() {
+        clearError(group);
+        updateCounter(group);
+        saveDraft();
+      });
+
+      field.addEventListener('change', function() {
+        clearError(group);
+        updateCounter(group);
+        saveDraft();
+      });
+
+      field.addEventListener('blur', function() {
+        validateGroup(group);
+      });
+    }
+
+    function bindAllGroups() {
+      document.querySelectorAll('.form-group[data-min][data-max]').forEach(function(group) {
+        bindGroup(group);
+      });
+    }
+
+    function renderRoleQuestions(selectedRole, savedDraft) {
+      var container = document.getElementById('dynamicQuestions');
+      var help = document.getElementById('roleHelp');
+      var sectionTitle = document.getElementById('dynamicSectionTitle');
+      var roleConfig = ROLE_QUESTIONS[selectedRole];
+
+      QUESTION_LOOKUP = {};
+      DYNAMIC_FIELD_IDS = [];
+      container.innerHTML = '';
+
+      if (!roleConfig) {
+        help.textContent = 'Select a role and the application questions below will update.';
+        sectionTitle.textContent = 'Section III - Role Questions';
+        return;
+      }
+
+      help.textContent = roleConfig.help;
+      sectionTitle.textContent = 'Section III - ' + selectedRole + ' Questions';
+
+      container.innerHTML = roleConfig.questions.map(function(question, index) {
+        DYNAMIC_FIELD_IDS.push(question.id);
+        return makeQuestionGroup(question, index + 1);
+      }).join('');
+
+      if (savedDraft) {
+        DYNAMIC_FIELD_IDS.forEach(function(id) {
+          var field = document.getElementById(id);
+          if (field && Object.prototype.hasOwnProperty.call(savedDraft, id)) {
+            field.value = savedDraft[id];
+          }
+        });
+      }
+
+      bindAllGroups();
+    }
+
     function setError(group, message) {
       var error = group.querySelector('.field-error');
       group.classList.add('invalid');
@@ -1189,7 +1271,7 @@
     }
 
     function updateCounter(group) {
-      var field = group.querySelector('input, textarea');
+      var field = group.querySelector('input, textarea, select');
       var counter = group.querySelector('.char-counter');
       var min = Number(group.getAttribute('data-min'));
       var max = Number(group.getAttribute('data-max'));
@@ -1209,7 +1291,7 @@
     }
 
     function validateGroup(group) {
-      var field = group.querySelector('input, textarea');
+      var field = group.querySelector('input, textarea, select');
       var label = group.querySelector('label');
       var min = Number(group.getAttribute('data-min'));
       var max = Number(group.getAttribute('data-max'));
@@ -1282,6 +1364,15 @@
       var age = getValue('age');
       var timezone = getValue('timezone');
       var discordUsername = getValue('discordUsername');
+      var selectedRole = getValue('roleApplied');
+      var roleConfig = ROLE_QUESTIONS[selectedRole];
+      var roleFields = [];
+
+      if (roleConfig) {
+        roleFields = roleConfig.questions.map(function(question, index) {
+          return answerField(index + 1, question.text, getValue(question.id));
+        });
+      }
 
       return {
         username: 'NSWDG Recruitment Bot',
@@ -1290,6 +1381,7 @@
             title: 'New Unit Application Received',
             color: 12298578,
             fields: [
+              { name: 'Role Applied For', value: selectedRole || 'Not provided', inline: true },
               { name: 'Name / Nickname', value: preferredName || 'Not provided', inline: true },
               { name: 'Discord', value: discordUsername || 'Not provided', inline: true },
               { name: 'Age', value: age || 'Not provided', inline: true },
@@ -1298,36 +1390,15 @@
             timestamp: new Date().toISOString()
           },
           {
-            title: 'Section II - Unit Compatibility',
+            title: selectedRole ? selectedRole + ' Application Answers' : 'Application Answers',
             color: 12298578,
-            fields: [
-              answerField(1, QUESTIONS.otherUnits, getValue('otherUnits')),
-              answerField(2, QUESTIONS.gearInterest, getValue('gearInterest')),
-              answerField(3, QUESTIONS.dreamCommunity, getValue('dreamCommunity'))
-            ]
+            fields: roleFields
           },
           {
-            title: 'Section III - Experience',
+            title: 'Final Notes',
             color: 12298578,
             fields: [
-              answerField(4, QUESTIONS.armaExperience, getValue('armaExperience'))
-            ]
-          },
-          {
-            title: 'Section IV - Availability & Requirements',
-            color: 12298578,
-            fields: [
-              answerField(5, QUESTIONS.availability, getValue('availability')),
-              answerField(6, QUESTIONS.technicalReadiness, getValue('technicalReadiness')),
-              answerField(7, QUESTIONS.voiceInterview, getValue('voiceInterview'))
-            ]
-          },
-          {
-            title: 'Section V - Position Interest',
-            color: 12298578,
-            fields: [
-              answerField(8, QUESTIONS.positionInterest, getValue('positionInterest')),
-              answerField(9, QUESTIONS.finalNotes, getValue('finalNotes'))
+              answerField('Final', 'Is there anything else we should know before reviewing your application?', getValue('finalNotes'))
             ],
             footer: {
               text: 'NSWDG Automated Application System'
@@ -1338,25 +1409,18 @@
     }
 
     restoreDraft();
+    bindAllGroups();
 
-    document.querySelectorAll('.form-group[data-min][data-max]').forEach(function(group) {
-      var field = group.querySelector('input, textarea');
-      updateCounter(group);
-
-      field.addEventListener('input', function() {
-        clearError(group);
-        updateCounter(group);
-        saveDraft();
-      });
-
-      field.addEventListener('blur', function() {
-        validateGroup(group);
-      });
+    document.getElementById('roleApplied').addEventListener('change', function() {
+      renderRoleQuestions(this.value, null);
+      saveDraft();
     });
 
     document.getElementById('clearDraftBtn').addEventListener('click', function() {
       clearDraft();
       document.getElementById('applicationForm').reset();
+      renderRoleQuestions('', null);
+      bindAllGroups();
       document.querySelectorAll('.form-group[data-min][data-max]').forEach(function(group) {
         clearError(group);
         updateCounter(group);
@@ -1370,8 +1434,8 @@
         return;
       }
 
-      if (!DISCORD_WEBHOOK_URL || DISCORD_WEBHOOK_URL === 'https://discord.com/api/webhooks/1508359225028509707/xfoeXuWWBl8itTpP3KjN-l-SxMuVZo1ydbglw4GHPzcZHZFWoUOFSFTOho1IaNOGDBq4') {
-        document.getElementById('errorModalText').textContent = 'Discord webhook URL is not configured inside application.html.';
+      if (!DISCORD_WEBHOOK_URL) {
+        document.getElementById('errorModalText').textContent = 'Discord webhook URL is not configured inside apply/index.html.';
         openModal('errorModal');
         return;
       }
@@ -1392,10 +1456,10 @@
         openModal('formModal');
         this.reset();
         clearDraft();
+        renderRoleQuestions('', null);
+        bindAllGroups();
 
-        restoreDraft();
-
-    document.querySelectorAll('.form-group[data-min][data-max]').forEach(function(group) {
+        document.querySelectorAll('.form-group[data-min][data-max]').forEach(function(group) {
           clearError(group);
           updateCounter(group);
         });
