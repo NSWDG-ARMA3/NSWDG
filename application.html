@@ -1083,7 +1083,7 @@
   </div>
 
   <script>
-    var DISCORD_WEBHOOK_URL = 'PASTE_YOUR_WEBHOOK_URL_HERE';
+    var DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1508359225028509707/xfoeXuWWBl8itTpP3KjN-l-SxMuVZo1ydbglw4GHPzcZHZFWoUOFSFTOho1IaNOGDBq4';
 
     var QUESTIONS = {
       otherUnits: 'Are you in any other units and you willing to provide some way to prove during your interview you are not involved in groups or experiences similar to ours or justify that a group you may be involved in provides something else?',
@@ -1360,7 +1360,7 @@
         return;
       }
 
-      if (!DISCORD_WEBHOOK_URL || DISCORD_WEBHOOK_URL === 'PASTE_YOUR_WEBHOOK_URL_HERE') {
+      if (!DISCORD_WEBHOOK_URL || DISCORD_WEBHOOK_URL === 'https://discord.com/api/webhooks/1508359225028509707/xfoeXuWWBl8itTpP3KjN-l-SxMuVZo1ydbglw4GHPzcZHZFWoUOFSFTOho1IaNOGDBq4') {
         document.getElementById('errorModalText').textContent = 'Discord webhook URL is not configured inside application.html.';
         openModal('errorModal');
         return;
