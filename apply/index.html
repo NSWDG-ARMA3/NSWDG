@@ -1205,7 +1205,7 @@
         help: 'Zeus applicants are reviewed for mission design judgement, technical competence, communication, consistency, restraint, and ability to support the campaign without over-controlling players.',
         questions: [
           { id: 'unitConflict', min: 15, max: 700, rows: 4, text: 'Are you currently in any other Arma 3 units or communities? If yes, explain whether there are schedule, staff, or mission-development conflicts.' },
-          { id: 'zeusExperience', min: 100, max: 700, rows: 5, text: 'Describe your Zeus, Eden Editor, scripting, modding, mission-making, or staff experience. Include examples if you have them.' },
+          { id: 'zeusExperience', min: 100, max: 700, rows: 5, text: 'Describe your Zeus, Eden Editor, scripting, modding, mission-making, or staff experience. Include examples if you have them. If you are interested in the BLUFOR side of Mission Support are you comfortable with some elements of mission planning, radio communication and tactical operations command tasks?' },
           { id: 'missionDesign', min: 100, max: 700, rows: 5, text: 'How do you design a believable operation from briefing to execution? Explain how you handle pacing, enemy placement, objectives, and player freedom.' },
           { id: 'liveAdaptation', min: 100, max: 700, rows: 5, text: 'During a live mission, the players ignore the expected route and break your plan. What do you do to keep the mission believable and functional?' },
           { id: 'feedbackLeadership', min: 75, max: 700, rows: 5, text: 'How do you handle feedback from leadership and players when a mission does not go well?' },
@@ -1472,8 +1472,8 @@
 
     function answerField(number, question, answer) {
       return {
-        name: 'Question ' + number,
-        value: '**Q:** ' + question + '\n**A:** ' + clampText(answer, 850)
+        name: ('Question ' + number).slice(0, 256),
+        value: ('**Q:** ' + question + '\n**A:** ' + clampText(answer, 850)).slice(0, 1024)
       };
     }
 
@@ -1553,7 +1553,18 @@
       }
 
       if (!DISCORD_WEBHOOK_URL) {
-        document.getElementById('errorModalText').textContent = 'Discord webhook URL is not configured inside apply/index.html.';
+        document.getElementById('errorModalText').textContent =
+          'Discord webhook URL is not configured inside apply/index.html.';
+        openModal('errorModal');
+        return;
+      }
+
+      var payload = buildPayload();
+      var payloadSize = JSON.stringify(payload).length;
+
+      if (payloadSize > 5000) {
+        document.getElementById('errorModalText').textContent =
+          'Your application is too large for Discord to accept. Your answers have been preserved and were NOT cleared. Please shorten one or more responses and try again.';
         openModal('errorModal');
         return;
       }
@@ -1562,16 +1573,18 @@
         var response = await fetch(DISCORD_WEBHOOK_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(buildPayload())
+          body: JSON.stringify(payload)
         });
 
         if (!response.ok) {
-          document.getElementById('errorModalText').textContent = 'Discord rejected the application. One or more answers may still be too long.';
+          document.getElementById('errorModalText').textContent =
+            'Discord rejected the application because one or more answers exceeded Discord embed limits. Your application has NOT been cleared. Please shorten some responses and try again.';
           openModal('errorModal');
           return;
         }
 
         openModal('formModal');
+
         this.reset();
         clearDraft();
         renderRoleQuestions('', null);
@@ -1581,8 +1594,10 @@
           clearError(group);
           updateCounter(group);
         });
+
       } catch (error) {
-        document.getElementById('errorModalText').textContent = 'Application could not be sent. Check the webhook URL and internet connection.';
+        document.getElementById('errorModalText').textContent =
+          'Application could not be sent. Your answers have been preserved. Check the webhook URL and internet connection.';
         openModal('errorModal');
       }
     });
