@@ -512,6 +512,153 @@
       line-height: 1.5;
     }
 
+
+
+    .recruitment-status {
+      background: #f3f3f3;
+      border: 1px solid #d5d5d5;
+      padding: 10px 12px;
+      margin: 0 0 18px;
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 14px;
+    }
+
+    .status-main h2 {
+      font-size: 13px;
+      color: #1d3f5e;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.2px;
+    }
+
+    .status-main p,
+    .status-side p {
+      font-size: 12px;
+      line-height: 1.6;
+      color: #444;
+      margin-bottom: 0;
+    }
+
+    .status-label {
+      display: inline-block;
+      background: #1d3f5e;
+      border: 1px solid #16304a;
+      color: #ddd;
+      font-size: 11px;
+      font-weight: bold;
+      padding: 3px 8px;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .role-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .role-card {
+      border: 1px solid #cfcfcf;
+      background: #fafafa;
+      padding: 12px;
+      min-height: 158px;
+    }
+
+    .role-card h3 {
+      font-size: 13px;
+      color: #1d3f5e;
+      margin-bottom: 5px;
+      padding-bottom: 5px;
+      border-bottom: 1px solid #d7d7d7;
+      text-transform: uppercase;
+      letter-spacing: 0.2px;
+    }
+
+    .role-card p {
+      font-size: 12px;
+      line-height: 1.55;
+      color: #444;
+      margin-bottom: 8px;
+    }
+
+    .role-card ul,
+    .briefing-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .role-card li,
+    .briefing-list li {
+      font-size: 12px;
+      line-height: 1.55;
+      color: #333;
+      border-top: 1px solid #e2e2e2;
+      padding: 4px 0;
+    }
+
+    .role-card li:first-child,
+    .briefing-list li:first-child {
+      border-top: 0;
+    }
+
+    .briefing-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .briefing-box {
+      background: #fafafa;
+      border: 1px solid #cfcfcf;
+      padding: 12px;
+    }
+
+    .briefing-box h3 {
+      font-size: 12px;
+      color: #1d3f5e;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.2px;
+    }
+
+    .draft-tools {
+      background: #f3f3f3;
+      border: 1px solid #d5d5d5;
+      padding: 8px 10px;
+      margin-bottom: 16px;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .draft-tools p {
+      font-size: 11px;
+      color: #555;
+      margin: 0;
+      line-height: 1.5;
+    }
+
+    .btn-secondary {
+      background: #e7e7e7;
+      color: #333;
+      border: 1px solid #aaa;
+      padding: 5px 12px;
+      font-size: 12px;
+      font-family: Arial, Helvetica, sans-serif;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .btn-secondary:hover {
+      background: #ddd;
+    }
+
     @media (max-width: 760px) {
       .top-strip .inner,
       .main-header .inner {
@@ -548,6 +695,18 @@
       .field-row {
         grid-template-columns: 1fr;
       }
+
+      .recruitment-status,
+      .role-grid,
+      .briefing-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .draft-tools {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
 
       .footer-cols {
         flex-direction: column;
@@ -616,13 +775,110 @@
         Applicants should answer clearly and honestly. Accepted applicants will be contacted through Discord.
       </div>
 
-      <p>This is not a test nor selection, our application, interview, and evaluations phase is purely to find people that fit into our niche and would be at home in our group. We are simply group with a high standard for historical recreation for those who are not aligned there is no shame we have our hobbies just as others have there's. Should your application be accepted you will receive a DM with a discord link and the following interview will be simple, you will present your application and we will discuss and use it to bring up additional relevant topics. We will have a copy of your application but feel free to screenshot your application if you want to continue review post submission.</p>
+      <p>This is not a test nor selection, our application, interview, and evaluations phase is purely to find people that fit into our niche and would be at home in our group. We are simply a group with a high standard for historical recreation for those who are not aligned there is no shame we have our hobbies just as others have there's. Should your application be accepted you will receive a DM with a discord link and the following interview will be simple, you will present your application and we will discuss and use it to bring up additional relevant topics. We will have a copy of your application but feel free to screenshot your application if you want to continue review post submission.</p>
 
-      <p>We are currently recruiting for NSWDG, OPFOR, and Zeus positions.</p>
+      <div class="recruitment-status">
+        <div class="status-main">
+          <span class="status-label">Recruitment Status</span>
+          <h2>Applications are open for all listed roles</h2>
+          <p>Recruitment is currently accepting applicants for NSWDG, OPFOR, and Zeus positions. Applicants should choose the role that best fits their interest, experience, and availability.</p>
+        </div>
+        <div class="status-side">
+          <span class="status-label">Screening Notice</span>
+          <p>Applications are reviewed for community fit, schedule compatibility, technical readiness, and interest in the unit's historical recreation focus.</p>
+        </div>
+      </div>
+
+      <div class="role-grid">
+        <div class="role-card">
+          <h3>NSWDG Candidate</h3>
+          <p>A highly immersive special operations experience focused on historical GWOT-era recreation, teamwork, and tactical proficiency. NSWDG personnel participate in direct action raids, reconnaissance missions, hostage rescue operations, and other special mission sets while developing individual skills and contributing to long-term campaign objectives.</p>
+          <ul>
+            <li>Direct action focused gameplay</li>
+            <li>GWOT-era kit and tactics interest</li>
+            <li>Team-based training and evaluations</li>
+          </ul>
+        </div>
+
+        <div class="role-card">
+          <h3>OPFOR Candidate</h3>
+          <p>A fully playable opposing force experience with its own objectives, planning, logistics, and campaign progression. OPFOR personnel conduct reconnaissance, prepare attacks, manage resources, and pursue independent goals that directly influence the wider operational environment.</p>
+          <ul>
+            <li>Scenario-driven opposition roles</li>
+            <li>Flexible mission support</li>
+            <li>Useful for players who enjoy immersion over winning</li>
+          </ul>
+        </div>
+
+        <div class="role-card">
+          <h3>Zeus Candidate <span class="role-badge paid">POSSIBLE PAID POSITION(S)</span></h3>
+          <style>
+            .role-badge {
+              display: inline-block;
+              margin-left: 6px;
+              padding: 1px 5px;
+              font-size: 9px;
+              text-transform: uppercase;
+              letter-spacing: 0.5px;
+          }
+
+          .role-badge.paid {
+              background: #309f4a;
+              border: 1px solid #9d8c3f;
+              color: #fff;
+          }
+          </style>
+          <p>A command and mission development role focused on creating engaging and believable operational environments. Zeus personnel design scenarios, manage battlefield dynamics, oversee campaign progression, and adapt events in real time to ensure a challenging, rewarding, and immersive experience for every participant.</p>
+          <ul>
+            <li>Mission flow and scenario management</li>
+            <li>Coordination with leadership</li>
+            <li>Focus on atmosphere, restraint, and consistency</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-box">
+      <h1 class="page-title">Applicant Briefing</h1>
+      <div class="page-subtitle">Review before submitting an application</div>
+
+      <div class="briefing-grid">
+        <div class="briefing-box">
+          <h3>Minimum Expectations</h3>
+          <ul class="briefing-list">
+            <li>Mature behaviour during operations and interviews</li>
+            <li>Working microphone and stable Arma 3 setup</li>
+            <li>Willingness to follow unit procedures</li>
+          </ul>
+        </div>
+
+        <div class="briefing-box">
+          <h3>Review Criteria</h3>
+          <ul class="briefing-list">
+            <li>Clear written answers</li>
+            <li>Schedule compatibility</li>
+            <li>Interest in the community's niche</li>
+          </ul>
+        </div>
+
+        <div class="briefing-box">
+          <h3>After Submission</h3>
+          <ul class="briefing-list">
+            <li>Staff review the application</li>
+            <li>Accepted applicants receive Discord contact</li>
+            <li>Interview discussion is based on the submitted answers</li>
+          </ul>
+        </div>
+      </div>
     </section>
 
     <section class="content-box">
       <form id="applicationForm" novalidate>
+
+        <div class="draft-tools">
+          <p><strong>Draft save:</strong> This application automatically saves in this browser while you type. Refreshing the page will not clear your answers.</p>
+          <button class="btn-secondary" type="button" id="clearDraftBtn">Clear Saved Draft</button>
+        </div>
 
         <div class="form-section">
           <h2>Section I - Applicant Information</h2>
@@ -841,6 +1097,49 @@
       finalNotes: 'Is there anything else we should know before reviewing your application?'
     };
 
+    var DRAFT_STORAGE_KEY = 'nswdgApplicationDraftV1';
+
+    function getDraftFields() {
+      return Array.prototype.slice.call(document.querySelectorAll('#applicationForm input, #applicationForm textarea'));
+    }
+
+    function saveDraft() {
+      var draft = {};
+      getDraftFields().forEach(function(field) {
+        if (field.id) {
+          draft[field.id] = field.value;
+        }
+      });
+
+      try {
+        localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(draft));
+      } catch (error) {
+        // Browser storage may be disabled. The form still works without draft saving.
+      }
+    }
+
+    function restoreDraft() {
+      try {
+        var saved = localStorage.getItem(DRAFT_STORAGE_KEY);
+        if (!saved) return;
+
+        var draft = JSON.parse(saved);
+        getDraftFields().forEach(function(field) {
+          if (field.id && Object.prototype.hasOwnProperty.call(draft, field.id)) {
+            field.value = draft[field.id];
+          }
+        });
+      } catch (error) {
+        // Ignore invalid stored draft data.
+      }
+    }
+
+    function clearDraft() {
+      try {
+        localStorage.removeItem(DRAFT_STORAGE_KEY);
+      } catch (error) {}
+    }
+
     function openModal(id) {
       var modal = document.getElementById(id);
       if (modal) modal.classList.add('visible');
@@ -1028,6 +1327,8 @@
       };
     }
 
+    restoreDraft();
+
     document.querySelectorAll('.form-group[data-min][data-max]').forEach(function(group) {
       var field = group.querySelector('input, textarea');
       updateCounter(group);
@@ -1035,10 +1336,20 @@
       field.addEventListener('input', function() {
         clearError(group);
         updateCounter(group);
+        saveDraft();
       });
 
       field.addEventListener('blur', function() {
         validateGroup(group);
+      });
+    });
+
+    document.getElementById('clearDraftBtn').addEventListener('click', function() {
+      clearDraft();
+      document.getElementById('applicationForm').reset();
+      document.querySelectorAll('.form-group[data-min][data-max]').forEach(function(group) {
+        clearError(group);
+        updateCounter(group);
       });
     });
 
@@ -1070,8 +1381,11 @@
 
         openModal('formModal');
         this.reset();
+        clearDraft();
 
-        document.querySelectorAll('.form-group[data-min][data-max]').forEach(function(group) {
+        restoreDraft();
+
+    document.querySelectorAll('.form-group[data-min][data-max]').forEach(function(group) {
           clearError(group);
           updateCounter(group);
         });
