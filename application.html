@@ -5,292 +5,1095 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title>Application | NSWDG</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background: #ebebeb; color: #222; font-family: Arial, Helvetica, sans-serif; font-size: 13px; min-height: 100vh; display: flex; flex-direction: column; }
+
+    body {
+      background: #ebebeb;
+      color: #222;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 13px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
     a { color: #2a5f8a; text-decoration: none; }
     a:hover { text-decoration: underline; }
 
-    .top-strip { background: #222; padding: 4px 0; }
-    .top-strip .inner { max-width: 1060px; margin: 0 auto; padding: 0 16px; display: flex; justify-content: space-between; align-items: center; }
-    .utility-links { list-style: none; display: flex; }
-    .utility-links li a { color: #999; font-size: 11px; padding: 2px 10px; border-right: 1px solid #3a3a3a; display: block; }
+    .inner {
+      max-width: 1060px;
+      margin: 0 auto;
+      padding: 0 16px;
+    }
+
+    .top-strip {
+      background: #222;
+      padding: 4px 0;
+    }
+
+    .top-strip .inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .utility-links {
+      list-style: none;
+      display: flex;
+      flex-wrap: wrap;
+    }
+
+    .utility-links li a {
+      color: #999;
+      font-size: 11px;
+      padding: 2px 10px;
+      border-right: 1px solid #3a3a3a;
+      display: block;
+    }
+
     .utility-links li:first-child a { padding-left: 0; }
-    .utility-links li a:hover { color: #ccc; text-decoration: none; }
-    .utility-links li a.cs-link { color: #666; cursor: default; }
-    .utility-links li a.cs-link:hover { color: #666; text-decoration: none; }
-    .small-date { font-size: 11px; color: #666; }
 
-    .main-header { background: #1d3f5e; color: #fff; border-bottom: 2px solid #bba952; padding: 12px 0; }
-    .main-header .inner { max-width: 1060px; margin: 0 auto; padding: 0 16px; display: flex; justify-content: space-between; align-items: center; }
-    .unit-left { display: flex; align-items: center; gap: 14px; }
-    .unit-mark { background: #bba952; color: #f0f0f0; font-size: 18px; font-weight: bold; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-    .unit-title-block h1 { font-size: 15px; font-weight: bold; line-height: 1.3; }
-    .unit-title-block p { font-size: 11px; color: #a0b8cc; margin-top: 2px; }
-    .header-tools { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
-    .search-form { display: flex; align-items: center; gap: 6px; }
-    .search-form label { font-size: 11px; color: #a0b8cc; }
-    .search-form input { border: 1px solid #999; padding: 4px 7px; font-size: 12px; font-family: Arial; background: #fff; width: 180px; }
-    .search-form input:focus { outline: 1px solid #a0b8cc; }
-    .search-form button { background: #2a5f8a; color: #fff; border: 1px solid #1d3f5e; padding: 4px 12px; font-size: 12px; font-family: Arial; cursor: pointer; }
-    .search-form button:hover { background: #1d3f5e; }
-    .login-links { font-size: 11px; color: #a0b8cc; }
-    .login-links a { color: #a0b8cc; }
-    .login-links a:hover { color: #fff; }
+    .utility-links li a:hover {
+      color: #ccc;
+      text-decoration: none;
+    }
 
-    .main-nav { background: #16304a; border-bottom: 1px solid #bba952; }
-    .main-nav .inner { max-width: 1060px; margin: 0 auto; padding: 0 16px; display: flex; }
-    .main-nav a { display: block; padding: 7px 14px; font-size: 12px; color: #a0b8cc; border-right: 1px solid #1d3f5e; }
-    .main-nav a:hover:not(.cs-link) { background: #1d3f5e; color: #ddd; text-decoration: none; }
-    .main-nav a.active { background: #1d3f5e; color: #ddd; font-weight: bold; }
-    .main-nav a.cs-link { color: #4a5f70; cursor: default; position: relative; }
-    .main-nav a.cs-link:hover { background: none; text-decoration: none; }
-    .cs-badge { font-size: 9px; color: #888; background: #2a3a48; border: 1px solid #3a4a58; padding: 1px 5px; margin-left: 5px; vertical-align: middle; letter-spacing: 0.5px; text-transform: uppercase; }
+    .utility-links li a.cs-link {
+      color: #666;
+      cursor: default;
+    }
 
-    .main-content { max-width: 1060px; margin: 20px auto; padding: 0 16px; flex: 1; width: 100%; }
+    .utility-links li a.cs-link:hover {
+      color: #666;
+      text-decoration: none;
+    }
 
-    .content-box { background: #fff; border: 1px solid #ccc; padding: 20px 24px; margin-bottom: 18px; }
-    .content-box h2 { font-size: 14px; font-weight: bold; color: #1d3f5e; border-bottom: 1px solid #ddd; padding-bottom: 7px; margin-bottom: 12px; }
-    .content-box p { font-size: 13px; line-height: 1.7; margin-bottom: 10px; color: #333; }
+    .small-date {
+      font-size: 11px;
+      color: #666;
+      white-space: nowrap;
+    }
 
-    .form-group { margin-bottom: 13px; }
-    .form-group label { display: block; font-size: 12px; font-weight: bold; margin-bottom: 4px; color: #222; }
-    .form-group textarea { width: 100%; border: 1px solid #bbb; padding: 6px 8px; font-size: 13px; font-family: Arial; background: #fafafa; resize: vertical; }
-    .form-group textarea:focus { outline: 1px solid #2a5f8a; background: #fff; }
-    .btn-submit { background: #1d3f5e; color: #e0e0e0; border: 1px solid #16304a; padding: 6px 20px; font-size: 13px; font-family: Arial; cursor: pointer; }
-    .btn-submit:hover { background: #16304a; }
+    .main-header {
+      background: #1d3f5e;
+      color: #fff;
+      border-bottom: 2px solid #bba952;
+      padding: 12px 0;
+    }
 
-    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 100; align-items: center; justify-content: center; }
-    .modal-overlay.visible { display: flex; }
-    .modal-box { background: #fff; border: 1px solid #aaa; width: 420px; }
-    .modal-header { background: #1d3f5e; color: #ddd; padding: 8px 14px; display: flex; justify-content: space-between; align-items: center; }
-    .modal-header h4 { font-size: 13px; font-weight: bold; }
-    .modal-header .close-btn { background: none; border: none; color: #aaa; font-size: 16px; cursor: pointer; }
-    .modal-body { padding: 14px 16px; font-size: 13px; line-height: 1.6; color: #333; }
-    .modal-footer { padding: 10px 16px; border-top: 1px solid #ddd; text-align: right; }
-    .btn-sm { background: #1d3f5e; color: #ddd; border: 1px solid #16304a; padding: 4px 14px; font-size: 12px; font-family: Arial; cursor: pointer; }
-    .btn-sm:hover { background: #16304a; }
+    .main-header .inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
 
-    .site-footer { background: #1a1a1a; color: #888; padding: 18px 0 10px; margin-top: auto; }
-    .site-footer .inner { max-width: 1060px; margin: 0 auto; padding: 0 16px; }
-    .footer-cols { display: flex; gap: 24px; margin-bottom: 12px; }
-    .footer-col { flex: 1; }
-    .footer-col h4 { font-size: 11px; font-weight: bold; color: #bbb; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px; }
-    .footer-col ul { list-style: none; }
-    .footer-col ul li a { color: #888; font-size: 12px; }
-    .footer-col ul li a:hover { color: #ccc; }
-    .footer-col ul li span { color: #555; font-size: 12px; }
-    .footer-disclaimer { border-top: 1px solid #2a2a2a; padding-top: 10px; font-size: 11px; color: #555; line-height: 1.5; }
+    .unit-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .unit-mark {
+      background: #bba952;
+      color: #f0f0f0;
+      font-size: 18px;
+      font-weight: bold;
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .unit-title-block h1 {
+      font-size: 15px;
+      font-weight: bold;
+      line-height: 1.3;
+    }
+
+    .unit-title-block p {
+      font-size: 11px;
+      color: #a0b8cc;
+      margin-top: 2px;
+    }
+
+    .header-tools {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 6px;
+    }
+
+    .search-form {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .search-form label {
+      font-size: 11px;
+      color: #a0b8cc;
+    }
+
+    .search-form input {
+      border: 1px solid #999;
+      padding: 4px 7px;
+      font-size: 12px;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #fff;
+      width: 180px;
+    }
+
+    .search-form button {
+      background: #2a5f8a;
+      color: #fff;
+      border: 1px solid #1d3f5e;
+      padding: 4px 12px;
+      font-size: 12px;
+      font-family: Arial, Helvetica, sans-serif;
+      cursor: pointer;
+    }
+
+    .search-form button:hover {
+      background: #16304a;
+    }
+
+    .login-links {
+      font-size: 11px;
+      color: #a0b8cc;
+    }
+
+    .login-links a {
+      color: #a0b8cc;
+    }
+
+    .login-links a:hover {
+      color: #fff;
+    }
+
+    .main-nav {
+      background: #16304a;
+      border-bottom: 1px solid #bba952;
+    }
+
+    .main-nav .inner {
+      display: flex;
+      flex-wrap: wrap;
+    }
+
+    .main-nav a {
+      display: block;
+      padding: 7px 14px;
+      font-size: 12px;
+      color: #a0b8cc;
+      border-right: 1px solid #1d3f5e;
+    }
+
+    .main-nav a:hover:not(.cs-link) {
+      background: #1d3f5e;
+      color: #ddd;
+      text-decoration: none;
+    }
+
+    .main-nav a.active {
+      background: #1d3f5e;
+      color: #ddd;
+      font-weight: bold;
+    }
+
+    .main-nav a.cs-link {
+      color: #4a5f70;
+      cursor: default;
+    }
+
+    .main-nav a.cs-link:hover {
+      background: none;
+      text-decoration: none;
+    }
+
+    .cs-badge {
+      font-size: 9px;
+      color: #888;
+      background: #2a3a48;
+      border: 1px solid #3a4a58;
+      padding: 1px 5px;
+      margin-left: 5px;
+      vertical-align: middle;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .main-content {
+      max-width: 1060px;
+      margin: 20px auto;
+      padding: 0 16px;
+      flex: 1;
+      width: 100%;
+    }
+
+    .content-box {
+      background: #fff;
+      border: 1px solid #ccc;
+      padding: 20px 24px;
+      margin-bottom: 18px;
+    }
+
+    .breadcrumb {
+      font-size: 11px;
+      color: #666;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #e1e1e1;
+    }
+
+    .page-title {
+      font-size: 18px;
+      color: #1d3f5e;
+      font-weight: bold;
+      margin-bottom: 4px;
+    }
+
+    .page-subtitle {
+      font-size: 11px;
+      color: #777;
+      margin-bottom: 18px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #d7d7d7;
+    }
+
+    .content-box p {
+      font-size: 13px;
+      line-height: 1.75;
+      margin-bottom: 10px;
+      color: #333;
+    }
+
+    .notice-line {
+      background: #f3f3f3;
+      border: 1px solid #d5d5d5;
+      color: #555;
+      font-size: 11px;
+      padding: 7px 9px;
+      margin-bottom: 18px;
+    }
+
+    .form-section {
+      margin-bottom: 24px;
+    }
+
+    .form-section h2 {
+      font-size: 13px;
+      color: #1d3f5e;
+      font-weight: bold;
+      margin-bottom: 10px;
+      padding-bottom: 5px;
+      border-bottom: 1px solid #d7d7d7;
+      text-transform: uppercase;
+      letter-spacing: 0.2px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: bold;
+      margin-bottom: 4px;
+      color: #222;
+      line-height: 1.5;
+    }
+
+    .field-wrap {
+      position: relative;
+    }
+
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      border: 1px solid #bbb;
+      padding: 6px 8px;
+      padding-bottom: 20px;
+      font-size: 13px;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #fafafa;
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 84px;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+      outline: 1px solid #2a5f8a;
+      background: #fff;
+    }
+
+    .char-counter {
+      position: absolute;
+      right: 7px;
+      bottom: 5px;
+      font-size: 10px;
+      color: #777;
+      background: #fafafa;
+      padding-left: 5px;
+    }
+
+    .char-counter.bad {
+      color: #b00000;
+      font-weight: bold;
+    }
+
+    .field-error {
+      display: none;
+      color: #b00000;
+      font-size: 11px;
+      margin-top: 4px;
+      line-height: 1.4;
+    }
+
+    .form-group.invalid .field-error {
+      display: block;
+    }
+
+    .form-group.invalid input,
+    .form-group.invalid textarea {
+      border-color: #b00000;
+      background: #fff7f7;
+    }
+
+    .field-row {
+      display: grid;
+      grid-template-columns: 1fr 120px 160px;
+      gap: 12px;
+    }
+
+    .btn-submit {
+      background: #1d3f5e;
+      color: #e0e0e0;
+      border: 1px solid #16304a;
+      padding: 6px 20px;
+      font-size: 13px;
+      font-family: Arial, Helvetica, sans-serif;
+      cursor: pointer;
+    }
+
+    .btn-submit:hover {
+      background: #16304a;
+    }
+
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.45);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .modal-overlay.visible {
+      display: flex;
+    }
+
+    .modal-box {
+      background: #fff;
+      border: 1px solid #aaa;
+      width: 420px;
+      max-width: 100%;
+    }
+
+    .modal-header {
+      background: #1d3f5e;
+      color: #ddd;
+      padding: 8px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-header h4 {
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      color: #aaa;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .close-btn:hover {
+      color: #fff;
+    }
+
+    .modal-body {
+      padding: 14px 16px;
+      font-size: 13px;
+      line-height: 1.6;
+      color: #333;
+    }
+
+    .modal-footer {
+      padding: 10px 16px;
+      border-top: 1px solid #ddd;
+      text-align: right;
+    }
+
+    .btn-sm {
+      background: #1d3f5e;
+      color: #ddd;
+      border: 1px solid #16304a;
+      padding: 4px 14px;
+      font-size: 12px;
+      font-family: Arial, Helvetica, sans-serif;
+      cursor: pointer;
+    }
+
+    .btn-sm:hover {
+      background: #16304a;
+    }
+
+    .site-footer {
+      background: #1a1a1a;
+      color: #888;
+      padding: 18px 0 10px;
+      margin-top: auto;
+    }
+
+    .footer-cols {
+      display: flex;
+      gap: 24px;
+      margin-bottom: 12px;
+    }
+
+    .footer-col {
+      flex: 1;
+    }
+
+    .footer-col h4 {
+      font-size: 11px;
+      font-weight: bold;
+      color: #bbb;
+      margin-bottom: 5px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .footer-col ul {
+      list-style: none;
+    }
+
+    .footer-col ul li a {
+      color: #888;
+      font-size: 12px;
+    }
+
+    .footer-col ul li span {
+      color: #555;
+      font-size: 12px;
+    }
+
+    .footer-disclaimer {
+      border-top: 1px solid #2a2a2a;
+      padding-top: 10px;
+      font-size: 11px;
+      color: #555;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 760px) {
+      .top-strip .inner,
+      .main-header .inner {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .small-date {
+        white-space: normal;
+      }
+
+      .header-tools,
+      .search-form {
+        align-items: flex-start;
+        width: 100%;
+      }
+
+      .search-form input {
+        width: 100%;
+      }
+
+      .main-nav .inner {
+        padding: 0;
+      }
+
+      .main-nav a {
+        border-bottom: 1px solid #1d3f5e;
+      }
+
+      .content-box {
+        padding: 16px;
+      }
+
+      .field-row {
+        grid-template-columns: 1fr;
+      }
+
+      .footer-cols {
+        flex-direction: column;
+        gap: 12px;
+      }
+    }
   </style>
 </head>
+
 <body>
 
-<div class="top-strip">
-  <div class="inner">
-    <ul class="utility-links">
-      <li><a href="#" onclick="return false;">Unit Portal</a></li>
-      <li><a href="#" class="cs-link">Discord</a></li>
-      <li><a href="#" class="cs-link">Modpack</a></li>
-      <li><a href="#" class="cs-link">Schedule</a></li>
-      <li><a href="#" class="cs-link" onclick="showCS(event)">Contact</a></li>
-    </ul>
-    <span class="small-date">Official community information site</span>
+  <div class="top-strip">
+    <div class="inner">
+      <ul class="utility-links">
+        <li><a href="#" onclick="return false;">Unit Portal</a></li>
+        <li><a href="#" class="cs-link" onclick="showCS(event)">Discord</a></li>
+        <li><a href="#" class="cs-link" onclick="showCS(event)">Modpack</a></li>
+        <li><a href="#" class="cs-link" onclick="showCS(event)">Schedule</a></li>
+        <li><a href="#" class="cs-link" onclick="showCS(event)">Contact</a></li>
+      </ul>
+      <span class="small-date">Official community information site</span>
+    </div>
   </div>
-</div>
 
-<header class="main-header">
-  <div class="inner">
-    <div class="unit-left">
-      <div class="unit-mark">DG</div>
-      <div class="unit-title-block">
-        <h1>NSWDG</h1>
-        <p>Naval special warfare Development Group</p>
+  <header class="main-header">
+    <div class="inner">
+      <div class="unit-left">
+        <div class="unit-mark">DG</div>
+        <div class="unit-title-block">
+          <h1>NSWDG</h1>
+          <p>Naval special Warfare Development Group</p>
+        </div>
+      </div>
+
+      <div class="header-tools">
+        <form class="search-form" action="#" method="get" onsubmit="return fakeSearch(event)">
+          <label for="siteSearch">Search</label>
+          <input id="siteSearch" type="text" placeholder="Search this site">
+          <button type="submit">Search</button>
+        </form>
+
+        <div class="login-links">
+          <a href="#" onclick="return false;">Login</a> &nbsp;|&nbsp; <a href="application.html">Apply</a>
+        </div>
       </div>
     </div>
-    <div class="header-tools">
-      <form class="search-form" action="#" method="get">
-        <label for="siteSearch">Search</label>
-        <input id="siteSearch" type="text" placeholder="Search this site">
-        <button type="button">Search</button>
+  </header>
+
+  <nav class="main-nav">
+    <div class="inner">
+      <a href="#" class="cs-link" onclick="showCS(event)">Home <span class="cs-badge">Soon</span></a>
+      <a href="index.html">Overview</a>
+      <a href="#" class="cs-link" onclick="showCS(event)">Media <span class="cs-badge">Soon</span></a>
+      <a href="application.html" class="active">Application</a>
+    </div>
+  </nav>
+
+  <main class="main-content">
+
+    <section class="content-box">
+      <div class="breadcrumb"><a href="index.html">Home</a> &gt; Application</div>
+      <h1 class="page-title">Application</h1>
+      <div class="page-subtitle">Candidate screening and unit fit assessment</div>
+
+      <div class="notice-line">
+        Applicants should answer clearly and honestly. Accepted applicants will be contacted through Discord.
+      </div>
+
+      <p>This is not a test nor selection, our application, interview, and evaluations phase is purely to find people that fit into our niche and would be at home in our group. We are simply group with a high standard for historical recreation for those who are not aligned there is no shame we have our hobbies just as others have there's. Should your application be accepted you will receive a DM with a discord link and the following interview will be simple, you will present your application and we will discuss and use it to bring up additional relevant topics. We will have a copy of your application but feel free to screenshot your application if you want to continue review post submission.</p>
+
+      <p>We are currently recruiting for NSWDG, OPFOR, and Zeus positions.</p>
+    </section>
+
+    <section class="content-box">
+      <form id="applicationForm" novalidate>
+
+        <div class="form-section">
+          <h2>Section I - Applicant Information</h2>
+
+          <div class="field-row">
+            <div class="form-group" data-min="2" data-max="40">
+              <label for="preferredName">What is your name, nickname, or what should we call you?</label>
+              <div class="field-wrap">
+                <input id="preferredName" name="preferredName" type="text" placeholder="Name, nickname, callsign, or preferred name">
+                <span class="char-counter"></span>
+              </div>
+              <div class="field-error"></div>
+            </div>
+
+            <div class="form-group" data-min="1" data-max="2">
+              <label for="age">Age</label>
+              <div class="field-wrap">
+                <input id="age" name="age" type="number" min="1" max="99" placeholder="21">
+                <span class="char-counter"></span>
+              </div>
+              <div class="field-error"></div>
+            </div>
+
+            <div class="form-group" data-min="2" data-max="20">
+              <label for="timezone">Timezone</label>
+              <div class="field-wrap">
+                <input id="timezone" name="timezone" type="text" placeholder="EST, GMT, CET">
+                <span class="char-counter"></span>
+              </div>
+              <div class="field-error"></div>
+            </div>
+          </div>
+
+          <div class="form-group" data-min="2" data-max="40">
+            <label for="discordUsername">What's your discord username?</label>
+            <div class="field-wrap">
+              <input id="discordUsername" name="discordUsername" type="text" placeholder="username or username#0000">
+              <span class="char-counter"></span>
+            </div>
+            <div class="field-error"></div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h2>Section II - Unit Compatibility</h2>
+
+          <div class="form-group" data-min="15" data-max="700">
+            <label for="otherUnits">1. Are you in any other units and you willing to provide some way to prove during your interview you are not involved in groups or experiences similar to ours or justify that a group you may be involved in provides something else?</label>
+            <div class="field-wrap">
+              <textarea id="otherUnits" name="otherUnits" rows="4"></textarea>
+              <span class="char-counter"></span>
+            </div>
+            <div class="field-error"></div>
+          </div>
+
+          <div class="form-group" data-min="100" data-max="500">
+            <label for="gearInterest">2. Are you a GWOT or DEVGRU gear and tactics enthusiast?</label>
+            <div class="field-wrap">
+              <textarea id="gearInterest" name="gearInterest" rows="3"></textarea>
+              <span class="char-counter"></span>
+            </div>
+            <div class="field-error"></div>
+          </div>
+
+          <div class="form-group" data-min="100" data-max="700">
+            <label for="dreamCommunity">3. Describe your dream mil-sim community and relate it to why you may be interested in ours.</label>
+            <div class="field-wrap">
+              <textarea id="dreamCommunity" name="dreamCommunity" rows="5"></textarea>
+              <span class="char-counter"></span>
+            </div>
+            <div class="field-error"></div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h2>Section III - Experience</h2>
+
+          <div class="form-group" data-min="100" data-max="700">
+            <label for="armaExperience">4. What's your previous experience Arma-3 or otherwise and how many hours do you have currently?</label>
+            <div class="field-wrap">
+              <textarea id="armaExperience" name="armaExperience" rows="5"></textarea>
+              <span class="char-counter"></span>
+            </div>
+            <div class="field-error"></div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h2>Section IV - Availability & Requirements</h2>
+
+          <div class="form-group" data-min="25" data-max="700">
+            <label for="availability">5. What does your availability look like detail your usual available hours for each day of the week and our considerations to note?</label>
+            <div class="field-wrap">
+              <textarea id="availability" name="availability" rows="5"></textarea>
+              <span class="char-counter"></span>
+            </div>
+            <div class="field-error"></div>
+          </div>
+
+          <div class="form-group" data-min="10" data-max="500">
+            <label for="technicalReadiness">6. Do you have a working microphone, TeamSpeak + Arma-3 installed, and can you run the game smoothly?</label>
+            <div class="field-wrap">
+              <textarea id="technicalReadiness" name="technicalReadiness" rows="4"></textarea>
+              <span class="char-counter"></span>
+            </div>
+            <div class="field-error"></div>
+          </div>
+
+          <div class="form-group" data-min="3" data-max="300">
+            <label for="voiceInterview">7. Are you willing to proceed to a voice interview should your application be accepted?</label>
+            <div class="field-wrap">
+              <textarea id="voiceInterview" name="voiceInterview" rows="3"></textarea>
+              <span class="char-counter"></span>
+            </div>
+            <div class="field-error"></div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h2>Section V - Position Interest</h2>
+
+          <div class="form-group" data-min="100" data-max="700">
+            <label for="positionInterest">8. Which position are you applying for and why are you interested in that position? additionally do you have any special interest within said position? e.g im applying for DEVGRU assaulter and have a special interest in MFF and Explosive Breaching.</label>
+            <div class="field-wrap">
+              <textarea id="positionInterest" name="positionInterest" rows="5"></textarea>
+              <span class="char-counter"></span>
+            </div>
+            <div class="field-error"></div>
+          </div>
+
+          <div class="form-group" data-min="0" data-max="500">
+            <label for="finalNotes">9. Is there anything else we should know before reviewing your application?</label>
+            <div class="field-wrap">
+              <textarea id="finalNotes" name="finalNotes" rows="4"></textarea>
+              <span class="char-counter"></span>
+            </div>
+            <div class="field-error"></div>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-submit">Submit Application</button>
       </form>
-      <div class="login-links">
-        <a href="#" onclick="return false;">Login</a> &nbsp;|&nbsp; <a href="application.html">Apply</a>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="inner">
+      <div class="footer-cols">
+        <div class="footer-col"><h4>Overview</h4><ul><li><a href="index.html">Unit Overview</a></li></ul></div>
+        <div class="footer-col"><h4>Media</h4><ul><li><span>Gallery Coming Soon</span></li></ul></div>
+        <div class="footer-col"><h4>Application</h4><ul><li><a href="application.html">Apply</a></li></ul></div>
+      </div>
+      <div class="footer-disclaimer">
+        <strong>Disclaimer:</strong> NSWDG is a fictional Arma 3 community project. It is not affiliated with DEVGRU, the U.S. Navy, JSOC, USSOCOM, or any real-world military organization. Names, procedures, departments, visual identity, and materials on this site are fictional community content.
+      </div>
+    </div>
+  </footer>
+
+  <div class="modal-overlay" id="formModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h4>Application Submitted</h4>
+        <button class="close-btn" type="button" onclick="closeModal('formModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p>Your application has been sent.</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-sm" type="button" onclick="closeModal('formModal')">Close</button>
       </div>
     </div>
   </div>
-</header>
 
-<nav class="main-nav">
-  <div class="inner">
-    <a href="#" class="cs-link" onclick="showCS(event)">Home <span class="cs-badge">Soon</span></a>
-    <a href="index.html">Overview</a>
-    <a href="#" class="cs-link" onclick="showCS(event)">Media <span class="cs-badge">Soon</span></a>
-    <a href="application.html" class="active">Application</a>
-  </div>
-</nav>
-
-<main class="main-content">
-  <section class="content-box">
-    <h2>Application Overview</h2>
-    <p>This is not a test nor selection, our application, interview, and evaluations phase is purely to find people that fit into our niche and would be at home in our group. We are simply group with a high standard for historical recreation for those who are not aligned there is no shame we have our hobbies just as others have there's. Should your application be accepted you will receive a DM with a discord link and the following interview will be simple, you will present your application and we will discuss and use it to bring up additional relevant topics. We will have a copy of your application but feel free to screenshot your application if you want to continue review post submission.</p>
-    <p>We are currently recruiting for NSWDG, OPFOR, and Zeus positions.</p>
-  </section>
-
-  <section class="content-box">
-    <h2>Application Form</h2>
-    <form id="applicationForm">
-      <div class="form-group"><label for="q1">1. Are you in any other units and you willing to provide some way to prove during your interview you are not involved in groups or experiences similar to ours or justify that a group you may be involved in provides something else?</label><textarea id="q1" name="q1" rows="3" placeholder="Type your response here"></textarea></div>
-      <div class="form-group"><label for="q2">2. Are you a GWOT or DEVGRU gear and tactics enthusiast?</label><textarea id="q2" name="q2" rows="3" placeholder="Type your response here"></textarea></div>
-      <div class="form-group"><label for="q3">3. Describe your dream mil-sim community and relate it to why you may be interested in ours.</label><textarea id="q3" name="q3" rows="4" placeholder="Type your response here"></textarea></div>
-      <div class="form-group"><label for="q4">4. What's your previous experience Arma-3 or otherwise and how many hours do you have currently?</label><textarea id="q4" name="q4" rows="4" placeholder="Type your response here"></textarea></div>
-      <div class="form-group"><label for="q5">5. What does your availability look like detail your usual available hours for each day of the week and our considerations to note?</label><textarea id="q5" name="q5" rows="4" placeholder="Type your response here"></textarea></div>
-      <div class="form-group"><label for="q6">6. Do you have a working microphone, TeamSpeak + Arma-3 installed, and can you run the game smoothly?</label><textarea id="q6" name="q6" rows="4" placeholder="Type your response here"></textarea></div>
-      <div class="form-group"><label for="q7">7. Are you willing to proceed to a voice interview should your application be accepted?</label><textarea id="q7" name="q7" rows="4" placeholder="Type your response here"></textarea></div>
-      <div class="form-group"><label for="q8">8. Which position are you applying for and why are you interested in that position? additionally do you have any special interest within said position? e.g im applying for DEVGRU assaulter and have a special interest in MFF and Explosive Breaching.</label><textarea id="q8" name="q8" rows="4" placeholder="Type your response here"></textarea></div>
-      <div class="form-group"><label for="q9">9. What's your discord username?</label><textarea id="q9" name="q9" rows="4" placeholder="Type your response here"></textarea></div>
-      <button type="submit" class="btn-submit">Submit Application</button>
-    </form>
-  </section>
-</main>
-
-<footer class="site-footer">
-  <div class="inner">
-    <div class="footer-cols">
-      <div class="footer-col"><h4>Overview</h4><ul><li><a href="index.html">Unit Overview</a></li></ul></div>
-      <div class="footer-col"><h4>Media</h4><ul><li><span>Gallery — Coming Soon</span></li></ul></div>
-      <div class="footer-col"><h4>Application</h4><ul><li><a href="application.html">Apply</a></li></ul></div>
-    </div>
-    <div class="footer-disclaimer">
-      <strong>Disclaimer:</strong> NSWDG is a fictional Arma 3 community project. It is not affiliated with DEVGRU, the U.S. Navy, JSOC, USSOCOM, or any real-world military organization. Names, procedures, departments, visual identity, and materials on this site are fictional community content.
+  <div class="modal-overlay" id="errorModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h4>Application Error</h4>
+        <button class="close-btn" type="button" onclick="closeModal('errorModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p id="errorModalText">Application could not be sent.</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-sm" type="button" onclick="closeModal('errorModal')">Close</button>
+      </div>
     </div>
   </div>
-</footer>
 
-<!-- Disclaimer Modal -->
-<div class="modal-overlay" id="noticeModal">
-  <div class="modal-box">
-    <div class="modal-header"><h4>Site Disclaimer</h4><button class="close-btn" onclick="closeModal('noticeModal')">&times;</button></div>
-    <div class="modal-body"><p>This is a fictional community site. It is not affiliated with any real-world military organization.</p></div>
-    <div class="modal-footer"><button class="btn-sm" onclick="closeModal('noticeModal')">Understood</button></div>
-  </div>
-</div>
-
-<!-- Form Submitted Modal -->
-<div class="modal-overlay" id="formModal">
-  <div class="modal-box">
-    <div class="modal-header"><h4>Application Submitted</h4><button class="close-btn" onclick="closeModal('formModal')">&times;</button></div>
-    <div class="modal-body">
-      <p>Your application has been sent.</p>
-      <p>If your Discord webhook relay is configured on the backend, the answers will be forwarded there automatically.</p>
+  <div class="modal-overlay" id="csModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h4>Coming Soon</h4>
+        <button class="close-btn" type="button" onclick="closeModal('csModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p>This section is not yet available. Check back soon.</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-sm" type="button" onclick="closeModal('csModal')">Close</button>
+      </div>
     </div>
-    <div class="modal-footer"><button class="btn-sm" onclick="closeModal('formModal')">Close</button></div>
   </div>
-</div>
 
-<!-- Coming Soon Modal -->
-<div class="modal-overlay" id="csModal">
-  <div class="modal-box">
-    <div class="modal-header"><h4>Coming Soon</h4><button class="close-btn" onclick="closeModal('csModal')">&times;</button></div>
-    <div class="modal-body"><p>This section is not yet available. Check back soon.</p></div>
-    <div class="modal-footer"><button class="btn-sm" onclick="closeModal('csModal')">Close</button></div>
-  </div>
-</div>
+  <script>
+    var DISCORD_WEBHOOK_URL = 'PASTE_YOUR_WEBHOOK_URL_HERE';
 
-<script>
-  function openModal(id){ document.getElementById(id).classList.add('visible'); }
-  function closeModal(id){ document.getElementById(id).classList.remove('visible'); }
-  function showCS(e){ e.preventDefault(); openModal('csModal'); }
-
-  document.getElementById('applicationForm').addEventListener('submit', async function(e){
-    e.preventDefault();
-    
-    // 1. CHOOSE YOUR MINIMUM CHARACTER COUNTS HERE
-    // You can adjust these numbers to whatever limits you think fit best!
-    const minRequirements = {
-      q1: 15,  // Exclusivity details
-      q2: 5,   // Gear enthusiast
-      q3: 40,  // Dream community (Requires a bit more detail)
-      q4: 15,  // Previous experience
-      q5: 25,  // Weekly availability
-      q6: 10,  // Mic / Performance
-      q7: 3,   // Voice interview (e.g., "Yes")
-      q8: 30,  // Position and interest detail
-      q9: 2    // Discord username
+    var QUESTIONS = {
+      otherUnits: 'Are you in any other units and you willing to provide some way to prove during your interview you are not involved in groups or experiences similar to ours or justify that a group you may be involved in provides something else?',
+      gearInterest: 'Are you a GWOT or DEVGRU gear and tactics enthusiast?',
+      dreamCommunity: 'Describe your dream mil-sim community and relate it to why you may be interested in ours.',
+      armaExperience: "What's your previous experience Arma-3 or otherwise and how many hours do you have currently?",
+      availability: 'What does your availability look like detail your usual available hours for each day of the week and our considerations to note?',
+      technicalReadiness: 'Do you have a working microphone, TeamSpeak + Arma-3 installed, and can you run the game smoothly?',
+      voiceInterview: 'Are you willing to proceed to a voice interview should your application be accepted?',
+      positionInterest: 'Which position are you applying for and why are you interested in that position? additionally do you have any special interest within said position? e.g im applying for DEVGRU assaulter and have a special interest in MFF and Explosive Breaching.',
+      finalNotes: 'Is there anything else we should know before reviewing your application?'
     };
 
-    // 2. Run the validation check
-    for (const [id, minLength] of Object.entries(minRequirements)) {
-      const field = document.getElementById(id);
-      const value = field.value.trim(); // removes accidental spaces at start/end
-      
-      if (value.length < minLength) {
-        const qNum = id.replace('q', ''); // extracts just the number for the alert
-        
-        alert(`⚠️ Question ${qNum} requires a more detailed answer.\n\nMinimum required: ${minLength} characters.\nYour current count: ${value.length} characters.`);
-        
-        field.focus(); // Automatically highlights the text area that needs fixing
-        return;        // CRITICAL: Stops the code right here and prevents sending to Discord
+    function openModal(id) {
+      var modal = document.getElementById(id);
+      if (modal) modal.classList.add('visible');
+    }
+
+    function closeModal(id) {
+      var modal = document.getElementById(id);
+      if (modal) modal.classList.remove('visible');
+    }
+
+    function showCS(event) {
+      event.preventDefault();
+      openModal('csModal');
+    }
+
+    function fakeSearch(event) {
+      event.preventDefault();
+      openModal('csModal');
+      return false;
+    }
+
+    function getValue(id) {
+      var element = document.getElementById(id);
+      return element ? element.value.trim() : '';
+    }
+
+    function setError(group, message) {
+      var error = group.querySelector('.field-error');
+      group.classList.add('invalid');
+      if (error) error.textContent = message;
+    }
+
+    function clearError(group) {
+      var error = group.querySelector('.field-error');
+      group.classList.remove('invalid');
+      if (error) error.textContent = '';
+    }
+
+    function updateCounter(group) {
+      var field = group.querySelector('input, textarea');
+      var counter = group.querySelector('.char-counter');
+      var min = Number(group.getAttribute('data-min'));
+      var max = Number(group.getAttribute('data-max'));
+      var count = field.value.trim().length;
+
+      counter.textContent = count + ' / ' + max;
+
+      if (min > 0) {
+        counter.textContent += ' | ' + min + ' minimum';
+      }
+
+      if (count > max || count < min) {
+        counter.classList.add('bad');
+      } else {
+        counter.classList.remove('bad');
       }
     }
 
-    // ⚠️ PASTE YOUR ACTUAL DISCORD WEBHOOK URL BETWEEN THE QUOTES BELOW:
-    const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1508359225028509707/xfoeXuWWBl8itTpP3KjN-l-SxMuVZo1ydbglw4GHPzcZHZFWoUOFSFTOho1IaNOGDBq4';
+    function validateGroup(group) {
+      var field = group.querySelector('input, textarea');
+      var label = group.querySelector('label');
+      var min = Number(group.getAttribute('data-min'));
+      var max = Number(group.getAttribute('data-max'));
+      var value = field.value.trim();
+      var count = value.length;
 
-    // 3. Gather all the responses (guaranteed to meet your requirements now)
-    const q1 = document.getElementById('q1').value.trim();
-    const q2 = document.getElementById('q2').value.trim();
-    const q3 = document.getElementById('q3').value.trim();
-    const q4 = document.getElementById('q4').value.trim();
-    const q5 = document.getElementById('q5').value.trim();
-    const q6 = document.getElementById('q6').value.trim();
-    const q7 = document.getElementById('q7').value.trim();
-    const q8 = document.getElementById('q8').value.trim();
-    const q9 = document.getElementById('q9').value.trim();
+      clearError(group);
+      updateCounter(group);
 
-    // 4. Build the Discord Webhook layout
-    const payload = {
-      username: "NSWDG Recruitment Bot",
-      embeds: [
-        {
-          title: "New Unit Application Received",
-          color: 12298578, // #bba952 theme gold
-          description: `**Applicant Discord Username:** ${q9}`,
-          fields: [
-            { name: "1. Other units & exclusivity details:", value: q1 },
-            { name: "2. GWOT or DEVGRU gear/tactics enthusiast?", value: q2 },
-            { name: "3. Dream mil-sim community description:", value: q3 },
-            { name: "4. Previous Arma-3 / gaming hours experience:", value: q4 },
-            { name: "5. Weekly availability details:", value: q5 },
-            { name: "6. Working Mic, TeamSpeak, and smooth game performance?", value: q6 },
-            { name: "7. Willing to proceed to a voice interview?", value: q7 },
-            { name: "8. Applied position and special interests:", value: q8 }
-          ],
-          footer: {
-            text: "NSWDG Automated Application System"
-          },
-          timestamp: new Date().toISOString()
+      if (count < min) {
+        setError(group, 'This answer is too short. Minimum: ' + min + ' characters. Current: ' + count + '.');
+        return false;
+      }
+
+      if (count > max) {
+        setError(group, 'This answer is too long. Maximum: ' + max + ' characters. Current: ' + count + '.');
+        return false;
+      }
+
+      if (field.id === 'age') {
+        var ageValue = Number(value);
+        if (!Number.isFinite(ageValue) || ageValue < 1 || ageValue > 99) {
+          setError(group, 'Please enter a valid age.');
+          return false;
         }
-      ]
-    };
+      }
 
-    try {
-      // 5. Send payload securely to Discord
-      const response = await fetch(DISCORD_WEBHOOK_URL, { 
-        method: 'POST', 
-        headers: { 'Content-Type': 'application/json' }, 
-        body: JSON.stringify(payload) 
-      });
-      
-      if (!response.ok) throw new Error('Discord rejected the webhook payload');
-      
-      // Success: Clear the form fields and show your original confirmation modal
-      openModal('formModal');
-      this.reset();
-    } catch(error) {
-      console.error(error);
-      alert('Application could not be sent directly to Discord. Make sure your Webhook URL inside the script is correct.');
+      return true;
     }
-  });
-</script>
+
+    function validateForm() {
+      var groups = document.querySelectorAll('.form-group[data-min][data-max]');
+      var valid = true;
+      var firstInvalid = null;
+
+      groups.forEach(function(group) {
+        var groupValid = validateGroup(group);
+
+        if (!groupValid && !firstInvalid) {
+          firstInvalid = group;
+        }
+
+        if (!groupValid) {
+          valid = false;
+        }
+      });
+
+      if (firstInvalid) {
+        firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+
+      return valid;
+    }
+
+    function clampText(text, max) {
+      if (!text) return 'Not provided';
+      if (text.length <= max) return text;
+      return text.slice(0, max - 32) + '\n[Trimmed for Discord length]';
+    }
+
+    function answerField(number, question, answer) {
+      return {
+        name: 'Question ' + number,
+        value: '**Q:** ' + question + '\n**A:** ' + clampText(answer, 850)
+      };
+    }
+
+    function buildPayload() {
+      var preferredName = getValue('preferredName');
+      var age = getValue('age');
+      var timezone = getValue('timezone');
+      var discordUsername = getValue('discordUsername');
+
+      return {
+        username: 'NSWDG Recruitment Bot',
+        embeds: [
+          {
+            title: 'New Unit Application Received',
+            color: 12298578,
+            fields: [
+              { name: 'Name / Nickname', value: preferredName || 'Not provided', inline: true },
+              { name: 'Discord', value: discordUsername || 'Not provided', inline: true },
+              { name: 'Age', value: age || 'Not provided', inline: true },
+              { name: 'Timezone', value: timezone || 'Not provided', inline: true }
+            ],
+            timestamp: new Date().toISOString()
+          },
+          {
+            title: 'Section II - Unit Compatibility',
+            color: 12298578,
+            fields: [
+              answerField(1, QUESTIONS.otherUnits, getValue('otherUnits')),
+              answerField(2, QUESTIONS.gearInterest, getValue('gearInterest')),
+              answerField(3, QUESTIONS.dreamCommunity, getValue('dreamCommunity'))
+            ]
+          },
+          {
+            title: 'Section III - Experience',
+            color: 12298578,
+            fields: [
+              answerField(4, QUESTIONS.armaExperience, getValue('armaExperience'))
+            ]
+          },
+          {
+            title: 'Section IV - Availability & Requirements',
+            color: 12298578,
+            fields: [
+              answerField(5, QUESTIONS.availability, getValue('availability')),
+              answerField(6, QUESTIONS.technicalReadiness, getValue('technicalReadiness')),
+              answerField(7, QUESTIONS.voiceInterview, getValue('voiceInterview'))
+            ]
+          },
+          {
+            title: 'Section V - Position Interest',
+            color: 12298578,
+            fields: [
+              answerField(8, QUESTIONS.positionInterest, getValue('positionInterest')),
+              answerField(9, QUESTIONS.finalNotes, getValue('finalNotes'))
+            ],
+            footer: {
+              text: 'NSWDG Automated Application System'
+            }
+          }
+        ]
+      };
+    }
+
+    document.querySelectorAll('.form-group[data-min][data-max]').forEach(function(group) {
+      var field = group.querySelector('input, textarea');
+      updateCounter(group);
+
+      field.addEventListener('input', function() {
+        clearError(group);
+        updateCounter(group);
+      });
+
+      field.addEventListener('blur', function() {
+        validateGroup(group);
+      });
+    });
+
+    document.getElementById('applicationForm').addEventListener('submit', async function(event) {
+      event.preventDefault();
+
+      if (!validateForm()) {
+        return;
+      }
+
+      if (!DISCORD_WEBHOOK_URL || DISCORD_WEBHOOK_URL === 'PASTE_YOUR_WEBHOOK_URL_HERE') {
+        document.getElementById('errorModalText').textContent = 'Discord webhook URL is not configured inside application.html.';
+        openModal('errorModal');
+        return;
+      }
+
+      try {
+        var response = await fetch(DISCORD_WEBHOOK_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(buildPayload())
+        });
+
+        if (!response.ok) {
+          document.getElementById('errorModalText').textContent = 'Discord rejected the application. One or more answers may still be too long.';
+          openModal('errorModal');
+          return;
+        }
+
+        openModal('formModal');
+        this.reset();
+
+        document.querySelectorAll('.form-group[data-min][data-max]').forEach(function(group) {
+          clearError(group);
+          updateCounter(group);
+        });
+      } catch (error) {
+        document.getElementById('errorModalText').textContent = 'Application could not be sent. Check the webhook URL and internet connection.';
+        openModal('errorModal');
+      }
+    });
+
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Escape') {
+        closeModal('formModal');
+        closeModal('errorModal');
+        closeModal('csModal');
+      }
+    });
+
+    document.addEventListener('click', function(event) {
+      if (event.target.classList.contains('modal-overlay')) {
+        event.target.classList.remove('visible');
+      }
+    });
+  </script>
 </body>
 </html>
