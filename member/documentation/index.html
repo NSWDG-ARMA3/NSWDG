@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NSW Operations Portal - Documentation</title>
+
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #f0f0f0;
+    color: #1a1a1a;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 12px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .gov-banner {
+    background: #1a1a1a;
+    color: #ccc;
+    font-size: 11px;
+    padding: 3px 12px;
+  }
+
+  .site-header {
+    background: #004b87;
+    color: #fff;
+    padding: 10px 16px;
+    border-bottom: 3px solid #c8a800;
+  }
+
+  .site-header h1 {
+    font-size: 16px;
+    font-weight: bold;
+  }
+
+  .site-header p {
+    font-size: 11px;
+    color: #c5d8ec;
+    margin-top: 2px;
+  }
+
+  .screen {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+  }
+
+  .portal-nav {
+    background: #003566;
+    display: flex;
+    align-items: stretch;
+    border-bottom: 2px solid #c8a800;
+    flex-shrink: 0;
+  }
+
+  .portal-nav a {
+    color: #cde;
+    text-decoration: none;
+    font-size: 12px;
+    padding: 8px 12px;
+    display: block;
+    border-right: 1px solid #00284e;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .portal-nav a:hover {
+    background: #004b87;
+    color: #fff;
+  }
+
+  .portal-nav a.active {
+    background: #004b87;
+    color: #fff;
+    font-weight: bold;
+    border-bottom: 2px solid #c8a800;
+  }
+
+  .nav-right {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    font-size: 11px;
+    color: #7a9ab8;
+    gap: 10px;
+  }
+
+  .nav-right a {
+    border: none !important;
+    padding: 4px 0 !important;
+    font-size: 11px;
+    color: #7a9ab8;
+  }
+
+  .portal-body {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+  }
+
+  .sidebar {
+    width: 180px;
+    background: #e8e8e8;
+    border-right: 1px solid #bbb;
+    flex-shrink: 0;
+    padding: 12px 0;
+  }
+
+  .sidebar-user-box {
+    padding: 7px 12px 10px;
+    border-bottom: 1px solid #ccc;
+    margin-bottom: 6px;
+    font-size: 11px;
+    color: #444;
+    line-height: 1.6;
+  }
+
+  .sidebar-user-box strong {
+    display: block;
+    font-size: 12px;
+    color: #1a1a1a;
+  }
+
+  .sidebar-section {
+    font-size: 10px;
+    font-weight: bold;
+    color: #777;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 8px 12px 4px;
+  }
+
+  .sidebar-link {
+    display: block;
+    padding: 5px 12px;
+    font-size: 12px;
+    color: #004b87;
+    text-decoration: none;
+    cursor: pointer;
+    border-left: 3px solid transparent;
+  }
+
+  .sidebar-link:hover {
+    background: #dde;
+    border-left-color: #004b87;
+  }
+
+  .sidebar-link.active {
+    background: #d0dae8;
+    border-left-color: #004b87;
+    font-weight: bold;
+    color: #003566;
+  }
+
+  .portal-main {
+    flex: 1;
+    padding: 16px 18px;
+    background: #fff;
+    overflow-y: auto;
+  }
+
+  .page-title {
+    font-size: 15px;
+    font-weight: bold;
+    color: #003566;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 6px;
+    margin-bottom: 10px;
+  }
+
+  .notice-box {
+    border: 1px solid #bbb;
+    padding: 8px 10px;
+    font-size: 11px;
+    margin-bottom: 10px;
+    line-height: 1.6;
+    background: #fafafa;
+  }
+
+  .notice-box h4 {
+    font-size: 11px;
+    font-weight: bold;
+    margin-bottom: 4px;
+    color: #003566;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .notice-box.warning {
+    background: #fffbe6;
+    border-color: #c8a800;
+  }
+
+  .layout {
+    display: grid;
+    grid-template-columns: 340px 1fr;
+    gap: 12px;
+    align-items: start;
+  }
+
+  .panel {
+    border: 1px solid #ccc;
+    background: #fafafa;
+    padding: 10px;
+    margin-bottom: 12px;
+  }
+
+  .panel h3 {
+    font-size: 12px;
+    color: #003566;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+  }
+
+  .form-group {
+    margin-bottom: 8px;
+  }
+
+  .form-group label {
+    display: block;
+    font-size: 11px;
+    font-weight: bold;
+    margin-bottom: 3px;
+  }
+
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    width: 100%;
+    border: 1px solid #888;
+    padding: 5px 6px;
+    font-size: 11px;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #fff;
+  }
+
+  .form-group textarea {
+    min-height: 65px;
+    resize: vertical;
+  }
+
+  .form-group input:focus,
+  .form-group select:focus,
+  .form-group textarea:focus {
+    outline: 2px solid #004b87;
+  }
+
+  .btn {
+    border: 1px solid;
+    padding: 5px 12px;
+    font-size: 11px;
+    font-family: Arial, Helvetica, sans-serif;
+    cursor: pointer;
+  }
+
+  .btn-primary {
+    background: #004b87;
+    color: #fff;
+    border-color: #003566;
+  }
+
+  .btn-primary:hover {
+    background: #003566;
+  }
+
+  .btn-secondary {
+    background: #f0f0f0;
+    color: #333;
+    border-color: #aaa;
+  }
+
+  .btn-secondary:hover {
+    background: #e0e0e0;
+  }
+
+  .btn-danger {
+    background: #c00;
+    color: #fff;
+    border-color: #900;
+  }
+
+  .btn-danger:hover {
+    background: #900;
+  }
+
+  .btn:disabled {
+    background: #aaa;
+    border-color: #888;
+    cursor: default;
+  }
+
+  .search-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+
+  .search-row input {
+    flex: 1;
+    border: 1px solid #888;
+    padding: 6px 8px;
+    font-size: 12px;
+  }
+
+  .docs-table {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 11px;
+  }
+
+  .docs-table th {
+    background: #004b87;
+    color: #fff;
+    text-align: left;
+    padding: 5px 6px;
+    font-size: 10px;
+  }
+
+  .docs-table td {
+    padding: 6px;
+    border-bottom: 1px solid #ddd;
+    vertical-align: top;
+  }
+
+  .docs-table tr:nth-child(even) td {
+    background: #f5f7fa;
+  }
+
+  .docs-table a {
+    color: #004b87;
+    font-weight: bold;
+    text-decoration: none;
+  }
+
+  .docs-table a:hover {
+    text-decoration: underline;
+  }
+
+  .badge {
+    display: inline-block;
+    font-size: 10px;
+    padding: 1px 6px;
+    border: 1px solid;
+    font-weight: bold;
+    text-transform: uppercase;
+  }
+
+  .badge-blue {
+    color: #004b87;
+    border-color: #004b87;
+    background: #eef2f8;
+  }
+
+  .badge-gray {
+    color: #555;
+    border-color: #aaa;
+    background: #f5f5f5;
+  }
+
+  .status-line {
+    margin-top: 8px;
+    font-size: 11px;
+    padding: 6px 8px;
+    border: 1px solid #bbb;
+    background: #fafafa;
+    display: none;
+  }
+
+  .status-line.visible {
+    display: block;
+  }
+
+  .status-line.ok {
+    border-color: #2a7a2a;
+    background: #f0f7f0;
+    color: #1a4a1a;
+  }
+
+  .status-line.err {
+    border-color: #c00;
+    background: #fdf0f0;
+    color: #800;
+  }
+
+  .muted {
+    color: #777;
+    font-size: 10px;
+  }
+
+  .empty-state {
+    text-align: center;
+    color: #777;
+    padding: 20px;
+    border: 1px dashed #bbb;
+    background: #fafafa;
+  }
+
+  .page-footer {
+    background: #1a1a1a;
+    color: #888;
+    font-size: 11px;
+    text-align: center;
+    padding: 7px;
+    flex-shrink: 0;
+  }
+
+  @media (max-width: 1000px) {
+    .layout {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 800px) {
+    .sidebar {
+      display: none;
+    }
+
+    .portal-main {
+      padding: 12px;
+    }
+
+    .nav-right {
+      display: none;
+    }
+
+    .search-row {
+      flex-direction: column;
+    }
+  }
+</style>
+</head>
+
+<body>
+
+<div class="gov-banner">U.S. Department of the Navy &nbsp;|&nbsp; Official Government System &nbsp;|&nbsp; Authorized Users Only</div>
+
+<div class="site-header">
+  <h1>Naval Special Warfare Command - Operations Portal</h1>
+  <p>NSW-OPS // UNCLASSIFIED // FOR OFFICIAL USE ONLY</p>
+</div>
+
+<div class="screen">
+
+  <div class="portal-nav">
+    <a href="/member/">Home</a>
+    <a href="/member/scheduling/">Scheduling</a>
+    <a class="active" href="/member/documentation/">Documentation</a>
+
+    <div class="nav-right">
+      <span>Logged in as: <span id="session-label">Loading...</span></span>
+      <a onclick="doLogout()">Log Out</a>
+    </div>
+  </div>
+
+  <div class="portal-body">
+
+    <div class="sidebar">
+      <div class="sidebar-user-box">
+        <strong id="sidebar-name">Loading...</strong>
+        Role: <span id="sidebar-role">Loading...</span>
+      </div>
+
+      <div class="sidebar-section">Navigation</div>
+      <a class="sidebar-link" href="/member/">Home / Dashboard</a>
+      <a class="sidebar-link" href="/member/scheduling/">Scheduling</a>
+      <a class="sidebar-link active" href="/member/documentation/">Documentation</a>
+    </div>
+
+    <div class="portal-main">
+      <div class="page-title">Documentation - SOP Library</div>
+
+      <div class="notice-box warning">
+        <h4>Instructions</h4>
+        Upload SOPs, training references, PDFs, images, or other documentation. Files are stored in Supabase Storage.
+        Metadata is stored in the database so the library can be searched.
+      </div>
+
+      <div class="layout">
+
+        <div>
+          <div class="panel">
+            <h3>Upload Document</h3>
+
+            <div class="form-group">
+              <label for="doc-title">Title</label>
+              <input id="doc-title" type="text" placeholder="Example: CQB SOP v1">
+            </div>
+
+            <div class="form-group">
+              <label for="doc-category">Category</label>
+              <select id="doc-category">
+                <option value="SOP">SOP</option>
+                <option value="Training">Training</option>
+                <option value="Reference">Reference</option>
+                <option value="Checklist">Checklist</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="doc-description">Description</label>
+              <textarea id="doc-description" placeholder="Short description of the document..."></textarea>
+            </div>
+
+            <div class="form-group">
+              <label for="doc-file">File</label>
+              <input id="doc-file" type="file">
+            </div>
+
+            <button class="btn btn-primary" id="upload-btn">Upload</button>
+            <div id="upload-status" class="status-line"></div>
+          </div>
+
+          <div class="panel">
+            <h3>Library Info</h3>
+            <table class="docs-table">
+              <tr><th>Field</th><th>Value</th></tr>
+              <tr><td>Total Files</td><td id="total-files">0</td></tr>
+              <tr><td>Filtered Results</td><td id="filtered-files">0</td></tr>
+              <tr><td>Last Updated</td><td id="last-updated">Loading...</td></tr>
+            </table>
+          </div>
+        </div>
+
+        <div>
+          <div class="panel">
+            <h3>Search Documentation</h3>
+
+            <div class="search-row">
+              <input id="search-input" type="text" placeholder="Search by title, category, description, or filename...">
+              <button class="btn btn-secondary" id="clear-search-btn">Clear</button>
+              <button class="btn btn-secondary" id="refresh-btn">Refresh</button>
+            </div>
+
+            <div id="docs-output"></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <div class="page-footer">Naval Special Warfare Command - Operations Portal &nbsp;|&nbsp; UNCLASSIFIED // FOUO &nbsp;|&nbsp; Contact your unit S6 for technical support</div>
+</div>
+
+<script type="module">
+import { supabase } from "/js/auth.js";
+
+const BUCKET_NAME = "sop-documents";
+
+let authUser = null;
+let profile = null;
+let allDocs = [];
+
+const uploadBtn = document.getElementById("upload-btn");
+const refreshBtn = document.getElementById("refresh-btn");
+const clearSearchBtn = document.getElementById("clear-search-btn");
+const searchInput = document.getElementById("search-input");
+
+function zp(n) {
+  return String(n).padStart(2, "0");
+}
+
+function utcNowLabel() {
+  const d = new Date();
+  const months = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
+  return `${zp(d.getUTCHours())}${zp(d.getUTCMinutes())}Z ${d.getUTCDate()} ${months[d.getUTCMonth()]} ${d.getUTCFullYear()}`;
+}
+
+function getUserIdFromEmail(email) {
+  if (!email || !email.includes("@")) return "unknown";
+  return email.split("@")[0];
+}
+
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function setUploadStatus(message, ok) {
+  const el = document.getElementById("upload-status");
+  el.textContent = message;
+  el.className = "status-line visible " + (ok ? "ok" : "err");
+}
+
+function formatDate(value) {
+  if (!value) return "Unknown";
+  const d = new Date(value);
+  return d.toLocaleString();
+}
+
+function getFileExt(name) {
+  const idx = name.lastIndexOf(".");
+  if (idx === -1) return "";
+  return name.slice(idx + 1).toLowerCase();
+}
+
+function cleanFileName(name) {
+  return name
+    .replace(/[^a-zA-Z0-9._-]/g, "_")
+    .replace(/_+/g, "_");
+}
+
+async function loadSessionAndProfile() {
+  const { data, error } = await supabase.auth.getSession();
+
+  if (error || !data.session) {
+    window.location.href = "/login/";
+    return false;
+  }
+
+  authUser = data.session.user;
+
+  const fallbackUserId = getUserIdFromEmail(authUser.email);
+
+  profile = {
+    id: authUser.id,
+    user_id: fallbackUserId,
+    display_name: authUser.email || fallbackUserId,
+    role: "MEMBER",
+    status: "ACTIVE"
+  };
+
+  const { data: profileData } = await supabase
+    .from("profiles")
+    .select("id, user_id, display_name, role, status")
+    .eq("id", authUser.id)
+    .single();
+
+  if (profileData) {
+    profile = {
+      id: profileData.id,
+      user_id: profileData.user_id,
+      display_name: profileData.display_name || profileData.user_id,
+      role: profileData.role || "MEMBER",
+      status: profileData.status || "ACTIVE"
+    };
+  }
+
+  document.getElementById("session-label").textContent = profile.display_name;
+  document.getElementById("sidebar-name").textContent = profile.display_name;
+  document.getElementById("sidebar-role").textContent = profile.role;
+
+  return true;
+}
+
+async function loadDocuments() {
+  const { data, error } = await supabase
+    .from("documentation_files")
+    .select("*")
+    .order("uploaded_at", { ascending: false });
+
+  if (error) {
+    document.getElementById("docs-output").innerHTML =
+      `<div class="empty-state">Failed to load documentation: ${escapeHtml(error.message)}</div>`;
+    return;
+  }
+
+  allDocs = data || [];
+  renderDocs();
+}
+
+function filterDocs() {
+  const q = searchInput.value.trim().toLowerCase();
+
+  if (!q) return allDocs;
+
+  return allDocs.filter(doc => {
+    const combined = [
+      doc.title,
+      doc.category,
+      doc.description,
+      doc.file_name,
+      doc.file_type
+    ].join(" ").toLowerCase();
+
+    return combined.includes(q);
+  });
+}
+
+async function createSignedUrl(filePath) {
+  const { data, error } = await supabase
+    .storage
+    .from(BUCKET_NAME)
+    .createSignedUrl(filePath, 60 * 10);
+
+  if (error || !data) {
+    return null;
+  }
+
+  return data.signedUrl;
+}
+
+async function openDocument(filePath) {
+  const url = await createSignedUrl(filePath);
+
+  if (!url) {
+    alert("Could not create download link.");
+    return;
+  }
+
+  window.open(url, "_blank");
+}
+
+window.openDocument = openDocument;
+
+function renderDocs() {
+  const output = document.getElementById("docs-output");
+  const docs = filterDocs();
+
+  document.getElementById("total-files").textContent = String(allDocs.length);
+  document.getElementById("filtered-files").textContent = String(docs.length);
+  document.getElementById("last-updated").textContent = utcNowLabel();
+
+  if (!docs.length) {
+    output.innerHTML = `<div class="empty-state">No documentation found.</div>`;
+    return;
+  }
+
+  let html = `
+    <table class="docs-table">
+      <tr>
+        <th>Title</th>
+        <th>Category</th>
+        <th>Description</th>
+        <th>File</th>
+        <th>Uploaded</th>
+        <th></th>
+      </tr>
+  `;
+
+  for (const doc of docs) {
+    html += `
+      <tr>
+        <td><strong>${escapeHtml(doc.title)}</strong></td>
+        <td><span class="badge badge-blue">${escapeHtml(doc.category)}</span></td>
+        <td>${escapeHtml(doc.description || "No description")}</td>
+        <td>
+          ${escapeHtml(doc.file_name)}
+          <br>
+          <span class="muted">${escapeHtml(doc.file_type || "unknown")}</span>
+        </td>
+        <td>${escapeHtml(formatDate(doc.uploaded_at))}</td>
+        <td>
+          <button class="btn btn-secondary" onclick="openDocument('${escapeHtml(doc.file_path)}')">Open</button>
+        </td>
+      </tr>
+    `;
+  }
+
+  html += "</table>";
+  output.innerHTML = html;
+}
+
+async function uploadDocument() {
+  const title = document.getElementById("doc-title").value.trim();
+  const category = document.getElementById("doc-category").value;
+  const description = document.getElementById("doc-description").value.trim();
+  const fileInput = document.getElementById("doc-file");
+  const file = fileInput.files[0];
+
+  if (!title) {
+    setUploadStatus("Title is required.", false);
+    return;
+  }
+
+  if (!file) {
+    setUploadStatus("Select a file first.", false);
+    return;
+  }
+
+  uploadBtn.disabled = true;
+  uploadBtn.textContent = "Uploading...";
+
+  const ext = getFileExt(file.name);
+  const safeName = cleanFileName(file.name);
+  const filePath = `${authUser.id}/${Date.now()}_${safeName}`;
+
+  const { error: uploadError } = await supabase
+    .storage
+    .from(BUCKET_NAME)
+    .upload(filePath, file, {
+      cacheControl: "3600",
+      upsert: false,
+      contentType: file.type || undefined
+    });
+
+  if (uploadError) {
+    setUploadStatus("File upload failed: " + uploadError.message, false);
+    uploadBtn.disabled = false;
+    uploadBtn.textContent = "Upload";
+    return;
+  }
+
+  const { error: dbError } = await supabase
+    .from("documentation_files")
+    .insert({
+      title,
+      category,
+      description,
+      file_path: filePath,
+      file_name: file.name,
+      file_type: ext || file.type || "unknown",
+      uploaded_by: authUser.id
+    });
+
+  if (dbError) {
+    await supabase.storage.from(BUCKET_NAME).remove([filePath]);
+    setUploadStatus("Database insert failed: " + dbError.message, false);
+    uploadBtn.disabled = false;
+    uploadBtn.textContent = "Upload";
+    return;
+  }
+
+  document.getElementById("doc-title").value = "";
+  document.getElementById("doc-category").value = "SOP";
+  document.getElementById("doc-description").value = "";
+  fileInput.value = "";
+
+  setUploadStatus("Document uploaded successfully.", true);
+
+  uploadBtn.disabled = false;
+  uploadBtn.textContent = "Upload";
+
+  await loadDocuments();
+}
+
+async function doLogout() {
+  await supabase.auth.signOut();
+  window.location.href = "/login/";
+}
+
+window.doLogout = doLogout;
+
+uploadBtn.addEventListener("click", uploadDocument);
+refreshBtn.addEventListener("click", loadDocuments);
+clearSearchBtn.addEventListener("click", () => {
+  searchInput.value = "";
+  renderDocs();
+});
+searchInput.addEventListener("input", renderDocs);
+
+async function init() {
+  const ok = await loadSessionAndProfile();
+  if (!ok) return;
+
+  await loadDocuments();
+}
+
+init();
+</script>
+
+</body>
+</html>
