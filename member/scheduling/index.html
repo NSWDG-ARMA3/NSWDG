@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NSW Operations Portal - Scheduling</title>
+
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #f0f0f0; color: #1a1a1a; font-family: Arial, Helvetica, sans-serif; font-size: 13px; min-height: 100vh; display: flex; flex-direction: column; }
+
+  .gov-banner { background: #1a1a1a; color: #ccc; font-size: 11px; padding: 3px 12px; }
+  .site-header { background: #004b87; color: #fff; padding: 10px 16px; border-bottom: 3px solid #c8a800; }
+  .site-header h1 { font-size: 16px; font-weight: bold; }
+  .site-header p { font-size: 11px; color: #c5d8ec; margin-top: 2px; }
+
+  .screen { display: flex; flex: 1; flex-direction: column; }
+
+  .portal-nav { background: #003566; display: flex; align-items: stretch; border-bottom: 2px solid #c8a800; flex-shrink: 0; }
+  .portal-nav a { color: #cde; text-decoration: none; font-size: 12px; padding: 8px 12px; display: block; border-right: 1px solid #00284e; cursor: pointer; white-space: nowrap; }
+  .portal-nav a:hover { background: #004b87; color: #fff; }
+  .portal-nav a.active { background: #004b87; color: #fff; font-weight: bold; border-bottom: 2px solid #c8a800; }
+
+  .nav-right { margin-left: auto; display: flex; align-items: center; padding: 0 12px; font-size: 11px; color: #7a9ab8; gap: 10px; }
+  .nav-right a { border: none !important; padding: 4px 0 !important; font-size: 11px; color: #7a9ab8; }
+
+  .portal-body { display: flex; flex: 1; min-height: 0; }
+
+  .sidebar { width: 180px; background: #e8e8e8; border-right: 1px solid #bbb; flex-shrink: 0; padding: 12px 0; }
+  .sidebar-user-box { padding: 7px 12px 10px; border-bottom: 1px solid #ccc; margin-bottom: 6px; font-size: 11px; color: #444; line-height: 1.6; }
+  .sidebar-user-box strong { display: block; font-size: 12px; color: #1a1a1a; }
+  .sidebar-section { font-size: 10px; font-weight: bold; color: #777; text-transform: uppercase; letter-spacing: 1px; padding: 8px 12px 4px; }
+  .sidebar-link { display: block; padding: 5px 12px; font-size: 12px; color: #004b87; text-decoration: none; cursor: pointer; border-left: 3px solid transparent; }
+  .sidebar-link:hover { background: #dde; border-left-color: #004b87; }
+  .sidebar-link.active { background: #d0dae8; border-left-color: #004b87; font-weight: bold; color: #003566; }
+
+  .portal-main { flex: 1; padding: 20px 24px; background: #fff; overflow-y: auto; }
+  .page-title { font-size: 15px; font-weight: bold; color: #003566; border-bottom: 1px solid #ccc; padding-bottom: 6px; margin-bottom: 14px; }
+
+  .notice-box { border: 1px solid #bbb; padding: 9px 12px; font-size: 12px; margin-bottom: 14px; line-height: 1.7; background: #fafafa; }
+  .notice-box h4 { font-size: 11px; font-weight: bold; margin-bottom: 4px; color: #003566; text-transform: uppercase; letter-spacing: 0.5px; }
+  .notice-box.warning { background: #fffbe6; border-color: #c8a800; }
+
+  .info-table { border-collapse: collapse; width: 100%; font-size: 12px; margin-bottom: 16px; }
+  .info-table th { background: #004b87; color: #fff; text-align: left; padding: 5px 8px; font-size: 11px; }
+  .info-table td { padding: 5px 8px; border-bottom: 1px solid #ddd; vertical-align: top; }
+  .info-table tr:nth-child(even) td { background: #f5f7fa; }
+
+  .btn { border: 1px solid; padding: 5px 16px; font-size: 12px; font-family: Arial, Helvetica, sans-serif; cursor: pointer; }
+  .btn-primary { background: #004b87; color: #fff; border-color: #003566; }
+  .btn-primary:hover { background: #003566; }
+  .btn-secondary { background: #f0f0f0; color: #333; border-color: #aaa; }
+  .btn-secondary:hover { background: #e0e0e0; }
+  .btn-danger { background: #c00; color: #fff; border-color: #900; }
+  .btn-danger:hover { background: #900; }
+
+  .form-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; margin-bottom: 14px; }
+  .form-group label { display: block; font-size: 12px; font-weight: bold; margin-bottom: 4px; }
+  .form-group input, .form-group select {
+    border: 1px solid #888;
+    padding: 5px 7px;
+    font-size: 12px;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #fff;
+  }
+  .form-group input:focus, .form-group select:focus { outline: 2px solid #004b87; }
+
+  .badge { display: inline-block; font-size: 10px; padding: 1px 6px; border: 1px solid; font-weight: bold; text-transform: uppercase; }
+  .badge-green { color: #1a5a1a; border-color: #1a5a1a; background: #eef7ee; }
+  .badge-red { color: #9a0000; border-color: #9a0000; background: #fdf0f0; }
+  .badge-orange { color: #9a4f00; border-color: #d98200; background: #fff0df; }
+  .badge-yellow { color: #6a5a00; border-color: #c8a800; background: #fffbe6; }
+  .badge-gray { color: #555; border-color: #aaa; background: #f5f5f5; }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; font-size: 11px; }
+  .legend-item { display: flex; align-items: center; gap: 5px; }
+  .legend-box { width: 18px; height: 12px; border: 1px solid #888; }
+
+  .grade-gray { background: #d0d0d0; }
+  .grade-red { background: #c7352d; color: #fff; }
+  .grade-orange { background: #e6862d; color: #111; }
+  .grade-yellow { background: #e8d84a; color: #111; }
+  .grade-green { background: #3d9b4f; color: #fff; }
+
+  .availability-wrap { overflow-x: auto; border: 1px solid #bbb; margin-bottom: 16px; }
+  .availability-grid { border-collapse: collapse; min-width: 1150px; width: 100%; font-size: 11px; }
+  .availability-grid th { background: #003566; color: #fff; padding: 5px 6px; border: 1px solid #00284e; text-align: center; position: sticky; top: 0; z-index: 2; }
+  .availability-grid td { border: 1px solid #ccc; padding: 4px 5px; text-align: center; min-width: 92px; height: 25px; cursor: pointer; }
+  .availability-grid .time-col { background: #f5f5f5; color: #333; font-weight: bold; position: sticky; left: 0; z-index: 1; min-width: 70px; cursor: default; }
+
+  .mine-empty { background: #fff; }
+  .mine-available { background: #e4f6e7; color: #1a5a1a; font-weight: bold; }
+  .mine-maybe { background: #fff7c7; color: #6a5a00; font-weight: bold; }
+  .mine-unavailable { background: #f7dddd; color: #800; font-weight: bold; }
+
+  .heat-cell { font-weight: bold; }
+  .heat-cell small { display: block; font-size: 9px; font-weight: normal; opacity: 0.9; }
+
+  .status-line { margin-top: 10px; font-size: 12px; padding: 6px 10px; border: 1px solid #bbb; background: #fafafa; display: none; }
+  .status-line.visible { display: block; }
+  .status-line.ok { border-color: #2a7a2a; background: #f0f7f0; color: #1a4a1a; }
+  .status-line.err { border-color: #c00; background: #fdf0f0; color: #800; }
+
+  .best-list { margin-bottom: 16px; }
+  .best-list li { margin-left: 18px; margin-bottom: 4px; font-size: 12px; }
+
+  .page-footer { background: #1a1a1a; color: #888; font-size: 11px; text-align: center; padding: 7px; flex-shrink: 0; }
+
+  @media (max-width: 800px) {
+    .sidebar { display: none; }
+    .portal-main { padding: 14px; }
+    .nav-right { display: none; }
+  }
+</style>
+</head>
+
+<body>
+
+<div class="gov-banner">U.S. Department of the Navy &nbsp;|&nbsp; Official Government System &nbsp;|&nbsp; Authorized Users Only</div>
+
+<div class="site-header">
+  <h1>Naval Special Warfare Command - Operations Portal</h1>
+  <p>NSW-OPS // UNCLASSIFIED // FOR OFFICIAL USE ONLY</p>
+</div>
+
+<div class="screen">
+
+  <div class="portal-nav">
+    <a href="/member/">Home</a>
+    <a class="active" href="/member/scheduling/">Scheduling</a>
+
+    <div class="nav-right">
+      <span>Logged in as: <span id="session-label">Loading...</span></span>
+      <a onclick="doLogout()">Log Out</a>
+    </div>
+  </div>
+
+  <div class="portal-body">
+
+    <div class="sidebar">
+      <div class="sidebar-user-box">
+        <strong id="sidebar-name">Loading...</strong>
+        Role: <span id="sidebar-role">Loading...</span>
+      </div>
+
+      <div class="sidebar-section">Navigation</div>
+      <a class="sidebar-link" href="/member/">Home / Dashboard</a>
+      <a class="sidebar-link active" href="/member/scheduling/">Scheduling</a>
+    </div>
+
+    <div class="portal-main">
+      <div class="page-title">Scheduling - Weekly Availability</div>
+
+      <div class="notice-box warning">
+        <h4>Instructions</h4>
+        Select a week and timezone. Click cells in your personal availability grid to cycle between Available, Maybe, Unavailable, and Empty.
+        Press Save Availability. The unit heatmap updates live when members submit changes.
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="week-start">Week Starting</label>
+          <input type="date" id="week-start">
+        </div>
+
+        <div class="form-group">
+          <label for="timezone-select">Display Timezone</label>
+          <select id="timezone-select">
+            <option value="UTC">UTC</option>
+            <option value="Europe/Amsterdam">Europe/Amsterdam</option>
+            <option value="Europe/London">Europe/London</option>
+            <option value="America/New_York">America/New_York</option>
+            <option value="America/Chicago">America/Chicago</option>
+            <option value="America/Denver">America/Denver</option>
+            <option value="America/Los_Angeles">America/Los_Angeles</option>
+          </select>
+        </div>
+
+        <button class="btn btn-primary" id="save-btn">Save Availability</button>
+        <button class="btn btn-secondary" id="refresh-btn">Refresh</button>
+        <button class="btn btn-danger" id="clear-btn">Clear My Week</button>
+      </div>
+
+      <div class="legend">
+        <div class="legend-item"><span class="legend-box grade-gray"></span> No responses</div>
+        <div class="legend-item"><span class="legend-box grade-red"></span> Bad fit</div>
+        <div class="legend-item"><span class="legend-box grade-orange"></span> Weak fit</div>
+        <div class="legend-item"><span class="legend-box grade-yellow"></span> Good fit</div>
+        <div class="legend-item"><span class="legend-box grade-green"></span> Best fit</div>
+      </div>
+
+      <table class="info-table">
+        <tr><th colspan="2">Session</th></tr>
+        <tr><td style="width:160px">Logged in as</td><td id="dash-user">Loading...</td></tr>
+        <tr><td>User ID</td><td id="dash-userid">Loading...</td></tr>
+        <tr><td>Timezone View</td><td id="dash-timezone">Loading...</td></tr>
+        <tr><td>Members Loaded</td><td id="dash-members">0</td></tr>
+        <tr><td>Last Updated</td><td id="dash-updated">Loading...</td></tr>
+      </table>
+
+      <div class="page-title">Best Training Windows</div>
+      <ul class="best-list" id="best-list">
+        <li>Loading...</li>
+      </ul>
+
+      <div class="page-title">Unit Availability Heatmap</div>
+      <div class="availability-wrap">
+        <table class="availability-grid" id="heatmap-table"></table>
+      </div>
+
+      <div class="page-title">My Availability</div>
+      <div class="availability-wrap">
+        <table class="availability-grid" id="my-table"></table>
+      </div>
+
+      <div id="status-line" class="status-line"></div>
+    </div>
+
+  </div>
+
+  <div class="page-footer">Naval Special Warfare Command - Operations Portal &nbsp;|&nbsp; UNCLASSIFIED // FOUO &nbsp;|&nbsp; Contact your unit S6 for technical support</div>
+</div>
+
+<script type="module">
+import { supabase } from "/js/auth.js";
+
+const DAYS = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"];
+const SLOT_MINUTES = 30;
+const SLOTS_PER_DAY = 48;
+
+let authUser = null;
+let profile = null;
+let profilesById = new Map();
+let members = [];
+let allResponses = [];
+let mySlots = new Map();
+let realtimeChannel = null;
+
+const weekInput = document.getElementById("week-start");
+const timezoneSelect = document.getElementById("timezone-select");
+const saveBtn = document.getElementById("save-btn");
+const refreshBtn = document.getElementById("refresh-btn");
+const clearBtn = document.getElementById("clear-btn");
+
+function zp(n) {
+  return String(n).padStart(2, "0");
+}
+
+function setStatus(message, ok) {
+  const el = document.getElementById("status-line");
+  el.textContent = message;
+  el.className = "status-line visible " + (ok ? "ok" : "err");
+}
+
+function utcNowLabel() {
+  const d = new Date();
+  const months = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
+  return `${zp(d.getUTCHours())}${zp(d.getUTCMinutes())}Z ${d.getUTCDate()} ${months[d.getUTCMonth()]} ${d.getUTCFullYear()}`;
+}
+
+function getUserIdFromEmail(email) {
+  if (!email || !email.includes("@")) return "unknown";
+  return email.split("@")[0];
+}
+
+function isoDate(d) {
+  return d.toISOString().split("T")[0];
+}
+
+function getNextMonday() {
+  const today = new Date();
+  const day = today.getDay();
+  const diff = day === 0 ? 1 : 8 - day;
+  const monday = new Date(today);
+  monday.setDate(today.getDate() + diff);
+  return isoDate(monday);
+}
+
+function getFormatter(timeZone, options) {
+  return new Intl.DateTimeFormat("en-GB", {
+    timeZone,
+    ...options
+  });
+}
+
+function getZonedParts(date, timeZone) {
+  const parts = new Intl.DateTimeFormat("en-GB", {
+    timeZone,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23"
+  }).formatToParts(date);
+
+  const out = {};
+  for (const p of parts) {
+    if (p.type !== "literal") out[p.type] = p.value;
+  }
+
+  return {
+    year: Number(out.year),
+    month: Number(out.month),
+    day: Number(out.day),
+    hour: Number(out.hour),
+    minute: Number(out.minute)
+  };
+}
+
+function zonedTimeToUtc(year, month, day, hour, minute, timeZone) {
+  const guess = new Date(Date.UTC(year, month - 1, day, hour, minute));
+  const parts = getZonedParts(guess, timeZone);
+
+  const targetUtc = Date.UTC(year, month - 1, day, hour, minute);
+  const actualUtc = Date.UTC(parts.year, parts.month - 1, parts.day, parts.hour, parts.minute);
+
+  return new Date(guess.getTime() + (targetUtc - actualUtc));
+}
+
+function addDaysToIsoDate(iso, days) {
+  const d = new Date(iso + "T00:00:00Z");
+  d.setUTCDate(d.getUTCDate() + days);
+  return d.toISOString().split("T")[0];
+}
+
+function getWeekRangeUtc() {
+  const tz = timezoneSelect.value;
+  const startIso = weekInput.value;
+
+  const y = Number(startIso.slice(0, 4));
+  const m = Number(startIso.slice(5, 7));
+  const d = Number(startIso.slice(8, 10));
+
+  const start = zonedTimeToUtc(y, m, d, 0, 0, tz);
+
+  const endIso = addDaysToIsoDate(startIso, 7);
+  const ey = Number(endIso.slice(0, 4));
+  const em = Number(endIso.slice(5, 7));
+  const ed = Number(endIso.slice(8, 10));
+
+  const end = zonedTimeToUtc(ey, em, ed, 0, 0, tz);
+
+  return { start, end };
+}
+
+function localSlotToUtc(dayIndex, slotIndex) {
+  const tz = timezoneSelect.value;
+  const baseIso = addDaysToIsoDate(weekInput.value, dayIndex);
+
+  const y = Number(baseIso.slice(0, 4));
+  const m = Number(baseIso.slice(5, 7));
+  const d = Number(baseIso.slice(8, 10));
+
+  const totalMinutes = slotIndex * SLOT_MINUTES;
+  const hour = Math.floor(totalMinutes / 60);
+  const minute = totalMinutes % 60;
+
+  return zonedTimeToUtc(y, m, d, hour, minute, tz);
+}
+
+function slotKey(date) {
+  return date.toISOString();
+}
+
+function labelForSlot(dayIndex, slotIndex) {
+  const utcDate = localSlotToUtc(dayIndex, slotIndex);
+  const tz = timezoneSelect.value;
+
+  return getFormatter(tz, {
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23"
+  }).format(utcDate);
+}
+
+function dayLabel(dayIndex) {
+  const utcDate = localSlotToUtc(dayIndex, 0);
+  const tz = timezoneSelect.value;
+
+  const label = getFormatter(tz, {
+    weekday: "short",
+    day: "2-digit",
+    month: "short"
+  }).format(utcDate);
+
+  return `${DAYS[dayIndex]}<br><small>${label}</small>`;
+}
+
+function cycleAvailability(current) {
+  if (!current) return "available";
+  if (current === "available") return "maybe";
+  if (current === "maybe") return "unavailable";
+  return null;
+}
+
+function availabilityLabel(value) {
+  if (value === "available") return "Available";
+  if (value === "maybe") return "Maybe";
+  if (value === "unavailable") return "Unavailable";
+  return "";
+}
+
+function myClass(value) {
+  if (value === "available") return "mine-available";
+  if (value === "maybe") return "mine-maybe";
+  if (value === "unavailable") return "mine-unavailable";
+  return "mine-empty";
+}
+
+function scoreToGrade(score, responseCount) {
+  if (responseCount === 0) return "gray";
+  if (score < 0.25) return "red";
+  if (score < 0.50) return "orange";
+  if (score < 0.75) return "yellow";
+  return "green";
+}
+
+function buildMyTable() {
+  const table = document.getElementById("my-table");
+
+  let html = "<tr><th class='time-col'>Time</th>";
+  for (let d = 0; d < 7; d++) html += `<th>${dayLabel(d)}</th>`;
+  html += "</tr>";
+
+  for (let s = 0; s < SLOTS_PER_DAY; s++) {
+    html += `<tr><td class="time-col">${labelForSlot(0, s)}</td>`;
+
+    for (let d = 0; d < 7; d++) {
+      const key = slotKey(localSlotToUtc(d, s));
+      const value = mySlots.get(key) || null;
+      html += `<td class="${myClass(value)}" data-day="${d}" data-slot="${s}" title="Click to change">${availabilityLabel(value)}</td>`;
+    }
+
+    html += "</tr>";
+  }
+
+  table.innerHTML = html;
+
+  table.querySelectorAll("td[data-day]").forEach(cell => {
+    cell.addEventListener("click", () => {
+      const d = Number(cell.dataset.day);
+      const s = Number(cell.dataset.slot);
+      const key = slotKey(localSlotToUtc(d, s));
+      const next = cycleAvailability(mySlots.get(key));
+
+      if (next) {
+        mySlots.set(key, next);
+      } else {
+        mySlots.delete(key);
+      }
+
+      buildMyTable();
+      buildHeatmap();
+      buildBestList();
+    });
+  });
+}
+
+function aggregateSlot(key) {
+  let available = 0;
+  let maybe = 0;
+  let unavailable = 0;
+  const peopleAvailable = [];
+  const peopleMaybe = [];
+  const peopleUnavailable = [];
+
+  for (const row of allResponses) {
+    if (new Date(row.slot_start).toISOString() !== key) continue;
+
+    const prof = profilesById.get(row.user_id);
+    const name = prof ? prof.display_name : row.user_id;
+
+    if (row.availability === "available") {
+      available++;
+      peopleAvailable.push(name);
+    } else if (row.availability === "maybe") {
+      maybe++;
+      peopleMaybe.push(name);
+    } else if (row.availability === "unavailable") {
+      unavailable++;
+      peopleUnavailable.push(name);
+    }
+  }
+
+  if (mySlots.has(key)) {
+    const existingOwn = allResponses.some(r => r.user_id === authUser.id && new Date(r.slot_start).toISOString() === key);
+    if (!existingOwn) {
+      const ownValue = mySlots.get(key);
+      const ownName = profile.display_name;
+
+      if (ownValue === "available") {
+        available++;
+        peopleAvailable.push(ownName);
+      } else if (ownValue === "maybe") {
+        maybe++;
+        peopleMaybe.push(ownName);
+      } else if (ownValue === "unavailable") {
+        unavailable++;
+        peopleUnavailable.push(ownName);
+      }
+    }
+  }
+
+  const totalMembers = Math.max(members.length, 1);
+  const responseCount = available + maybe + unavailable;
+  const score = (available + maybe * 0.5) / totalMembers;
+  const grade = scoreToGrade(score, responseCount);
+
+  return {
+    available,
+    maybe,
+    unavailable,
+    responseCount,
+    totalMembers,
+    score,
+    grade,
+    peopleAvailable,
+    peopleMaybe,
+    peopleUnavailable
+  };
+}
+
+function buildHeatmap() {
+  const table = document.getElementById("heatmap-table");
+
+  let html = "<tr><th class='time-col'>Time</th>";
+  for (let d = 0; d < 7; d++) html += `<th>${dayLabel(d)}</th>`;
+  html += "</tr>";
+
+  for (let s = 0; s < SLOTS_PER_DAY; s++) {
+    html += `<tr><td class="time-col">${labelForSlot(0, s)}</td>`;
+
+    for (let d = 0; d < 7; d++) {
+      const key = slotKey(localSlotToUtc(d, s));
+      const ag = aggregateSlot(key);
+      const percent = Math.round(ag.score * 100);
+
+      const title =
+        `Available: ${ag.peopleAvailable.join(", ") || "None"}\n` +
+        `Maybe: ${ag.peopleMaybe.join(", ") || "None"}\n` +
+        `Unavailable: ${ag.peopleUnavailable.join(", ") || "None"}`;
+
+      html += `
+        <td class="heat-cell grade-${ag.grade}" title="${title.replace(/"/g, "&quot;")}">
+          ${percent}%
+          <small>${ag.available} yes / ${ag.maybe} maybe</small>
+        </td>`;
+    }
+
+    html += "</tr>";
+  }
+
+  table.innerHTML = html;
+}
+
+function buildBestList() {
+  const entries = [];
+
+  for (let d = 0; d < 7; d++) {
+    for (let s = 0; s < SLOTS_PER_DAY; s++) {
+      const key = slotKey(localSlotToUtc(d, s));
+      const ag = aggregateSlot(key);
+
+      if (ag.responseCount > 0) {
+        entries.push({
+          day: d,
+          slot: s,
+          score: ag.score,
+          available: ag.available,
+          maybe: ag.maybe,
+          unavailable: ag.unavailable,
+          total: ag.totalMembers
+        });
+      }
+    }
+  }
+
+  entries.sort((a, b) => {
+    if (b.score !== a.score) return b.score - a.score;
+    return b.available - a.available;
+  });
+
+  const list = document.getElementById("best-list");
+
+  if (!entries.length) {
+    list.innerHTML = "<li>No availability submitted yet.</li>";
+    return;
+  }
+
+  const top = entries.slice(0, 10);
+
+  list.innerHTML = top.map(e => {
+    const pct = Math.round(e.score * 100);
+    const time = labelForSlot(e.day, e.slot);
+    const day = dayLabel(e.day).replace("<br>", " ").replace(/<[^>]+>/g, "");
+    return `<li><strong>${day} at ${time}</strong> - ${pct}% fit, ${e.available} available, ${e.maybe} maybe, ${e.unavailable} unavailable</li>`;
+  }).join("");
+}
+
+async function loadSessionAndProfile() {
+  const { data, error } = await supabase.auth.getSession();
+
+  if (error || !data.session) {
+    window.location.href = "/login/";
+    return false;
+  }
+
+  authUser = data.session.user;
+
+  const fallbackUserId = getUserIdFromEmail(authUser.email);
+
+  profile = {
+    id: authUser.id,
+    user_id: fallbackUserId,
+    display_name: fallbackUserId,
+    role: "MEMBER",
+    status: "ACTIVE"
+  };
+
+  const { data: profileData } = await supabase
+    .from("profiles")
+    .select("id, user_id, display_name, role, status")
+    .eq("id", authUser.id)
+    .single();
+
+  if (profileData) profile = profileData;
+
+  document.getElementById("session-label").textContent = profile.display_name;
+  document.getElementById("sidebar-name").textContent = profile.display_name;
+  document.getElementById("sidebar-role").textContent = profile.role;
+  document.getElementById("dash-user").textContent = profile.display_name;
+  document.getElementById("dash-userid").textContent = profile.user_id;
+
+  return true;
+}
+
+async function loadProfiles() {
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("id, user_id, display_name, role, status")
+    .eq("status", "ACTIVE")
+    .order("display_name", { ascending: true });
+
+  if (error || !data) {
+    members = [profile];
+    profilesById = new Map([[profile.id, profile]]);
+    document.getElementById("dash-members").textContent = "1";
+    return;
+  }
+
+  members = data;
+  profilesById = new Map(data.map(p => [p.id, p]));
+  document.getElementById("dash-members").textContent = String(members.length);
+}
+
+async function loadResponses() {
+  const { start, end } = getWeekRangeUtc();
+
+  const { data, error } = await supabase
+    .from("scheduling_responses")
+    .select("user_id, slot_start, availability, note, updated_at")
+    .gte("slot_start", start.toISOString())
+    .lt("slot_start", end.toISOString());
+
+  if (error) {
+    setStatus("Failed to load scheduling data: " + error.message, false);
+    allResponses = [];
+    return;
+  }
+
+  allResponses = data || [];
+
+  mySlots.clear();
+
+  for (const row of allResponses) {
+    if (row.user_id === authUser.id) {
+      mySlots.set(new Date(row.slot_start).toISOString(), row.availability);
+    }
+  }
+
+  document.getElementById("dash-timezone").textContent = timezoneSelect.value;
+  document.getElementById("dash-updated").textContent = utcNowLabel();
+
+  buildMyTable();
+  buildHeatmap();
+  buildBestList();
+}
+
+async function saveAvailability() {
+  const { start, end } = getWeekRangeUtc();
+
+  saveBtn.disabled = true;
+  saveBtn.textContent = "Saving...";
+
+  const { error: deleteError } = await supabase
+    .from("scheduling_responses")
+    .delete()
+    .eq("user_id", authUser.id)
+    .gte("slot_start", start.toISOString())
+    .lt("slot_start", end.toISOString());
+
+  if (deleteError) {
+    setStatus("Failed to clear old availability: " + deleteError.message, false);
+    saveBtn.disabled = false;
+    saveBtn.textContent = "Save Availability";
+    return;
+  }
+
+  const rows = [];
+
+  for (const [key, value] of mySlots.entries()) {
+    const date = new Date(key);
+
+    if (date >= start && date < end) {
+      rows.push({
+        user_id: authUser.id,
+        slot_start: key,
+        availability: value,
+        note: null,
+        updated_at: new Date().toISOString()
+      });
+    }
+  }
+
+  if (rows.length > 0) {
+    const { error: insertError } = await supabase
+      .from("scheduling_responses")
+      .insert(rows);
+
+    if (insertError) {
+      setStatus("Failed to save availability: " + insertError.message, false);
+      saveBtn.disabled = false;
+      saveBtn.textContent = "Save Availability";
+      return;
+    }
+  }
+
+  setStatus("Availability saved successfully.", true);
+
+  saveBtn.disabled = false;
+  saveBtn.textContent = "Save Availability";
+
+  await loadResponses();
+}
+
+async function clearMyWeek() {
+  const confirmed = confirm("Clear all of your availability for this selected week?");
+  if (!confirmed) return;
+
+  const { start, end } = getWeekRangeUtc();
+
+  const { error } = await supabase
+    .from("scheduling_responses")
+    .delete()
+    .eq("user_id", authUser.id)
+    .gte("slot_start", start.toISOString())
+    .lt("slot_start", end.toISOString());
+
+  if (error) {
+    setStatus("Failed to clear week: " + error.message, false);
+    return;
+  }
+
+  mySlots.clear();
+  setStatus("Your week was cleared.", true);
+  await loadResponses();
+}
+
+function setupRealtime() {
+  if (realtimeChannel) {
+    supabase.removeChannel(realtimeChannel);
+  }
+
+  realtimeChannel = supabase
+    .channel("scheduling-live")
+    .on(
+      "postgres_changes",
+      {
+        event: "*",
+        schema: "public",
+        table: "scheduling_responses"
+      },
+      async () => {
+        await loadResponses();
+      }
+    )
+    .subscribe();
+}
+
+async function doLogout() {
+  await supabase.auth.signOut();
+  window.location.href = "/login/";
+}
+
+window.doLogout = doLogout;
+
+saveBtn.addEventListener("click", saveAvailability);
+refreshBtn.addEventListener("click", loadResponses);
+clearBtn.addEventListener("click", clearMyWeek);
+
+timezoneSelect.addEventListener("change", async () => {
+  localStorage.setItem("schedulingTimezone", timezoneSelect.value);
+  await loadResponses();
+});
+
+weekInput.addEventListener("change", async () => {
+  await loadResponses();
+});
+
+async function init() {
+  weekInput.value = getNextMonday();
+
+  const savedTz = localStorage.getItem("schedulingTimezone");
+  if (savedTz) timezoneSelect.value = savedTz;
+
+  const ok = await loadSessionAndProfile();
+  if (!ok) return;
+
+  await loadProfiles();
+  await loadResponses();
+  setupRealtime();
+}
+
+init();
+</script>
+
+</body>
+</html>
