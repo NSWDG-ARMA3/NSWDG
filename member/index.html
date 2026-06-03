@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Member Area | NSWDG</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+  <h1>Member Area</h1>
+  <p id="userInfo">Checking login...</p>
+  <button id="logoutBtn">Logout</button>
+
+  <script type="module">
+    import { requireLogin, logout } from "/js/auth.js";
+
+    const user = await requireLogin();
+
+    if (user) {
+      document.getElementById("userInfo").textContent = "Logged in as: " + user.email;
+    }
+
+    document.getElementById("logoutBtn").addEventListener("click", logout);
+  </script>
+</body>
+</html>

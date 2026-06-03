@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Login | NSWDG</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="shortcut icon" href="../nsw.png" type="image/x-icon">
+
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #ebebeb;
+      color: #222;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 13px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    a { color: #2a5f8a; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .inner {
+      max-width: 1060px;
+      margin: 0 auto;
+      padding: 0 16px;
+    }
+
+    .top-strip {
+      background: #222;
+      padding: 4px 0;
+    }
+
+    .top-strip .inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .utility-links {
+      list-style: none;
+      display: flex;
+      flex-wrap: wrap;
+    }
+
+    .utility-links li a {
+      color: #999;
+      font-size: 11px;
+      padding: 2px 10px;
+      border-right: 1px solid #3a3a3a;
+      display: block;
+    }
+
+    .utility-links li:first-child a { padding-left: 0; }
+
+    .utility-links li a:hover {
+      color: #ccc;
+      text-decoration: none;
+    }
+
+    .small-date {
+      font-size: 11px;
+      color: #666;
+      white-space: nowrap;
+    }
+
+    .main-header {
+      background: #1d3f5e;
+      color: #fff;
+      border-bottom: 2px solid #bba952;
+      padding: 12px 0;
+    }
+
+    .main-header .inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .unit-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .unit-mark {
+      background: #bba952;
+      color: #f0f0f0;
+      font-size: 18px;
+      font-weight: bold;
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .unit-title-block h1 {
+      font-size: 15px;
+      font-weight: bold;
+      line-height: 1.3;
+    }
+
+    .unit-title-block p {
+      font-size: 11px;
+      color: #a0b8cc;
+      margin-top: 2px;
+    }
+
+    .login-links {
+      font-size: 11px;
+      color: #a0b8cc;
+    }
+
+    .login-links a {
+      color: #a0b8cc;
+    }
+
+    .login-links a:hover {
+      color: #fff;
+    }
+
+    .main-nav {
+      background: #16304a;
+      border-bottom: 1px solid #bba952;
+    }
+
+    .main-nav .inner {
+      display: flex;
+      flex-wrap: wrap;
+    }
+
+    .main-nav a {
+      display: block;
+      padding: 7px 14px;
+      font-size: 12px;
+      color: #a0b8cc;
+      border-right: 1px solid #1d3f5e;
+    }
+
+    .main-nav a:hover {
+      background: #1d3f5e;
+      color: #ddd;
+      text-decoration: none;
+    }
+
+    .main-nav a.active {
+      background: #1d3f5e;
+      color: #ddd;
+      font-weight: bold;
+    }
+
+    .main-content {
+      max-width: 1060px;
+      margin: 20px auto;
+      padding: 0 16px;
+      flex: 1;
+      width: 100%;
+    }
+
+    .content-box {
+      background: #fff;
+      border: 1px solid #ccc;
+      padding: 20px 24px;
+      margin-bottom: 18px;
+    }
+
+    .breadcrumb {
+      font-size: 11px;
+      color: #666;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #e1e1e1;
+    }
+
+    .page-title {
+      font-size: 18px;
+      color: #1d3f5e;
+      font-weight: bold;
+      margin-bottom: 4px;
+    }
+
+    .page-subtitle {
+      font-size: 11px;
+      color: #777;
+      margin-bottom: 18px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #d7d7d7;
+    }
+
+    .notice-line {
+      background: #f3f3f3;
+      border: 1px solid #d5d5d5;
+      color: #555;
+      font-size: 11px;
+      padding: 7px 9px;
+      margin-bottom: 18px;
+    }
+
+    .form-section {
+      margin-bottom: 24px;
+    }
+
+    .form-section h2 {
+      font-size: 13px;
+      color: #1d3f5e;
+      font-weight: bold;
+      margin-bottom: 10px;
+      padding-bottom: 5px;
+      border-bottom: 1px solid #d7d7d7;
+      text-transform: uppercase;
+      letter-spacing: 0.2px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: bold;
+      margin-bottom: 4px;
+      color: #222;
+      line-height: 1.5;
+    }
+
+    .form-group input {
+      width: 100%;
+      border: 1px solid #bbb;
+      padding: 6px 8px;
+      font-size: 13px;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #fafafa;
+    }
+
+    .form-group input:focus {
+      outline: 1px solid #2a5f8a;
+      background: #fff;
+    }
+
+    .btn-submit {
+      background: #1d3f5e;
+      color: #e0e0e0;
+      border: 1px solid #16304a;
+      padding: 6px 20px;
+      font-size: 13px;
+      font-family: Arial, Helvetica, sans-serif;
+      cursor: pointer;
+      margin-right: 6px;
+    }
+
+    .btn-submit:hover {
+      background: #16304a;
+    }
+
+    .btn-secondary {
+      background: #e7e7e7;
+      color: #333;
+      border: 1px solid #aaa;
+      padding: 6px 14px;
+      font-size: 13px;
+      font-family: Arial, Helvetica, sans-serif;
+      cursor: pointer;
+    }
+
+    .btn-secondary:hover {
+      background: #ddd;
+    }
+
+    #status {
+      margin-top: 12px;
+      font-size: 12px;
+      color: #555;
+      line-height: 1.5;
+    }
+
+    #status.error {
+      color: #b00000;
+      font-weight: bold;
+    }
+
+    #status.success {
+      color: #1d3f5e;
+      font-weight: bold;
+    }
+
+    .site-footer {
+      background: #1a1a1a;
+      color: #888;
+      padding: 18px 0 10px;
+      margin-top: auto;
+    }
+
+    .footer-disclaimer {
+      border-top: 1px solid #2a2a2a;
+      padding-top: 10px;
+      font-size: 11px;
+      color: #555;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 760px) {
+      .top-strip .inner,
+      .main-header .inner {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .main-nav .inner {
+        padding: 0;
+      }
+
+      .main-nav a {
+        border-bottom: 1px solid #1d3f5e;
+      }
+
+      .content-box {
+        padding: 16px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="top-strip">
+    <div class="inner">
+      <ul class="utility-links">
+        <li><a href="/">Unit Portal</a></li>
+        <li><a href="/apply/">Apply</a></li>
+      </ul>
+      <span class="small-date">Official community information site</span>
+    </div>
+  </div>
+
+  <header class="main-header">
+    <div class="inner">
+      <div class="unit-left">
+        <div class="unit-mark">DG</div>
+        <div class="unit-title-block">
+          <h1>NSWDG</h1>
+          <p>Naval Special Warfare Development Group</p>
+        </div>
+      </div>
+
+      <div class="login-links">
+        <a href="/login/">Login</a> &nbsp;|&nbsp; <a href="/apply/">Apply</a>
+      </div>
+    </div>
+  </header>
+
+  <nav class="main-nav">
+    <div class="inner">
+      <a href="/">Overview</a>
+      <a href="/apply/">Application</a>
+      <a href="/login/" class="active">Login</a>
+    </div>
+  </nav>
+
+  <main class="main-content">
+    <section class="content-box">
+      <div class="breadcrumb"><a href="/">Home</a> &gt; Login</div>
+      <h1 class="page-title">Member Login</h1>
+      <div class="page-subtitle">Authentication portal</div>
+
+      <div class="notice-line">
+        Use your registered email and password to access protected member areas.
+      </div>
+
+      <div class="form-section">
+        <h2>Account Access</h2>
+
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input id="email" type="email" autocomplete="email" placeholder="name@example.com">
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input id="password" type="password" autocomplete="current-password" placeholder="Password">
+        </div>
+
+        <button class="btn-submit" id="loginBtn" type="button">Login</button>
+        <button class="btn-secondary" id="signupBtn" type="button">Create Account</button>
+
+        <p id="status"></p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="inner">
+      <div class="footer-disclaimer">
+        This website is a community simulation portal and is not affiliated with the United States Navy or Department of Defense.
+      </div>
+    </div>
+  </footer>
+
+  <script type="module">
+    import { supabase } from "/js/auth.js";
+
+    const emailInput = document.getElementById("email");
+    const passwordInput = document.getElementById("password");
+    const statusBox = document.getElementById("status");
+
+    function setStatus(message, type) {
+      statusBox.textContent = message;
+      statusBox.className = type || "";
+    }
+
+    async function login() {
+      const email = emailInput.value.trim();
+      const password = passwordInput.value;
+
+      if (!email || !password) {
+        setStatus("Enter both email and password.", "error");
+        return;
+      }
+
+      setStatus("Logging in...", "");
+
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
+
+      if (error) {
+        setStatus(error.message, "error");
+        return;
+      }
+
+      window.location.href = "/member/";
+    }
+
+    async function signup() {
+      const email = emailInput.value.trim();
+      const password = passwordInput.value;
+
+      if (!email || !password) {
+        setStatus("Enter both email and password.", "error");
+        return;
+      }
+
+      setStatus("Creating account...", "");
+
+      const { error } = await supabase.auth.signUp({
+        email,
+        password
+      });
+
+      if (error) {
+        setStatus(error.message, "error");
+        return;
+      }
+
+      setStatus("Account created. Check your email if confirmation is enabled.", "success");
+    }
+
+    document.getElementById("loginBtn").addEventListener("click", login);
+    document.getElementById("signupBtn").addEventListener("click", signup);
+
+    passwordInput.addEventListener("keydown", function(event) {
+      if (event.key === "Enter") {
+        login();
+      }
+    });
+  </script>
+</body>
+</html>
