@@ -1,25 +1,211 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <title>Member Area | NSWDG</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NSW Operations Portal</title>
+
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #f0f0f0; color: #1a1a1a; font-family: Arial, Helvetica, sans-serif; font-size: 13px; min-height: 100vh; display: flex; flex-direction: column; }
+
+  .gov-banner { background: #1a1a1a; color: #ccc; font-size: 11px; padding: 3px 12px; }
+  .site-header { background: #004b87; color: #fff; padding: 10px 16px; border-bottom: 3px solid #c8a800; }
+  .site-header h1 { font-size: 16px; font-weight: bold; }
+  .site-header p { font-size: 11px; color: #c5d8ec; margin-top: 2px; }
+
+  .screen { display: none; flex: 1; flex-direction: column; }
+  .screen.active { display: flex; }
+
+  #screen-portal { flex-direction: column; }
+
+  .portal-nav { background: #003566; display: flex; align-items: stretch; border-bottom: 2px solid #c8a800; flex-shrink: 0; }
+  .portal-nav a { color: #cde; text-decoration: none; font-size: 12px; padding: 8px 12px; display: block; border-right: 1px solid #00284e; cursor: pointer; white-space: nowrap; }
+  .portal-nav a:hover { background: #004b87; color: #fff; }
+  .portal-nav a.active { background: #004b87; color: #fff; font-weight: bold; border-bottom: 2px solid #c8a800; }
+  .nav-right { margin-left: auto; display: flex; align-items: center; padding: 0 12px; font-size: 11px; color: #7a9ab8; gap: 10px; }
+  .nav-right a { border: none !important; padding: 4px 0 !important; font-size: 11px; color: #7a9ab8; }
+
+  .portal-body { display: flex; flex: 1; min-height: 0; }
+
+  .sidebar { width: 180px; background: #e8e8e8; border-right: 1px solid #bbb; flex-shrink: 0; padding: 12px 0; }
+  .sidebar-user-box { padding: 7px 12px 10px; border-bottom: 1px solid #ccc; margin-bottom: 6px; font-size: 11px; color: #444; line-height: 1.6; }
+  .sidebar-user-box strong { display: block; font-size: 12px; color: #1a1a1a; }
+  .sidebar-section { font-size: 10px; font-weight: bold; color: #777; text-transform: uppercase; letter-spacing: 1px; padding: 8px 12px 4px; }
+  .sidebar-link { display: block; padding: 5px 12px; font-size: 12px; color: #004b87; text-decoration: none; cursor: pointer; border-left: 3px solid transparent; }
+  .sidebar-link:hover { background: #dde; border-left-color: #004b87; }
+  .sidebar-link.active { background: #d0dae8; border-left-color: #004b87; font-weight: bold; color: #003566; }
+
+  .portal-main { flex: 1; padding: 20px 24px; background: #fff; overflow-y: auto; }
+  .page-title { font-size: 15px; font-weight: bold; color: #003566; border-bottom: 1px solid #ccc; padding-bottom: 6px; margin-bottom: 14px; }
+
+  .notice-box { border: 1px solid #bbb; padding: 9px 12px; font-size: 12px; margin-bottom: 14px; line-height: 1.7; background: #fafafa; }
+  .notice-box h4 { font-size: 11px; font-weight: bold; margin-bottom: 4px; color: #003566; text-transform: uppercase; letter-spacing: 0.5px; }
+  .notice-box.warning { background: #fffbe6; border-color: #c8a800; }
+  .notice-box.error { background: #fdf0f0; border-color: #c00; color: #800; }
+
+  .info-table { border-collapse: collapse; width: 100%; font-size: 12px; margin-bottom: 16px; }
+  .info-table th { background: #004b87; color: #fff; text-align: left; padding: 5px 8px; font-size: 11px; }
+  .info-table td { padding: 5px 8px; border-bottom: 1px solid #ddd; vertical-align: top; }
+  .info-table tr:nth-child(even) td { background: #f5f7fa; }
+
+  .badge { display: inline-block; font-size: 10px; padding: 1px 6px; border: 1px solid; font-weight: bold; text-transform: uppercase; }
+  .badge-green { color: #1a5a1a; border-color: #1a5a1a; background: #eef7ee; }
+  .badge-blue { color: #004b87; border-color: #004b87; background: #eef2f8; }
+  .badge-yellow { color: #6a5a00; border-color: #c8a800; background: #fffbe6; }
+
+  .btn { border: 1px solid; padding: 5px 16px; font-size: 12px; font-family: Arial, Helvetica, sans-serif; cursor: pointer; }
+  .btn-danger { background: #c00; color: #fff; border-color: #900; }
+  .btn-danger:hover { background: #900; }
+
+  .page-footer { background: #1a1a1a; color: #888; font-size: 11px; text-align: center; padding: 7px; flex-shrink: 0; }
+</style>
 </head>
+
 <body>
-  <h1>Member Area</h1>
-  <p id="userInfo">Checking login...</p>
-  <button id="logoutBtn">Logout</button>
 
-  <script type="module">
-    import { requireLogin, logout } from "/js/auth.js";
+<div class="gov-banner">U.S. Department of the Navy &nbsp;|&nbsp; Official Government System &nbsp;|&nbsp; Authorized Users Only</div>
 
-    const user = await requireLogin();
+<div class="site-header">
+  <h1>Naval Special Warfare Command - Operations Portal</h1>
+  <p>NSW-OPS // UNCLASSIFIED // FOR OFFICIAL USE ONLY</p>
+</div>
 
-    if (user) {
-      document.getElementById("userInfo").textContent = "Logged in as: " + user.email;
-    }
+<div id="screen-portal" class="screen active">
 
-    document.getElementById("logoutBtn").addEventListener("click", logout);
-  </script>
+  <div class="portal-nav">
+    <a class="active" id="tnav-dashboard">Home</a>
+
+    <div class="nav-right">
+      <span>Logged in as: <span id="session-label">Loading...</span></span>
+      <a onclick="doLogout()" style="cursor:pointer">Log Out</a>
+    </div>
+  </div>
+
+  <div class="portal-body">
+    <div class="sidebar">
+      <div class="sidebar-user-box">
+        <strong id="sidebar-name">Loading...</strong>
+        Role: <span id="sidebar-role">Loading...</span>
+      </div>
+
+      <div class="sidebar-section">Navigation</div>
+      <a class="sidebar-link active" id="snav-dashboard">Home / Dashboard</a>
+    </div>
+
+    <div class="portal-main">
+      <div class="page-title">Home / Dashboard</div>
+
+      <div class="notice-box warning">
+        <h4>System Notice</h4>
+        Welcome to the training portal. Additional training modules will be added one by one.
+      </div>
+
+      <table class="info-table">
+        <tr><th colspan="2">Session Information</th></tr>
+        <tr><td style="width:130px">Logged in as</td><td id="dash-user">Loading...</td></tr>
+        <tr><td>User ID</td><td id="dash-userid">Loading...</td></tr>
+        <tr><td>Role</td><td id="dash-role">Loading...</td></tr>
+        <tr><td>Status</td><td id="dash-status">Loading...</td></tr>
+        <tr><td>Login Time</td><td id="dash-time">Loading...</td></tr>
+        <tr><td>System</td><td>NSW-OPS-PORTAL v2.0 // UNCLASSIFIED // FOUO</td></tr>
+      </table>
+
+      <table class="info-table">
+        <tr><th>Module</th><th>Status</th><th>Function</th></tr>
+        <tr>
+          <td>Home / Dashboard</td>
+          <td><span class="badge badge-green">Online</span></td>
+          <td>Shows authenticated Supabase user profile</td>
+        </tr>
+        <tr>
+          <td>Training</td>
+          <td><span class="badge badge-yellow">Next</span></td>
+          <td>To be built next</td>
+        </tr>
+        <tr>
+          <td>Documentation</td>
+          <td><span class="badge badge-blue">Planned</span></td>
+          <td>Training files and references</td>
+        </tr>
+        <tr>
+          <td>Scheduling</td>
+          <td><span class="badge badge-blue">Planned</span></td>
+          <td>Availability and training attendance</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="page-footer">Naval Special Warfare Command - Operations Portal &nbsp;|&nbsp; UNCLASSIFIED // FOUO &nbsp;|&nbsp; Contact your unit S6 for technical support</div>
+</div>
+
+<script type="module">
+import { supabase } from "/js/auth.js";
+
+function zp(n) {
+  return String(n).padStart(2, "0");
+}
+
+function timeStr() {
+  const d = new Date();
+  const months = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
+  return `${zp(d.getUTCHours())}${zp(d.getUTCMinutes())}Z ${d.getUTCDate()} ${months[d.getUTCMonth()]} ${d.getUTCFullYear()}`;
+}
+
+function getFallbackUserId(email) {
+  if (!email || !email.includes("@")) return "unknown";
+  return email.split("@")[0];
+}
+
+async function loadDashboard() {
+  const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+
+  if (sessionError || !sessionData.session) {
+    window.location.href = "/login/";
+    return;
+  }
+
+  const user = sessionData.session.user;
+  const fallbackUserId = getFallbackUserId(user.email);
+
+  let profile = {
+    user_id: fallbackUserId,
+    display_name: fallbackUserId,
+    role: "MEMBER",
+    status: "ACTIVE"
+  };
+
+  const { data: profileData, error: profileError } = await supabase
+    .from("profiles")
+    .select("user_id, display_name, role, status")
+    .eq("id", user.id)
+    .single();
+
+  if (!profileError && profileData) {
+    profile = profileData;
+  }
+
+  document.getElementById("session-label").textContent = profile.display_name;
+  document.getElementById("sidebar-name").textContent = profile.display_name;
+  document.getElementById("sidebar-role").textContent = profile.role;
+
+  document.getElementById("dash-user").textContent = profile.display_name;
+  document.getElementById("dash-userid").textContent = profile.user_id;
+  document.getElementById("dash-role").textContent = profile.role;
+  document.getElementById("dash-status").textContent = profile.status;
+  document.getElementById("dash-time").textContent = timeStr();
+}
+
+async function doLogout() {
+  await supabase.auth.signOut();
+  window.location.href = "/login/";
+}
+
+window.doLogout = doLogout;
+
+loadDashboard();
+</script>
+
 </body>
 </html>
