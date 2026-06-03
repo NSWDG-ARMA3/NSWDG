@@ -506,6 +506,130 @@
         gap: 12px;
       }
     }
+
+    .recruitment-board {
+  border: 1px solid #b8b8b8;
+  background: #f7f7f7;
+  margin: 18px 0 22px;
+  font-size: 12px;
+}
+
+.recruitment-board-header {
+  background: #1d3f5e;
+  color: #ddd;
+  padding: 7px 10px;
+  font-weight: bold;
+  text-transform: uppercase;
+  border-bottom: 2px solid #bba952;
+  letter-spacing: 0.4px;
+}
+
+.recruitment-board-body {
+  padding: 12px;
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 14px;
+}
+
+.recruitment-status-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border: 1px solid #d2d2d2;
+}
+
+.recruitment-status-table td {
+  padding: 6px 8px;
+  border-bottom: 1px solid #e2e2e2;
+  font-size: 12px;
+}
+
+.recruitment-status-table tr:last-child td {
+  border-bottom: none;
+}
+
+.recruitment-status-table td:first-child {
+  color: #555;
+  width: 42%;
+  font-weight: bold;
+}
+
+.status-open {
+  color: #1d3f5e;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.recruitment-summary {
+  background: #fff;
+  border: 1px solid #d2d2d2;
+  padding: 10px;
+  line-height: 1.6;
+  color: #333;
+}
+
+.recruitment-actions {
+  margin-top: 10px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.apply-button-large {
+  display: inline-block;
+  background: #1d3f5e;
+  color: #ddd;
+  border: 1px solid #16304a;
+  border-bottom: 2px solid #0f2236;
+  padding: 7px 16px;
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.apply-button-large:hover {
+  background: #16304a;
+  color: #fff;
+  text-decoration: none;
+}
+
+.info-button-small {
+  display: inline-block;
+  background: #e8e8e8;
+  color: #333;
+  border: 1px solid #bbb;
+  padding: 7px 12px;
+  font-size: 12px;
+}
+
+.info-button-small:hover {
+  background: #ddd;
+  text-decoration: none;
+}
+
+@media (max-width: 720px) {
+  .recruitment-board-body {
+    grid-template-columns: 1fr;
+  }
+}
+
+@keyframes trainingFocus {
+  0% {
+    background-color: #446292;
+    padding: 20px;
+    box-shadow: 0 0 12px rgba(48, 48, 48, 0.45);
+  }
+
+  100% {
+    background-color: transparent;
+    box-shadow: none;
+  }
+}
+
+.training-highlight {
+  animation: trainingFocus 3s ease-out;
+}
+
   </style>
 </head>
 
@@ -570,6 +694,38 @@
         This page provides a general overview of the community, training expectations, operational format, and development focus.
       </div>
 
+      <div class="recruitment-board">
+  <div class="recruitment-board-header">
+    Applications Currently Open
+  </div>
+
+  <div class="recruitment-board-body">
+    <table class="recruitment-status-table">
+      <tr>
+  <td>Unit Status</td>
+  <td><span class="status-open">Active</span></td>
+</tr>
+<tr>
+  <td>Recruitment</td>
+  <td><span class="status-open">Open for all roles</span></td>
+</tr>
+<tr>
+  <td>Current Focus</td>
+  <td>Candidate Interviews & Development</td>
+</tr>
+    </table>
+
+    <div class="recruitment-summary">
+      NSWDG is currently accepting candidates interested in a serious, historically focused Arma 3 environment built around persistent operations, structured training, and custom development.
+
+      <div class="recruitment-actions">
+        <a href="apply/" class="apply-button-large">Begin Application</a>
+        <a href="#training" class="info-button-small" onclick="highlightTraining()">Review Expectations</a>
+      </div>
+    </div>
+  </div>
+</div>
+
       <div class="content-section">
         <h3>Preface</h3>
         <p>NSWDG Arma-3 aims to be an authentic historical recreation of select components of Naval Special Warfare Development Group plus some associated support elements set in the mid to late GWOT, this is a hardcore mil-sim environment with extensive skills development. Operations will be brutally long and realistic.</p>
@@ -580,7 +736,7 @@
         <p>Operations will be full spectrum and persistent meaning we aim to simulate as much of out JSOTF and associated elements as possible frequently operating out of an airbase with a realistic op tempo. Heavy Zeus and player opfor/roleplay will be a core component of what we are trying to simulate. We are not looking for generic Zeus made missions on deployment instead we want to simulate a JSOTFs whole area of responsibility having it be a living and breathing environment where dynamic gameplay opportunities and realistic tactics shine. Almost all of your experience besides the interview will happen within Arma-3 through TeamSpeak and in game slideshows/documentation to the point where our unit discord acts as a scheduling, support, and logistics resources but is not as heavily relied upon as in other units. For those who want an even more authentic experience a operations portal/dashboard terminal is in development for unit members.</p>
       </div>
 
-      <div class="content-section">
+      <div class="content-section" id="training">
         <h3>Trainings/Scheduling</h3>
         <p>Training will be extensive in the capability it provides the element however we recognize very long pipelines can be limiting for those with tight schedules as such we try to make it as efficient as possible. That being said we would like to hop on pretty frequently with the goal of 3-4 4 hours operation blocks a week on deployment phases and 3-4 main trainings with time to hop on whenever available during the week in green team and pro dev/work up phases. Should that training tempo be the case, a class of experienced Arma-3 players can likely complete green team in as little as a month. The group environment can be best described as focused on authentic operations we will not be doing PT or hosting ceremonies. All we ask is a group of people we are dedicated to authentic recreation tactically and historically to a high degree. Dual clanning is generally disallowed.</p>
       </div>
@@ -693,6 +849,20 @@
         event.target.classList.remove('visible');
       }
     });
+function highlightTraining() {
+  setTimeout(function() {
+    const section = document.getElementById('training');
+
+    section.classList.remove('training-highlight');
+
+    void section.offsetWidth;
+
+    section.classList.add('training-highlight');
+  }, 250);
+}
+
+
+    
   </script>
 
 </body>
