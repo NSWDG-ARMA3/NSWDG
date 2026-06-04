@@ -181,7 +181,7 @@ async function initialize() {
   await loadJpelEntries();
   await loadDocuments();
 
-  renderLinkedJpelSelect();
+  renderLinkedJpelSelect([]);
 }
 
 function cacheElements() {
@@ -228,6 +228,7 @@ function cacheElements() {
   elements.jpelLocationText = document.getElementById("jpel-location-text");
   elements.jpelDescription = document.getElementById("jpel-description");
   elements.jpelIntelligenceNotes = document.getElementById("jpel-intelligence-notes");
+  elements.jpelImages = document.getElementById("jpel-images");
   elements.saveJpelButton = document.getElementById("save-jpel-button");
   elements.resetJpelButton = document.getElementById("reset-jpel-button");
   elements.jpelStatusLine = document.getElementById("jpel-status-line");
@@ -255,6 +256,10 @@ function populateStaticDropdowns() {
 }
 
 function setOptions(selectElement, options) {
+  if (!selectElement) {
+    return;
+  }
+
   selectElement.innerHTML = options.map(option => {
     return `<option value="${escapeHtml(option.value)}">${escapeHtml(option.label)}</option>`;
   }).join("");
@@ -352,33 +357,6 @@ function showTab(tabName) {
   elements.jpelTabButton.classList.toggle("active", !showDocuments);
 }
 
-function renderLinkedJpelSelect(selectedIds = []) {
-  if (!state.jpelEntries.length) {
-    elements.linkedJpelSelect.innerHTML = `<option value="" disabled>No register entries have been created.</option>`;
-    elements.linkedJpelSelect.disabled = true;
-    elements.linkedJpelHelp.textContent = "Create a register entry first before linking it to a WARNO, OPORD, or INTPACK.";
-    return;
-  }
-
-  elements.linkedJpelSelect.disabled = false;
-  elements.linkedJpelHelp.textContent = "Hold Ctrl or Cmd to link multiple register entries.";
-
-  elements.linkedJpelSelect.innerHTML = state.jpelEntries.map(entry => {
-    const selected = selectedIds.includes(Number(entry.id)) ? "selected" : "";
-    return `<option value="${entry.id}" ${selected}>${escapeHtml(entry.target_name)} | ${escapeHtml(entry.priority)} | ${escapeHtml(entry.status)}</option>`;
-  }).join("");
-}
-
-function getSelectedLinkedJpelIds() {
-  if (elements.linkedJpelSelect.disabled) {
-    return [];
-  }
-
-  return Array.from(elements.linkedJpelSelect.selectedOptions)
-    .map(option => Number(option.value))
-    .filter(id => Number.isFinite(id));
-}
-
 function renderDynamicQuestions() {
   const type = elements.documentType.value;
   const sections = QUESTION_SETS[type] || [];
@@ -452,6 +430,10 @@ function addSelectedAsset() {
   const assetName = elements.assetType.value;
   const quantity = Math.max(1, Number(elements.assetQuantity.value || 1));
 
+  if (!assetName) {
+    return;
+  }
+
   const existing = state.selectedAssets.find(asset => asset.name === assetName);
 
   if (existing) {
@@ -493,6 +475,39 @@ function renderSelectedAssets() {
       removeSelectedAsset(button.dataset.removeAsset);
     });
   });
+}
+
+function renderLinkedJpelSelect(selectedIds = []) {
+  const selectedSet = new Set(selectedIds.map(Number));
+
+  if (!state.jpelEntries.length) {
+    elements.linkedJpelSelect.innerHTML = "";
+    elements.linkedJpelSelect.disabled = true;
+    elements.linkedJpelHelp.textContent = "No register entries have been created yet.";
+    return;
+  }
+
+  elements.linkedJpelSelect.disabled = false;
+  elements.linkedJpelHelp.textContent = "No entry is linked by default. Hold Ctrl or Cmd to select one or multiple entries.";
+
+  elements.linkedJpelSelect.innerHTML = state.jpelEntries.map(entry => {
+    const selected = selectedSet.has(Number(entry.id)) ? "selected" : "";
+    return `<option value="${entry.id}" ${selected}>${escapeHtml(entry.target_name)} | ${escapeHtml(entry.priority)} | ${escapeHtml(entry.status)}</option>`;
+  }).join("");
+
+  Array.from(elements.linkedJpelSelect.options).forEach(option => {
+    option.selected = selectedSet.has(Number(option.value));
+  });
+}
+
+function getSelectedLinkedJpelIds() {
+  if (elements.linkedJpelSelect.disabled) {
+    return [];
+  }
+
+  return Array.from(elements.linkedJpelSelect.selectedOptions)
+    .map(option => Number(option.value))
+    .filter(id => Number.isFinite(id));
 }
 
 function buildOperationalMeta(extra = {}) {
@@ -563,7 +578,7 @@ function resetDocumentForm() {
 
   renderDynamicQuestions();
   renderSelectedAssets();
-  renderLinkedJpelSelect();
+  renderLinkedJpelSelect([]);
   clearStatusLine(elements.documentStatusLine);
 }
 
@@ -752,10 +767,13 @@ function renderDocumentRow(documentRecord) {
 
   const statusControls = canManageOperational()
     ? `
-      <select data-document-status-select="${documentRecord.id}">
-        ${DOCUMENT_STATUSES.map(status => `<option value="${status.value}" ${documentRecord.status === status.value ? "selected" : ""}>${status.label}</option>`).join("")}
-      </select>
-      <button class="btn btn-secondary" type="button" data-update-document-status-id="${documentRecord.id}">Update</button>
+      <div class="inline-status-controls">
+        <select data-document-status-select="${documentRecord.id}">
+          ${DOCUMENT_STATUSES.map(status => `<option value="${status.value}" ${documentRecord.status === status.value ? "selected" : ""}>${status.label}</option>`).join("")}
+        </select>
+        <button class="btn btn-secondary" type="button" data-update-document-status-id="${documentRecord.id}">Update</button>
+      </div>
+      <div class="mini-status" data-document-status-message="${documentRecord.id}"></div>
     `
     : `<span class="badge ${getStatusBadgeClass(documentRecord.status)}">${escapeHtml(documentRecord.status)}</span>`;
 
@@ -862,6 +880,8 @@ async function updateDocumentStatus(id, status) {
   if (state.activeDocumentId === id) {
     viewDocument(id);
   }
+
+  showTemporaryPageMessage("Document status updated.");
 }
 
 function viewDocument(id) {
@@ -998,6 +1018,8 @@ async function saveAar(documentRecord, meta) {
     return;
   }
 
+  const line = document.getElementById("aar-status-line");
+
   const aar = {
     summary: document.getElementById("aar-summary").value.trim(),
     sustains: document.getElementById("aar-sustains").value.trim(),
@@ -1022,11 +1044,14 @@ async function saveAar(documentRecord, meta) {
     .eq("id", documentRecord.id);
 
   if (result.error) {
-    const line = document.getElementById("aar-status-line");
     if (line) {
       showStatusLine(line, "AAR save failed: " + result.error.message, false);
     }
     return;
+  }
+
+  if (line) {
+    showStatusLine(line, "AAR saved.", true);
   }
 
   await loadDocuments();
@@ -1071,6 +1096,7 @@ async function deleteDocument(id, filePath) {
   }
 
   await loadDocuments();
+  showTemporaryPageMessage("Document deleted.");
 }
 
 function resetJpelForm() {
@@ -1081,6 +1107,11 @@ function resetJpelForm() {
   elements.jpelLocationText.value = "";
   elements.jpelDescription.value = "";
   elements.jpelIntelligenceNotes.value = "";
+
+  if (elements.jpelImages) {
+    elements.jpelImages.value = "";
+  }
+
   clearStatusLine(elements.jpelStatusLine);
 }
 
@@ -1099,6 +1130,16 @@ async function saveJpelEntry() {
 
   setButtonLoading(elements.saveJpelButton, true, "Saving...");
 
+  let uploadedImages = [];
+
+  try {
+    uploadedImages = await uploadJpelImages();
+  } catch (error) {
+    showStatusLine(elements.jpelStatusLine, "Image upload failed: " + error.message, false);
+    setButtonLoading(elements.saveJpelButton, false, "Save Register Entry");
+    return;
+  }
+
   const payload = {
     target_name: targetName,
     priority: elements.jpelPriority.value,
@@ -1106,7 +1147,7 @@ async function saveJpelEntry() {
     category: elements.jpelCategory.value.trim(),
     location_text: elements.jpelLocationText.value.trim(),
     description: elements.jpelDescription.value.trim(),
-    intelligence_notes: elements.jpelIntelligenceNotes.value.trim(),
+    intelligence_notes: packJpelNotes(elements.jpelIntelligenceNotes.value.trim(), uploadedImages),
     created_by: state.authUser.id,
     updated_at: new Date().toISOString()
   };
@@ -1126,7 +1167,7 @@ async function saveJpelEntry() {
   setButtonLoading(elements.saveJpelButton, false, "Save Register Entry");
 
   await loadJpelEntries();
-  renderLinkedJpelSelect();
+  renderLinkedJpelSelect([]);
 }
 
 async function loadJpelEntries() {
@@ -1142,7 +1183,7 @@ async function loadJpelEntries() {
 
   state.jpelEntries = result.data || [];
   renderJpelEntries();
-  renderLinkedJpelSelect();
+  renderLinkedJpelSelect([]);
 }
 
 function renderJpelEntries() {
@@ -1207,10 +1248,13 @@ function renderJpelRow(entry) {
 
   const statusControls = canManageOperational()
     ? `
-      <select data-jpel-status-select="${entry.id}">
-        ${JPEL_STATUSES.map(status => `<option value="${status.value}" ${entry.status === status.value ? "selected" : ""}>${status.label}</option>`).join("")}
-      </select>
-      <button class="btn btn-secondary" type="button" data-update-jpel-status-id="${entry.id}">Update</button>
+      <div class="inline-status-controls">
+        <select data-jpel-status-select="${entry.id}">
+          ${JPEL_STATUSES.map(status => `<option value="${status.value}" ${entry.status === status.value ? "selected" : ""}>${status.label}</option>`).join("")}
+        </select>
+        <button class="btn btn-secondary" type="button" data-update-jpel-status-id="${entry.id}">Update</button>
+      </div>
+      <div class="mini-status" data-jpel-status-message="${entry.id}"></div>
     `
     : `<span class="badge ${getStatusBadgeClass(entry.status)}">${escapeHtml(entry.status)}</span>`;
 
@@ -1238,6 +1282,8 @@ function getFilteredJpelEntries() {
   const status = elements.jpelStatusFilter.value;
 
   const filtered = state.jpelEntries.filter(entry => {
+    const unpackedNotes = unpackJpelNotes(entry.intelligence_notes);
+
     const combinedText = [
       entry.target_name,
       entry.priority,
@@ -1245,7 +1291,7 @@ function getFilteredJpelEntries() {
       entry.category,
       entry.location_text,
       entry.description,
-      entry.intelligence_notes
+      unpackedNotes.notes
     ].join(" ").toLowerCase();
 
     return (!query || combinedText.includes(query)) &&
@@ -1292,14 +1338,32 @@ async function updateJpelStatus(id, status) {
 
   await loadJpelEntries();
   await loadDocuments();
+
+  showTemporaryPageMessage("Register status updated.");
 }
 
-function viewJpelEntry(id) {
+async function viewJpelEntry(id) {
   const entry = state.jpelEntries.find(item => item.id === id);
 
   if (!entry) {
     return;
   }
+
+  const meta = unpackJpelNotes(entry.intelligence_notes);
+  const signedImages = await getSignedImageUrls(meta.images);
+
+  const imagesHtml = signedImages.length
+    ? `
+      <div class="target-image-grid">
+        ${signedImages.map(image => `
+          <div class="target-image-card">
+            <img src="${escapeHtml(image.url)}" alt="${escapeHtml(image.name || "Attached image")}">
+            <div>${escapeHtml(image.name || "Attached image")}</div>
+          </div>
+        `).join("")}
+      </div>
+    `
+    : `<div class="empty-state">No images attached.</div>`;
 
   elements.jpelViewer.className = "viewer";
   elements.jpelViewer.innerHTML = `
@@ -1315,7 +1379,10 @@ function viewJpelEntry(id) {
     ${viewerSection("Category", entry.category)}
     ${viewerSection("Location / Area Text", entry.location_text)}
     ${viewerSection("Description", entry.description)}
-    ${viewerSection("Intelligence Notes", entry.intelligence_notes)}
+    ${viewerSection("Intelligence Notes", meta.notes)}
+
+    <h3>Attached Images</h3>
+    ${imagesHtml}
   `;
 }
 
@@ -1341,6 +1408,97 @@ async function deleteJpelEntry(id) {
 
   await loadJpelEntries();
   await loadDocuments();
+  showTemporaryPageMessage("Register entry deleted.");
+}
+
+function packJpelNotes(notes, images) {
+  return "__JPEL_META__" + JSON.stringify({
+    version: 1,
+    notes: notes || "",
+    images: Array.isArray(images) ? images : []
+  });
+}
+
+function unpackJpelNotes(rawValue) {
+  const raw = String(rawValue || "");
+
+  if (!raw.startsWith("__JPEL_META__")) {
+    return {
+      notes: raw,
+      images: []
+    };
+  }
+
+  try {
+    const parsed = JSON.parse(raw.replace("__JPEL_META__", ""));
+
+    return {
+      notes: parsed.notes || "",
+      images: Array.isArray(parsed.images) ? parsed.images : []
+    };
+  } catch {
+    return {
+      notes: raw,
+      images: []
+    };
+  }
+}
+
+async function uploadJpelImages() {
+  if (!elements.jpelImages) {
+    return [];
+  }
+
+  const files = Array.from(elements.jpelImages.files || []);
+
+  if (!files.length) {
+    return [];
+  }
+
+  const uploaded = [];
+
+  for (const file of files) {
+    const filePath = `${state.authUser.id}/jpel-images/${Date.now()}_${Math.random().toString(36).slice(2)}_${cleanFileName(file.name)}`;
+
+    const uploadResult = await supabase.storage
+      .from(SETTINGS.bucketName)
+      .upload(filePath, file, {
+        cacheControl: "3600",
+        upsert: false,
+        contentType: file.type || undefined
+      });
+
+    if (uploadResult.error) {
+      throw new Error(uploadResult.error.message);
+    }
+
+    uploaded.push({
+      path: filePath,
+      name: file.name,
+      type: file.type || getFileType(file)
+    });
+  }
+
+  return uploaded;
+}
+
+async function getSignedImageUrls(images) {
+  const output = [];
+
+  for (const image of images || []) {
+    const result = await supabase.storage
+      .from(SETTINGS.bucketName)
+      .createSignedUrl(image.path, 600);
+
+    if (!result.error && result.data) {
+      output.push({
+        ...image,
+        url: result.data.signedUrl
+      });
+    }
+  }
+
+  return output;
 }
 
 async function doLogout() {
@@ -1449,6 +1607,18 @@ function clearStatusLine(element) {
 function setButtonLoading(button, loading, text) {
   button.disabled = loading;
   button.textContent = text;
+}
+
+function showTemporaryPageMessage(message) {
+  if (!elements.documentStatusLine) {
+    return;
+  }
+
+  showStatusLine(elements.documentStatusLine, message, true);
+
+  window.setTimeout(function () {
+    clearStatusLine(elements.documentStatusLine);
+  }, 3000);
 }
 
 function escapeHtml(value) {
