@@ -383,7 +383,8 @@
     display: flex;
     flex-wrap: wrap;
     gap: 6px;
-    margin: 8px 0 10px;
+    margin-left: auto;
+    align-items: flex-end;
   }
 
   .view-toggle-row .btn.active {
@@ -746,19 +747,18 @@
 <div class="screen">
 
     <div class="portal-nav">
-    <a href="/member/">Home</a>
-    <a class="active" href="/member/scheduling/">Scheduling</a>
-    <a href="/member/documentation/">Documentation</a>
-    <a href="/member/operational/">Operational</a>
-    
+  <a href="/member/">Home</a>
+  <a class="active" href="/member/scheduling/">Scheduling</a>
+  <a href="/member/documentation/">Documentation</a>
+  <a href="/member/operational/">Operational</a>
+  <a href="/member/profile/">Profile</a>
 
-    <div class="nav-right">
-          <img id="nav-avatar" class="nav-avatar" src="../../nsw.png" alt="Profile picture">
-          <span>Logged in as: <span id="session-label">Loading...</span></span>
-          <a href="/member/profile/">Profile</a>
-          <a onclick="doLogout()">Log Out</a>
-      </div>
-    </div>
+  <div class="nav-right">
+    <img id="nav-avatar" class="nav-avatar" src="../../nsw.png" alt="Profile picture">
+    <span>Logged in as: <span id="session-label">Loading...</span></span>
+    <a onclick="doLogout()">Log Out</a>
+  </div>
+</div>
 
   <div class="portal-body">
 
@@ -768,12 +768,14 @@
         Role: <span id="sidebar-role">Loading...</span>
       </div>
 
-    <div class="sidebar-section">Training</div>
-    <a class="sidebar-link" href="/member/">Home / Dashboard</a>
-    <a class="sidebar-link active" href="/member/scheduling/">Scheduling</a>
-    <a class="sidebar-link" href="/member/documentation/">Documentation</a>
-    <a class="sidebar-link" href="/member/operational/">Operational</a>
-    <a class="sidebar-link" href="/member/profile/">Profile</a>
+      <div class="sidebar-section">Navigation</div>
+      <a class="sidebar-link" href="/member/">Home / Dashboard</a>
+      <a class="sidebar-link active" href="/member/scheduling/">Scheduling</a>
+      <a class="sidebar-link" href="/member/documentation/">Documentation</a>
+      <a class="sidebar-link" href="/member/operational/">Operational</a>
+
+      <div class="sidebar-section">Account</div>
+      <a class="sidebar-link" href="/member/profile/">Profile</a>
     </div>
 
     <div class="portal-main">
@@ -810,9 +812,9 @@
                 </select>
               </div>
 
-              <button class="btn btn-primary" id="save-btn">Save</button>
-              <button class="btn btn-secondary" id="refresh-btn">Refresh</button>
-              <button class="btn btn-danger" id="clear-btn">Clear Mine</button>
+              <button class="btn btn-primary" id="save-btn" type="button">Save</button>
+              <button class="btn btn-secondary" id="refresh-btn" type="button">Refresh</button>
+              <button class="btn btn-danger" id="clear-btn" type="button">Clear Mine</button>
 
               <div class="view-toggle-row">
                 <button class="btn btn-secondary active" id="calendar-view-btn" type="button">Calendar View</button>
@@ -1289,6 +1291,42 @@ function getPositiveMemberResponsesForDay(memberId, dayIndex) {
     .filter(row => row.availability === "available" || row.availability === "maybe");
 }
 
+function getAvailabilitySummary(responses) {
+  if (!responses.length) {
+    return {
+      className: "empty",
+      lineOne: "No availability submitted",
+      lineTwo: ""
+    };
+  }
+
+  const available = responses.filter(row => row.availability === "available");
+  const maybe = responses.filter(row => row.availability === "maybe");
+
+  const sorted = [...responses].sort((a, b) => {
+    return new Date(a.slot_start) - new Date(b.slot_start);
+  });
+
+  const firstTime = labelForDateTime(sorted[0].slot_start);
+  const lastTime = labelForDateTime(sorted[sorted.length - 1].slot_start);
+
+  const lineParts = [];
+
+  if (available.length) {
+    lineParts.push(`Available: ${available.length}`);
+  }
+
+  if (maybe.length) {
+    lineParts.push(`Maybe: ${maybe.length}`);
+  }
+
+  return {
+    className: available.length ? "available" : "maybe",
+    lineOne: lineParts.join(" | "),
+    lineTwo: `First: ${firstTime} | Last: ${lastTime}`
+  };
+}
+
 function getDayLabel(dayIndex) {
   const utcDate = localSlotToUtc(dayIndex, 12);
 
@@ -1365,23 +1403,16 @@ function buildOrbatDayTabs() {
 }
 
 function buildOrbatPersonCard(member, callsignLabel, responses) {
-  const availabilityClass = responses.some(row => row.availability === "available")
-    ? "available"
-    : responses.some(row => row.availability === "maybe")
-      ? "maybe"
-      : "empty";
-
-  const responseLabel = responses.length
-    ? responses.map(row => `${labelForDateTime(row.slot_start)}: ${availabilityLabel(row.availability)}`).join(" | ")
-    : "No availability submitted";
+  const summary = getAvailabilitySummary(responses);
 
   return `
     <div
-      class="orbat-person ${availabilityClass}"
+      class="orbat-person ${summary.className}"
       data-member-id="${escapeHtml(member.id)}">
       <strong>${escapeHtml(callsignLabel)} - ${escapeHtml(member.display_name || member.user_id)}</strong>
       <small>${escapeHtml(member.naval_rank || "Candidate")}</small>
-      <small>${escapeHtml(responseLabel)}</small>
+      <small>${escapeHtml(summary.lineOne)}</small>
+      ${summary.lineTwo ? `<small>${escapeHtml(summary.lineTwo)}</small>` : ""}
     </div>`;
 }
 
