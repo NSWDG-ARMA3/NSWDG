@@ -441,6 +441,47 @@
       flex-direction: column;
     }
   }
+
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    }
+
+    .modal-overlay.visible {
+    display: flex;
+    }
+
+    .modal-box {
+    width: 320px;
+    background: #fff;
+    border: 2px solid #1d3f5e;
+    padding: 14px;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
+    }
+
+    .modal-box h3 {
+    font-size: 13px;
+    color: #1d3f5e;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    }
+
+    .modal-box p {
+    font-size: 12px;
+    line-height: 1.5;
+    margin-bottom: 12px;
+    }
+
+    .modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    }
 </style>
 </head>
 
@@ -557,6 +598,18 @@
   </div>
 
   <div class="page-footer">Naval Special Warfare Command - Operations Portal &nbsp;|&nbsp; UNCLASSIFIED // FOUO &nbsp;|&nbsp; Contact your unit S6 for technical support</div>
+</div>
+
+<div id="delete-modal" class="modal-overlay">
+  <div class="modal-box">
+    <h3>Delete Document</h3>
+    <p id="delete-modal-text"></p>
+
+    <div class="modal-actions">
+      <button class="btn btn-secondary" id="delete-cancel-btn">Cancel</button>
+      <button class="btn btn-danger" id="delete-confirm-btn">Delete</button>
+    </div>
+  </div>
 </div>
 
 <script type="module">
@@ -747,6 +800,72 @@ async function openDocument(filePath) {
   window.open(url, "_blank");
 }
 
+let pendingDeleteDoc = null;
+
+function canManageDocumentation() {
+  return DOCUMENTATION_ADMINS.includes((authUser?.email || "").toLowerCase());
+}
+
+function escapeJsString(value) {
+  return String(value ?? "")
+    .replaceAll("\\", "\\\\")
+    .replaceAll("'", "\\'")
+    .replaceAll("\n", "\\n")
+    .replaceAll("\r", "\\r");
+}
+
+function showDeleteModal(docId, filePath, title) {
+  if (!canManageDocumentation()) {
+    alert("You do not have permission to delete documents.");
+    return;
+  }
+
+  pendingDeleteDoc = { docId, filePath, title };
+
+  document.getElementById("delete-modal-text").textContent =
+    `Are you sure you want to delete "${title}"? This cannot be undone.`;
+
+  document.getElementById("delete-modal").classList.add("visible");
+}
+
+function hideDeleteModal() {
+  pendingDeleteDoc = null;
+  document.getElementById("delete-modal").classList.remove("visible");
+}
+
+async function confirmDeleteDocument() {
+  if (!pendingDeleteDoc) return;
+
+  const { docId, filePath } = pendingDeleteDoc;
+
+  const { error: storageError } = await supabase
+    .storage
+    .from(BUCKET_NAME)
+    .remove([filePath]);
+
+  if (storageError) {
+    alert("File delete failed: " + storageError.message);
+    hideDeleteModal();
+    return;
+  }
+
+  const { error: dbError } = await supabase
+    .from("documentation_files")
+    .delete()
+    .eq("id", docId);
+
+  if (dbError) {
+    alert("Database delete failed: " + dbError.message);
+    hideDeleteModal();
+    return;
+  }
+
+  hideDeleteModal();
+  await loadDocuments();
+}
+
+window.showDeleteModal = showDeleteModal;
+
 async function deleteDocument(docId, filePath, title) {
   if (!canManageDocumentation()) {
     alert("You do not have permission to delete documents.");
@@ -825,7 +944,7 @@ function renderDocs() {
         <button class="btn btn-secondary" onclick="openDocument('${escapeJsString(doc.file_path)}')">Open</button>
         ${
             canManageDocumentation()
-            ? `<button class="btn btn-danger" onclick="deleteDocument('${escapeJsString(doc.id)}', '${escapeJsString(doc.file_path)}', '${escapeJsString(doc.title)}')">Remove</button>`
+            ? `<button class="btn btn-danger" onclick="showDeleteModal('${escapeJsString(doc.id)}', '${escapeJsString(doc.file_path)}', '${escapeJsString(doc.title)}')">Remove</button>`
             : ""
         }
         </td>
@@ -940,6 +1059,9 @@ async function init() {
 
   await loadDocuments();
 }
+
+document.getElementById("delete-cancel-btn").addEventListener("click", hideDeleteModal);
+document.getElementById("delete-confirm-btn").addEventListener("click", confirmDeleteDocument);
 
 init();
 </script>
