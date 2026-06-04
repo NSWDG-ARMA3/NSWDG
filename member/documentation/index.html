@@ -58,7 +58,7 @@
   }
 
   .portal-nav {
-    background: #004b87;
+    background: #1d3f5e;
     display: flex;
     align-items: stretch;
     border-bottom: 2px solid #c8a800;
@@ -162,7 +162,7 @@
     background: #d0dae8;
     border-left-color: #1d3f5e;
     font-weight: bold;
-    color: #004b87;
+    color: #1d3f5e;
   }
 
   .portal-main {
@@ -175,7 +175,7 @@
   .page-title {
     font-size: 15px;
     font-weight: bold;
-    color: #004b87;
+    color: #1d3f5e;
     border-bottom: 1px solid #ccc;
     padding-bottom: 6px;
     margin-bottom: 10px;
@@ -194,7 +194,7 @@
     font-size: 11px;
     font-weight: bold;
     margin-bottom: 4px;
-    color: #004b87;
+    color: #1d3f5e;
     text-transform: uppercase;
     letter-spacing: 0.5px;
   }
@@ -220,7 +220,7 @@
 
   .panel h3 {
     font-size: 12px;
-    color: #004b87;
+    color: #1d3f5e;
     margin-bottom: 8px;
     text-transform: uppercase;
     letter-spacing: 0.4px;
@@ -270,11 +270,11 @@
   .btn-primary {
     background: #1d3f5e;
     color: #fff;
-    border-color: #004b87;
+    border-color: #1d3f5e;
   }
 
   .btn-primary:hover {
-    background: #004b87;
+    background: #1d3f5e;
   }
 
   .btn-secondary {
@@ -493,7 +493,7 @@
       <div class="layout">
 
         <div>
-          <div class="panel">
+          <div class="panel" id="upload-panel">
             <h3>Upload Document</h3>
 
             <div class="form-group">
@@ -560,6 +560,10 @@
 </div>
 
 <script type="module">
+    const DOCUMENTATION_ADMINS = [
+  "evans@navy.mil",
+  "carver@navy.mil"
+];
 import { supabase } from "/js/auth.js";
 
 const BUCKET_NAME = "sop-documents";
@@ -630,6 +634,15 @@ async function loadSessionAndProfile() {
   }
 
   authUser = data.session.user;
+
+  const isDocumentationAdmin =
+    DOCUMENTATION_ADMINS.includes(
+        (authUser.email || "").toLowerCase()
+    );
+
+    if (!isDocumentationAdmin) {
+    document.getElementById("upload-panel").style.display = "none";
+    }
 
   const fallbackUserId = getUserIdFromEmail(authUser.email);
 
@@ -773,6 +786,15 @@ function renderDocs() {
 }
 
 async function uploadDocument() {
+    const isDocumentationAdmin =
+    DOCUMENTATION_ADMINS.includes(
+        (authUser.email || "").toLowerCase()
+    );
+
+    if (!isDocumentationAdmin) {
+    setUploadStatus("You do not have permission to upload documents.", false);
+    return;
+    }
   const title = document.getElementById("doc-title").value.trim();
   const category = document.getElementById("doc-category").value;
   const description = document.getElementById("doc-description").value.trim();
