@@ -2,7 +2,7 @@ import { supabase } from "/js/auth.js";
 
 const SETTINGS = {
   bucketName: "operational-files",
-  adminEmails: ["carver@navy.mil", "evans@navy.mil"]
+  adminEmails: ["carver@navy.mil", "evans@navy.mil", "stone@navy.mil"]
 };
 
 const DOCUMENT_TYPES = [
