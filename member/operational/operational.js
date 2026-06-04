@@ -181,6 +181,22 @@ async function initialize() {
   await loadJpelEntries();
   await loadDocuments();
 
+  elements.linkedJpelSearch?.addEventListener("input", () => {
+    renderLinkedJpelSelect(
+        getSelectedLinkedJpelIds()
+    );
+    });
+
+    elements.selectAllJpel?.addEventListener("click", () => {
+    renderLinkedJpelSelect(
+        state.jpelEntries.map(entry => Number(entry.id))
+    );
+    });
+
+    elements.clearAllJpel?.addEventListener("click", () => {
+    renderLinkedJpelSelect([]);
+    });
+
   renderLinkedJpelSelect([]);
 }
 
@@ -205,8 +221,14 @@ function cacheElements() {
   elements.assetQuantity = document.getElementById("asset-quantity");
   elements.addAssetButton = document.getElementById("add-asset-button");
   elements.selectedAssetsOutput = document.getElementById("selected-assets-output");
-  elements.linkedJpelSelect = document.getElementById("linked-jpel-select");
-  elements.linkedJpelHelp = document.getElementById("linked-jpel-help");
+
+    elements.linkedJpelSearch = document.getElementById("linked-jpel-search");
+    elements.linkedJpelCheckboxes = document.getElementById("linked-jpel-checkboxes");
+    elements.linkedJpelCount = document.getElementById("linked-jpel-count");
+    elements.selectAllJpel = document.getElementById("select-all-jpel");
+    elements.clearAllJpel = document.getElementById("clear-all-jpel");
+    elements.linkedJpelHelp = document.getElementById("linked-jpel-help");
+
   elements.documentFile = document.getElementById("document-file");
   elements.dynamicQuestionContainer = document.getElementById("dynamic-question-container");
   elements.saveDocumentButton = document.getElementById("save-document-button");
@@ -481,33 +503,65 @@ function renderLinkedJpelSelect(selectedIds = []) {
   const selectedSet = new Set(selectedIds.map(Number));
 
   if (!state.jpelEntries.length) {
-    elements.linkedJpelSelect.innerHTML = "";
-    elements.linkedJpelSelect.disabled = true;
-    elements.linkedJpelHelp.textContent = "No register entries have been created yet.";
+    elements.linkedJpelCheckboxes.innerHTML = "";
+    elements.linkedJpelHelp.textContent =
+      "No register entries have been created yet.";
+    updateLinkedJpelCount();
     return;
   }
 
-  elements.linkedJpelSelect.disabled = false;
-  elements.linkedJpelHelp.textContent = "No entry is linked by default. Hold Ctrl or Cmd to select one or multiple entries.";
+  const search =
+    (elements.linkedJpelSearch?.value || "")
+      .trim()
+      .toLowerCase();
 
-  elements.linkedJpelSelect.innerHTML = state.jpelEntries.map(entry => {
-    const selected = selectedSet.has(Number(entry.id)) ? "selected" : "";
-    return `<option value="${entry.id}" ${selected}>${escapeHtml(entry.target_name)} | ${escapeHtml(entry.priority)} | ${escapeHtml(entry.status)}</option>`;
-  }).join("");
-
-  Array.from(elements.linkedJpelSelect.options).forEach(option => {
-    option.selected = selectedSet.has(Number(option.value));
+  const filtered = state.jpelEntries.filter(entry => {
+    return (
+      entry.target_name?.toLowerCase().includes(search) ||
+      String(entry.id).includes(search)
+    );
   });
+
+  elements.linkedJpelCheckboxes.innerHTML = filtered.map(entry => `
+    <label class="checkbox-row">
+      <input
+        type="checkbox"
+        class="linked-jpel-checkbox"
+        value="${entry.id}"
+        ${selectedSet.has(Number(entry.id)) ? "checked" : ""}
+      >
+      ${escapeHtml(entry.target_name)}
+      (${escapeHtml(entry.priority)})
+    </label>
+  `).join("");
+
+  elements.linkedJpelHelp.textContent =
+    "Search, select multiple targets, or leave none selected.";
+
+  updateLinkedJpelCount();
+
+  document
+    .querySelectorAll(".linked-jpel-checkbox")
+    .forEach(box => {
+      box.addEventListener("change", updateLinkedJpelCount);
+    });
 }
 
 function getSelectedLinkedJpelIds() {
-  if (elements.linkedJpelSelect.disabled) {
-    return [];
-  }
-
-  return Array.from(elements.linkedJpelSelect.selectedOptions)
-    .map(option => Number(option.value))
+  return Array.from(
+    document.querySelectorAll(".linked-jpel-checkbox:checked")
+  )
+    .map(box => Number(box.value))
     .filter(id => Number.isFinite(id));
+}
+
+function updateLinkedJpelCount() {
+  const count = getSelectedLinkedJpelIds().length;
+
+  if (elements.linkedJpelCount) {
+    elements.linkedJpelCount.textContent =
+      `${count} Selected`;
+  }
 }
 
 function buildOperationalMeta(extra = {}) {
