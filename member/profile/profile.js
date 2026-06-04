@@ -161,7 +161,7 @@ async function uploadAvatar(event) {
   }
 
   const extension = file.name.split(".").pop().toLowerCase();
-  const filePath = `${currentUser.id}/avatar.${extension}`;
+  const filePath = `${currentUser.id}/avatar-${Date.now()}.${extension}`;
 
   const { error: uploadError } = await supabase.storage
     .from("avatars")
@@ -180,7 +180,7 @@ async function uploadAvatar(event) {
     .from("avatars")
     .getPublicUrl(filePath);
 
-  const avatarUrl = publicData.publicUrl;
+  const avatarUrl = `${publicData.publicUrl}?v=${Date.now()}`;
 
   const { error: updateError } = await supabase
     .from("profiles")
