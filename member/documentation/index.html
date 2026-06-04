@@ -658,14 +658,6 @@ function canManageDocumentation() {
   return DOCUMENTATION_ADMINS.includes((authUser?.email || "").toLowerCase());
 }
 
-function escapeJsString(value) {
-  return String(value ?? "")
-    .replaceAll("\\", "\\\\")
-    .replaceAll("'", "\\'")
-    .replaceAll("\n", "\\n")
-    .replaceAll("\r", "\\r");
-}
-
 function setUploadStatus(message, ok) {
   const el = document.getElementById("upload-status");
   el.textContent = message;
@@ -802,10 +794,6 @@ async function openDocument(filePath) {
 
 let pendingDeleteDoc = null;
 
-function canManageDocumentation() {
-  return DOCUMENTATION_ADMINS.includes((authUser?.email || "").toLowerCase());
-}
-
 function escapeJsString(value) {
   return String(value ?? "")
     .replaceAll("\\", "\\\\")
@@ -865,42 +853,6 @@ async function confirmDeleteDocument() {
 }
 
 window.showDeleteModal = showDeleteModal;
-
-async function deleteDocument(docId, filePath, title) {
-  if (!canManageDocumentation()) {
-    alert("You do not have permission to delete documents.");
-    return;
-  }
-
-  const confirmed = confirm(`Are you sure you want to delete this document?\n\n${title}`);
-
-  if (!confirmed) return;
-
-  const { error: storageError } = await supabase
-    .storage
-    .from(BUCKET_NAME)
-    .remove([filePath]);
-
-  if (storageError) {
-    alert("File delete failed: " + storageError.message);
-    return;
-  }
-
-  const { error: dbError } = await supabase
-    .from("documentation_files")
-    .delete()
-    .eq("id", docId);
-
-  if (dbError) {
-    alert("Database delete failed: " + dbError.message);
-    return;
-  }
-
-  await loadDocuments();
-}
-
-window.deleteDocument = deleteDocument;
-
 window.openDocument = openDocument;
 
 function renderDocs() {
@@ -941,12 +893,15 @@ function renderDocs() {
         </td>
         <td>${escapeHtml(formatDate(doc.uploaded_at))}</td>
         <td>
-        <button class="btn btn-secondary" onclick="openDocument('${escapeJsString(doc.file_path)}')">Open</button>
-        ${
+          <button class="btn btn-secondary open-doc-btn" data-path="${escapeHtml(doc.file_path)}">Open</button>
+          ${
             canManageDocumentation()
-            ? `<button class="btn btn-danger" onclick="showDeleteModal('${escapeJsString(doc.id)}', '${escapeJsString(doc.file_path)}', '${escapeJsString(doc.title)}')">Remove</button>`
-            : ""
-        }
+              ? `<button class="btn btn-danger remove-doc-btn"
+                  data-id="${escapeHtml(doc.id)}"
+                  data-path="${escapeHtml(doc.file_path)}"
+                  data-title="${escapeHtml(doc.title)}">Remove</button>`
+              : ""
+          }
         </td>
       </tr>
     `;
@@ -954,6 +909,18 @@ function renderDocs() {
 
   html += "</table>";
   output.innerHTML = html;
+
+  document.querySelectorAll(".open-doc-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      openDocument(btn.dataset.path);
+    });
+  });
+
+  document.querySelectorAll(".remove-doc-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      showDeleteModal(btn.dataset.id, btn.dataset.path, btn.dataset.title);
+    });
+  });
 }
 
 async function uploadDocument() {
