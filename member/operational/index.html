@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Operational</title>
+  <link rel="shortcut icon" href="../../nsw.png" type="image/x-icon">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: #f0f0f0;
+      color: #1a1a1a;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 12px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .gov-banner {
+      background: #1a1a1a;
+      color: #ccc;
+      font-size: 11px;
+      padding: 3px 12px;
+    }
+
+    .site-header {
+      background: #1d3f5e;
+      color: #fff;
+      padding: 10px 16px;
+      border-bottom: 3px solid #c8a800;
+    }
+
+    .site-header h1 {
+      font-size: 16px;
+    }
+
+    .site-header p {
+      font-size: 11px;
+      color: #c5d8ec;
+      margin-top: 2px;
+    }
+
+    .portal-nav {
+      background: #1d3f5e;
+      display: flex;
+      border-bottom: 2px solid #c8a800;
+    }
+
+    .portal-nav a {
+      color: #cde;
+      text-decoration: none;
+      font-size: 12px;
+      padding: 8px 12px;
+      border-right: 1px solid #00284e;
+    }
+
+    .portal-nav a.active {
+      color: #fff;
+      font-weight: bold;
+      border-bottom: 2px solid #c8a800;
+    }
+
+    .nav-right {
+      margin-left: auto;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      padding: 0 12px;
+      color: #cde;
+      font-size: 11px;
+    }
+
+    .logout-button {
+      background: none;
+      border: none;
+      color: #cde;
+      cursor: pointer;
+      font-size: 11px;
+    }
+
+    .portal-body {
+      display: flex;
+      flex: 1;
+    }
+
+    .sidebar {
+      width: 190px;
+      background: #e8e8e8;
+      border-right: 1px solid #bbb;
+      padding: 12px 0;
+      flex-shrink: 0;
+    }
+
+    .sidebar-user-box {
+      padding: 7px 12px 10px;
+      border-bottom: 1px solid #ccc;
+      margin-bottom: 6px;
+      font-size: 11px;
+      color: #444;
+      line-height: 1.6;
+    }
+
+    .sidebar-user-box strong {
+      display: block;
+      font-size: 12px;
+      color: #1a1a1a;
+    }
+
+    .sidebar-section {
+      font-size: 10px;
+      font-weight: bold;
+      color: #777;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 8px 12px 4px;
+    }
+
+    .sidebar-link {
+      display: block;
+      padding: 5px 12px;
+      font-size: 12px;
+      color: #1d3f5e;
+      text-decoration: none;
+      border-left: 3px solid transparent;
+    }
+
+    .sidebar-link:hover,
+    .sidebar-link.active {
+      background: #d0dae8;
+      border-left-color: #1d3f5e;
+      font-weight: bold;
+    }
+
+    .portal-main {
+      flex: 1;
+      padding: 16px 18px;
+      background: #fff;
+      overflow-y: auto;
+    }
+
+    .page-title {
+      font-size: 15px;
+      font-weight: bold;
+      color: #1d3f5e;
+      border-bottom: 1px solid #ccc;
+      padding-bottom: 6px;
+      margin-bottom: 10px;
+    }
+
+    .notice-box {
+      border: 1px solid #c8a800;
+      background: #fffbe6;
+      padding: 8px 10px;
+      font-size: 11px;
+      margin-bottom: 10px;
+      line-height: 1.6;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+
+    .tab-button {
+      border: 1px solid #1d3f5e;
+      background: #eef2f8;
+      color: #1d3f5e;
+      padding: 6px 12px;
+      font-size: 11px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .tab-button.active {
+      background: #1d3f5e;
+      color: #fff;
+    }
+
+    .screen {
+      display: none;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    .two-column-layout {
+      display: grid;
+      grid-template-columns: minmax(420px, 520px) 1fr;
+      gap: 12px;
+      align-items: start;
+    }
+
+    .panel {
+      border: 1px solid #ccc;
+      background: #fafafa;
+      padding: 10px;
+      margin-bottom: 12px;
+    }
+
+    .panel h3 {
+      font-size: 12px;
+      color: #1d3f5e;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .form-grid.full {
+      grid-template-columns: 1fr;
+    }
+
+    .form-group {
+      margin-bottom: 8px;
+    }
+
+    .form-group.full {
+      grid-column: 1 / -1;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 11px;
+      font-weight: bold;
+      margin-bottom: 3px;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      border: 1px solid #888;
+      padding: 5px 6px;
+      font-size: 11px;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #fff;
+    }
+
+    textarea {
+      min-height: 64px;
+      resize: vertical;
+    }
+
+    select[multiple] {
+      min-height: 155px;
+    }
+
+    .asset-help {
+      font-size: 10px;
+      color: #666;
+      margin-top: 3px;
+      line-height: 1.4;
+    }
+
+    .selected-assets {
+      margin-top: 5px;
+      font-size: 10px;
+      color: #1d3f5e;
+      line-height: 1.4;
+    }
+
+    .button-row {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+
+    .btn {
+      border: 1px solid;
+      padding: 5px 12px;
+      font-size: 11px;
+      font-family: Arial, Helvetica, sans-serif;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      background: #1d3f5e;
+      color: #fff;
+      border-color: #1d3f5e;
+    }
+
+    .btn-secondary {
+      background: #f0f0f0;
+      color: #333;
+      border-color: #aaa;
+    }
+
+    .btn-danger {
+      background: #c00;
+      color: #fff;
+      border-color: #900;
+    }
+
+    .btn:disabled {
+      background: #aaa;
+      border-color: #888;
+      cursor: default;
+    }
+
+    .filters {
+      display: grid;
+      grid-template-columns: 1fr 130px 130px 90px;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      font-size: 11px;
+    }
+
+    th {
+      background: #1d3f5e;
+      color: #fff;
+      text-align: left;
+      padding: 5px 6px;
+      font-size: 10px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 6px;
+      border-bottom: 1px solid #ddd;
+      vertical-align: top;
+    }
+
+    tr:nth-child(even) td {
+      background: #f5f7fa;
+    }
+
+    .badge {
+      display: inline-block;
+      font-size: 10px;
+      padding: 1px 6px;
+      border: 1px solid;
+      font-weight: bold;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .badge-blue {
+      color: #1d3f5e;
+      border-color: #1d3f5e;
+      background: #eef2f8;
+    }
+
+    .badge-yellow {
+      color: #6a5a00;
+      border-color: #c8a800;
+      background: #fffbe6;
+    }
+
+    .badge-red {
+      color: #800;
+      border-color: #c00;
+      background: #fdf0f0;
+    }
+
+    .badge-green {
+      color: #1a5a1a;
+      border-color: #1a5a1a;
+      background: #eef7ee;
+    }
+
+    .status-line {
+      margin-top: 8px;
+      font-size: 11px;
+      padding: 6px 8px;
+      border: 1px solid #bbb;
+      background: #fafafa;
+      display: none;
+    }
+
+    .status-line.visible {
+      display: block;
+    }
+
+    .status-line.ok {
+      border-color: #2a7a2a;
+      background: #f0f7f0;
+      color: #1a4a1a;
+    }
+
+    .status-line.err {
+      border-color: #c00;
+      background: #fdf0f0;
+      color: #800;
+    }
+
+    .empty-state {
+      text-align: center;
+      color: #777;
+      padding: 20px;
+      border: 1px dashed #bbb;
+      background: #fafafa;
+    }
+
+    .viewer {
+      border: 1px solid #ccc;
+      background: #fff;
+      padding: 14px;
+      font-size: 12px;
+      line-height: 1.65;
+    }
+
+    .viewer h2 {
+      font-size: 16px;
+      color: #1d3f5e;
+      border-bottom: 1px solid #ccc;
+      margin-bottom: 8px;
+      padding-bottom: 5px;
+    }
+
+    .viewer h3 {
+      font-size: 12px;
+      color: #1d3f5e;
+      text-transform: uppercase;
+      margin-top: 12px;
+      margin-bottom: 4px;
+    }
+
+    .viewer pre {
+      white-space: pre-wrap;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .muted {
+      color: #777;
+      font-size: 10px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .page-footer {
+      background: #1a1a1a;
+      color: #888;
+      font-size: 11px;
+      text-align: center;
+      padding: 7px;
+    }
+
+    @media (max-width: 1100px) {
+      .two-column-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .filters {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .sidebar {
+        display: none;
+      }
+
+      .nav-right {
+        display: none;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .filters {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="gov-banner">
+    U.S. Department of the Navy | Official Government System | Authorized Users Only
+  </div>
+
+  <div class="site-header">
+    <h1>Naval Special Warfare Command - Operations Portal</h1>
+    <p>NSW-OPS // UNCLASSIFIED // FOR OFFICIAL USE ONLY</p>
+  </div>
+
+  <div class="portal-nav">
+    <a href="/member/">Home</a>
+    <a href="/member/scheduling/">Scheduling</a>
+    <a href="/member/documentation/">Documentation</a>
+    <a href="/member/operational/" class="active">Operational</a>
+
+    <div class="nav-right">
+      <span>Logged in as: <span id="session-label">Loading...</span></span>
+      <button id="logout-button" class="logout-button" type="button">Log Out</button>
+    </div>
+  </div>
+
+  <div class="portal-body">
+    <aside class="sidebar">
+      <div class="sidebar-user-box">
+        <strong id="sidebar-name">Loading...</strong>
+        Role: <span id="sidebar-role">Loading...</span>
+      </div>
+
+      <div class="sidebar-section">Navigation</div>
+      <a class="sidebar-link" href="/member/">Home / Dashboard</a>
+      <a class="sidebar-link" href="/member/scheduling/">Scheduling</a>
+      <a class="sidebar-link" href="/member/documentation/">Documentation</a>
+      <a class="sidebar-link active" href="/member/operational/">Operational</a>
+    </aside>
+
+    <main class="portal-main">
+      <div class="page-title">Operational - WARNO / OPORD / INTPACK / JPEL</div>
+
+      <div class="notice-box">
+        <strong>Permissions:</strong> carver@navy.mil and evans@navy.mil can create and delete. Other authenticated users can view, search, sort, filter, and open records.
+      </div>
+
+      <div class="tabs">
+        <button id="documents-tab-button" class="tab-button active" type="button">Operational Documents</button>
+        <button id="jpel-tab-button" class="tab-button" type="button">JPEL Register</button>
+      </div>
+
+      <section id="documents-screen" class="screen active">
+        <div class="two-column-layout">
+          <div id="document-form-panel" class="panel">
+            <h3>Create Operational Document</h3>
+
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="document-type">Document Type</label>
+                <select id="document-type"></select>
+              </div>
+
+              <div class="form-group">
+                <label for="document-status">Status</label>
+                <select id="document-status"></select>
+              </div>
+
+              <div class="form-group">
+                <label for="document-title">Title</label>
+                <input id="document-title" type="text" placeholder="Example: OPORD Neptune Shield">
+              </div>
+
+              <div class="form-group">
+                <label for="document-classification">Classification / Marking</label>
+                <input id="document-classification" type="text" value="UNCLASSIFIED">
+              </div>
+
+              <div class="form-group">
+                <label for="document-operation-name">Operation Name</label>
+                <input id="document-operation-name" type="text">
+              </div>
+
+              <div class="form-group">
+                <label for="document-file">Upload Source File</label>
+                <input id="document-file" type="file">
+              </div>
+
+              <div class="form-group full">
+                <label for="document-assets">Attached Aircraft / Ground / Maritime Assets</label>
+                <select id="document-assets" multiple></select>
+                <div class="asset-help">Hold Ctrl or Cmd to select multiple assets.</div>
+                <div id="selected-assets-output" class="selected-assets">Selected: None</div>
+              </div>
+            </div>
+
+            <div id="dynamic-question-container"></div>
+
+            <div class="button-row">
+              <button id="save-document-button" class="btn btn-primary" type="button">Save Document</button>
+              <button id="reset-document-button" class="btn btn-secondary" type="button">Reset</button>
+            </div>
+
+            <div id="document-status-line" class="status-line"></div>
+          </div>
+
+          <div>
+            <div class="panel">
+              <h3>Document Library</h3>
+
+              <div class="filters">
+                <input id="document-search" type="text" placeholder="Search documents...">
+                <select id="document-type-filter"></select>
+                <select id="document-status-filter"></select>
+                <button id="refresh-documents-button" class="btn btn-secondary" type="button">Refresh</button>
+              </div>
+
+              <div id="documents-output"></div>
+            </div>
+
+            <div class="panel">
+              <h3>Document Viewer</h3>
+              <div id="document-viewer" class="empty-state">Select a document to view the formatted record.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="jpel-screen" class="screen">
+        <div class="two-column-layout">
+          <div id="jpel-form-panel" class="panel">
+            <h3>Create JPEL Register Entry</h3>
+
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="jpel-target-name">Name / Entity / Reference</label>
+                <input id="jpel-target-name" type="text">
+              </div>
+
+              <div class="form-group">
+                <label for="jpel-priority">Priority</label>
+                <select id="jpel-priority"></select>
+              </div>
+
+              <div class="form-group">
+                <label for="jpel-status">Status</label>
+                <select id="jpel-status"></select>
+              </div>
+
+              <div class="form-group">
+                <label for="jpel-category">Category</label>
+                <input id="jpel-category" type="text" placeholder="Example: Administrative, Watchlist, Intel Review">
+              </div>
+
+              <div class="form-group full">
+                <label for="jpel-location-text">Location / Area Text</label>
+                <input id="jpel-location-text" type="text">
+              </div>
+
+              <div class="form-group full">
+                <label for="jpel-description">Description</label>
+                <textarea id="jpel-description"></textarea>
+              </div>
+
+              <div class="form-group full">
+                <label for="jpel-intelligence-notes">Intelligence Notes</label>
+                <textarea id="jpel-intelligence-notes"></textarea>
+              </div>
+            </div>
+
+            <div class="button-row">
+              <button id="save-jpel-button" class="btn btn-primary" type="button">Save JPEL Entry</button>
+              <button id="reset-jpel-button" class="btn btn-secondary" type="button">Reset</button>
+            </div>
+
+            <div id="jpel-status-line" class="status-line"></div>
+          </div>
+
+          <div>
+            <div class="panel">
+              <h3>JPEL Register</h3>
+
+              <div class="filters">
+                <input id="jpel-search" type="text" placeholder="Search JPEL entries...">
+                <select id="jpel-priority-filter"></select>
+                <select id="jpel-status-filter"></select>
+                <button id="refresh-jpel-button" class="btn btn-secondary" type="button">Refresh</button>
+              </div>
+
+              <div id="jpel-output"></div>
+            </div>
+
+            <div class="panel">
+              <h3>JPEL Viewer</h3>
+              <div id="jpel-viewer" class="empty-state">Select a JPEL entry to view the formatted record.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="page-footer">
+    Naval Special Warfare Command - Operations Portal | UNCLASSIFIED // FOUO
+  </div>
+
+  <script type="module" src="./operational.js"></script>
+</body>
+</html>
