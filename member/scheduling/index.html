@@ -637,10 +637,12 @@
 </div>
 
 <script type="module">
+
 import { supabase } from "/js/auth.js";
 
 const SLOT_MINUTES = 60;
 const SLOTS_PER_DAY = 24;
+const SCHEDULE_TIMEZONE = "UTC";
 
 let authUser = null;
 let profile = null;
@@ -742,27 +744,25 @@ function addDaysToIsoDate(iso, days) {
 }
 
 function getWeekRangeUtc() {
-  const tz = timezoneSelect.value;
   const startIso = weekInput.value;
 
   const y = Number(startIso.slice(0, 4));
   const m = Number(startIso.slice(5, 7));
   const d = Number(startIso.slice(8, 10));
 
-  const start = zonedTimeToUtc(y, m, d, 0, 0, tz);
+  const start = zonedTimeToUtc(y, m, d, 0, 0, SCHEDULE_TIMEZONE);
 
   const endIso = addDaysToIsoDate(startIso, 7);
   const ey = Number(endIso.slice(0, 4));
   const em = Number(endIso.slice(5, 7));
   const ed = Number(endIso.slice(8, 10));
 
-  const end = zonedTimeToUtc(ey, em, ed, 0, 0, tz);
+  const end = zonedTimeToUtc(ey, em, ed, 0, 0, SCHEDULE_TIMEZONE);
 
   return { start, end };
 }
 
 function localSlotToUtc(dayIndex, slotIndex) {
-  const tz = timezoneSelect.value;
   const baseIso = addDaysToIsoDate(weekInput.value, dayIndex);
 
   const y = Number(baseIso.slice(0, 4));
@@ -773,7 +773,7 @@ function localSlotToUtc(dayIndex, slotIndex) {
   const hour = Math.floor(totalMinutes / 60);
   const minute = totalMinutes % 60;
 
-  return zonedTimeToUtc(y, m, d, hour, minute, tz);
+  return zonedTimeToUtc(y, m, d, hour, minute, SCHEDULE_TIMEZONE);
 }
 
 function slotKey(date) {
@@ -1306,6 +1306,8 @@ function setupRealtime() {
     supabase.removeChannel(realtimeChannel);
   }
 
+  let reloadTimer = null;
+
   realtimeChannel = supabase
     .channel("scheduling-live")
     .on(
@@ -1315,8 +1317,12 @@ function setupRealtime() {
         schema: "public",
         table: "scheduling_responses"
       },
-      async () => {
-        await loadResponses();
+      () => {
+        clearTimeout(reloadTimer);
+
+        reloadTimer = setTimeout(async () => {
+          await loadResponses();
+        }, 300);
       }
     )
     .subscribe();
@@ -1333,9 +1339,15 @@ saveBtn.addEventListener("click", saveAvailability);
 refreshBtn.addEventListener("click", loadResponses);
 clearBtn.addEventListener("click", clearMyWeek);
 
-timezoneSelect.addEventListener("change", async () => {
+timezoneSelect.addEventListener("change", () => {
   localStorage.setItem("schedulingTimezone", timezoneSelect.value);
-  await loadResponses();
+
+  document.getElementById("dash-timezone").textContent = timezoneSelect.value;
+
+  buildMyTable();
+  buildHeatmap();
+  buildBestList();
+  buildChangesList();
 });
 
 weekInput.addEventListener("change", async () => {
