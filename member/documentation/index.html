@@ -512,6 +512,7 @@
   <a class="active" href="/member/documentation/">Documentation</a>
   <a href="/member/operational/">Operational</a>
   <a href="/member/profile/">Profile</a>
+  <a class="admin-only-link" href="/member/admin/" style="display:none;">Admin</a>
 
   <div class="nav-right">
     <img id="nav-avatar" class="nav-avatar" src="../../nsw.png" alt="Profile picture">
@@ -535,6 +536,7 @@
         <a class="sidebar-link" href="/member/operational/">Operational</a>
 
         <div class="sidebar-section">Account</div>
+        <a class="sidebar-link admin-only-link" href="/member/admin/" style="display:none;">Admin</a>
         <a class="sidebar-link" href="/member/profile/">Profile</a>
     </div>
 
@@ -656,6 +658,21 @@ function utcNowLabel() {
   return `${zp(d.getUTCHours())}${zp(d.getUTCMinutes())}Z ${d.getUTCDate()} ${months[d.getUTCMonth()]} ${d.getUTCFullYear()}`;
 }
 
+function showAdminLinksIfAllowed(email) {
+  const normalized = String(email || "").trim().toLowerCase();
+
+  if (
+    normalized !== "evans@navy.mil" &&
+    normalized !== "carver@navy.mil"
+  ) {
+    return;
+  }
+
+  document.querySelectorAll(".admin-only-link").forEach(link => {
+    link.style.display = "";
+  });
+}
+
 function getUserIdFromEmail(email) {
   if (!email || !email.includes("@")) return "unknown";
   return email.split("@")[0];
@@ -706,7 +723,9 @@ async function loadSessionAndProfile() {
     return false;
   }
 
-  authUser = data.session.user;
+ authUser = data.session.user;
+
+showAdminLinksIfAllowed(authUser.email);
 
   const isDocumentationAdmin =
     DOCUMENTATION_ADMINS.includes(

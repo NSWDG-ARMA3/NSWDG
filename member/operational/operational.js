@@ -319,6 +319,21 @@ function bindEvents() {
   elements.jpelStatusFilter.addEventListener("change", renderJpelEntries);
 }
 
+function showAdminLinksIfAllowed(email) {
+  const normalized = String(email || "").trim().toLowerCase();
+
+  if (
+    normalized !== "evans@navy.mil" &&
+    normalized !== "carver@navy.mil"
+  ) {
+    return;
+  }
+
+  document.querySelectorAll(".admin-only-link").forEach(link => {
+    link.style.display = "";
+  });
+}
+
 async function loadSessionAndProfile() {
   const sessionResult = await supabase.auth.getSession();
 
@@ -328,6 +343,8 @@ async function loadSessionAndProfile() {
   }
 
   state.authUser = sessionResult.data.session.user;
+
+  showAdminLinksIfAllowed(state.authUser.email);
 
   state.profile = {
     id: state.authUser.id,

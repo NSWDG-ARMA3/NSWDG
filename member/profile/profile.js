@@ -21,6 +21,28 @@ const confirmPasswordInput = document.getElementById("confirm-password");
 let currentUser = null;
 let currentProfile = null;
 
+function showAdminLinksIfAllowed(email) {
+  const normalized = String(email || "").trim().toLowerCase();
+
+  if (
+    normalized !== "evans@navy.mil" &&
+    normalized !== "carver@navy.mil"
+  ) {
+    return;
+  }
+
+  document.querySelectorAll(".admin-only-link").forEach(link => {
+    link.style.display = "";
+  });
+}
+
+function isAdminEmail(email) {
+  const normalized = String(email || "").trim().toLowerCase();
+
+  return normalized === "evans@navy.mil"
+    || normalized === "carver@navy.mil";
+}
+
 function setStatus(message, type = "ok") {
   statusLine.textContent = message;
   statusLine.className = `status-line visible ${type}`;
@@ -83,6 +105,12 @@ async function loadProfile() {
   }
 
   currentUser = sessionData.session.user;
+
+  showAdminLinksIfAllowed(currentUser.email);
+
+  if (isAdminEmail(currentUser.email)) {
+  document.body.classList.add("is-profile-admin");
+}
 
   const fallbackUserId = getFallbackUserId(currentUser.email);
 
