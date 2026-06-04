@@ -26,6 +26,10 @@
     flex-direction: column;
   }
 
+  .availability-grid td {
+    user-select: none;
+  }
+
   .gov-banner {
     background: #1a1a1a;
     color: #ccc;
@@ -547,8 +551,8 @@
 
       <div class="notice-box warning">
         <h4>Instructions</h4>
-        Select the week and display timezone. Day names and dates are recalculated based on the selected timezone.
-        Click your availability cells to cycle between Available, Maybe, Unavailable, and Empty. Hover heatmap cells to see who selected each status.
+        Click an availability cell to cycle between Available, Maybe, Unavailable, and Empty.
+       You can also hold the left mouse button and drag across cells to apply the same status to multiple slots.
       </div>
 
       <div class="top-layout">
@@ -650,7 +654,6 @@ let profilesById = new Map();
 let members = [];
 let allResponses = [];
 let mySlots = new Map();
-let realtimeChannel = null;
 
 const weekInput = document.getElementById("week-start");
 const timezoneSelect = document.getElementById("timezone-select");
@@ -666,6 +669,49 @@ function setStatus(message, ok) {
   const el = document.getElementById("status-line");
   el.textContent = message;
   el.className = "status-line visible " + (ok ? "ok" : "err");
+}
+
+let isDraggingAvailability = false;
+let dragAvailabilityValue = null;
+let dragChangedAvailability = false;
+
+let realtimeChannel = null;
+
+function updateAvailabilityCellDisplay(cell, value) {
+  cell.className = myClass(value);
+  cell.textContent = compactAvailabilityLabel(value);
+  cell.title = `Click or drag to change. Current: ${availabilityLabel(value) || "Empty"}`;
+}
+
+function setAvailabilityCell(cell, value) {
+  const d = Number(cell.dataset.day);
+  const s = Number(cell.dataset.slot);
+  const key = slotKey(localSlotToUtc(d, s));
+  const current = mySlots.get(key) || null;
+
+  if (current === value) return;
+
+  if (value) {
+    mySlots.set(key, value);
+  } else {
+    mySlots.delete(key);
+  }
+
+  updateAvailabilityCellDisplay(cell, value);
+  dragChangedAvailability = true;
+}
+
+function finishAvailabilityDrag() {
+  if (!isDraggingAvailability) return;
+
+  isDraggingAvailability = false;
+  dragAvailabilityValue = null;
+
+  if (dragChangedAvailability) {
+    dragChangedAvailability = false;
+    buildHeatmap();
+    buildBestList();
+  }
 }
 
 function utcNowLabel() {
@@ -906,7 +952,7 @@ function buildMyTable() {
         <td class="${myClass(value)}"
             data-day="${d}"
             data-slot="${s}"
-            title="Click to change. Current: ${escapeHtml(availabilityLabel(value) || "Empty")}">
+            title="Click or drag to change. Current: ${escapeHtml(availabilityLabel(value) || "Empty")}"
           ${escapeHtml(compactAvailabilityLabel(value))}
         </td>`;
     }
@@ -917,23 +963,31 @@ function buildMyTable() {
   table.innerHTML = html;
 
   table.querySelectorAll("td[data-day]").forEach(cell => {
-    cell.addEventListener("click", () => {
-      const d = Number(cell.dataset.day);
-      const s = Number(cell.dataset.slot);
-      const key = slotKey(localSlotToUtc(d, s));
-      const next = cycleAvailability(mySlots.get(key));
 
-      if (next) {
-        mySlots.set(key, next);
-      } else {
-        mySlots.delete(key);
-      }
+  cell.addEventListener("mousedown", event => {
+    if (event.button !== 0) return;
 
-      buildMyTable();
-      buildHeatmap();
-      buildBestList();
-    });
+    event.preventDefault();
+
+    const d = Number(cell.dataset.day);
+    const s = Number(cell.dataset.slot);
+
+    const key = slotKey(localSlotToUtc(d, s));
+
+    isDraggingAvailability = true;
+    dragAvailabilityValue = cycleAvailability(mySlots.get(key));
+    dragChangedAvailability = false;
+
+    setAvailabilityCell(cell, dragAvailabilityValue);
   });
+
+  cell.addEventListener("mouseenter", () => {
+    if (!isDraggingAvailability) return;
+
+    setAvailabilityCell(cell, dragAvailabilityValue);
+  });
+
+});
 }
 
 function responsesForSlot(key) {
@@ -1338,6 +1392,9 @@ window.doLogout = doLogout;
 saveBtn.addEventListener("click", saveAvailability);
 refreshBtn.addEventListener("click", loadResponses);
 clearBtn.addEventListener("click", clearMyWeek);
+
+document.addEventListener("mouseup", finishAvailabilityDrag);
+window.addEventListener("blur", finishAvailabilityDrag);
 
 timezoneSelect.addEventListener("change", () => {
   localStorage.setItem("schedulingTimezone", timezoneSelect.value);

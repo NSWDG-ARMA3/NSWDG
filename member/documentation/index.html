@@ -794,14 +794,6 @@ async function openDocument(filePath) {
 
 let pendingDeleteDoc = null;
 
-function escapeJsString(value) {
-  return String(value ?? "")
-    .replaceAll("\\", "\\\\")
-    .replaceAll("'", "\\'")
-    .replaceAll("\n", "\\n")
-    .replaceAll("\r", "\\r");
-}
-
 function showDeleteModal(docId, filePath, title) {
   if (!canManageDocumentation()) {
     alert("You do not have permission to delete documents.");
