@@ -897,13 +897,21 @@ function cycleAvailability(current) {
 }
 
 function availabilityLabel(value) {
+  value = normalizeAvailability(value);
+
   if (value === "available") return "Available";
   if (value === "maybe") return "Maybe";
   if (value === "unavailable") return "Unavailable";
   return "";
 }
 
+function normalizeAvailability(value) {
+  return String(value || "").trim().toLowerCase();
+}
+
 function compactAvailabilityLabel(value) {
+  value = normalizeAvailability(value);
+
   if (value === "available") return "AVAIL";
   if (value === "maybe") return "MAYBE";
   if (value === "unavailable") return "NO";
@@ -911,12 +919,13 @@ function compactAvailabilityLabel(value) {
 }
 
 function myClass(value) {
+  value = normalizeAvailability(value);
+
   if (value === "available") return "mine-available";
   if (value === "maybe") return "mine-maybe";
   if (value === "unavailable") return "mine-unavailable";
   return "mine-empty";
 }
-
 function scoreToGrade(score, responseCount) {
   if (responseCount === 0) return "gray";
   if (score < 0.25) return "red";
