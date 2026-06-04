@@ -98,6 +98,16 @@
     gap: 10px;
   }
 
+  .nav-avatar {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid #7a9ab8;
+  background: #e8e8e8;
+  flex-shrink: 0;
+}
+
   .nav-right a {
     border: none !important;
     padding: 4px 0 !important;
@@ -505,7 +515,9 @@
 
 
     <div class="nav-right">
+      <img id="nav-avatar" class="nav-avatar" src="../../nsw.png" alt="Profile picture">
       <span>Logged in as: <span id="session-label">Loading...</span></span>
+      <a href="/member/profile/">Profile</a>
       <a onclick="doLogout()">Log Out</a>
     </div>
   </div>
@@ -716,7 +728,7 @@ async function loadSessionAndProfile() {
 
   const { data: profileData } = await supabase
     .from("profiles")
-    .select("id, user_id, display_name, role, status")
+    .select("id, user_id, display_name, role, status, avatar_url")
     .eq("id", authUser.id)
     .single();
 
@@ -733,6 +745,11 @@ async function loadSessionAndProfile() {
   document.getElementById("session-label").textContent = profile.display_name;
   document.getElementById("sidebar-name").textContent = profile.display_name;
   document.getElementById("sidebar-role").textContent = profile.role;
+
+  const navAvatar = document.getElementById("nav-avatar");
+  if (navAvatar && profile.avatar_url) {
+    navAvatar.src = profile.avatar_url;
+  }
 
   return true;
 }

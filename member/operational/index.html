@@ -79,6 +79,15 @@
       color: #cde;
       font-size: 11px;
     }
+    .nav-avatar {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid #7a9ab8;
+  background: #e8e8e8;
+  flex-shrink: 0;
+}
 
     .logout-button {
       background: none;
@@ -493,7 +502,9 @@
     <a href="/member/operational/" class="active">Operational</a>
 
     <div class="nav-right">
+      <img id="nav-avatar" class="nav-avatar" src="../../nsw.png" alt="Profile picture">
       <span>Logged in as: <span id="session-label">Loading...</span></span>
+      <a href="/member/profile/">Profile</a>
       <button id="logout-button" class="logout-button" type="button">Log Out</button>
     </div>
   </div>

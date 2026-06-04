@@ -102,6 +102,16 @@
     gap: 10px;
   }
 
+  .nav-avatar {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid #7a9ab8;
+  background: #e8e8e8;
+  flex-shrink: 0;
+}
+
   .nav-right a {
     border: none !important;
     padding: 4px 0 !important;
@@ -369,6 +379,220 @@
     font-size: 10px;
   }
 
+  .view-toggle-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 8px 0 10px;
+  }
+
+  .view-toggle-row .btn.active {
+    background: #1d3f5e;
+    color: #fff;
+    border-color: #1d3f5e;
+  }
+
+  .schedule-view {
+    display: block;
+  }
+
+  .schedule-view.hidden {
+    display: none;
+  }
+
+  .orbat-week-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    border: 1px solid #ccc;
+    background: #fafafa;
+    padding: 8px 10px;
+    margin-bottom: 10px;
+    font-size: 11px;
+  }
+
+  .orbat-week-title {
+    font-weight: bold;
+    color: #1d3f5e;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+  }
+
+  .orbat-day-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-bottom: 10px;
+  }
+
+  .orbat-day-tab {
+    border: 1px solid #aaa;
+    background: #f0f0f0;
+    color: #333;
+    font-size: 11px;
+    font-family: Arial, Helvetica, sans-serif;
+    padding: 4px 8px;
+    cursor: pointer;
+  }
+
+  .orbat-day-tab:hover {
+    background: #e0e0e0;
+  }
+
+  .orbat-day-tab.active {
+    background: #1d3f5e;
+    color: #fff;
+    border-color: #1d3f5e;
+  }
+
+  .orbat-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 280px;
+    gap: 12px;
+    align-items: start;
+  }
+
+  .orbat-day-panel {
+    border: 1px solid #ccc;
+    background: #fff;
+    margin-bottom: 12px;
+  }
+
+  .orbat-day-panel-header {
+    background: #1d3f5e;
+    color: #fff;
+    padding: 6px 8px;
+    font-size: 12px;
+    font-weight: bold;
+  }
+
+  .orbat-section {
+    border-top: 1px solid #ddd;
+  }
+
+  .orbat-section:first-child {
+    border-top: none;
+  }
+
+  .orbat-section-title {
+    background: #e8e8e8;
+    border-bottom: 1px solid #ccc;
+    color: #1a1a1a;
+    font-weight: bold;
+    font-size: 11px;
+    padding: 5px 8px;
+  }
+
+  .orbat-slot-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    gap: 6px;
+    padding: 8px;
+  }
+
+  .orbat-person {
+    border: 1px solid #ccc;
+    background: #fafafa;
+    padding: 6px;
+    font-size: 11px;
+    cursor: pointer;
+    min-height: 48px;
+  }
+
+  .orbat-person:hover {
+    background: #eef3f8;
+    border-color: #1d3f5e;
+  }
+
+  .orbat-person.available {
+    border-left: 4px solid #218838;
+  }
+
+  .orbat-person.maybe {
+    border-left: 4px solid #c8a800;
+  }
+
+  .orbat-person.unavailable {
+    border-left: 4px solid #b02a37;
+    opacity: 0.75;
+  }
+
+  .orbat-person.empty {
+    border-left: 4px solid #999;
+  }
+
+  .orbat-person strong {
+    display: block;
+    color: #1d3f5e;
+    margin-bottom: 2px;
+  }
+
+  .orbat-person small {
+    display: block;
+    color: #555;
+    line-height: 1.4;
+  }
+
+  .orbat-empty {
+    padding: 8px;
+    font-size: 11px;
+    color: #777;
+  }
+
+  .orbat-detail-card {
+    border: 1px solid #ccc;
+    background: #fafafa;
+    padding: 10px;
+    font-size: 11px;
+  }
+
+  .orbat-detail-card h3 {
+    font-size: 12px;
+    color: #1d3f5e;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+  }
+
+  .orbat-detail-row {
+    display: grid;
+    grid-template-columns: 90px 1fr;
+    gap: 6px;
+    border-bottom: 1px solid #ddd;
+    padding: 4px 0;
+  }
+
+  .orbat-detail-row:last-child {
+    border-bottom: none;
+  }
+
+  .orbat-detail-label {
+    color: #666;
+    font-weight: bold;
+  }
+
+  .orbat-time-block {
+    border: 1px solid #ddd;
+    margin-bottom: 8px;
+    background: #fff;
+  }
+
+  .orbat-time-title {
+    background: #f0f0f0;
+    border-bottom: 1px solid #ddd;
+    font-weight: bold;
+    font-size: 11px;
+    padding: 5px 8px;
+  }
+
+  @media (max-width: 1000px) {
+    .orbat-layout {
+      grid-template-columns: 1fr;
+    }
+  }
+
   .availability-grid th {
     background: #1d3f5e;
     color: #fff;
@@ -529,9 +753,11 @@
     
 
     <div class="nav-right">
-        <span>Logged in as: <span id="session-label">Loading...</span></span>
-        <a onclick="doLogout()">Log Out</a>
-    </div>
+          <img id="nav-avatar" class="nav-avatar" src="../../nsw.png" alt="Profile picture">
+          <span>Logged in as: <span id="session-label">Loading...</span></span>
+          <a href="/member/profile/">Profile</a>
+          <a onclick="doLogout()">Log Out</a>
+      </div>
     </div>
 
   <div class="portal-body">
@@ -547,6 +773,7 @@
     <a class="sidebar-link active" href="/member/scheduling/">Scheduling</a>
     <a class="sidebar-link" href="/member/documentation/">Documentation</a>
     <a class="sidebar-link" href="/member/operational/">Operational</a>
+    <a class="sidebar-link" href="/member/profile/">Profile</a>
     </div>
 
     <div class="portal-main">
@@ -586,6 +813,11 @@
               <button class="btn btn-primary" id="save-btn">Save</button>
               <button class="btn btn-secondary" id="refresh-btn">Refresh</button>
               <button class="btn btn-danger" id="clear-btn">Clear Mine</button>
+
+              <div class="view-toggle-row">
+                <button class="btn btn-secondary active" id="calendar-view-btn" type="button">Calendar View</button>
+                <button class="btn btn-secondary" id="orbat-view-btn" type="button">ORBAT View</button>
+              </div>
             </div>
 
             <div class="legend">
@@ -608,14 +840,46 @@
             <div id="status-line" class="status-line"></div>
           </div>
 
-          <div class="page-title">Unit Availability Heatmap</div>
-          <div class="availability-wrap">
-            <table class="availability-grid" id="heatmap-table"></table>
+          <div id="calendar-view" class="schedule-view">
+            <div class="page-title">Unit Availability Heatmap</div>
+            <div class="availability-wrap">
+              <table class="availability-grid" id="heatmap-table"></table>
+            </div>
+
+            <div class="page-title">My Availability</div>
+            <div class="availability-wrap">
+              <table class="availability-grid" id="my-table"></table>
+            </div>
           </div>
 
-          <div class="page-title">My Availability</div>
-          <div class="availability-wrap">
-            <table class="availability-grid" id="my-table"></table>
+          <div id="orbat-view" class="schedule-view hidden">
+            <div class="page-title">ORBAT Availability View</div>
+
+            <div class="orbat-week-header">
+              <div>
+                <div class="orbat-week-title" id="orbat-week-title">Loading week...</div>
+                <div class="muted">Shows members by ORBAT callsign and selected daily availability.</div>
+              </div>
+
+              <div class="form-row" style="margin-bottom:0;">
+                <button class="btn btn-secondary" id="orbat-prev-week" type="button">Previous Week</button>
+                <button class="btn btn-secondary" id="orbat-current-week" type="button">Selected Week</button>
+                <button class="btn btn-secondary" id="orbat-next-week" type="button">Next Week</button>
+              </div>
+            </div>
+
+            <div class="orbat-day-tabs" id="orbat-day-tabs"></div>
+
+            <div class="orbat-layout">
+              <div id="orbat-day-content">
+                <div class="orbat-empty">Loading ORBAT availability...</div>
+              </div>
+
+              <div class="orbat-detail-card" id="orbat-detail-card">
+                <h3>Individual Details</h3>
+                <div class="muted">Click a name in the ORBAT view to see rank, callsign, Steam, Discord, and availability details.</div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -658,11 +922,56 @@ let members = [];
 let allResponses = [];
 let mySlots = new Map();
 
+let activeScheduleView = "calendar";
+let selectedOrbatDay = 0;
+
 const weekInput = document.getElementById("week-start");
 const timezoneSelect = document.getElementById("timezone-select");
 const saveBtn = document.getElementById("save-btn");
 const refreshBtn = document.getElementById("refresh-btn");
 const clearBtn = document.getElementById("clear-btn");
+
+const calendarViewBtn = document.getElementById("calendar-view-btn");
+const orbatViewBtn = document.getElementById("orbat-view-btn");
+const calendarView = document.getElementById("calendar-view");
+const orbatView = document.getElementById("orbat-view");
+
+const orbatWeekTitle = document.getElementById("orbat-week-title");
+const orbatDayTabs = document.getElementById("orbat-day-tabs");
+const orbatDayContent = document.getElementById("orbat-day-content");
+const orbatDetailCard = document.getElementById("orbat-detail-card");
+
+const orbatPrevWeekBtn = document.getElementById("orbat-prev-week");
+const orbatCurrentWeekBtn = document.getElementById("orbat-current-week");
+const orbatNextWeekBtn = document.getElementById("orbat-next-week");
+
+const ORBAT_STRUCTURE = [
+  {
+    title: "Green Team",
+    type: "candidate",
+    slots: ["Candidate"]
+  },
+  {
+    title: "Red Squadron, 3 Troop, Golf, Assault",
+    slots: ["EG1", "EG2", "EG3", "EG4", "EG5", "EG6"]
+  },
+  {
+    title: "Red Squadron, 3 Troop, Hotel, Assault",
+    slots: ["EH1", "EH2", "EH3", "EH4", "EH5", "EH6"]
+  },
+  {
+    title: "Red Squadron, 3 Troop, India, Recce",
+    slots: ["EI1", "EI2", "EI3", "EI4", "EI5", "EI6"]
+  },
+  {
+    title: "Red Squadron, 3 Troop, Troop Headquarters",
+    slots: ["E31", "E32"]
+  },
+  {
+    title: "Red Squadron, 3 Troop, Enablers",
+    slots: ["EX1", "EN1", "ER1", "EY1", "EU1", "EU2", "EP1", "EP2"]
+  }
+];
 
 function zp(n) {
   return String(n).padStart(2, "0");
@@ -942,6 +1251,290 @@ function getProfileName(userId) {
   return prof ? prof.display_name : userId;
 }
 
+function getProfileByCallsign(callsign) {
+  const wanted = String(callsign || "").trim().toUpperCase();
+
+  return members.find(member => {
+    return String(member.callsign || "").trim().toUpperCase() === wanted;
+  }) || null;
+}
+
+function getCandidateMembers() {
+  return members.filter(member => {
+    const callsign = String(member.callsign || "").trim();
+    const rank = String(member.naval_rank || "").trim();
+
+    return !callsign && rank === "Candidate";
+  });
+}
+
+function getResponsesForDay(dayIndex) {
+  const dayStart = localSlotToUtc(dayIndex, 0);
+  const nextDayStart = localSlotToUtc(dayIndex + 1, 0);
+
+  return allResponses.filter(row => {
+    const rowDate = new Date(row.slot_start);
+    return rowDate >= dayStart && rowDate < nextDayStart;
+  });
+}
+
+function getMemberResponsesForDay(memberId, dayIndex) {
+  return getResponsesForDay(dayIndex)
+    .filter(row => row.user_id === memberId)
+    .sort((a, b) => new Date(a.slot_start) - new Date(b.slot_start));
+}
+
+function getPositiveMemberResponsesForDay(memberId, dayIndex) {
+  return getMemberResponsesForDay(memberId, dayIndex)
+    .filter(row => row.availability === "available" || row.availability === "maybe");
+}
+
+function getDayLabel(dayIndex) {
+  const utcDate = localSlotToUtc(dayIndex, 12);
+
+  const weekday = getFormatter(timezoneSelect.value, {
+    weekday: "short"
+  }).format(utcDate);
+
+  const dateLabel = getFormatter(timezoneSelect.value, {
+    day: "2-digit",
+    month: "short"
+  }).format(utcDate);
+
+  return `${weekday} ${dateLabel}`;
+}
+
+function getWeekTitle() {
+  const start = localSlotToUtc(0, 0);
+  const end = localSlotToUtc(6, 23);
+
+  const startLabel = getFormatter(timezoneSelect.value, {
+    day: "2-digit",
+    month: "short",
+    year: "numeric"
+  }).format(start);
+
+  const endLabel = getFormatter(timezoneSelect.value, {
+    day: "2-digit",
+    month: "short",
+    year: "numeric"
+  }).format(end);
+
+  return `${startLabel} - ${endLabel}`;
+}
+
+function setScheduleView(viewName) {
+  activeScheduleView = viewName;
+
+  if (viewName === "orbat") {
+    calendarView.classList.add("hidden");
+    orbatView.classList.remove("hidden");
+    calendarViewBtn.classList.remove("active");
+    orbatViewBtn.classList.add("active");
+    buildOrbatView();
+    return;
+  }
+
+  orbatView.classList.add("hidden");
+  calendarView.classList.remove("hidden");
+  orbatViewBtn.classList.remove("active");
+  calendarViewBtn.classList.add("active");
+}
+
+function buildOrbatDayTabs() {
+  let html = "";
+
+  for (let dayIndex = 0; dayIndex < 7; dayIndex++) {
+    html += `
+      <button
+        class="orbat-day-tab ${dayIndex === selectedOrbatDay ? "active" : ""}"
+        type="button"
+        data-orbat-day="${dayIndex}">
+        ${escapeHtml(getDayLabel(dayIndex))}
+      </button>`;
+  }
+
+  orbatDayTabs.innerHTML = html;
+
+  orbatDayTabs.querySelectorAll("[data-orbat-day]").forEach(button => {
+    button.addEventListener("click", () => {
+      selectedOrbatDay = Number(button.dataset.orbatDay);
+      buildOrbatView();
+    });
+  });
+}
+
+function buildOrbatPersonCard(member, callsignLabel, responses) {
+  const availabilityClass = responses.some(row => row.availability === "available")
+    ? "available"
+    : responses.some(row => row.availability === "maybe")
+      ? "maybe"
+      : "empty";
+
+  const responseLabel = responses.length
+    ? responses.map(row => `${labelForDateTime(row.slot_start)}: ${availabilityLabel(row.availability)}`).join(" | ")
+    : "No availability submitted";
+
+  return `
+    <div
+      class="orbat-person ${availabilityClass}"
+      data-member-id="${escapeHtml(member.id)}">
+      <strong>${escapeHtml(callsignLabel)} - ${escapeHtml(member.display_name || member.user_id)}</strong>
+      <small>${escapeHtml(member.naval_rank || "Candidate")}</small>
+      <small>${escapeHtml(responseLabel)}</small>
+    </div>`;
+}
+
+function buildEmptyOrbatPerson(callsignLabel) {
+  return `
+    <div class="orbat-person empty">
+      <strong>${escapeHtml(callsignLabel)}</strong>
+      <small>Unassigned</small>
+      <small>No member assigned to this callsign.</small>
+    </div>`;
+}
+
+function buildOrbatSection(section, dayIndex) {
+  let html = `
+    <div class="orbat-section">
+      <div class="orbat-section-title">${escapeHtml(section.title)}</div>
+      <div class="orbat-slot-grid">`;
+
+  if (section.type === "candidate") {
+    const candidates = getCandidateMembers();
+
+    if (!candidates.length) {
+      html += `
+        <div class="orbat-person empty">
+          <strong>Candidate</strong>
+          <small>No candidates found.</small>
+        </div>`;
+    } else {
+      for (const candidate of candidates) {
+        const responses = getPositiveMemberResponsesForDay(candidate.id, dayIndex);
+        html += buildOrbatPersonCard(candidate, "Candidate", responses);
+      }
+    }
+  } else {
+    for (const callsign of section.slots) {
+      const member = getProfileByCallsign(callsign);
+
+      if (!member) {
+        html += buildEmptyOrbatPerson(callsign);
+        continue;
+      }
+
+      const responses = getPositiveMemberResponsesForDay(member.id, dayIndex);
+      html += buildOrbatPersonCard(member, callsign, responses);
+    }
+  }
+
+  html += `
+      </div>
+    </div>`;
+
+  return html;
+}
+
+function buildOrbatView() {
+  if (!orbatView || !orbatDayContent) return;
+
+  orbatWeekTitle.textContent = getWeekTitle();
+  buildOrbatDayTabs();
+
+  let html = `
+    <div class="orbat-day-panel">
+      <div class="orbat-day-panel-header">${escapeHtml(getDayLabel(selectedOrbatDay))}</div>`;
+
+  for (const section of ORBAT_STRUCTURE) {
+    html += buildOrbatSection(section, selectedOrbatDay);
+  }
+
+  html += "</div>";
+
+  orbatDayContent.innerHTML = html;
+
+  orbatDayContent.querySelectorAll("[data-member-id]").forEach(card => {
+    card.addEventListener("click", () => {
+      showOrbatMemberDetails(card.dataset.memberId, selectedOrbatDay);
+    });
+  });
+}
+
+function showOrbatMemberDetails(memberId, dayIndex) {
+  const member = profilesById.get(memberId);
+
+  if (!member) {
+    return;
+  }
+
+  const responses = getMemberResponsesForDay(memberId, dayIndex);
+
+  const responseHtml = responses.length
+    ? responses.map(row => {
+        return `
+          <div class="orbat-detail-row">
+            <div class="orbat-detail-label">${escapeHtml(labelForDateTime(row.slot_start))}</div>
+            <div>${escapeHtml(availabilityLabel(row.availability))}</div>
+          </div>`;
+      }).join("")
+    : `
+      <div class="orbat-detail-row">
+        <div class="orbat-detail-label">Availability</div>
+        <div>No response submitted for this day.</div>
+      </div>`;
+
+  const steam = member.steam_name || member.steam_id || "-";
+  const discord = member.discord_name || member.discord_id || "-";
+
+  orbatDetailCard.innerHTML = `
+    <h3>Individual Details</h3>
+
+    <div class="orbat-detail-row">
+      <div class="orbat-detail-label">Name</div>
+      <div>${escapeHtml(member.display_name || member.user_id)}</div>
+    </div>
+
+    <div class="orbat-detail-row">
+      <div class="orbat-detail-label">Rank</div>
+      <div>${escapeHtml(member.naval_rank || "-")}</div>
+    </div>
+
+    <div class="orbat-detail-row">
+      <div class="orbat-detail-label">Callsign</div>
+      <div>${escapeHtml(member.callsign || "Candidate")}</div>
+    </div>
+
+    <div class="orbat-detail-row">
+      <div class="orbat-detail-label">Steam</div>
+      <div>${escapeHtml(steam)}</div>
+    </div>
+
+    <div class="orbat-detail-row">
+      <div class="orbat-detail-label">Discord</div>
+      <div>${escapeHtml(discord)}</div>
+    </div>
+
+    <div class="orbat-detail-row">
+      <div class="orbat-detail-label">Day</div>
+      <div>${escapeHtml(getDayLabel(dayIndex))}</div>
+    </div>
+
+    ${responseHtml}
+  `;
+}
+
+function shiftSelectedWeek(days) {
+  const current = weekInput.value;
+
+  if (!current) {
+    return;
+  }
+
+  weekInput.value = addDaysToIsoDate(current, days);
+  loadResponses();
+}
+
 function buildMyTable() {
   const table = document.getElementById("my-table");
 
@@ -1212,12 +1805,19 @@ async function loadSessionAndProfile() {
     user_id: fallbackUserId,
     display_name: fallbackUserId,
     role: "MEMBER",
-    status: "ACTIVE"
+    status: "ACTIVE",
+    avatar_url: null,
+    naval_rank: "Candidate",
+    callsign: null,
+    steam_name: null,
+    steam_id: null,
+    discord_name: null,
+    discord_id: null
   };
 
   const { data: profileData } = await supabase
     .from("profiles")
-    .select("id, user_id, display_name, role, status")
+    .select("id, user_id, display_name, role, status, avatar_url, naval_rank, callsign, steam_name, steam_id, discord_name, discord_id, profile_notes")
     .eq("id", authUser.id)
     .single();
 
@@ -1228,6 +1828,12 @@ async function loadSessionAndProfile() {
   document.getElementById("session-label").textContent = profile.display_name;
   document.getElementById("sidebar-name").textContent = profile.display_name;
   document.getElementById("sidebar-role").textContent = profile.role;
+
+  const navAvatar = document.getElementById("nav-avatar");
+  if (navAvatar && profile.avatar_url) {
+    navAvatar.src = profile.avatar_url;
+  }
+
   document.getElementById("dash-user").textContent = profile.display_name;
   document.getElementById("dash-userid").textContent = profile.user_id;
 
@@ -1237,7 +1843,7 @@ async function loadSessionAndProfile() {
 async function loadProfiles() {
   const { data, error } = await supabase
     .from("profiles")
-    .select("id, user_id, display_name, role, status")
+    .select("id, user_id, display_name, role, status, avatar_url, naval_rank, callsign, steam_name, steam_id, discord_name, discord_id")
     .eq("status", "ACTIVE")
     .order("display_name", { ascending: true });
 
@@ -1284,6 +1890,10 @@ async function loadResponses() {
   buildHeatmap();
   buildBestList();
   buildChangesList();
+
+  if (activeScheduleView === "orbat") {
+    buildOrbatView();
+  }
 }
 
 async function saveAvailability() {
@@ -1405,6 +2015,26 @@ saveBtn.addEventListener("click", saveAvailability);
 refreshBtn.addEventListener("click", loadResponses);
 clearBtn.addEventListener("click", clearMyWeek);
 
+calendarViewBtn.addEventListener("click", () => {
+  setScheduleView("calendar");
+});
+
+orbatViewBtn.addEventListener("click", () => {
+  setScheduleView("orbat");
+});
+
+orbatPrevWeekBtn.addEventListener("click", () => {
+  shiftSelectedWeek(-7);
+});
+
+orbatCurrentWeekBtn.addEventListener("click", () => {
+  buildOrbatView();
+});
+
+orbatNextWeekBtn.addEventListener("click", () => {
+  shiftSelectedWeek(7);
+});
+
 document.addEventListener("mouseup", finishAvailabilityDrag);
 window.addEventListener("blur", finishAvailabilityDrag);
 
@@ -1417,6 +2047,10 @@ timezoneSelect.addEventListener("change", () => {
   buildHeatmap();
   buildBestList();
   buildChangesList();
+
+  if (activeScheduleView === "orbat") {
+    buildOrbatView();
+  }
 });
 
 weekInput.addEventListener("change", async () => {

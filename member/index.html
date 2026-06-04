@@ -32,6 +32,15 @@
   .portal-nav a.active { background: #1d3f5e; color: #fff; font-weight: bold; border-bottom: 2px solid #c8a800; }
   .nav-right { margin-left: auto; display: flex; align-items: center; padding: 0 12px; font-size: 11px; color: #7a9ab8; gap: 10px; }
   .nav-right a { border: none !important; padding: 4px 0 !important; font-size: 11px; color: #7a9ab8; }
+  .nav-avatar {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid #7a9ab8;
+  background: #e8e8e8;
+  flex-shrink: 0;
+}
 
   .portal-body { display: flex; flex: 1; min-height: 0; }
 
@@ -140,9 +149,11 @@
     <a href="/member/operational/">Operational</a>
 
     <div class="nav-right">
-      <span>Logged in as: <span id="session-label">Loading...</span></span>
-      <a onclick="doLogout()" style="cursor:pointer">Log Out</a>
-    </div>
+        <img id="nav-avatar" class="nav-avatar" src="../nsw.png" alt="Profile picture">
+        <span>Logged in as: <span id="session-label">Loading...</span></span>
+        <a href="/member/profile/">Profile</a>
+        <a onclick="doLogout()" style="cursor:pointer">Log Out</a>
+      </div>
   </div>
 
   <div class="portal-body">
@@ -234,12 +245,13 @@ async function loadDashboard() {
     user_id: fallbackUserId,
     display_name: fallbackUserId,
     role: "MEMBER",
-    status: "ACTIVE"
+    status: "ACTIVE",
+    avatar_url: null
   };
 
   const { data: profileData, error: profileError } = await supabase
     .from("profiles")
-    .select("user_id, display_name, role, status")
+    .select("user_id, display_name, role, status, avatar_url")
     .eq("id", user.id)
     .single();
 
@@ -250,6 +262,11 @@ async function loadDashboard() {
   document.getElementById("session-label").textContent = profile.display_name;
   document.getElementById("sidebar-name").textContent = profile.display_name;
   document.getElementById("sidebar-role").textContent = profile.role;
+
+  const navAvatar = document.getElementById("nav-avatar");
+  if (navAvatar && profile.avatar_url) {
+    navAvatar.src = profile.avatar_url;
+  }
 
   document.getElementById("dash-user").textContent = profile.display_name;
   document.getElementById("dash-userid").textContent = profile.user_id;

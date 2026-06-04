@@ -204,6 +204,7 @@ function cacheElements() {
   elements.sessionLabel = document.getElementById("session-label");
   elements.sidebarName = document.getElementById("sidebar-name");
   elements.sidebarRole = document.getElementById("sidebar-role");
+  elements.navAvatar = document.getElementById("nav-avatar");
   elements.logoutButton = document.getElementById("logout-button");
 
   elements.documentsTabButton = document.getElementById("documents-tab-button");
@@ -333,12 +334,13 @@ async function loadSessionAndProfile() {
     user_id: getUserIdFromEmail(state.authUser.email),
     display_name: state.authUser.email || "User",
     role: "MEMBER",
-    status: "ACTIVE"
+    status: "ACTIVE",
+    avatar_url: null
   };
 
   const profileResult = await supabase
     .from("profiles")
-    .select("id,user_id,display_name,role,status")
+    .select("id,user_id,display_name,role,status,avatar_url")
     .eq("id", state.authUser.id)
     .single();
 
@@ -349,6 +351,10 @@ async function loadSessionAndProfile() {
   elements.sessionLabel.textContent = state.profile.display_name;
   elements.sidebarName.textContent = state.profile.display_name;
   elements.sidebarRole.textContent = state.profile.role;
+
+  if (elements.navAvatar && state.profile.avatar_url) {
+  elements.navAvatar.src = state.profile.avatar_url;
+}
 
   return true;
 }

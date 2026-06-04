@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NSW Operations Portal - Profile</title>
+
+<meta property="og:title" content="RSQDN, Navy Portal">
+<meta property="og:image" content="../../nsw.png">
+<meta property="og:type" content="website">
+<meta property="og:url" content="http://www.rsqdn.com/member/">
+
+<link rel="shortcut icon" href="../../nsw.png" type="image/x-icon">
+
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #f0f0f0;
+    color: #1a1a1a;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 12px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .gov-banner {
+    background: #1a1a1a;
+    color: #ccc;
+    font-size: 11px;
+    padding: 3px 12px;
+  }
+
+  .site-header {
+    background: #1d3f5e;
+    color: #fff;
+    padding: 10px 16px;
+    border-bottom: 3px solid #c8a800;
+  }
+
+  .site-header h1 {
+    font-size: 16px;
+    font-weight: bold;
+  }
+
+  .site-header p {
+    font-size: 11px;
+    color: #c5d8ec;
+    margin-top: 2px;
+  }
+
+  .screen {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+  }
+
+  .portal-nav {
+    background: #1d3f5e;
+    display: flex;
+    align-items: stretch;
+    border-bottom: 2px solid #c8a800;
+    flex-shrink: 0;
+  }
+
+  .portal-nav a {
+    color: #cde;
+    text-decoration: none;
+    font-size: 12px;
+    padding: 8px 12px;
+    display: block;
+    border-right: 1px solid #00284e;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .portal-nav a:hover {
+    background: #1d3f5e;
+    color: #fff;
+  }
+
+  .portal-nav a.active {
+    background: #1d3f5e;
+    color: #fff;
+    font-weight: bold;
+    border-bottom: 2px solid #c8a800;
+  }
+
+  .nav-right {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    font-size: 11px;
+    color: #7a9ab8;
+    gap: 10px;
+  }
+
+  .nav-avatar {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid #7a9ab8;
+  background: #e8e8e8;
+  flex-shrink: 0;
+}
+  .nav-right a {
+    border: none !important;
+    padding: 4px 0 !important;
+    font-size: 11px;
+    color: #7a9ab8;
+  }
+
+  .portal-avatar {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid #7a9ab8;
+    background: #e8e8e8;
+  }
+
+  .portal-body {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+  }
+
+  .sidebar {
+    width: 180px;
+    background: #e8e8e8;
+    border-right: 1px solid #bbb;
+    flex-shrink: 0;
+    padding: 12px 0;
+  }
+
+  .sidebar-user-box {
+    padding: 7px 12px 10px;
+    border-bottom: 1px solid #ccc;
+    margin-bottom: 6px;
+    font-size: 11px;
+    color: #444;
+    line-height: 1.6;
+  }
+
+  .sidebar-user-box strong {
+    display: block;
+    font-size: 12px;
+    color: #1a1a1a;
+  }
+
+  .sidebar-section {
+    font-size: 10px;
+    font-weight: bold;
+    color: #777;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 8px 12px 4px;
+  }
+
+  .sidebar-link {
+    display: block;
+    padding: 5px 12px;
+    font-size: 12px;
+    color: #1d3f5e;
+    text-decoration: none;
+    cursor: pointer;
+    border-left: 3px solid transparent;
+  }
+
+  .sidebar-link:hover {
+    background: #dde;
+    border-left-color: #1d3f5e;
+  }
+
+  .sidebar-link.active {
+    background: #d0dae8;
+    border-left-color: #1d3f5e;
+    font-weight: bold;
+    color: #1d3f5e;
+  }
+
+  .portal-main {
+    flex: 1;
+    padding: 16px 18px;
+    background: #fff;
+    overflow-y: auto;
+  }
+
+  .page-title {
+    font-size: 15px;
+    font-weight: bold;
+    color: #1d3f5e;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 6px;
+    margin-bottom: 10px;
+  }
+
+  .notice-box {
+    border: 1px solid #bbb;
+    padding: 8px 10px;
+    font-size: 11px;
+    margin-bottom: 10px;
+    line-height: 1.6;
+    background: #fafafa;
+  }
+
+  .notice-box h4 {
+    font-size: 11px;
+    font-weight: bold;
+    margin-bottom: 4px;
+    color: #1d3f5e;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .notice-box.warning {
+    background: #fffbe6;
+    border-color: #c8a800;
+  }
+
+  .notice-box.error {
+    background: #fdf0f0;
+    border-color: #c00;
+    color: #800;
+  }
+
+  .profile-layout {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 12px;
+    align-items: start;
+  }
+
+  .compact-panel {
+    border: 1px solid #ccc;
+    background: #fafafa;
+    padding: 10px;
+    margin-bottom: 12px;
+  }
+
+  .compact-panel h3 {
+    font-size: 12px;
+    color: #1d3f5e;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+  }
+
+  .form-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: flex-end;
+    margin-bottom: 8px;
+  }
+
+  .form-group {
+    margin-bottom: 8px;
+  }
+
+  .form-group label {
+    display: block;
+    font-size: 11px;
+    font-weight: bold;
+    margin-bottom: 3px;
+  }
+
+  .form-group input {
+    border: 1px solid #888;
+    padding: 4px 6px;
+    font-size: 11px;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #fff;
+    height: 26px;
+    width: 100%;
+  }
+
+  .form-group input[type="file"] {
+    height: auto;
+    padding: 5px;
+  }
+
+  .form-group input:focus {
+    outline: 2px solid #1d3f5e;
+  }
+
+  .btn {
+    border: 1px solid;
+    padding: 4px 10px;
+    font-size: 11px;
+    font-family: Arial, Helvetica, sans-serif;
+    cursor: pointer;
+    height: 26px;
+  }
+
+  .btn-primary {
+    background: #1d3f5e;
+    color: #fff;
+    border-color: #1d3f5e;
+  }
+
+  .btn-primary:hover {
+    background: #16304a;
+  }
+
+  .btn-secondary {
+    background: #f0f0f0;
+    color: #333;
+    border-color: #aaa;
+  }
+
+  .btn-secondary:hover {
+    background: #e0e0e0;
+  }
+
+  .profile-avatar-large {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid #999;
+    background: #e8e8e8;
+    display: block;
+    margin: 8px auto 12px;
+  }
+
+  .info-table {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 11px;
+    margin-bottom: 10px;
+  }
+
+  .info-table th {
+    background: #1d3f5e;
+    color: #fff;
+    text-align: left;
+    padding: 4px 6px;
+    font-size: 10px;
+  }
+
+  .info-table td {
+    padding: 4px 6px;
+    border-bottom: 1px solid #ddd;
+    vertical-align: top;
+  }
+
+  .info-table tr:nth-child(even) td {
+    background: #f5f7fa;
+  }
+
+  .muted {
+    color: #777;
+    font-size: 10px;
+  }
+
+  .status-line {
+    margin-top: 8px;
+    font-size: 11px;
+    padding: 6px 8px;
+    border: 1px solid #bbb;
+    background: #fafafa;
+    display: none;
+  }
+
+  .status-line.visible {
+    display: block;
+  }
+
+  .status-line.ok {
+    border-color: #2a7a2a;
+    background: #f0f7f0;
+    color: #1a4a1a;
+  }
+
+  .status-line.err {
+    border-color: #c00;
+    background: #fdf0f0;
+    color: #800;
+  }
+
+  .page-footer {
+    background: #1a1a1a;
+    color: #888;
+    font-size: 11px;
+    text-align: center;
+    padding: 7px;
+    flex-shrink: 0;
+  }
+
+  @media (max-width: 900px) {
+    .profile-layout {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 800px) {
+    .sidebar {
+      display: none;
+    }
+
+    .portal-main {
+      padding: 12px;
+    }
+
+    .nav-right {
+      display: none;
+    }
+  }
+</style>
+</head>
+
+<body>
+
+<div class="gov-banner">U.S. Department of the Navy &nbsp;|&nbsp; Official Government System &nbsp;|&nbsp; Authorized Users Only</div>
+
+<div class="site-header">
+  <h1>Naval Special Warfare Command - Operations Portal</h1>
+  <p>NSW-OPS // UNCLASSIFIED // FOR OFFICIAL USE ONLY</p>
+</div>
+
+<div class="screen">
+
+  <div class="portal-nav">
+    <a href="/member/">Home</a>
+    <a href="/member/scheduling/">Scheduling</a>
+    <a href="/member/documentation/">Documentation</a>
+    <a href="/member/operational/">Operational</a>
+    <a class="active" href="/member/profile/">Profile</a>
+
+    <div class="nav-right">
+      <img id="nav-avatar" class="portal-avatar" src="../../nsw.png" alt="Profile picture">
+      <span>Logged in as: <span id="session-label">Loading...</span></span>
+      <a onclick="doLogout()">Log Out</a>
+    </div>
+  </div>
+
+  <div class="portal-body">
+
+    <div class="sidebar">
+      <div class="sidebar-user-box">
+        <strong id="sidebar-name">Loading...</strong>
+        Role: <span id="sidebar-role">Loading...</span>
+      </div>
+
+      <div class="sidebar-section">Training</div>
+      <a class="sidebar-link" href="/member/">Home / Dashboard</a>
+      <a class="sidebar-link" href="/member/scheduling/">Scheduling</a>
+      <a class="sidebar-link" href="/member/documentation/">Documentation</a>
+      <a class="sidebar-link" href="/member/operational/">Operational</a>
+
+      <div class="sidebar-section">Account</div>
+      <a class="sidebar-link active" href="/member/profile/">Profile</a>
+    </div>
+
+    <div class="portal-main">
+      <div class="page-title">Profile</div>
+
+      <div class="notice-box warning">
+        <h4>Account Notice</h4>
+        You can update your password and profile picture here. Rank, callsign, Steam, Discord, and member details are controlled by leadership.
+      </div>
+
+      <div class="profile-layout">
+
+        <div>
+          <div class="compact-panel">
+            <h3>Profile Picture</h3>
+
+            <img id="profile-avatar" class="profile-avatar-large" src="../../nsw.png" alt="Profile picture">
+
+            <form id="avatar-form">
+              <div class="form-group">
+                <label for="avatar-file">Upload Image</label>
+                <input id="avatar-file" type="file" accept="image/png,image/jpeg,image/webp">
+              </div>
+
+              <button class="btn btn-primary" type="submit">Save Picture</button>
+            </form>
+
+            <div class="muted" style="margin-top:8px;">
+              Accepted: PNG, JPG, WEBP.
+            </div>
+          </div>
+
+          <div class="compact-panel">
+            <h3>Password</h3>
+
+            <form id="password-form">
+              <div class="form-group">
+                <label for="new-password">New Password</label>
+                <input id="new-password" type="password" minlength="8" autocomplete="new-password" required>
+              </div>
+
+              <div class="form-group">
+                <label for="confirm-password">Confirm Password</label>
+                <input id="confirm-password" type="password" minlength="8" autocomplete="new-password" required>
+              </div>
+
+              <button class="btn btn-primary" type="submit">Change Password</button>
+            </form>
+          </div>
+
+          <div id="status-line" class="status-line"></div>
+        </div>
+
+        <div>
+          <table class="info-table">
+            <tr><th colspan="2">Profile Information</th></tr>
+            <tr><td style="width:130px">Display Name</td><td id="profile-display-name">Loading...</td></tr>
+            <tr><td>User ID</td><td id="profile-user-id">Loading...</td></tr>
+            <tr><td>Role</td><td id="profile-role">Loading...</td></tr>
+            <tr><td>Status</td><td id="profile-status">Loading...</td></tr>
+            <tr><td>Rank</td><td id="profile-rank">Loading...</td></tr>
+            <tr><td>Callsign</td><td id="profile-callsign">Loading...</td></tr>
+            <tr><td>Steam</td><td id="profile-steam">Loading...</td></tr>
+            <tr><td>Discord</td><td id="profile-discord">Loading...</td></tr>
+          </table>
+
+          <div class="compact-panel">
+            <h3>Read Only Information</h3>
+            <p class="muted">
+              If any rank, callsign, Steam, or Discord information is wrong, contact Evans or Silva.
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <div class="page-footer">Naval Special Warfare Command - Operations Portal &nbsp;|&nbsp; UNCLASSIFIED // FOUO &nbsp;|&nbsp; Contact your unit S6 for technical support</div>
+</div>
+
+<script type="module" src="/member/profile/profile.js"></script>
+
+</body>
+</html>
