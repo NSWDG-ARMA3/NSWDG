@@ -354,18 +354,25 @@ async function loadSessionAndProfile() {
 }
 
 function applyPermissions() {
-  const layout = document.querySelector(".two-column-layout");
+  const layouts = document.querySelectorAll(".two-column-layout");
 
   if (canManageOperational()) {
     elements.documentFormPanel.classList.remove("hidden");
     elements.jpelFormPanel.classList.remove("hidden");
-    layout?.classList.remove("viewer-mode");
+
+    layouts.forEach(layout => {
+      layout.classList.remove("viewer-mode");
+    });
+
     return;
   }
 
   elements.documentFormPanel.classList.add("hidden");
   elements.jpelFormPanel.classList.add("hidden");
-  layout?.classList.add("viewer-mode");
+
+  layouts.forEach(layout => {
+    layout.classList.add("viewer-mode");
+  });
 }
 
 function canManageOperational() {
