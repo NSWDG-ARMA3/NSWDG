@@ -958,12 +958,12 @@ function buildMyTable() {
       const value = mySlots.get(key) || null;
 
       html += `
-        <td class="${myClass(value)}"
-            data-day="${d}"
-            data-slot="${s}"
-            title="Click or drag to change. Current: ${escapeHtml(availabilityLabel(value) || "Empty")}"
-          ${escapeHtml(compactAvailabilityLabel(value))}
-        </td>`;
+      <td class="${myClass(value)}"
+          data-day="${d}"
+          data-slot="${s}"
+          title="Click or drag to change. Current: ${escapeHtml(availabilityLabel(value) || "Empty")}">
+        ${escapeHtml(compactAvailabilityLabel(value))}
+      </td>`;
     }
 
     html += "</tr>";
