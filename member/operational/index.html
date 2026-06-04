@@ -7,11 +7,7 @@
   <link rel="shortcut icon" href="../../nsw.png" type="image/x-icon">
 
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       background: #f0f0f0;
@@ -37,15 +33,8 @@
       border-bottom: 3px solid #c8a800;
     }
 
-    .site-header h1 {
-      font-size: 16px;
-    }
-
-    .site-header p {
-      font-size: 11px;
-      color: #c5d8ec;
-      margin-top: 2px;
-    }
+    .site-header h1 { font-size: 16px; }
+    .site-header p { font-size: 11px; color: #c5d8ec; margin-top: 2px; }
 
     .portal-nav {
       background: #1d3f5e;
@@ -85,10 +74,7 @@
       font-size: 11px;
     }
 
-    .portal-body {
-      display: flex;
-      flex: 1;
-    }
+    .portal-body { display: flex; flex: 1; }
 
     .sidebar {
       width: 190px;
@@ -163,12 +149,7 @@
       line-height: 1.6;
     }
 
-    .tabs {
-      display: flex;
-      gap: 6px;
-      margin-bottom: 10px;
-      flex-wrap: wrap;
-    }
+    .tabs { display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
 
     .tab-button {
       border: 1px solid #1d3f5e;
@@ -180,22 +161,14 @@
       font-weight: bold;
     }
 
-    .tab-button.active {
-      background: #1d3f5e;
-      color: #fff;
-    }
+    .tab-button.active { background: #1d3f5e; color: #fff; }
 
-    .screen {
-      display: none;
-    }
-
-    .screen.active {
-      display: block;
-    }
+    .screen { display: none; }
+    .screen.active { display: block; }
 
     .two-column-layout {
       display: grid;
-      grid-template-columns: minmax(420px, 520px) 1fr;
+      grid-template-columns: minmax(420px, 540px) 1fr;
       gap: 12px;
       align-items: start;
     }
@@ -221,17 +194,8 @@
       gap: 8px;
     }
 
-    .form-grid.full {
-      grid-template-columns: 1fr;
-    }
-
-    .form-group {
-      margin-bottom: 8px;
-    }
-
-    .form-group.full {
-      grid-column: 1 / -1;
-    }
+    .form-group { margin-bottom: 8px; }
+    .form-group.full { grid-column: 1 / -1; }
 
     .form-group label {
       display: block;
@@ -256,21 +220,39 @@
       resize: vertical;
     }
 
-    select[multiple] {
-      min-height: 155px;
+    select[multiple] { min-height: 120px; }
+
+    .asset-builder {
+      display: grid;
+      grid-template-columns: 1fr 80px 80px;
+      gap: 6px;
+      align-items: end;
     }
+
+    .asset-list {
+      border: 1px solid #ccc;
+      background: #fff;
+      padding: 6px;
+      min-height: 38px;
+      margin-top: 6px;
+      font-size: 11px;
+      line-height: 1.5;
+    }
+
+    .asset-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      border-bottom: 1px solid #eee;
+      padding: 3px 0;
+    }
+
+    .asset-row:last-child { border-bottom: none; }
 
     .asset-help {
       font-size: 10px;
       color: #666;
       margin-top: 3px;
-      line-height: 1.4;
-    }
-
-    .selected-assets {
-      margin-top: 5px;
-      font-size: 10px;
-      color: #1d3f5e;
       line-height: 1.4;
     }
 
@@ -289,29 +271,10 @@
       cursor: pointer;
     }
 
-    .btn-primary {
-      background: #1d3f5e;
-      color: #fff;
-      border-color: #1d3f5e;
-    }
-
-    .btn-secondary {
-      background: #f0f0f0;
-      color: #333;
-      border-color: #aaa;
-    }
-
-    .btn-danger {
-      background: #c00;
-      color: #fff;
-      border-color: #900;
-    }
-
-    .btn:disabled {
-      background: #aaa;
-      border-color: #888;
-      cursor: default;
-    }
+    .btn-primary { background: #1d3f5e; color: #fff; border-color: #1d3f5e; }
+    .btn-secondary { background: #f0f0f0; color: #333; border-color: #aaa; }
+    .btn-danger { background: #c00; color: #fff; border-color: #900; }
+    .btn:disabled { background: #aaa; border-color: #888; cursor: default; }
 
     .filters {
       display: grid;
@@ -320,9 +283,7 @@
       margin-bottom: 10px;
     }
 
-    .table-wrap {
-      overflow-x: auto;
-    }
+    .table-wrap { overflow-x: auto; }
 
     table {
       border-collapse: collapse;
@@ -346,9 +307,7 @@
       vertical-align: top;
     }
 
-    tr:nth-child(even) td {
-      background: #f5f7fa;
-    }
+    tr:nth-child(even) td { background: #f5f7fa; }
 
     .badge {
       display: inline-block;
@@ -360,29 +319,10 @@
       white-space: nowrap;
     }
 
-    .badge-blue {
-      color: #1d3f5e;
-      border-color: #1d3f5e;
-      background: #eef2f8;
-    }
-
-    .badge-yellow {
-      color: #6a5a00;
-      border-color: #c8a800;
-      background: #fffbe6;
-    }
-
-    .badge-red {
-      color: #800;
-      border-color: #c00;
-      background: #fdf0f0;
-    }
-
-    .badge-green {
-      color: #1a5a1a;
-      border-color: #1a5a1a;
-      background: #eef7ee;
-    }
+    .badge-blue { color: #1d3f5e; border-color: #1d3f5e; background: #eef2f8; }
+    .badge-yellow { color: #6a5a00; border-color: #c8a800; background: #fffbe6; }
+    .badge-red { color: #800; border-color: #c00; background: #fdf0f0; }
+    .badge-green { color: #1a5a1a; border-color: #1a5a1a; background: #eef7ee; }
 
     .status-line {
       margin-top: 8px;
@@ -393,21 +333,9 @@
       display: none;
     }
 
-    .status-line.visible {
-      display: block;
-    }
-
-    .status-line.ok {
-      border-color: #2a7a2a;
-      background: #f0f7f0;
-      color: #1a4a1a;
-    }
-
-    .status-line.err {
-      border-color: #c00;
-      background: #fdf0f0;
-      color: #800;
-    }
+    .status-line.visible { display: block; }
+    .status-line.ok { border-color: #2a7a2a; background: #f0f7f0; color: #1a4a1a; }
+    .status-line.err { border-color: #c00; background: #fdf0f0; color: #800; }
 
     .empty-state {
       text-align: center;
@@ -446,14 +374,15 @@
       font-family: Arial, Helvetica, sans-serif;
     }
 
-    .muted {
-      color: #777;
-      font-size: 10px;
+    .aar-box {
+      border: 1px solid #bbb;
+      background: #f7f7f7;
+      padding: 10px;
+      margin-top: 12px;
     }
 
-    .hidden {
-      display: none !important;
-    }
+    .muted { color: #777; font-size: 10px; }
+    .hidden { display: none !important; }
 
     .page-footer {
       background: #1a1a1a;
@@ -464,31 +393,16 @@
     }
 
     @media (max-width: 1100px) {
-      .two-column-layout {
-        grid-template-columns: 1fr;
-      }
-
-      .filters {
-        grid-template-columns: 1fr 1fr;
-      }
+      .two-column-layout { grid-template-columns: 1fr; }
+      .filters { grid-template-columns: 1fr 1fr; }
     }
 
     @media (max-width: 760px) {
-      .sidebar {
-        display: none;
-      }
-
-      .nav-right {
-        display: none;
-      }
-
-      .form-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .filters {
-        grid-template-columns: 1fr;
-      }
+      .sidebar { display: none; }
+      .nav-right { display: none; }
+      .form-grid { grid-template-columns: 1fr; }
+      .filters { grid-template-columns: 1fr; }
+      .asset-builder { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -522,7 +436,7 @@
         Role: <span id="sidebar-role">Loading...</span>
       </div>
 
-      <div class="sidebar-section">Navigation</div>
+      <div class="sidebar-section">Operational</div>
       <a class="sidebar-link" href="/member/">Home / Dashboard</a>
       <a class="sidebar-link" href="/member/scheduling/">Scheduling</a>
       <a class="sidebar-link" href="/member/documentation/">Documentation</a>
@@ -530,15 +444,15 @@
     </aside>
 
     <main class="portal-main">
-      <div class="page-title">Operational - WARNO / OPORD / INTPACK / JPEL</div>
+      <div class="page-title">Operational - WARNO / OPORD / INTPACK / Register / AAR</div>
 
       <div class="notice-box">
-        <strong>Permissions:</strong> carver@navy.mil and evans@navy.mil can create and delete. Other authenticated users can view, search, sort, filter, and open records.
+        <strong>Permissions:</strong> carver@navy.mil and evans@navy.mil can create, delete, change status, link register entries, and save AARs. Other authenticated users can view, search, sort, filter, and open records.
       </div>
 
       <div class="tabs">
         <button id="documents-tab-button" class="tab-button active" type="button">Operational Documents</button>
-        <button id="jpel-tab-button" class="tab-button" type="button">JPEL Register</button>
+        <button id="jpel-tab-button" class="tab-button" type="button">Register Entries</button>
       </div>
 
       <section id="documents-screen" class="screen active">
@@ -578,10 +492,30 @@
               </div>
 
               <div class="form-group full">
-                <label for="document-assets">Attached Aircraft / Ground / Maritime Assets</label>
-                <select id="document-assets" multiple></select>
-                <div class="asset-help">Hold Ctrl or Cmd to select multiple assets.</div>
-                <div id="selected-assets-output" class="selected-assets">Selected: None</div>
+                <label>Attached Aircraft / Ground / Maritime Assets</label>
+
+                <div class="asset-builder">
+                  <div>
+                    <label for="asset-type">Asset</label>
+                    <select id="asset-type"></select>
+                  </div>
+
+                  <div>
+                    <label for="asset-quantity">Qty</label>
+                    <input id="asset-quantity" type="number" min="1" max="99" value="1">
+                  </div>
+
+                  <button id="add-asset-button" class="btn btn-secondary" type="button">Add</button>
+                </div>
+
+                <div class="asset-help">Add the same asset more than once or increase quantity. This stores exact quantities.</div>
+                <div id="selected-assets-output" class="asset-list">No assets selected.</div>
+              </div>
+
+              <div class="form-group full">
+                <label for="linked-jpel-select">Linked Register Entries</label>
+                <select id="linked-jpel-select" multiple></select>
+                <div id="linked-jpel-help" class="asset-help"></div>
               </div>
             </div>
 
@@ -620,7 +554,7 @@
       <section id="jpel-screen" class="screen">
         <div class="two-column-layout">
           <div id="jpel-form-panel" class="panel">
-            <h3>Create JPEL Register Entry</h3>
+            <h3>Create Register Entry</h3>
 
             <div class="form-grid">
               <div class="form-group">
@@ -660,7 +594,7 @@
             </div>
 
             <div class="button-row">
-              <button id="save-jpel-button" class="btn btn-primary" type="button">Save JPEL Entry</button>
+              <button id="save-jpel-button" class="btn btn-primary" type="button">Save Register Entry</button>
               <button id="reset-jpel-button" class="btn btn-secondary" type="button">Reset</button>
             </div>
 
@@ -669,10 +603,10 @@
 
           <div>
             <div class="panel">
-              <h3>JPEL Register</h3>
+              <h3>Register Entries</h3>
 
               <div class="filters">
-                <input id="jpel-search" type="text" placeholder="Search JPEL entries...">
+                <input id="jpel-search" type="text" placeholder="Search register entries...">
                 <select id="jpel-priority-filter"></select>
                 <select id="jpel-status-filter"></select>
                 <button id="refresh-jpel-button" class="btn btn-secondary" type="button">Refresh</button>
@@ -682,8 +616,8 @@
             </div>
 
             <div class="panel">
-              <h3>JPEL Viewer</h3>
-              <div id="jpel-viewer" class="empty-state">Select a JPEL entry to view the formatted record.</div>
+              <h3>Register Viewer</h3>
+              <div id="jpel-viewer" class="empty-state">Select a register entry to view the formatted record.</div>
             </div>
           </div>
         </div>

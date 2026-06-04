@@ -32,37 +32,19 @@ const JPEL_STATUSES = [
 ];
 
 const ASSET_LIST = [
-  "MH-6 Little Bird",
-  "AH-6 Little Bird",
-  "MH-60 Transport",
-  "MH-60 DAP",
+  "MH-6",
+  "MH-60",
+  "MH-60-DAP",
   "HH-60 Pedro",
-  "C-130 Hercules",
-  "C-17 Globemaster III",
-  "CCA Boat",
-  "RHIB",
-  "SOC-R",
-  "MRZR",
-  "MV850 ATV",
-  "GMV",
-  "JLTV",
-  "HMMWV",
-  "MATV",
-  "LMTV",
-  "MTV",
-  "Fuel Truck",
-  "Ammo Truck",
-  "Medical Evacuation Vehicle",
-  "UAS ISR Platform",
-  "JTAC Team",
-  "K9 Team",
-  "EOD Team",
-  "Boat Crew",
-  "Ground Mobility Team",
-  "Sniper / Overwatch Team",
-  "Communications Relay Team",
-  "CASEVAC Package",
-  "QRF Element"
+  "CH-47",
+  "MRZR2",
+  "MRZR4",
+  "MV850",
+  "Toyota Landcruiser",
+  "C-130",
+  "C-17",
+  "CCA",
+  "Jetski"
 ];
 
 const QUESTION_SETS = {
@@ -70,28 +52,28 @@ const QUESTION_SETS = {
     {
       title: "1. Situation",
       fields: [
-        { id: "situation-overview", label: "Situation Overview", target: "situation", type: "textarea" },
-        { id: "enemy-summary", label: "Enemy / Threat Summary", target: "enemy_forces", type: "textarea" },
-        { id: "friendly-summary", label: "Friendly Forces Summary", target: "friendly_forces", type: "textarea" },
-        { id: "terrain-weather", label: "Terrain / Weather", target: "terrain_weather", type: "textarea" }
+        { id: "situation-overview", label: "Situation Overview", target: "situation" },
+        { id: "enemy-summary", label: "Enemy / Threat Summary", target: "enemy_forces" },
+        { id: "friendly-summary", label: "Friendly Forces Summary", target: "friendly_forces" },
+        { id: "terrain-weather", label: "Terrain / Weather", target: "terrain_weather" }
       ]
     },
     {
       title: "2. Mission Preview",
       fields: [
-        { id: "mission-statement", label: "Initial Mission Statement", target: "mission", type: "textarea" },
-        { id: "operation-purpose", label: "Purpose / Intent", target: "free_text", type: "textarea" },
-        { id: "known-constraints", label: "Known Constraints", target: "coordinating_instructions", type: "textarea" },
-        { id: "initial-risks", label: "Initial Risks", target: "risks", type: "textarea" }
+        { id: "mission-statement", label: "Initial Mission Statement", target: "mission" },
+        { id: "operation-purpose", label: "Purpose / Intent", target: "free_text" },
+        { id: "known-constraints", label: "Known Constraints", target: "coordinating_instructions" },
+        { id: "initial-risks", label: "Initial Risks", target: "risks" }
       ]
     },
     {
       title: "3. Timeline And Coordination",
       fields: [
-        { id: "timeline", label: "Known Timeline", target: "timeline", type: "textarea" },
-        { id: "task-org", label: "Initial Task Organization", target: "task_org", type: "textarea" },
-        { id: "coordination", label: "Coordination Requirements", target: "command_signal", type: "textarea" },
-        { id: "support-needs", label: "Support Requirements", target: "sustainment", type: "textarea" }
+        { id: "timeline", label: "Known Timeline", target: "timeline" },
+        { id: "task-org", label: "Initial Task Organization", target: "task_org" },
+        { id: "coordination", label: "Coordination Requirements", target: "command_signal" },
+        { id: "support-needs", label: "Support Requirements", target: "sustainment" }
       ]
     }
   ],
@@ -100,37 +82,37 @@ const QUESTION_SETS = {
     {
       title: "1. Situation",
       fields: [
-        { id: "situation", label: "General Situation", target: "situation", type: "textarea" },
-        { id: "enemy-forces", label: "Enemy Forces", target: "enemy_forces", type: "textarea" },
-        { id: "friendly-forces", label: "Friendly Forces", target: "friendly_forces", type: "textarea" },
-        { id: "terrain-weather", label: "Terrain / Weather", target: "terrain_weather", type: "textarea" }
+        { id: "situation", label: "General Situation", target: "situation" },
+        { id: "enemy-forces", label: "Enemy Forces", target: "enemy_forces" },
+        { id: "friendly-forces", label: "Friendly Forces", target: "friendly_forces" },
+        { id: "terrain-weather", label: "Terrain / Weather", target: "terrain_weather" }
       ]
     },
     {
       title: "2. Mission And Execution",
       fields: [
-        { id: "mission", label: "Mission Statement", target: "mission", type: "textarea" },
-        { id: "commander-intent", label: "Commander Intent", target: "execution", type: "textarea" },
-        { id: "concept-of-operation", label: "Concept Of Operation", target: "execution", type: "textarea", append: true },
-        { id: "tasks-to-subordinate-units", label: "Tasks To Subordinate Units", target: "task_org", type: "textarea" }
+        { id: "mission", label: "Mission Statement", target: "mission" },
+        { id: "commander-intent", label: "Commander Intent", target: "execution" },
+        { id: "concept-of-operation", label: "Concept Of Operation", target: "execution", append: true },
+        { id: "tasks-to-subordinate-units", label: "Tasks To Subordinate Units", target: "task_org" }
       ]
     },
     {
       title: "3. Sustainment And Command",
       fields: [
-        { id: "sustainment", label: "Sustainment", target: "sustainment", type: "textarea" },
-        { id: "medical", label: "Medical / CASEVAC", target: "sustainment", type: "textarea", append: true },
-        { id: "command-signal", label: "Command And Signal", target: "command_signal", type: "textarea" },
-        { id: "coordinating-instructions", label: "Coordinating Instructions", target: "coordinating_instructions", type: "textarea" }
+        { id: "sustainment", label: "Sustainment", target: "sustainment" },
+        { id: "medical", label: "Medical / CASEVAC", target: "sustainment", append: true },
+        { id: "command-signal", label: "Command And Signal", target: "command_signal" },
+        { id: "coordinating-instructions", label: "Coordinating Instructions", target: "coordinating_instructions" }
       ]
     },
     {
       title: "4. Timeline And Risk",
       fields: [
-        { id: "timeline", label: "Timeline", target: "timeline", type: "textarea" },
-        { id: "risk-controls", label: "Risk Controls / Mitigation", target: "risks", type: "textarea" },
-        { id: "additional-notes", label: "Additional Free Notes", target: "free_text", type: "textarea" },
-        { id: "intel-summary", label: "Intel Summary", target: "intel_summary", type: "textarea" }
+        { id: "timeline", label: "Timeline", target: "timeline" },
+        { id: "risk-controls", label: "Risk Controls / Mitigation", target: "risks" },
+        { id: "additional-notes", label: "Additional Free Notes", target: "free_text" },
+        { id: "intel-summary", label: "Intel Summary", target: "intel_summary" }
       ]
     }
   ],
@@ -139,28 +121,28 @@ const QUESTION_SETS = {
     {
       title: "1. Intelligence Overview",
       fields: [
-        { id: "intel-summary", label: "Executive Intelligence Summary", target: "intel_summary", type: "textarea" },
-        { id: "situation", label: "Operational Context", target: "situation", type: "textarea" },
-        { id: "collection-gaps", label: "Collection Gaps", target: "free_text", type: "textarea" },
-        { id: "confidence-level", label: "Assessment Confidence", target: "free_text", type: "textarea", append: true }
+        { id: "intel-summary", label: "Executive Intelligence Summary", target: "intel_summary" },
+        { id: "situation", label: "Operational Context", target: "situation" },
+        { id: "collection-gaps", label: "Collection Gaps", target: "free_text" },
+        { id: "confidence-level", label: "Assessment Confidence", target: "free_text", append: true }
       ]
     },
     {
       title: "2. Threat And Environment",
       fields: [
-        { id: "enemy-forces", label: "Threat / Enemy Forces", target: "enemy_forces", type: "textarea" },
-        { id: "friendly-forces", label: "Friendly / Partner Forces", target: "friendly_forces", type: "textarea" },
-        { id: "terrain-weather", label: "Terrain / Weather / Civil Considerations", target: "terrain_weather", type: "textarea" },
-        { id: "pattern-of-life", label: "Pattern Of Life Notes", target: "timeline", type: "textarea" }
+        { id: "enemy-forces", label: "Threat / Enemy Forces", target: "enemy_forces" },
+        { id: "friendly-forces", label: "Friendly / Partner Forces", target: "friendly_forces" },
+        { id: "terrain-weather", label: "Terrain / Weather / Civil Considerations", target: "terrain_weather" },
+        { id: "pattern-of-life", label: "Pattern Of Life Notes", target: "timeline" }
       ]
     },
     {
       title: "3. Intelligence Product Details",
       fields: [
-        { id: "priority-intelligence-requirements", label: "Priority Intelligence Requirements", target: "coordinating_instructions", type: "textarea" },
-        { id: "recommended-actions", label: "Recommended Non-Lethal Follow-Up", target: "mission", type: "textarea" },
-        { id: "risk-notes", label: "Risks / Source Reliability Concerns", target: "risks", type: "textarea" },
-        { id: "distribution-notes", label: "Distribution / Handling Notes", target: "command_signal", type: "textarea" }
+        { id: "priority-intelligence-requirements", label: "Priority Intelligence Requirements", target: "coordinating_instructions" },
+        { id: "recommended-actions", label: "Recommended Non-Lethal Follow-Up", target: "mission" },
+        { id: "risk-notes", label: "Risks / Source Reliability Concerns", target: "risks" },
+        { id: "distribution-notes", label: "Distribution / Handling Notes", target: "command_signal" }
       ]
     }
   ]
@@ -171,6 +153,8 @@ const state = {
   profile: null,
   documents: [],
   jpelEntries: [],
+  selectedAssets: [],
+  activeDocumentId: null,
   documentSort: { field: "created_at", asc: false },
   jpelSort: { field: "priority", asc: false }
 };
@@ -192,10 +176,12 @@ async function initialize() {
 
   applyPermissions();
   renderDynamicQuestions();
-  updateSelectedAssetsOutput();
+  renderSelectedAssets();
 
-  await loadDocuments();
   await loadJpelEntries();
+  await loadDocuments();
+
+  renderLinkedJpelSelect();
 }
 
 function cacheElements() {
@@ -215,8 +201,12 @@ function cacheElements() {
   elements.documentTitle = document.getElementById("document-title");
   elements.documentClassification = document.getElementById("document-classification");
   elements.documentOperationName = document.getElementById("document-operation-name");
-  elements.documentAssets = document.getElementById("document-assets");
+  elements.assetType = document.getElementById("asset-type");
+  elements.assetQuantity = document.getElementById("asset-quantity");
+  elements.addAssetButton = document.getElementById("add-asset-button");
   elements.selectedAssetsOutput = document.getElementById("selected-assets-output");
+  elements.linkedJpelSelect = document.getElementById("linked-jpel-select");
+  elements.linkedJpelHelp = document.getElementById("linked-jpel-help");
   elements.documentFile = document.getElementById("document-file");
   elements.dynamicQuestionContainer = document.getElementById("dynamic-question-container");
   elements.saveDocumentButton = document.getElementById("save-document-button");
@@ -261,9 +251,7 @@ function populateStaticDropdowns() {
   setOptions(elements.jpelPriorityFilter, [{ value: "", label: "All Priority" }, ...JPEL_PRIORITIES]);
   setOptions(elements.jpelStatusFilter, [{ value: "", label: "All Status" }, ...JPEL_STATUSES]);
 
-  elements.documentAssets.innerHTML = ASSET_LIST.map(asset => {
-    return `<option value="${escapeHtml(asset)}">${escapeHtml(asset)}</option>`;
-  }).join("");
+  setOptions(elements.assetType, ASSET_LIST.map(asset => ({ value: asset, label: asset })));
 }
 
 function setOptions(selectElement, options) {
@@ -283,11 +271,8 @@ function bindEvents() {
     showTab("jpel");
   });
 
-  elements.documentType.addEventListener("change", function () {
-    renderDynamicQuestions();
-  });
-
-  elements.documentAssets.addEventListener("change", updateSelectedAssetsOutput);
+  elements.documentType.addEventListener("change", renderDynamicQuestions);
+  elements.addAssetButton.addEventListener("click", addSelectedAsset);
 
   elements.saveDocumentButton.addEventListener("click", saveDocument);
   elements.resetDocumentButton.addEventListener("click", resetDocumentForm);
@@ -331,10 +316,7 @@ async function loadSessionAndProfile() {
     .single();
 
   if (profileResult.data) {
-    state.profile = {
-      ...state.profile,
-      ...profileResult.data
-    };
+    state.profile = { ...state.profile, ...profileResult.data };
   }
 
   elements.sessionLabel.textContent = state.profile.display_name;
@@ -370,6 +352,33 @@ function showTab(tabName) {
   elements.jpelTabButton.classList.toggle("active", !showDocuments);
 }
 
+function renderLinkedJpelSelect(selectedIds = []) {
+  if (!state.jpelEntries.length) {
+    elements.linkedJpelSelect.innerHTML = `<option value="" disabled>No register entries have been created.</option>`;
+    elements.linkedJpelSelect.disabled = true;
+    elements.linkedJpelHelp.textContent = "Create a register entry first before linking it to a WARNO, OPORD, or INTPACK.";
+    return;
+  }
+
+  elements.linkedJpelSelect.disabled = false;
+  elements.linkedJpelHelp.textContent = "Hold Ctrl or Cmd to link multiple register entries.";
+
+  elements.linkedJpelSelect.innerHTML = state.jpelEntries.map(entry => {
+    const selected = selectedIds.includes(Number(entry.id)) ? "selected" : "";
+    return `<option value="${entry.id}" ${selected}>${escapeHtml(entry.target_name)} | ${escapeHtml(entry.priority)} | ${escapeHtml(entry.status)}</option>`;
+  }).join("");
+}
+
+function getSelectedLinkedJpelIds() {
+  if (elements.linkedJpelSelect.disabled) {
+    return [];
+  }
+
+  return Array.from(elements.linkedJpelSelect.selectedOptions)
+    .map(option => Number(option.value))
+    .filter(id => Number.isFinite(id));
+}
+
 function renderDynamicQuestions() {
   const type = elements.documentType.value;
   const sections = QUESTION_SETS[type] || [];
@@ -377,7 +386,7 @@ function renderDynamicQuestions() {
   elements.dynamicQuestionContainer.innerHTML = sections.map(section => {
     const fieldsHtml = section.fields.map(field => {
       return `
-        <div class="form-group ${field.full ? "full" : ""}">
+        <div class="form-group">
           <label for="dynamic-${escapeHtml(field.id)}">${escapeHtml(field.label)}</label>
           <textarea id="dynamic-${escapeHtml(field.id)}" data-target="${escapeHtml(field.target)}" data-append="${field.append ? "true" : "false"}"></textarea>
         </div>
@@ -439,6 +448,110 @@ function getDynamicFieldValues() {
   return base;
 }
 
+function addSelectedAsset() {
+  const assetName = elements.assetType.value;
+  const quantity = Math.max(1, Number(elements.assetQuantity.value || 1));
+
+  const existing = state.selectedAssets.find(asset => asset.name === assetName);
+
+  if (existing) {
+    existing.quantity += quantity;
+  } else {
+    state.selectedAssets.push({ name: assetName, quantity });
+  }
+
+  elements.assetQuantity.value = "1";
+  renderSelectedAssets();
+}
+
+function removeSelectedAsset(assetName) {
+  state.selectedAssets = state.selectedAssets.filter(asset => asset.name !== assetName);
+  renderSelectedAssets();
+}
+
+function renderSelectedAssets() {
+  if (!state.selectedAssets.length) {
+    elements.selectedAssetsOutput.innerHTML = "No assets selected.";
+    return;
+  }
+
+  elements.selectedAssetsOutput.innerHTML = state.selectedAssets.map(asset => {
+    const removeButton = canManageOperational()
+      ? `<button class="btn btn-danger" type="button" data-remove-asset="${escapeHtml(asset.name)}">Remove</button>`
+      : "";
+
+    return `
+      <div class="asset-row">
+        <span>${escapeHtml(asset.name)} x ${escapeHtml(asset.quantity)}</span>
+        ${removeButton}
+      </div>
+    `;
+  }).join("");
+
+  elements.selectedAssetsOutput.querySelectorAll("[data-remove-asset]").forEach(button => {
+    button.addEventListener("click", function () {
+      removeSelectedAsset(button.dataset.removeAsset);
+    });
+  });
+}
+
+function buildOperationalMeta(extra = {}) {
+  return {
+    version: 2,
+    assets: state.selectedAssets.map(asset => ({
+      name: asset.name,
+      quantity: Number(asset.quantity || 1)
+    })),
+    linked_jpel_ids: getSelectedLinkedJpelIds(),
+    aar: null,
+    ...extra
+  };
+}
+
+function normalizeOperationalMeta(rawAssets) {
+  if (Array.isArray(rawAssets)) {
+    return {
+      version: 1,
+      assets: rawAssets.map(asset => {
+        if (typeof asset === "string") {
+          return { name: asset, quantity: 1 };
+        }
+
+        return {
+          name: String(asset.name || "Unknown"),
+          quantity: Number(asset.quantity || 1)
+        };
+      }),
+      linked_jpel_ids: [],
+      aar: null
+    };
+  }
+
+  if (rawAssets && typeof rawAssets === "object") {
+    return {
+      version: Number(rawAssets.version || 2),
+      assets: Array.isArray(rawAssets.assets) ? rawAssets.assets.map(asset => ({
+        name: String(asset.name || "Unknown"),
+        quantity: Number(asset.quantity || 1)
+      })) : [],
+      linked_jpel_ids: Array.isArray(rawAssets.linked_jpel_ids) ? rawAssets.linked_jpel_ids.map(Number).filter(Number.isFinite) : [],
+      aar: rawAssets.aar || null
+    };
+  }
+
+  return {
+    version: 2,
+    assets: [],
+    linked_jpel_ids: [],
+    aar: null
+  };
+}
+
+function getLinkedJpelEntries(meta) {
+  const ids = Array.isArray(meta.linked_jpel_ids) ? meta.linked_jpel_ids : [];
+  return state.jpelEntries.filter(entry => ids.includes(Number(entry.id)));
+}
+
 function resetDocumentForm() {
   elements.documentType.value = "WARNO";
   elements.documentStatus.value = "DRAFT";
@@ -446,29 +559,12 @@ function resetDocumentForm() {
   elements.documentClassification.value = "UNCLASSIFIED";
   elements.documentOperationName.value = "";
   elements.documentFile.value = "";
-
-  Array.from(elements.documentAssets.options).forEach(option => {
-    option.selected = false;
-  });
+  state.selectedAssets = [];
 
   renderDynamicQuestions();
-  updateSelectedAssetsOutput();
+  renderSelectedAssets();
+  renderLinkedJpelSelect();
   clearStatusLine(elements.documentStatusLine);
-}
-
-function getSelectedAssets() {
-  return Array.from(elements.documentAssets.selectedOptions).map(option => option.value);
-}
-
-function updateSelectedAssetsOutput() {
-  const selectedAssets = getSelectedAssets();
-
-  if (!selectedAssets.length) {
-    elements.selectedAssetsOutput.textContent = "Selected: None";
-    return;
-  }
-
-  elements.selectedAssetsOutput.textContent = "Selected: " + selectedAssets.join(", ");
 }
 
 async function saveDocument() {
@@ -516,7 +612,7 @@ async function saveDocument() {
 
   const payload = {
     doc_type: elements.documentType.value,
-    title: title,
+    title,
     status: elements.documentStatus.value,
     classification: elements.documentClassification.value.trim() || "UNCLASSIFIED",
     operation_name: elements.documentOperationName.value.trim(),
@@ -534,7 +630,7 @@ async function saveDocument() {
     coordinating_instructions: dynamicValues.coordinating_instructions,
     risks: dynamicValues.risks,
     free_text: dynamicValues.free_text,
-    assets: getSelectedAssets(),
+    assets: buildOperationalMeta(),
     file_path: uploadedFilePath,
     file_name: uploadedFileName,
     file_type: uploadedFileType,
@@ -595,6 +691,7 @@ function renderDocuments() {
             <th data-document-sort="status">Status</th>
             <th data-document-sort="operation_name">Operation</th>
             <th>Assets</th>
+            <th>Linked Entries</th>
             <th data-document-sort="created_at">Created</th>
             <th>Actions</th>
           </tr>
@@ -629,10 +726,22 @@ function renderDocuments() {
       deleteDocument(Number(button.dataset.deleteDocumentId), button.dataset.deleteFilePath || "");
     });
   });
+
+  elements.documentsOutput.querySelectorAll("[data-update-document-status-id]").forEach(button => {
+    button.addEventListener("click", function () {
+      const id = Number(button.dataset.updateDocumentStatusId);
+      const select = elements.documentsOutput.querySelector(`[data-document-status-select="${id}"]`);
+      updateDocumentStatus(id, select.value);
+    });
+  });
 }
 
 function renderDocumentRow(documentRecord) {
-  const assets = Array.isArray(documentRecord.assets) ? documentRecord.assets : [];
+  const meta = normalizeOperationalMeta(documentRecord.assets);
+  const linkedEntries = getLinkedJpelEntries(meta);
+  const assetsText = meta.assets.length ? meta.assets.map(asset => `${asset.name} x ${asset.quantity}`).join(", ") : "None";
+  const linkedText = linkedEntries.length ? linkedEntries.map(entry => entry.target_name).join(", ") : "None";
+
   const fileButton = documentRecord.file_path
     ? `<button class="btn btn-secondary" type="button" data-open-file-path="${escapeHtml(documentRecord.file_path)}">File</button>`
     : "";
@@ -641,6 +750,15 @@ function renderDocumentRow(documentRecord) {
     ? `<button class="btn btn-danger" type="button" data-delete-document-id="${documentRecord.id}" data-delete-file-path="${escapeHtml(documentRecord.file_path || "")}">Delete</button>`
     : "";
 
+  const statusControls = canManageOperational()
+    ? `
+      <select data-document-status-select="${documentRecord.id}">
+        ${DOCUMENT_STATUSES.map(status => `<option value="${status.value}" ${documentRecord.status === status.value ? "selected" : ""}>${status.label}</option>`).join("")}
+      </select>
+      <button class="btn btn-secondary" type="button" data-update-document-status-id="${documentRecord.id}">Update</button>
+    `
+    : `<span class="badge ${getStatusBadgeClass(documentRecord.status)}">${escapeHtml(documentRecord.status)}</span>`;
+
   return `
     <tr>
       <td><span class="badge badge-blue">${escapeHtml(documentRecord.doc_type)}</span></td>
@@ -648,9 +766,10 @@ function renderDocumentRow(documentRecord) {
         <strong>${escapeHtml(documentRecord.title)}</strong><br>
         <span class="muted">${escapeHtml(documentRecord.classification || "UNCLASSIFIED")}</span>
       </td>
-      <td><span class="badge ${getStatusBadgeClass(documentRecord.status)}">${escapeHtml(documentRecord.status)}</span></td>
+      <td>${statusControls}</td>
       <td>${escapeHtml(documentRecord.operation_name || "N/A")}</td>
-      <td>${escapeHtml(assets.join(", ") || "None")}</td>
+      <td>${escapeHtml(assetsText)}</td>
+      <td>${escapeHtml(linkedText)}</td>
       <td>${escapeHtml(formatDate(documentRecord.created_at))}</td>
       <td>
         <button class="btn btn-secondary" type="button" data-view-document-id="${documentRecord.id}">View</button>
@@ -667,7 +786,9 @@ function getFilteredDocuments() {
   const status = elements.documentStatusFilter.value;
 
   const filtered = state.documents.filter(documentRecord => {
-    const assets = Array.isArray(documentRecord.assets) ? documentRecord.assets.join(" ") : "";
+    const meta = normalizeOperationalMeta(documentRecord.assets);
+    const assetsText = meta.assets.map(asset => `${asset.name} ${asset.quantity}`).join(" ");
+    const linkedText = getLinkedJpelEntries(meta).map(entry => entry.target_name).join(" ");
 
     const combinedText = [
       documentRecord.doc_type,
@@ -690,14 +811,13 @@ function getFilteredDocuments() {
       documentRecord.risks,
       documentRecord.free_text,
       documentRecord.file_name,
-      assets
+      assetsText,
+      linkedText
     ].join(" ").toLowerCase();
 
-    const matchesQuery = !query || combinedText.includes(query);
-    const matchesType = !type || documentRecord.doc_type === type;
-    const matchesStatus = !status || documentRecord.status === status;
-
-    return matchesQuery && matchesType && matchesStatus;
+    return (!query || combinedText.includes(query)) &&
+      (!type || documentRecord.doc_type === type) &&
+      (!status || documentRecord.status === status);
   });
 
   filtered.sort(function (a, b) {
@@ -718,6 +838,32 @@ function updateDocumentSort(field) {
   renderDocuments();
 }
 
+async function updateDocumentStatus(id, status) {
+  if (!canManageOperational()) {
+    alert("You do not have permission to change document status.");
+    return;
+  }
+
+  const result = await supabase
+    .from("operational_documents")
+    .update({
+      status,
+      updated_at: new Date().toISOString()
+    })
+    .eq("id", id);
+
+  if (result.error) {
+    alert("Status update failed: " + result.error.message);
+    return;
+  }
+
+  await loadDocuments();
+
+  if (state.activeDocumentId === id) {
+    viewDocument(id);
+  }
+}
+
 function viewDocument(id) {
   const documentRecord = state.documents.find(item => item.id === id);
 
@@ -725,7 +871,14 @@ function viewDocument(id) {
     return;
   }
 
-  const assets = Array.isArray(documentRecord.assets) ? documentRecord.assets : [];
+  state.activeDocumentId = id;
+
+  const meta = normalizeOperationalMeta(documentRecord.assets);
+  const linkedEntries = getLinkedJpelEntries(meta);
+  const assetsText = meta.assets.length ? meta.assets.map(asset => `${asset.name} x ${asset.quantity}`).join("\n") : "None";
+  const linkedText = linkedEntries.length
+    ? linkedEntries.map(entry => `${entry.target_name} | ${entry.priority} | ${entry.status}`).join("\n")
+    : "No linked register entries.";
 
   elements.documentViewer.className = "viewer";
   elements.documentViewer.innerHTML = `
@@ -739,7 +892,8 @@ function viewDocument(id) {
     </div>
 
     ${viewerSection("Operation Name", documentRecord.operation_name)}
-    ${viewerSection("Attached Assets", assets.join(", ") || "None")}
+    ${viewerSection("Attached Assets", assetsText)}
+    ${viewerSection("Linked Register Entries", linkedText)}
     ${viewerSection("Task Organization", documentRecord.task_org)}
     ${viewerSection("Situation", documentRecord.situation)}
     ${viewerSection("Mission", documentRecord.mission)}
@@ -754,7 +908,129 @@ function viewDocument(id) {
     ${viewerSection("Coordinating Instructions", documentRecord.coordinating_instructions)}
     ${viewerSection("Risk / Mitigation Notes", documentRecord.risks)}
     ${viewerSection("Free Text", documentRecord.free_text)}
+    ${renderAarSection(documentRecord, meta)}
   `;
+
+  bindAarEvents(documentRecord, meta);
+}
+
+function renderAarSection(documentRecord, meta) {
+  if (documentRecord.doc_type !== "OPORD") {
+    return `
+      <div class="aar-box">
+        <h3>AAR</h3>
+        <div class="muted">AARs are only enabled for OPORD records.</div>
+      </div>
+    `;
+  }
+
+  const aar = meta.aar || {};
+
+  if (!canManageOperational()) {
+    return `
+      <div class="aar-box">
+        <h3>AAR</h3>
+        ${viewerSection("Summary", aar.summary)}
+        ${viewerSection("What Went Well", aar.sustains)}
+        ${viewerSection("What Needs Improvement", aar.improves)}
+        ${viewerSection("Action Items", aar.action_items)}
+        ${viewerSection("Submitted By", aar.submitted_by)}
+        ${viewerSection("Submitted At", aar.submitted_at ? formatDate(aar.submitted_at) : "")}
+      </div>
+    `;
+  }
+
+  return `
+    <div class="aar-box">
+      <h3>After Action Review</h3>
+
+      <div class="form-grid">
+        <div class="form-group full">
+          <label for="aar-summary">Summary</label>
+          <textarea id="aar-summary">${escapeHtml(aar.summary || "")}</textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="aar-sustains">What Went Well</label>
+          <textarea id="aar-sustains">${escapeHtml(aar.sustains || "")}</textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="aar-improves">What Needs Improvement</label>
+          <textarea id="aar-improves">${escapeHtml(aar.improves || "")}</textarea>
+        </div>
+
+        <div class="form-group full">
+          <label for="aar-action-items">Action Items</label>
+          <textarea id="aar-action-items">${escapeHtml(aar.action_items || "")}</textarea>
+        </div>
+      </div>
+
+      <div class="button-row">
+        <button id="save-aar-button" class="btn btn-primary" type="button">Save AAR</button>
+      </div>
+
+      <div id="aar-status-line" class="status-line"></div>
+    </div>
+  `;
+}
+
+function bindAarEvents(documentRecord, meta) {
+  const saveButton = document.getElementById("save-aar-button");
+
+  if (!saveButton) {
+    return;
+  }
+
+  saveButton.addEventListener("click", function () {
+    saveAar(documentRecord, meta);
+  });
+}
+
+async function saveAar(documentRecord, meta) {
+  if (!canManageOperational()) {
+    alert("You do not have permission to save AARs.");
+    return;
+  }
+
+  if (documentRecord.doc_type !== "OPORD") {
+    alert("AARs are only enabled for OPORD records.");
+    return;
+  }
+
+  const aar = {
+    summary: document.getElementById("aar-summary").value.trim(),
+    sustains: document.getElementById("aar-sustains").value.trim(),
+    improves: document.getElementById("aar-improves").value.trim(),
+    action_items: document.getElementById("aar-action-items").value.trim(),
+    submitted_by: state.authUser.email || state.authUser.id,
+    submitted_at: new Date().toISOString()
+  };
+
+  const nextMeta = {
+    ...meta,
+    version: 2,
+    aar
+  };
+
+  const result = await supabase
+    .from("operational_documents")
+    .update({
+      assets: nextMeta,
+      updated_at: new Date().toISOString()
+    })
+    .eq("id", documentRecord.id);
+
+  if (result.error) {
+    const line = document.getElementById("aar-status-line");
+    if (line) {
+      showStatusLine(line, "AAR save failed: " + result.error.message, false);
+    }
+    return;
+  }
+
+  await loadDocuments();
+  viewDocument(documentRecord.id);
 }
 
 async function openDocumentFile(filePath) {
@@ -776,9 +1052,7 @@ async function deleteDocument(id, filePath) {
     return;
   }
 
-  const confirmed = window.confirm("Delete this operational document?");
-
-  if (!confirmed) {
+  if (!window.confirm("Delete this operational document?")) {
     return;
   }
 
@@ -812,7 +1086,7 @@ function resetJpelForm() {
 
 async function saveJpelEntry() {
   if (!canManageOperational()) {
-    showStatusLine(elements.jpelStatusLine, "You do not have permission to create JPEL entries.", false);
+    showStatusLine(elements.jpelStatusLine, "You do not have permission to create register entries.", false);
     return;
   }
 
@@ -842,16 +1116,17 @@ async function saveJpelEntry() {
     .insert(payload);
 
   if (result.error) {
-    showStatusLine(elements.jpelStatusLine, "JPEL save failed: " + result.error.message, false);
-    setButtonLoading(elements.saveJpelButton, false, "Save JPEL Entry");
+    showStatusLine(elements.jpelStatusLine, "Register save failed: " + result.error.message, false);
+    setButtonLoading(elements.saveJpelButton, false, "Save Register Entry");
     return;
   }
 
   resetJpelForm();
-  showStatusLine(elements.jpelStatusLine, "JPEL entry saved.", true);
-  setButtonLoading(elements.saveJpelButton, false, "Save JPEL Entry");
+  showStatusLine(elements.jpelStatusLine, "Register entry saved.", true);
+  setButtonLoading(elements.saveJpelButton, false, "Save Register Entry");
 
   await loadJpelEntries();
+  renderLinkedJpelSelect();
 }
 
 async function loadJpelEntries() {
@@ -861,19 +1136,20 @@ async function loadJpelEntries() {
     .order("created_at", { ascending: false });
 
   if (result.error) {
-    elements.jpelOutput.innerHTML = `<div class="empty-state">Failed to load JPEL entries: ${escapeHtml(result.error.message)}</div>`;
+    elements.jpelOutput.innerHTML = `<div class="empty-state">Failed to load register entries: ${escapeHtml(result.error.message)}</div>`;
     return;
   }
 
   state.jpelEntries = result.data || [];
   renderJpelEntries();
+  renderLinkedJpelSelect();
 }
 
 function renderJpelEntries() {
   const rows = getFilteredJpelEntries();
 
   if (!rows.length) {
-    elements.jpelOutput.innerHTML = `<div class="empty-state">No JPEL entries found.</div>`;
+    elements.jpelOutput.innerHTML = `<div class="empty-state">No register entries found.</div>`;
     return;
   }
 
@@ -914,12 +1190,29 @@ function renderJpelEntries() {
       deleteJpelEntry(Number(button.dataset.deleteJpelId));
     });
   });
+
+  elements.jpelOutput.querySelectorAll("[data-update-jpel-status-id]").forEach(button => {
+    button.addEventListener("click", function () {
+      const id = Number(button.dataset.updateJpelStatusId);
+      const select = elements.jpelOutput.querySelector(`[data-jpel-status-select="${id}"]`);
+      updateJpelStatus(id, select.value);
+    });
+  });
 }
 
 function renderJpelRow(entry) {
   const deleteButton = canManageOperational()
     ? `<button class="btn btn-danger" type="button" data-delete-jpel-id="${entry.id}">Delete</button>`
     : "";
+
+  const statusControls = canManageOperational()
+    ? `
+      <select data-jpel-status-select="${entry.id}">
+        ${JPEL_STATUSES.map(status => `<option value="${status.value}" ${entry.status === status.value ? "selected" : ""}>${status.label}</option>`).join("")}
+      </select>
+      <button class="btn btn-secondary" type="button" data-update-jpel-status-id="${entry.id}">Update</button>
+    `
+    : `<span class="badge ${getStatusBadgeClass(entry.status)}">${escapeHtml(entry.status)}</span>`;
 
   return `
     <tr>
@@ -928,7 +1221,7 @@ function renderJpelRow(entry) {
         <span class="muted">${escapeHtml(entry.location_text || "No location text")}</span>
       </td>
       <td><span class="badge ${getPriorityBadgeClass(entry.priority)}">${escapeHtml(entry.priority)}</span></td>
-      <td><span class="badge ${getStatusBadgeClass(entry.status)}">${escapeHtml(entry.status)}</span></td>
+      <td>${statusControls}</td>
       <td>${escapeHtml(entry.category || "N/A")}</td>
       <td>${escapeHtml(formatDate(entry.created_at))}</td>
       <td>
@@ -955,11 +1248,9 @@ function getFilteredJpelEntries() {
       entry.intelligence_notes
     ].join(" ").toLowerCase();
 
-    const matchesQuery = !query || combinedText.includes(query);
-    const matchesPriority = !priority || entry.priority === priority;
-    const matchesStatus = !status || entry.status === status;
-
-    return matchesQuery && matchesPriority && matchesStatus;
+    return (!query || combinedText.includes(query)) &&
+      (!priority || entry.priority === priority) &&
+      (!status || entry.status === status);
   });
 
   filtered.sort(function (a, b) {
@@ -980,6 +1271,29 @@ function updateJpelSort(field) {
   renderJpelEntries();
 }
 
+async function updateJpelStatus(id, status) {
+  if (!canManageOperational()) {
+    alert("You do not have permission to change register status.");
+    return;
+  }
+
+  const result = await supabase
+    .from("jpel_entries")
+    .update({
+      status,
+      updated_at: new Date().toISOString()
+    })
+    .eq("id", id);
+
+  if (result.error) {
+    alert("Status update failed: " + result.error.message);
+    return;
+  }
+
+  await loadJpelEntries();
+  await loadDocuments();
+}
+
 function viewJpelEntry(id) {
   const entry = state.jpelEntries.find(item => item.id === id);
 
@@ -989,7 +1303,7 @@ function viewJpelEntry(id) {
 
   elements.jpelViewer.className = "viewer";
   elements.jpelViewer.innerHTML = `
-    <h2>JPEL Register Entry - ${escapeHtml(entry.target_name)}</h2>
+    <h2>Register Entry - ${escapeHtml(entry.target_name)}</h2>
     <div>
       <strong>Priority:</strong> ${escapeHtml(entry.priority)}
       |
@@ -1007,13 +1321,11 @@ function viewJpelEntry(id) {
 
 async function deleteJpelEntry(id) {
   if (!canManageOperational()) {
-    alert("You do not have permission to delete JPEL entries.");
+    alert("You do not have permission to delete register entries.");
     return;
   }
 
-  const confirmed = window.confirm("Delete this JPEL entry?");
-
-  if (!confirmed) {
+  if (!window.confirm("Delete this register entry?")) {
     return;
   }
 
@@ -1028,6 +1340,7 @@ async function deleteJpelEntry(id) {
   }
 
   await loadJpelEntries();
+  await loadDocuments();
 }
 
 async function doLogout() {
