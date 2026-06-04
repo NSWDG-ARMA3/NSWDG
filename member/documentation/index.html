@@ -601,6 +601,18 @@ function escapeHtml(value) {
     .replaceAll("'", "&#039;");
 }
 
+function canManageDocumentation() {
+  return DOCUMENTATION_ADMINS.includes((authUser?.email || "").toLowerCase());
+}
+
+function escapeJsString(value) {
+  return String(value ?? "")
+    .replaceAll("\\", "\\\\")
+    .replaceAll("'", "\\'")
+    .replaceAll("\n", "\\n")
+    .replaceAll("\r", "\\r");
+}
+
 function setUploadStatus(message, ok) {
   const el = document.getElementById("upload-status");
   el.textContent = message;
@@ -735,6 +747,41 @@ async function openDocument(filePath) {
   window.open(url, "_blank");
 }
 
+async function deleteDocument(docId, filePath, title) {
+  if (!canManageDocumentation()) {
+    alert("You do not have permission to delete documents.");
+    return;
+  }
+
+  const confirmed = confirm(`Are you sure you want to delete this document?\n\n${title}`);
+
+  if (!confirmed) return;
+
+  const { error: storageError } = await supabase
+    .storage
+    .from(BUCKET_NAME)
+    .remove([filePath]);
+
+  if (storageError) {
+    alert("File delete failed: " + storageError.message);
+    return;
+  }
+
+  const { error: dbError } = await supabase
+    .from("documentation_files")
+    .delete()
+    .eq("id", docId);
+
+  if (dbError) {
+    alert("Database delete failed: " + dbError.message);
+    return;
+  }
+
+  await loadDocuments();
+}
+
+window.deleteDocument = deleteDocument;
+
 window.openDocument = openDocument;
 
 function renderDocs() {
@@ -775,7 +822,12 @@ function renderDocs() {
         </td>
         <td>${escapeHtml(formatDate(doc.uploaded_at))}</td>
         <td>
-          <button class="btn btn-secondary" onclick="openDocument('${escapeHtml(doc.file_path)}')">Open</button>
+        <button class="btn btn-secondary" onclick="openDocument('${escapeJsString(doc.file_path)}')">Open</button>
+        ${
+            canManageDocumentation()
+            ? `<button class="btn btn-danger" onclick="deleteDocument('${escapeJsString(doc.id)}', '${escapeJsString(doc.file_path)}', '${escapeJsString(doc.title)}')">Remove</button>`
+            : ""
+        }
         </td>
       </tr>
     `;
