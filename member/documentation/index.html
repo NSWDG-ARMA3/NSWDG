@@ -738,20 +738,20 @@ showAdminLinksIfAllowed(authUser.email);
 
   const fallbackUserId = getUserIdFromEmail(authUser.email);
 
-  profile = {
-    id: profileData.id,
-    user_id: profileData.user_id,
-    display_name: profileData.display_name || profileData.user_id,
-    role: profileData.role || "MEMBER",
-    status: profileData.status || "ACTIVE",
-    avatar_url: profileData.avatar_url || null
-  };
-
   const { data: profileData } = await supabase
     .from("profiles")
     .select("id, user_id, display_name, role, status, avatar_url")
     .eq("id", authUser.id)
     .single();
+
+  profile = {
+    id: authUser.id,
+    user_id: fallbackUserId,
+    display_name: fallbackUserId,
+    role: "MEMBER",
+    status: "ACTIVE",
+    avatar_url: null
+  };
 
   if (profileData) {
     profile = {
@@ -759,7 +759,8 @@ showAdminLinksIfAllowed(authUser.email);
       user_id: profileData.user_id,
       display_name: profileData.display_name || profileData.user_id,
       role: profileData.role || "MEMBER",
-      status: profileData.status || "ACTIVE"
+      status: profileData.status || "ACTIVE",
+      avatar_url: profileData.avatar_url || null
     };
   }
 
