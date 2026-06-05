@@ -1283,7 +1283,7 @@ function getCandidateMembers() {
     const callsign = String(member.callsign || "").trim();
     const rank = String(member.naval_rank || "").trim();
 
-    return !callsign && rank === "Candidate";
+    return !callsign;
   });
 }
 
