@@ -108,44 +108,111 @@ function renderStats(rows) {
 }
 
 function renderBoard() {
-  const rows = filteredMembers();
-  renderStats(rows);
-  if (!rows.length) {
-    board.innerHTML = `<div class="notice-box">No personnel matched the current filter.</div>`;
-    setStatus("No matching personnel.");
-    return;
-  }
+  const personnel = filteredMembers();
 
-  const groups = new Map();
-  rows.forEach(member => {
-    const group = callsignGroup(member.callsign);
-    if (!groups.has(group)) groups.set(group, []);
-    groups.get(group).push(member);
+  renderStats(personnel);
+
+  const slotMap = new Map();
+
+  personnel.forEach(member => {
+    slotMap.set(member.callsign, member);
   });
 
-  board.innerHTML = [...groups.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([group, groupMembers]) => `
+  const sections = [
+    {
+      title: "Troop Headquarters",
+      subtitle: "Red Squadron • 3 Troop",
+      slots: ["E31", "E32"]
+    },
+    {
+      title: "Golf Team",
+      subtitle: "Assault Element",
+      slots: ["EG1", "EG2", "EG3", "EG4", "EG5", "EG6"]
+    },
+    {
+      title: "Hotel Team",
+      subtitle: "Assault Element",
+      slots: ["EH1", "EH2", "EH3", "EH4", "EH5", "EH6"]
+    },
+    {
+      title: "India Team",
+      subtitle: "Reconnaissance Element",
+      slots: ["EI1", "EI2", "EI3", "EI4", "EI5", "EI6"]
+    },
+    {
+      title: "Attached Specialists",
+      subtitle: "Troop Support Assets",
+      slots: [
+        "EX1",
+        "EN1",
+        "ER1",
+        "EY1",
+        "EU1",
+        "EU2",
+        "EP1",
+        "EP2"
+      ]
+    }
+  ];
+
+  board.innerHTML = sections.map(section => `
     <section class="unit-panel">
-      <div class="unit-title"><span>${escapeHtml(GROUP_LABELS[group] || group)}</span><span>${groupMembers.length}</span></div>
+      <div class="unit-title">
+        <span>${escapeHtml(section.title)}</span>
+      </div>
+
       <div class="unit-body">
-        ${groupMembers.map(member => `
-          <article class="member-card">
-            <img class="avatar" src="${escapeHtml(avatarUrl(member.avatar_url) || "../../nsw.png")}" alt="">
-            <div>
-              <div class="member-name">${escapeHtml(member.display_name || member.user_id || "Unknown")}</div>
-              <div class="member-meta">
-                ${escapeHtml(member.naval_rank || "No rank")}<br>
-                ${escapeHtml(member.role || "MEMBER")}
-                ${member.steam_name ? `<br>Steam: ${escapeHtml(member.steam_name)}` : ""}
-                ${member.discord_name ? `<br>Discord: ${escapeHtml(member.discord_name)}` : ""}
+        <div class="muted" style="margin-bottom:8px;">
+          ${escapeHtml(section.subtitle)}
+        </div>
+
+        ${section.slots.map(callsign => {
+          const member = slotMap.get(callsign);
+
+          if (!member) {
+            return `
+              <article class="member-card">
+                <img class="avatar" src="../../nsw.png">
+                <div>
+                  <div class="member-name">Vacant</div>
+                  <div class="member-meta">
+                    Position Unfilled
+                  </div>
+                  <span class="badge">${callsign}</span>
+                </div>
+              </article>
+            `;
+          }
+
+          return `
+            <article class="member-card">
+              <img
+                class="avatar"
+                src="${escapeHtml(avatarUrl(member.avatar_url) || '../../nsw.png')}"
+              >
+
+              <div>
+                <div class="member-name">
+                  ${escapeHtml(member.display_name)}
+                </div>
+
+                <div class="member-meta">
+                  ${escapeHtml(member.naval_rank || '')}<br>
+                  ${escapeHtml(member.role || '')}
+                </div>
+
+                <span class="badge">
+                  ${escapeHtml(member.callsign)}
+                </span>
               </div>
-              <span class="badge">${escapeHtml(member.callsign)}</span>
-            </div>
-          </article>
-        `).join("")}
+            </article>
+          `;
+        }).join("")}
       </div>
     </section>
   `).join("");
-  setStatus(`${rows.length} personnel displayed.`);
+
+  setStatus(`${personnel.length} personnel displayed.`);
 }
 
 async function boot() {
