@@ -942,9 +942,12 @@
       &nbsp;|&nbsp; Contact your unit S6 for technical support</div>
   </div>
 
-  <script type="module">
+<script type="module">
 
     import { supabase } from "/js/auth.js";
+    import { renderPortalLayout } from "/js/portal-layout.js";
+
+    renderPortalLayout("scheduling");
 
 const SLOT_MINUTES = 60;
 const SLOTS_PER_DAY = 24;
