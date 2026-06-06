@@ -123,23 +123,21 @@ statusLine.textContent = message;
 }
 
 async function loadMembers() {
-setStatus("Loading ORBAT...");
-let { data, error } = await supabase.rpc("get_orbat_profiles");
+  setStatus("Loading ORBAT...");
 
-if (error) {
-const fallback = await supabase
-.from("profiles")
-.select("id,user_id,display_name,role,status,avatar_url,naval_rank,callsign,steam_name,discord_name")
-.order("callsign", { ascending: true });
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("id,user_id,display_name,role,status,avatar_url,naval_rank,callsign,steam_name,discord_name")
+    .order("callsign", { ascending: true });
 
-data = fallback.data;
-error = fallback.error;
-}
+  if (error) throw new Error(error.message);
 
-if (error) throw new Error(error.message);
-members = (data || []).filter(isOrbatMember).sort((a, b) =>
-callsignSortValue(a.callsign).localeCompare(callsignSortValue(b.callsign)) || String(a.display_name ||
-"").localeCompare(String(b.display_name || "")));
+  members = (data || [])
+    .filter(isOrbatMember)
+    .sort((a, b) =>
+      callsignSortValue(a.callsign).localeCompare(callsignSortValue(b.callsign)) ||
+      String(a.display_name || "").localeCompare(String(b.display_name || ""))
+    );
 }
 
 function filteredMembers() {
