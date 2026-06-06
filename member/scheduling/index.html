@@ -2120,11 +2120,17 @@ async function loadLoas() {
 async function loadResponses() {
   const { start, end } = getWeekRangeUtc();
 
+  const loadStart = new Date(start);
+  loadStart.setUTCDate(loadStart.getUTCDate() - 1);
+
+  const loadEnd = new Date(end);
+  loadEnd.setUTCDate(loadEnd.getUTCDate() + 1);
+
   const { data, error } = await supabase
     .from("scheduling_responses")
     .select("user_id, slot_start, availability, note, updated_at")
-    .gte("slot_start", start.toISOString())
-    .lt("slot_start", end.toISOString());
+    .gte("slot_start", loadStart.toISOString())
+    .lt("slot_start", loadEnd.toISOString());
 
   if (error) {
     setStatus("Failed to load scheduling data: " + error.message, false);
@@ -2158,28 +2164,30 @@ async function loadResponses() {
 async function saveAvailability() {
   const { start, end } = getWeekRangeUtc();
 
+  const loadStart = new Date(start);
+  loadStart.setUTCDate(loadStart.getUTCDate() - 1);
+
+  const loadEnd = new Date(end);
+  loadEnd.setUTCDate(loadEnd.getUTCDate() + 1);
+
   saveBtn.disabled = true;
   saveBtn.textContent = "Saving...";
 
   const rows = [];
 
   for (const [key, value] of mySlots.entries()) {
-    const date = new Date(key);
-
-    for (const [key, value] of mySlots.entries()) {
-      rows.push({
-        user_id: authUser.id,
-        slot_start: key,
-        availability: value,
-        note: null,
-        updated_at: new Date().toISOString()
-      });
-    }
+    rows.push({
+      user_id: authUser.id,
+      slot_start: key,
+      availability: value,
+      note: null,
+      updated_at: new Date().toISOString()
+    });
   }
 
   const { error } = await supabase.rpc("replace_my_scheduling_responses", {
-    p_start: start.toISOString(),
-    p_end: end.toISOString(),
+    p_start: loadStart.toISOString(),
+    p_end: loadEnd.toISOString(),
     p_rows: rows
   });
 
