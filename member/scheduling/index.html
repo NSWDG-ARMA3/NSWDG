@@ -826,6 +826,26 @@
                   </select>
                 </div>
 
+                <div class="form-group">
+                  <label for="heatmap-filter">Heatmap Filter</label>
+                  <select id="heatmap-filter">
+                    <option value="full_troop">Full Troop</option>
+                    <option value="green">Only Green Team</option>
+                    <option value="golf">Only Golf Team</option>
+                    <option value="hotel">Only Hotel Team</option>
+                    <option value="india">Only India Team</option>
+                    <option value="full_troop_green">Full Troop + Green Team</option>
+                    <option value="headquarters">Only Headquarters</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label>
+                    <input type="checkbox" id="include-loa-checkbox">
+                    Include approved LOAs as unavailable
+                  </label>
+                </div>
+
                 <button class="btn btn-primary" id="save-btn" type="button">Save</button>
                 <button class="btn btn-secondary" id="refresh-btn" type="button">Refresh</button>
                 <button class="btn btn-danger" id="clear-btn" type="button">Clear Mine</button>
@@ -960,6 +980,7 @@ let profile = null;
 let profilesById = new Map();
 let members = [];
 let allResponses = [];
+let allLoas = [];
 let mySlots = new Map();
 
 let activeScheduleView = "calendar";
@@ -970,6 +991,8 @@ const timezoneSelect = document.getElementById("timezone-select");
 const saveBtn = document.getElementById("save-btn");
 const refreshBtn = document.getElementById("refresh-btn");
 const clearBtn = document.getElementById("clear-btn");
+const heatmapFilter = document.getElementById("heatmap-filter");
+const includeLoaCheckbox = document.getElementById("include-loa-checkbox");
 
 const calendarViewBtn = document.getElementById("calendar-view-btn");
 const orbatViewBtn = document.getElementById("orbat-view-btn");
@@ -1676,10 +1699,87 @@ function buildMyTable() {
 });
 }
 
-function responsesForSlot(key) {
-  return allResponses.filter(row => {
-    return new Date(row.slot_start).toISOString() === key;
+function normalizeCallsign(value) {
+  return String(value || "").trim().toUpperCase();
+}
+
+function isGreenTeamMember(member) {
+  return !normalizeCallsign(member.callsign);
+}
+
+function isGolfTeamMember(member) {
+  return /^EG[1-6]$/.test(normalizeCallsign(member.callsign));
+}
+
+function isHotelTeamMember(member) {
+  return /^EH[1-6]$/.test(normalizeCallsign(member.callsign));
+}
+
+function isIndiaTeamMember(member) {
+  return /^EI[1-6]$/.test(normalizeCallsign(member.callsign));
+}
+
+function isHeadquartersMember(member) {
+  return ["E31", "E32"].includes(normalizeCallsign(member.callsign));
+}
+
+function isFullTroopMember(member) {
+  return Boolean(normalizeCallsign(member.callsign));
+}
+
+function getFilteredHeatmapMembers() {
+  const filter = heatmapFilter?.value || "full_troop";
+
+  return members.filter(member => {
+    if (filter === "green") return isGreenTeamMember(member);
+    if (filter === "golf") return isGolfTeamMember(member);
+    if (filter === "hotel") return isHotelTeamMember(member);
+    if (filter === "india") return isIndiaTeamMember(member);
+    if (filter === "headquarters") return isHeadquartersMember(member);
+    if (filter === "full_troop_green") return true;
+
+    return isFullTroopMember(member);
   });
+}
+
+function getFilteredHeatmapMemberIds() {
+  return new Set(getFilteredHeatmapMembers().map(member => member.id));
+}
+
+function responsesForSlot(key) {
+  const allowedIds = getFilteredHeatmapMemberIds();
+
+  return allResponses.filter(row => {
+    return allowedIds.has(row.user_id) &&
+      new Date(row.slot_start).toISOString() === key;
+  });
+}
+
+function localDateIsoFromSlot(slotIso) {
+  const parts = getZonedParts(new Date(slotIso), scheduleTimezone());
+  return `${parts.year}-${zp(parts.month)}-${zp(parts.day)}`;
+}
+
+function loaCoversSlot(loa, slotIso) {
+  const localDate = localDateIsoFromSlot(slotIso);
+  return loa.start_date <= localDate && loa.end_date >= localDate;
+}
+
+function getLoaMemberIdsForSlot(slotIso, existingResponseIds) {
+  if (!includeLoaCheckbox?.checked) return new Set();
+
+  const allowedIds = getFilteredHeatmapMemberIds();
+  const loaIds = new Set();
+
+  for (const loa of allLoas) {
+    if (!allowedIds.has(loa.requester_id)) continue;
+    if (existingResponseIds.has(loa.requester_id)) continue;
+    if (!loaCoversSlot(loa, slotIso)) continue;
+
+    loaIds.add(loa.requester_id);
+  }
+
+  return loaIds;
 }
 
 function aggregateSlot(key) {
@@ -1692,8 +1792,11 @@ function aggregateSlot(key) {
   const peopleUnavailable = [];
 
   const rows = responsesForSlot(key);
+  const existingResponseIds = new Set();
 
   for (const row of rows) {
+    existingResponseIds.add(row.user_id);
+
     const name = getProfileName(row.user_id);
 
     if (row.availability === "available") {
@@ -1708,7 +1811,9 @@ function aggregateSlot(key) {
     }
   }
 
-  if (mySlots.has(key)) {
+  const allowedIds = getFilteredHeatmapMemberIds();
+
+  if (allowedIds.has(authUser.id) && mySlots.has(key)) {
     const existingOwn = rows.some(r => r.user_id === authUser.id);
 
     if (!existingOwn) {
@@ -1725,10 +1830,19 @@ function aggregateSlot(key) {
         unavailable++;
         peopleUnavailable.push(ownName);
       }
+
+      existingResponseIds.add(authUser.id);
     }
   }
 
-  const totalMembers = Math.max(members.length, 1);
+  const loaMemberIds = getLoaMemberIdsForSlot(key, existingResponseIds);
+
+  for (const memberId of loaMemberIds) {
+    unavailable++;
+    peopleUnavailable.push(`${getProfileName(memberId)} (LOA)`);
+  }
+
+  const totalMembers = Math.max(getFilteredHeatmapMembers().length, 1);
   const responseCount = available + maybe + unavailable;
   const score = (available + maybe * 0.5) / totalMembers;
   const grade = scoreToGrade(score, responseCount);
@@ -1942,6 +2056,26 @@ async function loadProfiles() {
   document.getElementById("dash-members").textContent = String(members.length);
 }
 
+async function loadLoas() {
+  const weekStart = weekInput.value;
+  const weekEnd = addDaysToIsoDate(weekStart, 6);
+
+  const { data, error } = await supabase
+    .from("loa_requests")
+    .select("requester_id, start_date, end_date, status")
+    .eq("status", "APPROVED")
+    .lte("start_date", weekEnd)
+    .gte("end_date", weekStart);
+
+  if (error) {
+    allLoas = [];
+    console.warn("Failed to load LOAs:", error.message);
+    return;
+  }
+
+  allLoas = data || [];
+}
+
 async function loadResponses() {
   const { start, end } = getWeekRangeUtc();
 
@@ -1958,6 +2092,7 @@ async function loadResponses() {
   }
 
   allResponses = data || [];
+  await loadLoas();
   mySlots.clear();
 
   for (const row of allResponses) {
@@ -2097,6 +2232,16 @@ window.doLogout = doLogout;
 saveBtn.addEventListener("click", saveAvailability);
 refreshBtn.addEventListener("click", loadResponses);
 clearBtn.addEventListener("click", clearMyWeek);
+
+heatmapFilter.addEventListener("change", () => {
+  buildHeatmap();
+  buildBestList();
+});
+
+includeLoaCheckbox.addEventListener("change", () => {
+  buildHeatmap();
+  buildBestList();
+});
 
 calendarViewBtn.addEventListener("click", () => {
   setScheduleView("calendar");
