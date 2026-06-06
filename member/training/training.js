@@ -145,6 +145,7 @@ async function loadData() {
   state.sessions = sessionsResult.data || [];
   state.attendance = attendanceResult.data || [];
   state.profiles = profilesResult.data || [];
+  state.sessions = (sessionsResult.data || []).filter(canViewSession);
 
   renderSessions();
 
@@ -159,6 +160,16 @@ function isTroopHq() {
   const callsign = String(state.profile?.callsign || "").trim().toUpperCase();
 
   return HQ_ROLES.includes(role) || TROOP_HQ_CALLSIGNS.includes(callsign);
+}
+
+function isCandidate() {
+  return String(state.profile?.naval_rank || "").trim() === "Candidate";
+}
+
+function canViewSession(session) {
+  if (!session) return false;
+  if (session.category !== "INNER_TEAM") return true;
+  return !isCandidate();
 }
 
 function isTeamLeader() {
@@ -641,6 +652,10 @@ function getProfileName(userId) {
 function categoryBadge(category) {
   if (category === "UNIT_WIDE") {
     return `<span class="badge badge-blue">Unit Wide Training</span>`;
+  }
+
+  if (category === "INNER_TEAM") {
+    return `<span class="badge badge-yellow">Inner Team</span>`;
   }
 
   return `<span class="badge badge-green">Pro Development</span>`;
