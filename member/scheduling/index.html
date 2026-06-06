@@ -951,7 +951,9 @@
 
 const SLOT_MINUTES = 60;
 const SLOTS_PER_DAY = 24;
-const SCHEDULE_TIMEZONE = "UTC";
+function scheduleTimezone() {
+  return timezoneSelect?.value || "UTC";
+}
 
 let authUser = null;
 let profile = null;
@@ -1161,14 +1163,14 @@ function getWeekRangeUtc() {
   const m = Number(startIso.slice(5, 7));
   const d = Number(startIso.slice(8, 10));
 
-  const start = zonedTimeToUtc(y, m, d, 0, 0, SCHEDULE_TIMEZONE);
+  const start = zonedTimeToUtc(y, m, d, 0, 0, scheduleTimezone());
 
   const endIso = addDaysToIsoDate(startIso, 7);
   const ey = Number(endIso.slice(0, 4));
   const em = Number(endIso.slice(5, 7));
   const ed = Number(endIso.slice(8, 10));
 
-  const end = zonedTimeToUtc(ey, em, ed, 0, 0, SCHEDULE_TIMEZONE);
+  const end = zonedTimeToUtc(ey, em, ed, 0, 0, scheduleTimezone());
 
   return { start, end };
 }
@@ -1184,7 +1186,7 @@ function localSlotToUtc(dayIndex, slotIndex) {
   const hour = Math.floor(totalMinutes / 60);
   const minute = totalMinutes % 60;
 
-  return zonedTimeToUtc(y, m, d, hour, minute, SCHEDULE_TIMEZONE);
+  return zonedTimeToUtc(y, m, d, hour, minute, scheduleTimezone());
 }
 
 function slotKey(date) {
@@ -2124,17 +2126,7 @@ window.addEventListener("blur", finishAvailabilityDrag);
 
 timezoneSelect.addEventListener("change", () => {
   localStorage.setItem("schedulingTimezone", timezoneSelect.value);
-
-  document.getElementById("dash-timezone").textContent = timezoneSelect.value;
-
-  buildMyTable();
-  buildHeatmap();
-  buildBestList();
-  buildChangesList();
-
-  if (activeScheduleView === "orbat") {
-    buildOrbatView();
-  }
+  loadResponses();
 });
 
 weekInput.addEventListener("change", async () => {
