@@ -1,4 +1,8 @@
 import { supabase } from "/js/auth.js";
+import { bootPortalChrome, escapeHtml, avatarUrl } from "/js/portal-common.js";
+import { renderPortalLayout } from "/js/portal-layout.js";
+
+renderPortalLayout("scheduling");
 
 const SLOT_MINUTES = 60;
 const SLOTS_PER_DAY = 24;
