@@ -1,4 +1,5 @@
 import { supabase } from "/js/auth.js";
+import { showOrbatLinks } from "/js/portal-layout.js";
 
 export function escapeHtml(value) {
   return String(value ?? "")
@@ -91,6 +92,23 @@ export async function bootPortalChrome() {
     document.querySelectorAll(".admin-only-link").forEach(link => {
       link.style.display = "";
     });
+  }
+
+  const email = String(user.email || "").trim().toLowerCase();
+
+  const canViewOrbat =
+    (
+      profile.callsign &&
+      String(profile.callsign).trim() !== "" &&
+      profile.naval_rank !== "Candidate"
+    ) ||
+    [
+      "carver@navy.mil",
+      "evans@navy.mil"
+    ].includes(email);
+
+  if (canViewOrbat) {
+    showOrbatLinks();
   }
 
   window.doLogout = async function doLogout() {

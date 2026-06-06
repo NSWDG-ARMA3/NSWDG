@@ -1,0 +1,190 @@
+import { supabase } from "/js/auth.js";
+import { bootPortalChrome, escapeHtml, avatarUrl } from "/js/portal-common.js";
+import { renderPortalLayout } from "/js/portal-layout.js";
+
+renderPortalLayout("orbat");
+
+const SPECIAL_ACCESS_EMAILS = ["carver@navy.mil", "evans@navy.mil"];
+const OFFICER_RANKS = new Set(["Ensign", "Lieutenant Junior Grade", "Lieutenant", "Lieutenant Commander", "Commander", "Captain"]);
+const GROUP_LABELS = {
+  EG: "Gold Squadron", EH: "Hotel Squadron", EI: "India Squadron", E3: "Command Element", EX: "Executive Element", EN: "Naval Support", ER: "Reconnaissance", EY: "Aviation / Mobility", EU: "UAS Element", EP: "Planning Element"
+};
+
+let authUser = null;
+let currentProfile = null;
+let members = [];
+
+const accessDenied = document.getElementById("access-denied");
+const content = document.getElementById("orbat-content");
+const board = document.getElementById("orbat-board");
+const statusLine = document.getElementById("status-line");
+const searchInput = document.getElementById("search-input");
+const groupFilter = document.getElementById("group-filter");
+const refreshBtn = document.getElementById("refresh-btn");
+const statTotal = document.getElementById("stat-total");
+const statGroups = document.getElementById("stat-groups");
+const statOfficers = document.getElementById("stat-officers");
+const statEnlisted = document.getElementById("stat-enlisted");
+
+function canViewOrbat(user, profile) {
+  const email = String(user?.email || "").trim().toLowerCase();
+  const callsign = String(profile?.callsign || "").trim();
+  const rank = String(profile?.naval_rank || "").trim().toLowerCase();
+  if (SPECIAL_ACCESS_EMAILS.includes(email)) return true;
+  if (rank === "candidate") return false;
+  return callsign.length > 0;
+}
+
+function isOrbatMember(profile) {
+  const callsign = String(profile?.callsign || "").trim();
+  const rank = String(profile?.naval_rank || "").trim().toLowerCase();
+  const status = String(profile?.status || "ACTIVE").trim().toUpperCase();
+  return status === "ACTIVE" && rank !== "candidate" && callsign.length > 0;
+}
+
+function callsignGroup(callsign) {
+  const value = String(callsign || "").trim().toUpperCase();
+  if (value.startsWith("E3")) return "E3";
+  return value.slice(0, 2) || "OTHER";
+}
+
+function callsignSortValue(callsign) {
+  const value = String(callsign || "").toUpperCase();
+  const match = value.match(/^([A-Z]+)(\d+)$/);
+  if (!match) return value;
+  return `${match[1]}-${String(Number(match[2])).padStart(3, "0")}`;
+}
+
+function memberSearchText(member) {
+  return [member.display_name, member.user_id, member.role, member.naval_rank, member.callsign, member.steam_name, member.discord_name].join(" ").toLowerCase();
+}
+
+function setStatus(message) {
+  statusLine.textContent = message;
+}
+
+async function loadMembers() {
+  setStatus("Loading ORBAT...");
+  let { data, error } = await supabase.rpc("get_orbat_profiles");
+
+  if (error) {
+    const fallback = await supabase
+      .from("profiles")
+      .select("id,user_id,display_name,role,status,avatar_url,naval_rank,callsign,steam_name,discord_name")
+      .order("callsign", { ascending: true });
+
+    data = fallback.data;
+    error = fallback.error;
+  }
+
+  if (error) throw new Error(error.message);
+  members = (data || []).filter(isOrbatMember).sort((a, b) => callsignSortValue(a.callsign).localeCompare(callsignSortValue(b.callsign)) || String(a.display_name || "").localeCompare(String(b.display_name || "")));
+}
+
+function renderGroupFilter() {
+  const groups = [...new Set(members.map(member => callsignGroup(member.callsign)))].sort();
+  const current = groupFilter.value || "ALL";
+  groupFilter.innerHTML = `<option value="ALL">All Groups</option>` + groups.map(group => `<option value="${escapeHtml(group)}">${escapeHtml(GROUP_LABELS[group] || group)}</option>`).join("");
+  groupFilter.value = groups.includes(current) ? current : "ALL";
+}
+
+function filteredMembers() {
+  const query = String(searchInput.value || "").trim().toLowerCase();
+  const group = groupFilter.value || "ALL";
+  return members.filter(member => {
+    if (group !== "ALL" && callsignGroup(member.callsign) !== group) return false;
+    if (query && !memberSearchText(member).includes(query)) return false;
+    return true;
+  });
+}
+
+function renderStats(rows) {
+  const groups = new Set(rows.map(row => callsignGroup(row.callsign)));
+  const officers = rows.filter(row => OFFICER_RANKS.has(row.naval_rank)).length;
+  statTotal.textContent = rows.length;
+  statGroups.textContent = groups.size;
+  statOfficers.textContent = officers;
+  statEnlisted.textContent = rows.length - officers;
+}
+
+function renderBoard() {
+  const rows = filteredMembers();
+  renderStats(rows);
+  if (!rows.length) {
+    board.innerHTML = `<div class="notice-box">No personnel matched the current filter.</div>`;
+    setStatus("No matching personnel.");
+    return;
+  }
+
+  const groups = new Map();
+  rows.forEach(member => {
+    const group = callsignGroup(member.callsign);
+    if (!groups.has(group)) groups.set(group, []);
+    groups.get(group).push(member);
+  });
+
+  board.innerHTML = [...groups.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([group, groupMembers]) => `
+    <section class="unit-panel">
+      <div class="unit-title"><span>${escapeHtml(GROUP_LABELS[group] || group)}</span><span>${groupMembers.length}</span></div>
+      <div class="unit-body">
+        ${groupMembers.map(member => `
+          <article class="member-card">
+            <img class="avatar" src="${escapeHtml(avatarUrl(member.avatar_url) || "../../nsw.png")}" alt="">
+            <div>
+              <div class="member-name">${escapeHtml(member.display_name || member.user_id || "Unknown")}</div>
+              <div class="member-meta">
+                ${escapeHtml(member.naval_rank || "No rank")}<br>
+                ${escapeHtml(member.role || "MEMBER")}
+                ${member.steam_name ? `<br>Steam: ${escapeHtml(member.steam_name)}` : ""}
+                ${member.discord_name ? `<br>Discord: ${escapeHtml(member.discord_name)}` : ""}
+              </div>
+              <span class="badge">${escapeHtml(member.callsign)}</span>
+            </div>
+          </article>
+        `).join("")}
+      </div>
+    </section>
+  `).join("");
+  setStatus(`${rows.length} personnel displayed.`);
+}
+
+async function boot() {
+  try {
+    const boot = await bootPortalChrome();
+    if (!boot) return;
+    authUser = boot.user;
+    currentProfile = boot.profile;
+
+    if (!canViewOrbat(authUser, currentProfile)) {
+      accessDenied.classList.remove("hidden");
+      content.classList.add("hidden");
+      return;
+    }
+
+    content.classList.remove("hidden");
+    await loadMembers();
+    renderGroupFilter();
+    renderBoard();
+  } catch (error) {
+    console.error(error);
+    accessDenied.classList.add("hidden");
+    content.classList.remove("hidden");
+    board.innerHTML = `<div class="notice-box error">Failed to load ORBAT: ${escapeHtml(error.message)}</div>`;
+    setStatus("Failed to load ORBAT.");
+  }
+}
+
+searchInput.addEventListener("input", renderBoard);
+groupFilter.addEventListener("change", renderBoard);
+refreshBtn.addEventListener("click", async () => {
+  try {
+    await loadMembers();
+    renderGroupFilter();
+    renderBoard();
+  } catch (error) {
+    console.error(error);
+    board.innerHTML = `<div class="notice-box error">Refresh failed: ${escapeHtml(error.message)}</div>`;
+  }
+});
+
+boot();
