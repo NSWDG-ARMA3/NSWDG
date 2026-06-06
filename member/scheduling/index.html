@@ -497,168 +497,182 @@
     }
 
     .orbat-toolbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-bottom: 8px;
-    }
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+  }
 
-    .orbat-day-tabs {
-      display: grid;
-      grid-template-columns: repeat(7, minmax(80px, 1fr));
-      gap: 5px;
-      margin-bottom: 10px;
-    }
+  .orbat-day-tabs {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(90px, 1fr));
+    gap: 6px;
+    margin-bottom: 12px;
+  }
 
-    .orbat-day-tab {
-      border: 1px solid var(--line);
-      background: #fff;
-      border-radius: 4px;
-      padding: 6px 8px;
-      cursor: pointer;
-      text-align: left;
-      font-size: 11px;
-    }
+  .orbat-day-tab {
+    border: 1px solid var(--line);
+    background: #fff;
+    border-radius: 6px;
+    padding: 7px 8px;
+    cursor: pointer;
+    text-align: left;
+    font-size: 11px;
+  }
 
-    .orbat-day-tab strong {
-      display: block;
-      color: var(--blue);
-      font-size: 12px;
-    }
+  .orbat-day-tab strong {
+    display: block;
+    color: var(--blue);
+    font-size: 12px;
+  }
 
-    .orbat-day-tab span {
-      color: var(--muted);
-      font-size: 10px;
-    }
+  .orbat-day-tab span {
+    display: block;
+    color: var(--muted);
+    font-size: 10px;
+    margin-top: 2px;
+  }
 
-    .orbat-day-tab.active {
-      background: var(--blue);
-      border-color: var(--blue);
-      color: #fff;
-    }
+  .orbat-day-tab.active {
+    background: var(--blue);
+    border-color: var(--blue);
+  }
 
-    .orbat-day-tab.active strong,
-    .orbat-day-tab.active span {
-      color: #fff;
-    }
+  .orbat-day-tab.active strong,
+  .orbat-day-tab.active span {
+    color: #fff;
+  }
 
-    .orbat-grid {
-      display: grid;
-      grid-template-columns: 74px minmax(0, 1fr);
-      border: 1px solid var(--line);
-      border-radius: 5px;
-      overflow: hidden;
-      background: #fff;
-    }
+  .orbat-board {
+    display: grid;
+    gap: 10px;
+  }
 
-    .orbat-time {
-      background: #eef2f7;
-      border-bottom: 1px solid var(--line);
-      border-right: 1px solid var(--line);
-      padding: 8px 7px;
-      font-weight: bold;
-      color: var(--blue);
-      min-height: 64px;
-    }
+  .orbat-hour {
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    background: #fff;
+    overflow: hidden;
+  }
 
-    .orbat-slot-body {
-      border-bottom: 1px solid var(--line);
-      padding: 7px;
-      min-height: 64px;
-    }
+  .orbat-hour-head {
+    background: #eef2f7;
+    border-bottom: 1px solid var(--line);
+    padding: 7px 10px;
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    align-items: center;
+  }
 
-    .orbat-slot-body.empty {
-      color: var(--muted);
-      display: flex;
-      align-items: center;
-    }
+  .orbat-hour-time {
+    font-weight: bold;
+    color: var(--blue);
+    font-size: 12px;
+  }
 
-    .orbat-sections {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 7px;
-    }
+  .orbat-hour-total {
+    color: var(--muted);
+    font-size: 10px;
+  }
 
-    .orbat-card {
-      border: 1px solid #e5e7eb;
-      border-radius: 4px;
-      background: #fbfcfd;
-      overflow: hidden;
-    }
+  .orbat-sections {
+    display: grid;
+    gap: 8px;
+    padding: 8px;
+  }
 
-    .orbat-card-head {
-      background: #f1f5f9;
-      border-bottom: 1px solid #e5e7eb;
-      padding: 5px 7px;
-      display: flex;
-      justify-content: space-between;
-      gap: 8px;
-      color: var(--blue);
-      font-weight: bold;
-      font-size: 10px;
-      text-transform: uppercase;
-      letter-spacing: 0.3px;
-    }
+  .orbat-section {
+    border: 1px solid #dde4ec;
+    border-radius: 6px;
+    overflow: hidden;
+    background: #fbfcfd;
+  }
 
-    .orbat-card-body {
-      padding: 6px;
-    }
+  .orbat-section-head {
+    padding: 6px 8px;
+    background: #f1f5f9;
+    border-bottom: 1px solid #dde4ec;
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    align-items: center;
+  }
 
-    .orbat-role-line {
-      display: flex;
-      align-items: flex-start;
-      gap: 6px;
-      margin-bottom: 5px;
-    }
+  .orbat-section-title {
+    color: var(--blue);
+    font-weight: bold;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.35px;
+  }
 
-    .orbat-role-line:last-child {
-      margin-bottom: 0;
-    }
+  .orbat-section-count {
+    font-size: 10px;
+    color: var(--muted);
+  }
 
-    .orbat-code {
-      min-width: 34px;
-      border-radius: 3px;
-      background: var(--blue);
-      color: #fff;
-      padding: 3px 5px;
-      font-size: 10px;
-      text-align: center;
-      font-weight: bold;
-    }
+  .orbat-role-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 6px;
+    padding: 8px;
+  }
 
-    .orbat-people {
-      display: flex;
-      gap: 4px;
-      flex-wrap: wrap;
-      align-items: center;
-      min-width: 0;
-    }
+  .orbat-role {
+    border: 1px solid #e5e7eb;
+    border-radius: 5px;
+    background: #fff;
+    padding: 6px;
+  }
 
-    .orbat-person {
-      display: inline-flex;
-      align-items: center;
-      border: 1px solid #b7c2cf;
-      background: #fff;
-      border-radius: 999px;
-      padding: 2px 7px;
-      cursor: pointer;
-      font-size: 10px;
-      line-height: 1.5;
-      max-width: 160px;
-    }
+  .orbat-role-code {
+    display: inline-block;
+    min-width: 42px;
+    background: var(--blue);
+    color: #fff;
+    border-radius: 4px;
+    padding: 3px 6px;
+    font-size: 10px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 5px;
+  }
 
-    .orbat-person:hover {
-      background: #edf4fb;
-      border-color: var(--blue);
-    }
+  .orbat-people {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
 
-    .orbat-count {
-      color: var(--muted);
-      font-weight: normal;
-      font-size: 10px;
-    }
+  .orbat-person {
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid #b7c2cf;
+    background: #fff;
+    border-radius: 999px;
+    padding: 3px 8px;
+    cursor: pointer;
+    font-size: 10px;
+    line-height: 1.4;
+    max-width: 180px;
+  }
+
+  .orbat-person:hover {
+    background: #edf4fb;
+    border-color: var(--blue);
+  }
+
+  .orbat-empty {
+    border: 1px dashed var(--line);
+    border-radius: 6px;
+    padding: 12px;
+    color: var(--muted);
+    background: #fafafa;
+    text-align: center;
+  }
 
     .modal {
       display: none;
@@ -1496,99 +1510,104 @@
       }
     }
 
-    function buildOrbatSlot(slot) {
-      const key = slotKey(slotUtc(selectedOrbatDay, slot));
-      const sections = [];
-      let totalAvailable = 0;
+   function buildOrbatSlot(slot) {
+    const key = slotKey(slotUtc(selectedOrbatDay, slot));
+    const sections = [];
+    let totalAvailable = 0;
 
-      for (const section of ORBAT) {
-        const roleLines = [];
-        let sectionCount = 0;
+    for (const section of ORBAT) {
+      const roles = [];
+      let sectionCount = 0;
 
-        for (const callsignCode of section.slots) {
-          const list = availableMembersForCode(callsignCode, key);
+      for (const callsignCode of section.slots) {
+        const list = availableMembersForCode(callsignCode, key);
 
-          if (!list.length) {
-            continue;
-          }
-
-          sectionCount += list.length;
-          totalAvailable += list.length;
-
-          roleLines.push(`
-            <div class="orbat-role-line">
-              <span class="orbat-code">${escapeHtml(callsignCode)}</span>
-              <div class="orbat-people">
-                ${list.map((member) => {
-                  return `
-                    <span
-                      class="orbat-person"
-                      data-id="${escapeHtml(member.id)}"
-                      data-slot="${escapeHtml(key)}"
-                      title="${escapeHtml(member.display_name)}">
-                      ${escapeHtml(member.display_name)}
-                    </span>`;
-                }).join("")}
-              </div>
-            </div>`);
+        if (!list.length) {
+          continue;
         }
 
-        if (roleLines.length) {
-          sections.push(`
-            <div class="orbat-card">
-              <div class="orbat-card-head">
-                <span>${escapeHtml(section.title)}</span>
-                <span class="orbat-count">${sectionCount}</span>
-              </div>
-              <div class="orbat-card-body">
-                ${roleLines.join("")}
-              </div>
-            </div>`);
-        }
+        sectionCount += list.length;
+        totalAvailable += list.length;
+
+        roles.push(`
+          <div class="orbat-role">
+            <div class="orbat-role-code">${escapeHtml(callsignCode)}</div>
+            <div class="orbat-people">
+              ${list.map((member) => {
+                return `
+                  <span
+                    class="orbat-person"
+                    data-id="${escapeHtml(member.id)}"
+                    data-slot="${escapeHtml(key)}"
+                    title="${escapeHtml(member.display_name)}">
+                    ${escapeHtml(member.display_name)}
+                  </span>`;
+              }).join("")}
+            </div>
+          </div>`);
       }
 
-      return {
-        key,
-        totalAvailable,
-        html: sections.join("")
-      };
+      if (roles.length) {
+        sections.push(`
+          <section class="orbat-section">
+            <div class="orbat-section-head">
+              <div class="orbat-section-title">${escapeHtml(section.title)}</div>
+              <div class="orbat-section-count">${sectionCount} available</div>
+            </div>
+            <div class="orbat-role-grid">
+              ${roles.join("")}
+            </div>
+          </section>`);
+      }
     }
 
-    function buildOrbat() {
-      $("orbat-week-title").textContent = `ORBAT Availability, Week of ${weekInput.value}`;
-      $("orbat-summary").textContent = `${scheduleTimezone()} · available members only · click a member for details`;
+    return {
+      key,
+      totalAvailable,
+      html: sections.join("")
+    };
+  }
 
-      buildTabs();
+  function buildOrbat() {
+    $("orbat-week-title").textContent = `ORBAT Availability, Week of ${weekInput.value}`;
+    $("orbat-summary").textContent = `${scheduleTimezone()} · available members only · click a member for details`;
 
-      let html = "<div class='orbat-grid'>";
-      let activeSlots = 0;
+    buildTabs();
 
-      for (let slot = 0; slot < SLOTS_PER_DAY; slot++) {
-        const built = buildOrbatSlot(slot);
-        const time = escapeHtml(slotLabel(selectedOrbatDay, slot));
+    let html = "<div class='orbat-board'>";
+    let activeSlots = 0;
 
-        if (built.totalAvailable) {
-          activeSlots += 1;
-        }
+    for (let slot = 0; slot < SLOTS_PER_DAY; slot++) {
+      const built = buildOrbatSlot(slot);
 
-        html += `
-          <div class="orbat-time">
-            ${time}<br>
-            <span class="muted">${built.totalAvailable} available</span>
+      if (!built.totalAvailable) {
+        continue;
+      }
+
+      activeSlots += 1;
+
+      html += `
+        <article class="orbat-hour">
+          <div class="orbat-hour-head">
+            <div class="orbat-hour-time">${escapeHtml(slotLabel(selectedOrbatDay, slot))}</div>
+            <div class="orbat-hour-total">${built.totalAvailable} available</div>
           </div>
-          <div class="orbat-slot-body${built.totalAvailable ? "" : " empty"}">
-            ${built.totalAvailable ? `<div class="orbat-sections">${built.html}</div>` : "No available members for this hour."}
-          </div>`;
-      }
-
-      html += "</div>";
-
-      $("orbat-day-content").innerHTML = activeSlots ? html : "<div class='notice-box'>No available members for this selected day.</div>";
-
-      $("orbat-day-content").querySelectorAll(".orbat-person").forEach((element) => {
-        element.onclick = () => openPerson(element.dataset.id, element.dataset.slot);
-      });
+          <div class="orbat-sections">
+            ${built.html}
+          </div>
+        </article>`;
     }
+
+    html += "</div>";
+
+    $("orbat-day-content").innerHTML = activeSlots
+      ? html
+      : "<div class='orbat-empty'>No available members for this selected day.</div>";
+
+    $("orbat-day-content").querySelectorAll(".orbat-person").forEach((element) => {
+      element.onclick = () => openPerson(element.dataset.id, element.dataset.slot);
+    });
+  }
 
     function openPerson(userId, key) {
       const member = profilesById.get(userId);
