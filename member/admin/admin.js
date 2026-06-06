@@ -94,7 +94,7 @@ function renderMemberList() {
     const activeClass = selectedProfile && selectedProfile.id === member.id ? "active" : "";
     const summary = attendanceSummaryRows.find(row => row.profile_id === member.id);
     const compliance = summary ? summary.compliance_status : "NO_DATA";
-    const percent = summary ? `${Number(summary.overall_percent).toFixed(1)}%` : "-";
+    const percent = summary ? formatPercent(summary.overall_percent) : "N/A";
 
     return `
       <div class="member-row ${activeClass}" data-profile-id="${escapeHtml(member.id)}">
@@ -223,8 +223,8 @@ function renderAttendancePanel() {
   attendanceSummary.innerHTML = `
     <div class="attendance-cards">
       ${metricCard("Status", summary.compliance_status)}
-      ${metricCard("Overall", `${Number(summary.overall_percent).toFixed(1)}% / ${Number(summary.min_overall_percent).toFixed(0)}%`)}
-      ${metricCard("Mandatory", `${Number(summary.mandatory_percent).toFixed(1)}% / ${Number(summary.min_mandatory_percent).toFixed(0)}%`)}
+      ${metricCard("Overall", `${formatPercent(summary.overall_percent)} / ${Number(summary.min_overall_percent).toFixed(0)}%`)}
+      ${metricCard("Mandatory", `${formatPercent(summary.mandatory_percent)} / ${Number(summary.min_mandatory_percent).toFixed(0)}%`)}
       ${metricCard("Attended", `${summary.attended_events}/${summary.total_required_events}`)}
       ${metricCard("Unexcused", `${summary.unexcused_absences}/${summary.max_unexcused_absences}`)}
       ${metricCard("No-shows", `${summary.no_shows}/${summary.max_no_shows}`)}
@@ -430,6 +430,13 @@ async function deleteSelectedProfile() {
 async function doLogout() {
   await supabase.auth.signOut();
   window.location.href = "/login/";
+}
+
+function formatPercent(value) {
+  if (value === null || value === undefined) return "N/A";
+  const number = Number(value);
+  if (!Number.isFinite(number)) return "N/A";
+  return `${number.toFixed(1)}%`;
 }
 
 function formatDateTime(value) {
