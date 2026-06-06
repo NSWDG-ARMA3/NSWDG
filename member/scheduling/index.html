@@ -999,7 +999,7 @@ const SLOT_MINUTES = 60;
 const SLOTS_PER_DAY = 24;
 
 function scheduleTimezone() {
-  return displayTimezone();
+  return "UTC";
 }
 
 function displayTimezone() {
@@ -2334,18 +2334,18 @@ orbatNextWeekBtn.addEventListener("click", () => {
 document.addEventListener("mouseup", finishAvailabilityDrag);
 window.addEventListener("blur", finishAvailabilityDrag);
 
-timezoneSelect.addEventListener("change", async () => {
+timezoneSelect.addEventListener("change", () => {
   localStorage.setItem("schedulingTimezone", timezoneSelect.value);
   document.getElementById("dash-timezone").textContent = displayTimezone();
 
-  deletedSlots.clear();
-  hasUnsavedAvailabilityChanges = false;
+  buildMyTable();
+  buildHeatmap();
+  buildBestList();
+  buildChangesList();
 
-  await loadResponses();
-});
-
-weekInput.addEventListener("change", async () => {
-  await loadResponses();
+  if (activeScheduleView === "orbat") {
+    buildOrbatView();
+  }
 });
 
 async function init() {
