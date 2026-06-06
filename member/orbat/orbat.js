@@ -294,7 +294,6 @@ setStatus("Failed to load ORBAT.");
 }
 
 searchInput.addEventListener("input", renderBoard);
-groupFilter.addEventListener("change", renderBoard);
 refreshBtn.addEventListener("click", async () => {
 try {
 await loadMembers();
