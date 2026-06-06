@@ -7,6 +7,23 @@
   <link rel="shortcut icon" href="../../nsw.png" type="image/x-icon">
 
   <style>
+    :root {
+      --blue: #183a56;
+      --blue-dark: #10283c;
+      --gold: #c8a800;
+      --bg: #f4f5f7;
+      --panel: #ffffff;
+      --line: #d8dde3;
+      --text: #1f2933;
+      --muted: #6b7280;
+      --green-bg: #dff4e3;
+      --green: #145214;
+      --yellow-bg: #fff5bd;
+      --yellow: #6a5200;
+      --red-bg: #f7d7d7;
+      --red: #800000;
+    }
+
     * {
       box-sizing: border-box;
       margin: 0;
@@ -14,8 +31,8 @@
     }
 
     body {
-      background: #f0f0f0;
-      color: #1a1a1a;
+      background: var(--bg);
+      color: var(--text);
       font-family: Arial, Helvetica, sans-serif;
       font-size: 12px;
       min-height: 100vh;
@@ -25,20 +42,21 @@
 
     .gov-banner {
       background: #111;
-      color: #ccc;
+      color: #d1d5db;
       font-size: 11px;
-      padding: 3px 12px;
+      padding: 4px 14px;
     }
 
     .site-header {
-      background: #1d3f5e;
+      background: var(--blue);
       color: #fff;
-      padding: 10px 16px;
-      border-bottom: 3px solid #c8a800;
+      padding: 11px 16px;
+      border-bottom: 3px solid var(--gold);
     }
 
     .site-header h1 {
       font-size: 16px;
+      letter-spacing: 0.2px;
     }
 
     .site-header p {
@@ -48,23 +66,25 @@
     }
 
     .portal-nav {
-      background: #1d3f5e;
+      background: var(--blue);
       display: flex;
       align-items: stretch;
-      border-bottom: 2px solid #c8a800;
+      border-bottom: 1px solid #0d263a;
+      overflow-x: auto;
     }
 
     .portal-nav a {
-      color: #cde;
+      color: #d7e6f3;
       text-decoration: none;
       font-size: 12px;
       padding: 8px 12px;
-      border-right: 1px solid #00284e;
+      border-right: 1px solid #0d263a;
       white-space: nowrap;
     }
 
     .portal-nav a.active,
     .portal-nav a:hover {
+      background: var(--blue-dark);
       color: #fff;
       font-weight: bold;
     }
@@ -75,8 +95,9 @@
       align-items: center;
       padding: 0 12px;
       font-size: 11px;
-      color: #cde;
+      color: #d7e6f3;
       gap: 10px;
+      white-space: nowrap;
     }
 
     .nav-avatar {
@@ -95,104 +116,125 @@
     }
 
     .sidebar {
-      width: 180px;
-      background: #e8e8e8;
-      border-right: 1px solid #bbb;
+      width: 184px;
+      background: #eceff3;
+      border-right: 1px solid #cbd5df;
       flex-shrink: 0;
       padding: 12px 0;
     }
 
     .sidebar-user-box {
       padding: 7px 12px 10px;
-      border-bottom: 1px solid #ccc;
+      border-bottom: 1px solid #d1d5db;
       margin-bottom: 6px;
       font-size: 11px;
-      color: #444;
-      line-height: 1.6;
+      color: #4b5563;
+      line-height: 1.55;
     }
 
     .sidebar-user-box strong {
       display: block;
       font-size: 12px;
-      color: #1a1a1a;
+      color: #111827;
     }
 
     .sidebar-section {
       font-size: 10px;
       font-weight: bold;
-      color: #777;
+      color: #6b7280;
       text-transform: uppercase;
-      letter-spacing: 1px;
+      letter-spacing: 0.8px;
       padding: 8px 12px 4px;
     }
 
     .sidebar-link {
       display: block;
-      padding: 5px 12px;
+      padding: 6px 12px;
       font-size: 12px;
-      color: #1d3f5e;
+      color: var(--blue);
       text-decoration: none;
       border-left: 3px solid transparent;
     }
 
     .sidebar-link:hover,
     .sidebar-link.active {
-      background: #d0dae8;
-      border-left-color: #1d3f5e;
+      background: #dbe5ef;
+      border-left-color: var(--blue);
       font-weight: bold;
     }
 
     .portal-main {
       flex: 1;
-      padding: 16px 18px;
-      background: #fff;
+      padding: 14px 16px;
       overflow: auto;
     }
 
+    .page-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 10px;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 8px;
+    }
+
     .page-title {
-      font-size: 15px;
+      font-size: 16px;
       font-weight: bold;
-      color: #1d3f5e;
-      border-bottom: 1px solid #ccc;
-      padding-bottom: 6px;
-      margin-bottom: 10px;
+      color: var(--blue);
     }
 
-    .notice-box {
-      border: 1px solid #bbb;
-      padding: 8px 10px;
-      font-size: 11px;
-      margin-bottom: 10px;
-      line-height: 1.6;
-      background: #fafafa;
+    .page-subtitle {
+      color: var(--muted);
+      margin-top: 3px;
+      line-height: 1.4;
     }
 
-    .notice-box h4 {
-      font-size: 11px;
-      color: #1d3f5e;
-      text-transform: uppercase;
-      margin-bottom: 4px;
+    .view-switch {
+      display: flex;
+      gap: 5px;
+      flex-wrap: wrap;
     }
 
-    .top-layout {
+    .layout {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) 320px;
+      grid-template-columns: minmax(0, 1fr) 310px;
       gap: 12px;
     }
 
     .panel {
-      border: 1px solid #ccc;
-      background: #fafafa;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 5px;
       padding: 10px;
       margin-bottom: 12px;
+      box-shadow: 0 1px 1px rgba(0, 0, 0, 0.03);
+    }
+
+    .panel-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 8px;
     }
 
     .panel h3 {
       font-size: 12px;
-      color: #1d3f5e;
-      margin-bottom: 8px;
+      color: var(--blue);
       text-transform: uppercase;
-      letter-spacing: 0.4px;
+      letter-spacing: 0.5px;
+    }
+
+    .notice-box {
+      background: #f9fafb;
+      border: 1px solid var(--line);
+      border-left: 3px solid var(--blue);
+      padding: 8px 10px;
+      font-size: 11px;
+      line-height: 1.5;
+      margin-bottom: 10px;
     }
 
     .form-row {
@@ -200,32 +242,42 @@
       flex-wrap: wrap;
       gap: 8px;
       align-items: flex-end;
-      margin-bottom: 8px;
     }
 
     .form-group label {
       display: block;
-      font-size: 11px;
+      font-size: 10px;
       font-weight: bold;
+      color: #374151;
       margin-bottom: 3px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
     }
 
     .form-group input,
     .form-group select {
-      border: 1px solid #888;
+      border: 1px solid #9ca3af;
+      border-radius: 3px;
       padding: 4px 6px;
       font-size: 11px;
       background: #fff;
-      height: 26px;
+      height: 27px;
+      min-width: 150px;
     }
 
     .btn {
-      border: 1px solid #aaa;
+      border: 1px solid #9ca3af;
+      border-radius: 3px;
       padding: 4px 10px;
       font-size: 11px;
       cursor: pointer;
-      height: 26px;
-      background: #f0f0f0;
+      height: 27px;
+      background: #f9fafb;
+      color: #111827;
+    }
+
+    .btn:hover {
+      background: #eef2f7;
     }
 
     .btn:disabled {
@@ -233,28 +285,33 @@
       opacity: 0.7;
     }
 
-    .btn-primary {
-      background: #1d3f5e;
+    .btn-primary,
+    .btn.active {
+      background: var(--blue);
       color: #fff;
-      border-color: #1d3f5e;
+      border-color: var(--blue);
+    }
+
+    .btn-primary:hover,
+    .btn.active:hover {
+      background: var(--blue-dark);
     }
 
     .btn-danger {
-      background: #b40000;
+      background: #a70000;
       color: #fff;
       border-color: #800;
     }
 
-    .btn.active {
-      background: #1d3f5e;
-      color: #fff;
-      border-color: #1d3f5e;
+    .btn-danger:hover {
+      background: #850000;
     }
 
     .status-line {
       display: none;
-      border: 1px solid #bbb;
-      padding: 6px 8px;
+      border: 1px solid var(--line);
+      border-radius: 3px;
+      padding: 7px 8px;
       margin-top: 8px;
       font-size: 11px;
     }
@@ -266,25 +323,26 @@
     .status-line.ok {
       background: #e8f7e8;
       border-color: #8ac58a;
-      color: #145214;
+      color: var(--green);
     }
 
     .status-line.err {
       background: #fde8e8;
       border-color: #d48a8a;
-      color: #800;
+      color: var(--red);
     }
 
     .availability-wrap {
       overflow: auto;
-      border: 1px solid #bbb;
-      margin-bottom: 12px;
+      border: 1px solid var(--line);
+      border-radius: 4px;
       max-height: 72vh;
+      background: #fff;
     }
 
     .availability-grid {
       border-collapse: collapse;
-      min-width: 820px;
+      min-width: 860px;
       width: 100%;
       font-size: 10px;
     }
@@ -292,62 +350,69 @@
     .availability-grid th {
       position: sticky;
       top: 0;
-      background: #1d3f5e;
+      background: var(--blue);
       color: #fff;
-      border: 1px solid #16324b;
+      border: 1px solid #12324b;
       padding: 5px;
       z-index: 2;
     }
 
     .availability-grid td {
-      border: 1px solid #ccc;
+      border: 1px solid #d2d6dc;
       text-align: center;
       padding: 4px;
-      min-width: 72px;
-      height: 28px;
+      min-width: 76px;
+      height: 26px;
       user-select: none;
     }
 
     .time-col {
       position: sticky;
       left: 0;
-      background: #e8e8e8 !important;
-      color: #111 !important;
+      background: #eef2f7 !important;
+      color: #111827 !important;
       font-weight: bold;
       z-index: 3;
-      min-width: 70px;
+      min-width: 72px;
     }
 
     .availability-grid th small {
       display: block;
-      color: #cde;
+      color: #d7e6f3;
       font-weight: normal;
+      font-size: 9px;
+      margin-top: 1px;
     }
 
     .mine-empty {
       background: #fff;
+      cursor: pointer;
     }
 
     .mine-available {
-      background: #dff4e3;
-      color: #145214;
+      background: var(--green-bg);
+      color: var(--green);
       font-weight: bold;
+      cursor: pointer;
     }
 
     .mine-maybe {
-      background: #fff5bd;
-      color: #6a5200;
+      background: var(--yellow-bg);
+      color: var(--yellow);
       font-weight: bold;
+      cursor: pointer;
     }
 
     .mine-unavailable {
-      background: #f7d7d7;
-      color: #800;
+      background: var(--red-bg);
+      color: var(--red);
       font-weight: bold;
+      cursor: pointer;
     }
 
     .grade-gray {
-      background: #d0d0d0;
+      background: #e5e7eb;
+      color: #4b5563;
     }
 
     .grade-red {
@@ -357,10 +422,12 @@
 
     .grade-orange {
       background: #e6862d;
+      color: #111827;
     }
 
     .grade-yellow {
       background: #e8d84a;
+      color: #111827;
     }
 
     .grade-green {
@@ -374,29 +441,39 @@
       margin-top: 2px;
     }
 
+    .legend {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      font-size: 10px;
+      color: #4b5563;
+      margin-bottom: 7px;
+    }
+
+    .legend-box {
+      width: 14px;
+      height: 9px;
+      border: 1px solid #6b7280;
+      display: inline-block;
+      vertical-align: middle;
+      margin-right: 3px;
+    }
+
     .info-table {
       border-collapse: collapse;
       width: 100%;
       font-size: 11px;
-      margin-bottom: 10px;
-    }
-
-    .info-table th {
-      background: #1d3f5e;
-      color: #fff;
-      text-align: left;
-      padding: 4px 6px;
-      font-size: 10px;
     }
 
     .info-table td {
-      padding: 4px 6px;
-      border-bottom: 1px solid #ddd;
+      padding: 5px 6px;
+      border-bottom: 1px solid #e5e7eb;
       vertical-align: top;
     }
 
-    .info-table tr:nth-child(even) td {
-      background: #f5f7fa;
+    .info-table td:first-child {
+      color: var(--muted);
+      width: 38%;
     }
 
     .best-list,
@@ -412,76 +489,175 @@
     }
 
     .muted {
-      color: #666;
+      color: var(--muted);
     }
 
     .schedule-view.hidden {
       display: none;
     }
 
-    .legend {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      font-size: 10px;
-      margin-bottom: 8px;
-    }
-
-    .legend-box {
-      width: 16px;
-      height: 10px;
-      border: 1px solid #777;
-      display: inline-block;
-      vertical-align: middle;
-      margin-right: 3px;
-    }
-
-    .orbat-header {
+    .orbat-toolbar {
       display: flex;
       justify-content: space-between;
       align-items: center;
       gap: 8px;
       flex-wrap: wrap;
+      margin-bottom: 8px;
     }
 
     .orbat-day-tabs {
-      display: flex;
-      gap: 4px;
-      flex-wrap: wrap;
-      margin: 8px 0;
-    }
-
-    .orbat-slot {
-      border: 1px solid #ccc;
-      background: #fff;
+      display: grid;
+      grid-template-columns: repeat(7, minmax(80px, 1fr));
+      gap: 5px;
       margin-bottom: 10px;
     }
 
-    .orbat-slot h4 {
-      background: #1d3f5e;
-      color: #fff;
+    .orbat-day-tab {
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 4px;
       padding: 6px 8px;
+      cursor: pointer;
+      text-align: left;
+      font-size: 11px;
+    }
+
+    .orbat-day-tab strong {
+      display: block;
+      color: var(--blue);
       font-size: 12px;
     }
 
-    .orbat-section {
-      padding: 8px;
-      border-top: 1px solid #ddd;
+    .orbat-day-tab span {
+      color: var(--muted);
+      font-size: 10px;
     }
 
-    .orbat-section h5 {
-      font-size: 11px;
-      color: #1d3f5e;
+    .orbat-day-tab.active {
+      background: var(--blue);
+      border-color: var(--blue);
+      color: #fff;
+    }
+
+    .orbat-day-tab.active strong,
+    .orbat-day-tab.active span {
+      color: #fff;
+    }
+
+    .orbat-grid {
+      display: grid;
+      grid-template-columns: 74px minmax(0, 1fr);
+      border: 1px solid var(--line);
+      border-radius: 5px;
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .orbat-time {
+      background: #eef2f7;
+      border-bottom: 1px solid var(--line);
+      border-right: 1px solid var(--line);
+      padding: 8px 7px;
+      font-weight: bold;
+      color: var(--blue);
+      min-height: 64px;
+    }
+
+    .orbat-slot-body {
+      border-bottom: 1px solid var(--line);
+      padding: 7px;
+      min-height: 64px;
+    }
+
+    .orbat-slot-body.empty {
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+    }
+
+    .orbat-sections {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 7px;
+    }
+
+    .orbat-card {
+      border: 1px solid #e5e7eb;
+      border-radius: 4px;
+      background: #fbfcfd;
+      overflow: hidden;
+    }
+
+    .orbat-card-head {
+      background: #f1f5f9;
+      border-bottom: 1px solid #e5e7eb;
+      padding: 5px 7px;
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      color: var(--blue);
+      font-weight: bold;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .orbat-card-body {
+      padding: 6px;
+    }
+
+    .orbat-role-line {
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
       margin-bottom: 5px;
     }
 
-    .orbat-person {
-      display: inline-block;
-      border: 1px solid #aaa;
-      background: #f4f4f4;
-      margin: 2px;
+    .orbat-role-line:last-child {
+      margin-bottom: 0;
+    }
+
+    .orbat-code {
+      min-width: 34px;
+      border-radius: 3px;
+      background: var(--blue);
+      color: #fff;
       padding: 3px 5px;
+      font-size: 10px;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .orbat-people {
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+      align-items: center;
+      min-width: 0;
+    }
+
+    .orbat-person {
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid #b7c2cf;
+      background: #fff;
+      border-radius: 999px;
+      padding: 2px 7px;
       cursor: pointer;
+      font-size: 10px;
+      line-height: 1.5;
+      max-width: 160px;
+    }
+
+    .orbat-person:hover {
+      background: #edf4fb;
+      border-color: var(--blue);
+    }
+
+    .orbat-count {
+      color: var(--muted);
+      font-weight: normal;
+      font-size: 10px;
     }
 
     .modal {
@@ -492,6 +668,7 @@
       align-items: center;
       justify-content: center;
       z-index: 20;
+      padding: 16px;
     }
 
     .modal.visible {
@@ -499,13 +676,16 @@
     }
 
     .modal-card {
-      width: min(520px, 92vw);
+      width: min(520px, 94vw);
       background: #fff;
-      border: 2px solid #1d3f5e;
+      border: 1px solid var(--blue);
+      border-radius: 6px;
+      overflow: hidden;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.22);
     }
 
     .modal-head {
-      background: #1d3f5e;
+      background: var(--blue);
       color: #fff;
       padding: 8px 10px;
       display: flex;
@@ -525,8 +705,8 @@
       cursor: pointer;
     }
 
-    @media (max-width: 900px) {
-      .top-layout {
+    @media (max-width: 980px) {
+      .layout {
         grid-template-columns: 1fr;
       }
 
@@ -534,12 +714,12 @@
         display: none;
       }
 
-      .portal-nav {
-        overflow-x: auto;
-      }
-
       .nav-right {
         display: none;
+      }
+
+      .orbat-day-tabs {
+        grid-template-columns: repeat(2, minmax(120px, 1fr));
       }
     }
   </style>
@@ -595,19 +775,24 @@
     </aside>
 
     <main class="portal-main">
-      <h2 class="page-title">Scheduling</h2>
+      <div class="page-head">
+        <div>
+          <h2 class="page-title">Scheduling</h2>
+          <p class="page-subtitle">Availability is entered in your selected timezone and stored as UTC so everyone sees the same real-world times converted to their own timezone.</p>
+        </div>
 
-      <div class="notice-box">
-        <h4>How it works</h4>
-        Pick the selected week, click or drag across your grid, then save.
-        Click cycles Empty, Available, Maybe, Unavailable, Empty.
-        The heatmap and ORBAT views update from all active member responses.
+        <div class="view-switch">
+          <button class="btn active" id="calendar-view-btn" type="button">Calendar</button>
+          <button class="btn" id="orbat-view-btn" type="button">ORBAT</button>
+        </div>
       </div>
 
-      <div class="top-layout">
+      <div class="layout">
         <section>
           <div class="panel">
-            <h3>Controls</h3>
+            <div class="panel-title">
+              <h3>Controls</h3>
+            </div>
 
             <div class="form-row">
               <div class="form-group">
@@ -616,7 +801,7 @@
               </div>
 
               <div class="form-group">
-                <label for="timezone-select">Display timezone</label>
+                <label for="timezone-select">Your timezone</label>
                 <select id="timezone-select">
                   <option value="UTC">UTC</option>
                   <option value="Europe/Amsterdam">Europe/Amsterdam</option>
@@ -631,26 +816,31 @@
               <button class="btn btn-primary" id="save-btn" type="button">Save</button>
               <button class="btn" id="refresh-btn" type="button">Refresh</button>
               <button class="btn btn-danger" id="clear-btn" type="button">Clear Mine</button>
-
-              <span style="flex: 1;"></span>
-
-              <button class="btn active" id="calendar-view-btn" type="button">Calendar</button>
-              <button class="btn" id="orbat-view-btn" type="button">ORBAT</button>
             </div>
 
             <div id="status-line" class="status-line"></div>
           </div>
 
+          <div class="notice-box">
+            Click or drag to set availability. Cycle order: Empty, Available, Maybe, Unavailable, Empty.
+          </div>
+
           <div id="calendar-view" class="schedule-view">
             <div class="panel">
-              <h3>Your Availability</h3>
+              <div class="panel-title">
+                <h3>Your Availability</h3>
+                <span class="muted" id="calendar-title">Loading...</span>
+              </div>
+
               <div class="availability-wrap">
                 <table class="availability-grid" id="my-table"></table>
               </div>
             </div>
 
             <div class="panel">
-              <h3>Availability Heatmap</h3>
+              <div class="panel-title">
+                <h3>Availability Heatmap</h3>
+              </div>
 
               <div class="legend">
                 <span><i class="legend-box grade-green"></i>Best</span>
@@ -668,13 +858,16 @@
 
           <div id="orbat-view" class="schedule-view hidden">
             <div class="panel">
-              <div class="orbat-header">
-                <h3 id="orbat-week-title">ORBAT Availability</h3>
+              <div class="orbat-toolbar">
+                <div>
+                  <h3 id="orbat-week-title">ORBAT Availability</h3>
+                  <div class="muted" id="orbat-summary">Loading...</div>
+                </div>
 
                 <div>
-                  <button class="btn" id="orbat-prev-week" type="button">Previous Week</button>
+                  <button class="btn" id="orbat-prev-week" type="button">Previous</button>
                   <button class="btn" id="orbat-current-week" type="button">Reload</button>
-                  <button class="btn" id="orbat-next-week" type="button">Next Week</button>
+                  <button class="btn" id="orbat-next-week" type="button">Next</button>
                 </div>
               </div>
 
@@ -686,7 +879,10 @@
 
         <aside>
           <div class="panel">
-            <h3>Dashboard</h3>
+            <div class="panel-title">
+              <h3>Dashboard</h3>
+            </div>
+
             <table class="info-table">
               <tr>
                 <td>User</td>
@@ -712,14 +908,20 @@
           </div>
 
           <div class="panel">
-            <h3>Best Times</h3>
+            <div class="panel-title">
+              <h3>Best Times</h3>
+            </div>
+
             <ol class="best-list" id="best-list">
               <li>Loading...</li>
             </ol>
           </div>
 
           <div class="panel">
-            <h3>Recent Changes</h3>
+            <div class="panel-title">
+              <h3>Recent Changes</h3>
+            </div>
+
             <ol class="changes-list" id="changes-list">
               <li>Loading...</li>
             </ol>
@@ -752,19 +954,19 @@
         slots: ["Candidate"]
       },
       {
-        title: "Red Squadron, 3 Troop, Golf, Assault",
+        title: "Red Squadron, 3 Troop, Golf Assault",
         slots: ["EG1", "EG2", "EG3", "EG4", "EG5", "EG6"]
       },
       {
-        title: "Red Squadron, 3 Troop, Hotel, Assault",
+        title: "Red Squadron, 3 Troop, Hotel Assault",
         slots: ["EH1", "EH2", "EH3", "EH4", "EH5", "EH6"]
       },
       {
-        title: "Red Squadron, 3 Troop, India, Recce",
+        title: "Red Squadron, 3 Troop, India Recce",
         slots: ["EI1", "EI2", "EI3", "EI4", "EI5", "EI6"]
       },
       {
-        title: "Red Squadron, 3 Troop, Troop Headquarters",
+        title: "Red Squadron, 3 Troop, Headquarters",
         slots: ["E31", "E32"]
       },
       {
@@ -788,15 +990,15 @@
 
     const $ = (id) => document.getElementById(id);
 
-    function scheduleTimezone() {
-    return timezoneSelect.value || "UTC";
-  }
-
     const weekInput = $("week-start");
     const timezoneSelect = $("timezone-select");
     const saveBtn = $("save-btn");
     const refreshBtn = $("refresh-btn");
     const clearBtn = $("clear-btn");
+
+    function scheduleTimezone() {
+      return timezoneSelect.value || "UTC";
+    }
 
     function slotKey(date) {
       return new Date(date).toISOString();
@@ -863,37 +1065,10 @@
     function zonedToUtc(year, month, day, hour, minute, timezone) {
       const guess = new Date(Date.UTC(year, month - 1, day, hour, minute));
       const parts = getZonedParts(guess, timezone);
-
       const target = Date.UTC(year, month - 1, day, hour, minute);
       const actual = Date.UTC(parts.year, parts.month - 1, parts.day, parts.hour, parts.minute);
 
       return new Date(guess.getTime() + (target - actual));
-    }
-
-    function weekRange() {
-      const startIso = weekInput.value;
-      const endIso = addDays(startIso, 7);
-      const timezone = scheduleTimezone();
-
-      const start = zonedToUtc(
-        Number(startIso.slice(0, 4)),
-        Number(startIso.slice(5, 7)),
-        Number(startIso.slice(8, 10)),
-        0,
-        0,
-        timezone
-      );
-
-      const end = zonedToUtc(
-        Number(endIso.slice(0, 4)),
-        Number(endIso.slice(5, 7)),
-        Number(endIso.slice(8, 10)),
-        0,
-        0,
-        timezone
-      );
-
-      return { start, end };
     }
 
     function slotUtc(dayIndex, slotIndex) {
@@ -923,8 +1098,23 @@
       return keys;
     }
 
+    function bufferedLoadRange() {
+      const keys = visibleSlotKeys();
+      const earliest = new Date(keys[0]);
+      const latest = new Date(keys[keys.length - 1]);
+
+      earliest.setUTCDate(earliest.getUTCDate() - 1);
+      latest.setUTCDate(latest.getUTCDate() + 1);
+
+      return {
+        keys,
+        earliest,
+        latest
+      };
+    }
+
     function slotLabel(dayIndex, slotIndex) {
-      return fmt(timezoneSelect.value, {
+      return fmt(scheduleTimezone(), {
         hour: "2-digit",
         minute: "2-digit",
         hourCycle: "h23"
@@ -932,7 +1122,7 @@
     }
 
     function dtLabel(iso) {
-      return fmt(timezoneSelect.value, {
+      return fmt(scheduleTimezone(), {
         weekday: "short",
         day: "2-digit",
         month: "short",
@@ -942,8 +1132,16 @@
       }).format(new Date(iso));
     }
 
+    function shortDayLabel(dayIndex) {
+      const date = slotUtc(dayIndex, 12);
+      const weekday = fmt(scheduleTimezone(), { weekday: "short" }).format(date);
+      const dayMonth = fmt(scheduleTimezone(), { day: "2-digit", month: "short" }).format(date);
+
+      return { weekday, dayMonth };
+    }
+
     function updLabel(iso) {
-      return fmt(timezoneSelect.value, {
+      return fmt(scheduleTimezone(), {
         day: "2-digit",
         month: "short",
         hour: "2-digit",
@@ -953,11 +1151,8 @@
     }
 
     function dayHeader(dayIndex) {
-      const date = slotUtc(dayIndex, 12);
-      const weekday = fmt(timezoneSelect.value, { weekday: "short" }).format(date);
-      const dayMonth = fmt(timezoneSelect.value, { day: "2-digit", month: "short" }).format(date);
-
-      return `${escapeHtml(weekday)}<small>${escapeHtml(dayMonth)}</small>`;
+      const parts = shortDayLabel(dayIndex);
+      return `${escapeHtml(parts.weekday)}<small>${escapeHtml(parts.dayMonth)}</small>`;
     }
 
     function setStatus(message, ok) {
@@ -1171,7 +1366,7 @@
           html += `
             <td class="heat-cell grade-${result.grade}" title="${escapeHtml(hoverTitle(result, key))}">
               ${Math.round(result.score * 100)}%
-              <small>${result.available}Y ${result.maybe}M ${result.unavailable}N</small>
+              <small>${result.available}A ${result.maybe}M ${result.unavailable}U</small>
             </td>`;
         }
 
@@ -1217,7 +1412,9 @@
     }
 
     function buildChanges() {
+      const visibleSet = new Set(visibleSlotKeys());
       const latest = [...allResponses]
+        .filter((response) => visibleSet.has(new Date(response.slot_start).toISOString()))
         .sort((a, b) => new Date(b.updated_at || b.slot_start) - new Date(a.updated_at || a.slot_start))
         .slice(0, 12);
 
@@ -1259,14 +1456,36 @@
       })?.availability || null;
     }
 
+    function availableMembersForCode(callsignCode, key) {
+      return membersFor(callsignCode).filter((member) => {
+        return availabilityFor(member.id, key) === "available";
+      });
+    }
+
+    function dayAvailableCount(dayIndex) {
+      let total = 0;
+
+      for (let slot = 0; slot < SLOTS_PER_DAY; slot++) {
+        const key = slotKey(slotUtc(dayIndex, slot));
+        total += aggregate(key).available;
+      }
+
+      return total;
+    }
+
     function buildTabs() {
       const root = $("orbat-day-tabs");
       root.innerHTML = "";
 
       for (let day = 0; day < 7; day++) {
+        const labels = shortDayLabel(day);
         const button = document.createElement("button");
-        button.className = `btn${day === selectedOrbatDay ? " active" : ""}`;
-        button.innerHTML = dayHeader(day).replace("<small>", " ").replace("</small>", "");
+
+        button.className = `orbat-day-tab${day === selectedOrbatDay ? " active" : ""}`;
+        button.type = "button";
+        button.innerHTML = `
+          <strong>${escapeHtml(labels.weekday)}</strong>
+          <span>${escapeHtml(labels.dayMonth)} · ${dayAvailableCount(day)} available entries</span>`;
 
         button.onclick = () => {
           selectedOrbatDay = day;
@@ -1277,61 +1496,94 @@
       }
     }
 
-    function buildOrbat() {
-      $("orbat-week-title").textContent = `ORBAT Availability, Week of ${weekInput.value}, ${timezoneSelect.value}`;
+    function buildOrbatSlot(slot) {
+      const key = slotKey(slotUtc(selectedOrbatDay, slot));
+      const sections = [];
+      let totalAvailable = 0;
 
-      buildTabs();
+      for (const section of ORBAT) {
+        const roleLines = [];
+        let sectionCount = 0;
 
-      let html = "";
+        for (const callsignCode of section.slots) {
+          const list = availableMembersForCode(callsignCode, key);
 
-      for (let slot = 0; slot < SLOTS_PER_DAY; slot++) {
-        const key = slotKey(slotUtc(selectedOrbatDay, slot));
-        let slotHtml = "";
-
-        for (const section of ORBAT) {
-          let sectionHtml = "";
-
-          for (const callsignCode of section.slots) {
-            const list = membersFor(callsignCode).filter((member) => {
-              return availabilityFor(member.id, key) === "available";
-            });
-
-            if (list.length) {
-              sectionHtml += `
-                <div>
-                  <strong>${escapeHtml(callsignCode)}</strong>
-                  ${list.map((member) => {
-                    return `
-                      <span
-                        class="orbat-person"
-                        data-id="${escapeHtml(member.id)}"
-                        data-slot="${escapeHtml(key)}">
-                        ${escapeHtml(member.display_name)}
-                      </span>`;
-                  }).join("")}
-                </div>`;
-            }
+          if (!list.length) {
+            continue;
           }
 
-          if (sectionHtml) {
-            slotHtml += `
-              <div class="orbat-section">
-                <h5>${escapeHtml(section.title)}</h5>
-                ${sectionHtml}
-              </div>`;
-          }
+          sectionCount += list.length;
+          totalAvailable += list.length;
+
+          roleLines.push(`
+            <div class="orbat-role-line">
+              <span class="orbat-code">${escapeHtml(callsignCode)}</span>
+              <div class="orbat-people">
+                ${list.map((member) => {
+                  return `
+                    <span
+                      class="orbat-person"
+                      data-id="${escapeHtml(member.id)}"
+                      data-slot="${escapeHtml(key)}"
+                      title="${escapeHtml(member.display_name)}">
+                      ${escapeHtml(member.display_name)}
+                    </span>`;
+                }).join("")}
+              </div>
+            </div>`);
         }
 
-        if (slotHtml) {
-          html += `
-            <div class="orbat-slot">
-              <h4>${escapeHtml(dtLabel(key))}</h4>
-              ${slotHtml}
-            </div>`;
+        if (roleLines.length) {
+          sections.push(`
+            <div class="orbat-card">
+              <div class="orbat-card-head">
+                <span>${escapeHtml(section.title)}</span>
+                <span class="orbat-count">${sectionCount}</span>
+              </div>
+              <div class="orbat-card-body">
+                ${roleLines.join("")}
+              </div>
+            </div>`);
         }
       }
 
-      $("orbat-day-content").innerHTML = html || "<div class='notice-box'>No available members for this day.</div>";
+      return {
+        key,
+        totalAvailable,
+        html: sections.join("")
+      };
+    }
+
+    function buildOrbat() {
+      $("orbat-week-title").textContent = `ORBAT Availability, Week of ${weekInput.value}`;
+      $("orbat-summary").textContent = `${scheduleTimezone()} · available members only · click a member for details`;
+
+      buildTabs();
+
+      let html = "<div class='orbat-grid'>";
+      let activeSlots = 0;
+
+      for (let slot = 0; slot < SLOTS_PER_DAY; slot++) {
+        const built = buildOrbatSlot(slot);
+        const time = escapeHtml(slotLabel(selectedOrbatDay, slot));
+
+        if (built.totalAvailable) {
+          activeSlots += 1;
+        }
+
+        html += `
+          <div class="orbat-time">
+            ${time}<br>
+            <span class="muted">${built.totalAvailable} available</span>
+          </div>
+          <div class="orbat-slot-body${built.totalAvailable ? "" : " empty"}">
+            ${built.totalAvailable ? `<div class="orbat-sections">${built.html}</div>` : "No available members for this hour."}
+          </div>`;
+      }
+
+      html += "</div>";
+
+      $("orbat-day-content").innerHTML = activeSlots ? html : "<div class='notice-box'>No available members for this selected day.</div>";
 
       $("orbat-day-content").querySelectorAll(".orbat-person").forEach((element) => {
         element.onclick = () => openPerson(element.dataset.id, element.dataset.slot);
@@ -1367,6 +1619,10 @@
           <tr>
             <td>Time</td>
             <td>${escapeHtml(dtLabel(key))}</td>
+          </tr>
+          <tr>
+            <td>Timezone</td>
+            <td>${escapeHtml(scheduleTimezone())}</td>
           </tr>
           <tr>
             <td>Discord</td>
@@ -1430,12 +1686,14 @@
     }
 
     async function loadResponses() {
-      const keys = visibleSlotKeys();
+      const range = bufferedLoadRange();
+      const visibleSet = new Set(range.keys);
 
       const { data, error } = await supabase
         .from("scheduling_responses")
         .select("user_id,slot_start,availability,note,updated_at")
-        .in("slot_start", keys)
+        .gte("slot_start", range.earliest.toISOString())
+        .lte("slot_start", range.latest.toISOString())
         .order("slot_start", { ascending: true });
 
       if (error) {
@@ -1447,14 +1705,17 @@
         mySlots.clear();
 
         for (const response of allResponses) {
-          if (response.user_id === authUser.id) {
-            mySlots.set(new Date(response.slot_start).toISOString(), response.availability);
+          const key = new Date(response.slot_start).toISOString();
+
+          if (response.user_id === authUser.id && visibleSet.has(key)) {
+            mySlots.set(key, response.availability);
           }
         }
       }
 
-      $("dash-timezone").textContent = timezoneSelect.value;
+      $("dash-timezone").textContent = scheduleTimezone();
       $("dash-updated").textContent = utcNowLabel();
+      $("calendar-title").textContent = `Week of ${weekInput.value} · ${scheduleTimezone()}`;
 
       buildMyTable();
       buildHeatmap();
@@ -1516,7 +1777,7 @@
     }
 
     async function clearWeek() {
-      const confirmed = confirm("Clear all of your availability for this selected week?");
+      const confirmed = confirm("Clear all of your availability for this selected week in the selected timezone?");
 
       if (!confirmed) {
         return;
@@ -1536,7 +1797,7 @@
       }
 
       mySlots.clear();
-      setStatus("Your week was cleared.", true);
+      setStatus("Your visible week was cleared.", true);
       await loadResponses();
     }
 
@@ -1594,7 +1855,7 @@
     window.addEventListener("blur", finishDrag);
 
     timezoneSelect.onchange = () => {
-      localStorage.setItem("schedulingTimezone", timezoneSelect.value);
+      localStorage.setItem("schedulingTimezone", scheduleTimezone());
       loadResponses();
     };
 
@@ -1607,6 +1868,12 @@
 
       if (savedTimezone) {
         timezoneSelect.value = savedTimezone;
+      } else {
+        const browserTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+        if ([...timezoneSelect.options].some((option) => option.value === browserTimezone)) {
+          timezoneSelect.value = browserTimezone;
+        }
       }
 
       const sessionLoaded = await loadSession();
