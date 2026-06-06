@@ -222,16 +222,17 @@ board.innerHTML = sections.map(section => `
 
     if (!member) {
     return `
-    <article class="member-card">
-      <img class="avatar" src="../../nsw.png">
-      <div>
-        <div class="member-name">Vacant</div>
-        <div class="member-meta">
-          Position Unfilled
+      <article class="member-card vacant-card">
+        <img class="avatar" src="../../nsw.png">
+
+        <div>
+          <div class="member-name">Vacant</div>
+          <div class="member-meta">Unassigned</div>
+          <div class="member-billet">${escapeHtml(getBillet(callsign) || "Position Unfilled")}</div>
         </div>
+
         <span class="badge">${callsign}</span>
-      </div>
-    </article>
+      </article>
     `;
     }
 
@@ -240,22 +241,12 @@ board.innerHTML = sections.map(section => `
       <img class="avatar" src="${escapeHtml(avatarUrl(member.avatar_url) || '../../nsw.png')}">
 
       <div>
-        <div class="member-name">
-          ${escapeHtml(member.display_name)}
-        </div>
-
-        <div class="member-meta">
-          ${escapeHtml(member.naval_rank || '')}
-        </div>
-
-        <div class="member-billet">
-          ${escapeHtml(getBillet(member.callsign))}
-        </div>
-
-        <span class="badge">
-          ${escapeHtml(member.callsign)}
-        </span>
+        <div class="member-name">${escapeHtml(member.display_name)}</div>
+        <div class="member-meta">${escapeHtml(member.naval_rank || '')}</div>
+        <div class="member-billet">${escapeHtml(getBillet(member.callsign))}</div>
       </div>
+
+      <span class="badge">${escapeHtml(member.callsign)}</span>
     </article>
     `;
     }).join("")}
