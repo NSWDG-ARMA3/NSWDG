@@ -998,12 +998,8 @@
 const SLOT_MINUTES = 60;
 const SLOTS_PER_DAY = 24;
 
-// This must never depend on the user's display dropdown.
-// Pick one fixed timezone for the schedule grid.
-const SCHEDULE_TIMEZONE = "UTC";
-
 function scheduleTimezone() {
-  return SCHEDULE_TIMEZONE;
+  return displayTimezone();
 }
 
 function displayTimezone() {
@@ -2306,18 +2302,11 @@ orbatNextWeekBtn.addEventListener("click", () => {
 document.addEventListener("mouseup", finishAvailabilityDrag);
 window.addEventListener("blur", finishAvailabilityDrag);
 
-timezoneSelect.addEventListener("change", () => {
+timezoneSelect.addEventListener("change", async () => {
   localStorage.setItem("schedulingTimezone", timezoneSelect.value);
   document.getElementById("dash-timezone").textContent = displayTimezone();
 
-  buildMyTable();
-  buildHeatmap();
-  buildBestList();
-  buildChangesList();
-
-  if (activeScheduleView === "orbat") {
-    buildOrbatView();
-  }
+  await loadResponses();
 });
 
 weekInput.addEventListener("change", async () => {
