@@ -120,8 +120,40 @@ async function updateLayoutUserInfo() {
   const email = await getCurrentUserEmail();
 
   const sessionLabel = document.getElementById("session-label");
+
   if (sessionLabel) {
     sessionLabel.textContent = email;
+  }
+
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) return;
+
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("callsign, naval_rank")
+      .eq("id", user.id)
+      .single();
+
+    const canViewOrbat =
+      (
+        profile?.callsign &&
+        profile.callsign.trim() !== "" &&
+        profile.naval_rank !== "Candidate"
+      ) ||
+      [
+        "carver@navy.mil",
+        "evans@navy.mil"
+      ].includes(email.toLowerCase());
+
+    if (canViewOrbat) {
+      document.querySelectorAll(".orbat-only-link").forEach(el => {
+        el.style.display = "";
+      });
+    }
+  } catch (err) {
+    console.error(err);
   }
 }
 
