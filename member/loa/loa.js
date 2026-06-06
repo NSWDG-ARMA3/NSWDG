@@ -1,6 +1,10 @@
 import { supabase } from "/js/auth.js";
 import { bootPortalChrome, escapeHtml } from "/js/portal-common.js";
 
+import { renderPortalLayout } from "/js/portal-layout.js";
+
+renderPortalLayout("loa");
+
 let authUser = null;
 let profile = null;
 let profilesById = new Map();

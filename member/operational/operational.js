@@ -1,5 +1,9 @@
 import { supabase } from "/js/auth.js";
 
+import { renderPortalLayout } from "/js/portal-layout.js";
+
+renderPortalLayout("operational");
+
 const SETTINGS = {
   bucketName: "operational-files",
   adminEmails: ["carver@navy.mil", "evans@navy.mil"]

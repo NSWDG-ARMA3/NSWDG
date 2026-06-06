@@ -431,39 +431,11 @@
 
   <div class="screen">
 
-    <div class="portal-nav">
-      <a href="/member/">Home</a>
-      <a href="/member/scheduling/">Scheduling</a>
-      <a href="/member/documentation/">Documentation</a>
-      <a href="/member/operational/">Operational</a>
-      <a class="active" href="/member/profile/">Profile</a>
-      <a class="admin-only-link" href="/member/admin/" style="display:none;">Admin</a>
-
-      <div class="nav-right">
-        <img id="nav-avatar" class="nav-avatar" src="../../nsw.png" alt="Profile picture">
-        <span>Logged in as: <span id="session-label">Loading...</span></span>
-        <a onclick="doLogout()">Log Out</a>
-      </div>
-    </div>
+    <div id="portal-nav" class="portal-nav"></div>
 
     <div class="portal-body">
 
-      <div class="sidebar">
-        <div class="sidebar-user-box">
-          <strong id="sidebar-name">Loading...</strong>
-          Role: <span id="sidebar-role">Loading...</span>
-        </div>
-
-        <div class="sidebar-section">Navigation</div>
-        <a class="sidebar-link" href="/member/">Home / Dashboard</a>
-        <a class="sidebar-link" href="/member/scheduling/">Scheduling</a>
-        <a class="sidebar-link" href="/member/documentation/">Documentation</a>
-        <a class="sidebar-link" href="/member/operational/">Operational</a>
-
-        <div class="sidebar-section">Account</div>
-        <a class="sidebar-link admin-only-link" href="/member/admin/" style="display:none;">Admin</a>
-        <a class="sidebar-link active" href="/member/profile/">Profile</a>
-      </div>
+      <div id="portal-sidebar" class="sidebar"></div>
 
       <div class="portal-main">
         <div class="page-title">Profile</div>

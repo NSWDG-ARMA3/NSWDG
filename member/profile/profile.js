@@ -1,5 +1,9 @@
 import { supabase } from "/js/auth.js";
 
+import { renderPortalLayout } from "/js/portal-layout.js";
+
+renderPortalLayout("profile");
+
 const DEFAULT_AVATAR = "../../nsw.png";
 
 const navAvatar = document.getElementById("nav-avatar");

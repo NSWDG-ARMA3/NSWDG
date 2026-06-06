@@ -1,5 +1,9 @@
 import { supabase } from "/js/auth.js";
 
+import { renderPortalLayout } from "/js/portal-layout.js";
+
+renderPortalLayout("admin");
+
 const DEFAULT_AVATAR = "../../nsw.png";
 
 const ADMIN_EMAILS = [
