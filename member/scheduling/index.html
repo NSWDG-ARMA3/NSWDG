@@ -1203,14 +1203,11 @@ function escapeHtml(value) {
 }
 
 function labelForSlot(dayIndex, slotIndex) {
-  const utcDate = localSlotToUtc(dayIndex, slotIndex);
-  const tz = timezoneSelect.value;
+  const totalMinutes = slotIndex * SLOT_MINUTES;
+  const hour = Math.floor(totalMinutes / 60);
+  const minute = totalMinutes % 60;
 
-  return getFormatter(tz, {
-    hour: "2-digit",
-    minute: "2-digit",
-    hourCycle: "h23"
-  }).format(utcDate);
+  return `${zp(hour)}:${zp(minute)}`;
 }
 
 function labelForDateTime(utcIso) {
