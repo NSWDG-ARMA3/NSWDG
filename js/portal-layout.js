@@ -27,16 +27,22 @@ export function renderPortalLayout(activePage = "") {
         Role: <span id="sidebar-role">Loading...</span>
       </div>
 
-      <div class="sidebar-section">Navigation</div>
-      <a class="sidebar-link ${activePage === "home" ? "active" : ""}" href="/member/">Home / Dashboard</a>
-      <a class="sidebar-link ${activePage === "scheduling" ? "active" : ""}" href="/member/scheduling/">Scheduling</a>
-      <a class="sidebar-link ${activePage === "loa" ? "active" : ""}" href="/member/loa/">LOA</a>
-      <a class="sidebar-link ${activePage === "documentation" ? "active" : ""}" href="/member/documentation/">Documentation</a>
-      <a class="sidebar-link ${activePage === "operational" ? "active" : ""}" href="/member/operational/">Operational</a>
+      <div class="sidebar-section">Portal</div>
+        <a class="sidebar-link ${activePage === "home" ? "active" : ""}" href="/member/">Home</a>
 
-      <div class="sidebar-section">Account</div>
-      <a class="sidebar-link admin-only-link ${activePage === "admin" ? "active" : ""}" href="/member/admin/" style="${activePage === "admin" ? "" : "display:none;"}">Admin</a>
-      <a class="sidebar-link ${activePage === "profile" ? "active" : ""}" href="/member/profile/">Profile</a>
+        <div class="sidebar-section">Personnel</div>
+        <a class="sidebar-link ${activePage === "profile" ? "active" : ""}" href="/member/profile/">Profile</a>
+        <a class="sidebar-link ${activePage === "scheduling" ? "active" : ""}" href="/member/scheduling/">Scheduling</a>
+        <a class="sidebar-link ${activePage === "loa" ? "active" : ""}" href="/member/loa/">LOA</a>
+
+        <div class="sidebar-section">Operations</div>
+        <a class="sidebar-link ${activePage === "operational" ? "active" : ""}" href="/member/operational/">Operational</a>
+
+        <div class="sidebar-section">Resources</div>
+        <a class="sidebar-link ${activePage === "documentation" ? "active" : ""}" href="/member/documentation/">Documentation</a>
+
+        <div class="sidebar-section">System</div>
+        <a class="sidebar-link admin-only-link ${activePage === "admin" ? "active" : ""}" href="/member/admin/" style="${activePage === "admin" ? "" : "display:none;"}">Admin</a>
     `;
   }
 }
