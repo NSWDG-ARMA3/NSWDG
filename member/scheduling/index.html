@@ -990,21 +990,15 @@
 
 <script type="module">
 
-    import { supabase } from "/js/auth.js";
-    import { renderPortalLayout } from "/js/portal-layout.js";
+import { supabase } from "/js/auth.js";
+import { renderPortalLayout } from "/js/portal-layout.js";
 
-    renderPortalLayout("scheduling");
+renderPortalLayout("scheduling");
 
 const SLOT_MINUTES = 60;
 const SLOTS_PER_DAY = 24;
-
-function scheduleTimezone() {
-  return "UTC";
-}
-
-function displayTimezone() {
-  return timezoneSelect?.value || "UTC";
-}
+const DAYS_PER_WEEK = 7;
+const LOAD_BUFFER_DAYS = 3;
 
 let authUser = null;
 let profile = null;
@@ -1013,11 +1007,16 @@ let members = [];
 let allResponses = [];
 let allLoas = [];
 let mySlots = new Map();
+let dirtySlots = new Set();
 let deletedSlots = new Set();
 let hasUnsavedAvailabilityChanges = false;
 
 let activeScheduleView = "calendar";
 let selectedOrbatDay = 0;
+let isDraggingAvailability = false;
+let dragAvailabilityValue = null;
+let dragChangedAvailability = false;
+let realtimeChannel = null;
 
 const weekInput = document.getElementById("week-start");
 const timezoneSelect = document.getElementById("timezone-select");
@@ -1043,35 +1042,20 @@ const orbatCurrentWeekBtn = document.getElementById("orbat-current-week");
 const orbatNextWeekBtn = document.getElementById("orbat-next-week");
 
 const ORBAT_STRUCTURE = [
-  {
-    title: "Green Team",
-    type: "candidate",
-    slots: ["Candidate"]
-  },
-  {
-    title: "Red Squadron, 3 Troop, Golf, Assault",
-    slots: ["EG1", "EG2", "EG3", "EG4", "EG5", "EG6"]
-  },
-  {
-    title: "Red Squadron, 3 Troop, Hotel, Assault",
-    slots: ["EH1", "EH2", "EH3", "EH4", "EH5", "EH6"]
-  },
-  {
-    title: "Red Squadron, 3 Troop, India, Recce",
-    slots: ["EI1", "EI2", "EI3", "EI4", "EI5", "EI6"]
-  },
-  {
-    title: "Red Squadron, 3 Troop, Troop Headquarters",
-    slots: ["E31", "E32"]
-  },
-  {
-    title: "Red Squadron, 3 Troop, Enablers",
-    slots: ["EX1", "EN1", "ER1", "EY1", "EU1", "EU2", "EP1", "EP2"]
-  }
+  { title: "Green Team", type: "candidate", slots: ["Candidate"] },
+  { title: "Red Squadron, 3 Troop, Golf, Assault", slots: ["EG1", "EG2", "EG3", "EG4", "EG5", "EG6"] },
+  { title: "Red Squadron, 3 Troop, Hotel, Assault", slots: ["EH1", "EH2", "EH3", "EH4", "EH5", "EH6"] },
+  { title: "Red Squadron, 3 Troop, India, Recce", slots: ["EI1", "EI2", "EI3", "EI4", "EI5", "EI6"] },
+  { title: "Red Squadron, 3 Troop, Troop Headquarters", slots: ["E31", "E32"] },
+  { title: "Red Squadron, 3 Troop, Enablers", slots: ["EX1", "EN1", "ER1", "EY1", "EU1", "EU2", "EP1", "EP2"] }
 ];
 
 function zp(n) {
   return String(n).padStart(2, "0");
+}
+
+function displayTimezone() {
+  return timezoneSelect?.value || "UTC";
 }
 
 function setStatus(message, ok) {
@@ -1080,11 +1064,220 @@ function setStatus(message, ok) {
   el.className = "status-line visible " + (ok ? "ok" : "err");
 }
 
-let isDraggingAvailability = false;
-let dragAvailabilityValue = null;
-let dragChangedAvailability = false;
+function utcNowLabel() {
+  const d = new Date();
+  const months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+  return `${zp(d.getUTCHours())}${zp(d.getUTCMinutes())}Z ${d.getUTCDate()} ${months[d.getUTCMonth()]} ${d.getUTCFullYear()}`;
+}
 
-let realtimeChannel = null;
+function getFormatter(timeZone, options) {
+  return new Intl.DateTimeFormat("en-GB", { timeZone, ...options });
+}
+
+function getZonedParts(date, timeZone) {
+  const parts = new Intl.DateTimeFormat("en-GB", {
+    timeZone,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23"
+  }).formatToParts(date);
+
+  const out = {};
+  for (const p of parts) {
+    if (p.type !== "literal") out[p.type] = p.value;
+  }
+
+  return {
+    year: Number(out.year),
+    month: Number(out.month),
+    day: Number(out.day),
+    hour: Number(out.hour),
+    minute: Number(out.minute)
+  };
+}
+
+function zonedTimeToUtc(year, month, day, hour, minute, timeZone) {
+  let utc = new Date(Date.UTC(year, month - 1, day, hour, minute));
+
+  for (let i = 0; i < 3; i++) {
+    const parts = getZonedParts(utc, timeZone);
+    const wanted = Date.UTC(year, month - 1, day, hour, minute);
+    const actual = Date.UTC(parts.year, parts.month - 1, parts.day, parts.hour, parts.minute);
+    const diff = wanted - actual;
+
+    if (diff === 0) break;
+    utc = new Date(utc.getTime() + diff);
+  }
+
+  return utc;
+}
+
+function addDaysToIsoDate(iso, days) {
+  const d = new Date(`${iso}T00:00:00Z`);
+  d.setUTCDate(d.getUTCDate() + days);
+  return d.toISOString().split("T")[0];
+}
+
+function isoDate(d) {
+  return d.toISOString().split("T")[0];
+}
+
+function getNextMonday() {
+  const today = new Date();
+  const day = today.getDay();
+  const diff = day === 0 ? 1 : 8 - day;
+  const monday = new Date(today);
+  monday.setDate(today.getDate() + diff);
+  return isoDate(monday);
+}
+
+function localSlotToUtc(dayIndex, slotIndex, timeZone = displayTimezone()) {
+  const localDateIso = addDaysToIsoDate(weekInput.value, dayIndex);
+  const y = Number(localDateIso.slice(0, 4));
+  const m = Number(localDateIso.slice(5, 7));
+  const d = Number(localDateIso.slice(8, 10));
+  const totalMinutes = slotIndex * SLOT_MINUTES;
+  const hour = Math.floor(totalMinutes / 60);
+  const minute = totalMinutes % 60;
+
+  return zonedTimeToUtc(y, m, d, hour, minute, timeZone);
+}
+
+function getDisplayedWeekRangeUtc() {
+  return {
+    start: localSlotToUtc(0, 0),
+    end: localSlotToUtc(DAYS_PER_WEEK, 0)
+  };
+}
+
+function getBufferedWeekRangeUtc() {
+  const { start, end } = getDisplayedWeekRangeUtc();
+  const loadStart = new Date(start);
+  loadStart.setUTCDate(loadStart.getUTCDate() - LOAD_BUFFER_DAYS);
+
+  const loadEnd = new Date(end);
+  loadEnd.setUTCDate(loadEnd.getUTCDate() + LOAD_BUFFER_DAYS);
+
+  return { loadStart, loadEnd };
+}
+
+function visibleSlotKeys() {
+  const keys = [];
+  for (let d = 0; d < DAYS_PER_WEEK; d++) {
+    for (let s = 0; s < SLOTS_PER_DAY; s++) {
+      keys.push(slotKey(localSlotToUtc(d, s)));
+    }
+  }
+  return keys;
+}
+
+function slotKey(date) {
+  return date.toISOString();
+}
+
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function labelForSlot(_dayIndex, slotIndex) {
+  const totalMinutes = slotIndex * SLOT_MINUTES;
+  const hour = Math.floor(totalMinutes / 60);
+  const minute = totalMinutes % 60;
+  return `${zp(hour)}:${zp(minute)}`;
+}
+
+function labelForDateTime(utcIso) {
+  return getFormatter(displayTimezone(), {
+    weekday: "short",
+    day: "2-digit",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23"
+  }).format(new Date(utcIso));
+}
+
+function labelForUpdateTime(utcIso) {
+  return getFormatter(displayTimezone(), {
+    day: "2-digit",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23"
+  }).format(new Date(utcIso));
+}
+
+function dayHeader(dayIndex) {
+  const noon = localSlotToUtc(dayIndex, 12);
+  const weekday = getFormatter(displayTimezone(), { weekday: "short" }).format(noon);
+  const dateLabel = getFormatter(displayTimezone(), { day: "2-digit", month: "short" }).format(noon);
+  return `${escapeHtml(weekday)}<small>${escapeHtml(dateLabel)}</small>`;
+}
+
+function getDayLabel(dayIndex) {
+  const noon = localSlotToUtc(dayIndex, 12);
+  const weekday = getFormatter(displayTimezone(), { weekday: "short" }).format(noon);
+  const dateLabel = getFormatter(displayTimezone(), { day: "2-digit", month: "short" }).format(noon);
+  return `${weekday} ${dateLabel}`;
+}
+
+function getWeekTitle() {
+  const start = localSlotToUtc(0, 0);
+  const end = localSlotToUtc(6, 23);
+  const options = { day: "2-digit", month: "short", year: "numeric" };
+  return `${getFormatter(displayTimezone(), options).format(start)} - ${getFormatter(displayTimezone(), options).format(end)}`;
+}
+
+function cycleAvailability(current) {
+  if (!current) return "available";
+  if (current === "available") return "maybe";
+  if (current === "maybe") return "unavailable";
+  return null;
+}
+
+function normalizeAvailability(value) {
+  return String(value || "").trim().toLowerCase();
+}
+
+function availabilityLabel(value) {
+  value = normalizeAvailability(value);
+  if (value === "available") return "Available";
+  if (value === "maybe") return "Maybe";
+  if (value === "unavailable") return "Unavailable";
+  return "";
+}
+
+function compactAvailabilityLabel(value) {
+  value = normalizeAvailability(value);
+  if (value === "available") return "AVAIL";
+  if (value === "maybe") return "MAYBE";
+  if (value === "unavailable") return "NO";
+  return "";
+}
+
+function myClass(value) {
+  value = normalizeAvailability(value);
+  if (value === "available") return "mine-available";
+  if (value === "maybe") return "mine-maybe";
+  if (value === "unavailable") return "mine-unavailable";
+  return "mine-empty";
+}
+
+function scoreToGrade(score, responseCount) {
+  if (responseCount === 0) return "gray";
+  if (score < 0.25) return "red";
+  if (score < 0.50) return "orange";
+  if (score < 0.75) return "yellow";
+  return "green";
+}
 
 function updateAvailabilityCellDisplay(cell, value) {
   cell.className = myClass(value);
@@ -1102,9 +1295,11 @@ function setAvailabilityCell(cell, value) {
 
   if (value) {
     mySlots.set(key, value);
+    dirtySlots.add(key);
     deletedSlots.delete(key);
   } else {
     mySlots.delete(key);
+    dirtySlots.delete(key);
     deletedSlots.add(key);
   }
 
@@ -1115,7 +1310,6 @@ function setAvailabilityCell(cell, value) {
 
 function finishAvailabilityDrag() {
   if (!isDraggingAvailability) return;
-
   isDraggingAvailability = false;
   dragAvailabilityValue = null;
 
@@ -1123,24 +1317,13 @@ function finishAvailabilityDrag() {
     dragChangedAvailability = false;
     buildHeatmap();
     buildBestList();
+    if (activeScheduleView === "orbat") buildOrbatView();
   }
-}
-
-function utcNowLabel() {
-  const d = new Date();
-  const months = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
-  return `${zp(d.getUTCHours())}${zp(d.getUTCMinutes())}Z ${d.getUTCDate()} ${months[d.getUTCMonth()]} ${d.getUTCFullYear()}`;
 }
 
 function showAdminLinksIfAllowed(email) {
   const normalized = String(email || "").trim().toLowerCase();
-
-  if (
-    normalized !== "evans@navy.mil" &&
-    normalized !== "carver@navy.mil"
-  ) {
-    return;
-  }
+  if (normalized !== "evans@navy.mil" && normalized !== "carver@navy.mil") return;
 
   document.querySelectorAll(".admin-only-link").forEach(link => {
     link.style.display = "";
@@ -1152,594 +1335,22 @@ function getUserIdFromEmail(email) {
   return email.split("@")[0];
 }
 
-function isoDate(d) {
-  return d.toISOString().split("T")[0];
-}
-
-function getNextMonday() {
-  const today = new Date();
-  const day = today.getDay();
-  const diff = day === 0 ? 1 : 8 - day;
-  const monday = new Date(today);
-  monday.setDate(today.getDate() + diff);
-  return isoDate(monday);
-}
-
-function getFormatter(timeZone, options) {
-  return new Intl.DateTimeFormat("en-GB", {
-    timeZone,
-    ...options
-  });
-}
-
-function getZonedParts(date, timeZone) {
-  const parts = new Intl.DateTimeFormat("en-GB", {
-    timeZone,
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-    hourCycle: "h23"
-  }).formatToParts(date);
-
-  const out = {};
-
-  for (const p of parts) {
-    if (p.type !== "literal") {
-      out[p.type] = p.value;
-    }
-  }
-
-  return {
-    year: Number(out.year),
-    month: Number(out.month),
-    day: Number(out.day),
-    hour: Number(out.hour),
-    minute: Number(out.minute)
-  };
-}
-
-function zonedTimeToUtc(year, month, day, hour, minute, timeZone) {
-  const guess = new Date(Date.UTC(year, month - 1, day, hour, minute));
-  const parts = getZonedParts(guess, timeZone);
-
-  const targetUtc = Date.UTC(year, month - 1, day, hour, minute);
-  const actualUtc = Date.UTC(parts.year, parts.month - 1, parts.day, parts.hour, parts.minute);
-
-  return new Date(guess.getTime() + (targetUtc - actualUtc));
-}
-
-function addDaysToIsoDate(iso, days) {
-  const d = new Date(iso + "T00:00:00Z");
-  d.setUTCDate(d.getUTCDate() + days);
-  return d.toISOString().split("T")[0];
-}
-
-function getWeekRangeUtc() {
-  const startIso = weekInput.value;
-
-  const y = Number(startIso.slice(0, 4));
-  const m = Number(startIso.slice(5, 7));
-  const d = Number(startIso.slice(8, 10));
-
-  const start = zonedTimeToUtc(y, m, d, 0, 0, scheduleTimezone());
-
-  const endIso = addDaysToIsoDate(startIso, 7);
-  const ey = Number(endIso.slice(0, 4));
-  const em = Number(endIso.slice(5, 7));
-  const ed = Number(endIso.slice(8, 10));
-
-  const end = zonedTimeToUtc(ey, em, ed, 0, 0, scheduleTimezone());
-
-  return { start, end };
-}
-
-function localSlotToUtc(dayIndex, slotIndex) {
-  const baseIso = addDaysToIsoDate(weekInput.value, dayIndex);
-
-  const y = Number(baseIso.slice(0, 4));
-  const m = Number(baseIso.slice(5, 7));
-  const d = Number(baseIso.slice(8, 10));
-
-  const totalMinutes = slotIndex * SLOT_MINUTES;
-  const hour = Math.floor(totalMinutes / 60);
-  const minute = totalMinutes % 60;
-
-  return zonedTimeToUtc(y, m, d, hour, minute, scheduleTimezone());
-}
-
-function slotKey(date) {
-  return date.toISOString();
-}
-
-function escapeHtml(value) {
-  return String(value ?? "")
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-}
-
-function labelForSlot(dayIndex, slotIndex) {
-  const slotDate = localSlotToUtc(dayIndex, slotIndex);
-
-  return getFormatter(displayTimezone(), {
-    hour: "2-digit",
-    minute: "2-digit",
-    hourCycle: "h23"
-  }).format(slotDate);
-}
-
-function labelForDateTime(utcIso) {
-  const tz = displayTimezone();
-  const d = new Date(utcIso);
-
-  return getFormatter(tz, {
-    weekday: "short",
-    day: "2-digit",
-    month: "short",
-    hour: "2-digit",
-    minute: "2-digit",
-    hourCycle: "h23"
-  }).format(d);
-}
-
-function labelForUpdateTime(utcIso) {
-  const tz = displayTimezone();
-  const d = new Date(utcIso);
-
-  return getFormatter(tz, {
-    day: "2-digit",
-    month: "short",
-    hour: "2-digit",
-    minute: "2-digit",
-    hourCycle: "h23"
-  }).format(d);
-}
-
-function dayHeader(dayIndex) {
-  const utcDate = localSlotToUtc(dayIndex, 12);
-  const tz = displayTimezone();
-
-  const weekday = getFormatter(tz, {
-    weekday: "short"
-  }).format(utcDate);
-
-  const dateLabel = getFormatter(tz, {
-    day: "2-digit",
-    month: "short"
-  }).format(utcDate);
-
-  return `${escapeHtml(weekday)}<small>${escapeHtml(dateLabel)}</small>`;
-}
-
-function cycleAvailability(current) {
-  if (!current) return "available";
-  if (current === "available") return "maybe";
-  if (current === "maybe") return "unavailable";
-  return null;
-}
-
-function availabilityLabel(value) {
-  value = normalizeAvailability(value);
-
-  if (value === "available") return "Available";
-  if (value === "maybe") return "Maybe";
-  if (value === "unavailable") return "Unavailable";
-  return "";
-}
-
-function normalizeAvailability(value) {
-  return String(value || "").trim().toLowerCase();
-}
-
-function compactAvailabilityLabel(value) {
-  value = normalizeAvailability(value);
-
-  if (value === "available") return "AVAIL";
-  if (value === "maybe") return "MAYBE";
-  if (value === "unavailable") return "NO";
-  return "";
-}
-
-function myClass(value) {
-  value = normalizeAvailability(value);
-
-  if (value === "available") return "mine-available";
-  if (value === "maybe") return "mine-maybe";
-  if (value === "unavailable") return "mine-unavailable";
-  return "mine-empty";
-}
-function scoreToGrade(score, responseCount) {
-  if (responseCount === 0) return "gray";
-  if (score < 0.25) return "red";
-  if (score < 0.50) return "orange";
-  if (score < 0.75) return "yellow";
-  return "green";
-}
-
 function getProfileName(userId) {
   const prof = profilesById.get(userId);
   return prof ? prof.display_name : userId;
 }
 
-function getProfileByCallsign(callsign) {
-  const wanted = String(callsign || "").trim().toUpperCase();
+function normalizeCallsign(value) {
+  return String(value || "").trim().toUpperCase();
+}
 
-  return members.find(member => {
-    return String(member.callsign || "").trim().toUpperCase() === wanted;
-  }) || null;
+function getProfileByCallsign(callsign) {
+  const wanted = normalizeCallsign(callsign);
+  return members.find(member => normalizeCallsign(member.callsign) === wanted) || null;
 }
 
 function getCandidateMembers() {
-  return members.filter(member => {
-    const callsign = String(member.callsign || "").trim();
-    const rank = String(member.naval_rank || "").trim();
-
-    return !callsign;
-  });
-}
-
-function getResponsesForDay(dayIndex) {
-  const dayStart = localSlotToUtc(dayIndex, 0);
-  const nextDayStart = localSlotToUtc(dayIndex + 1, 0);
-
-  return allResponses.filter(row => {
-    const rowDate = new Date(row.slot_start);
-    return rowDate >= dayStart && rowDate < nextDayStart;
-  });
-}
-
-function getMemberResponsesForDay(memberId, dayIndex) {
-  return getResponsesForDay(dayIndex)
-    .filter(row => row.user_id === memberId)
-    .sort((a, b) => new Date(a.slot_start) - new Date(b.slot_start));
-}
-
-function getPositiveMemberResponsesForDay(memberId, dayIndex) {
-  return getMemberResponsesForDay(memberId, dayIndex)
-    .filter(row => row.availability === "available" || row.availability === "maybe");
-}
-
-function getAvailabilitySummary(responses) {
-  if (!responses.length) {
-    return {
-      className: "empty",
-      lineOne: "No availability submitted",
-      lineTwo: ""
-    };
-  }
-
-  const available = responses.filter(row => row.availability === "available");
-  const maybe = responses.filter(row => row.availability === "maybe");
-
-  const sorted = [...responses].sort((a, b) => {
-    return new Date(a.slot_start) - new Date(b.slot_start);
-  });
-
-  const firstTime = labelForDateTime(sorted[0].slot_start);
-  const lastTime = labelForDateTime(sorted[sorted.length - 1].slot_start);
-
-  const lineParts = [];
-
-  if (available.length) {
-    lineParts.push(`Available: ${available.length}`);
-  }
-
-  if (maybe.length) {
-    lineParts.push(`Maybe: ${maybe.length}`);
-  }
-
-  return {
-    className: available.length ? "available" : "maybe",
-    lineOne: lineParts.join(" | "),
-    lineTwo: `First: ${firstTime} | Last: ${lastTime}`
-  };
-}
-
-function getDayLabel(dayIndex) {
-  const utcDate = localSlotToUtc(dayIndex, 12);
-
-  const weekday = getFormatter(displayTimezone(), {
-    weekday: "short"
-  }).format(utcDate);
-
-  const dateLabel = getFormatter(displayTimezone(), {
-    day: "2-digit",
-    month: "short"
-  }).format(utcDate);
-
-  return `${weekday} ${dateLabel}`;
-}
-
-function getWeekTitle() {
-  const start = localSlotToUtc(0, 0);
-  const end = localSlotToUtc(6, 23);
-
-  const startLabel = getFormatter(displayTimezone(), {
-    day: "2-digit",
-    month: "short",
-    year: "numeric"
-  }).format(start);
-
-  const endLabel = getFormatter(displayTimezone(), {
-    day: "2-digit",
-    month: "short",
-    year: "numeric"
-  }).format(end);
-
-  return `${startLabel} - ${endLabel}`;
-}
-
-function setScheduleView(viewName) {
-  activeScheduleView = viewName;
-
-  if (viewName === "orbat") {
-    calendarView.classList.add("hidden");
-    orbatView.classList.remove("hidden");
-    calendarViewBtn.classList.remove("active");
-    orbatViewBtn.classList.add("active");
-    buildOrbatView();
-    return;
-  }
-
-  orbatView.classList.add("hidden");
-  calendarView.classList.remove("hidden");
-  orbatViewBtn.classList.remove("active");
-  calendarViewBtn.classList.add("active");
-}
-
-function buildOrbatDayTabs() {
-  let html = "";
-
-  for (let dayIndex = 0; dayIndex < 7; dayIndex++) {
-    html += `
-      <button
-        class="orbat-day-tab ${dayIndex === selectedOrbatDay ? "active" : ""}"
-        type="button"
-        data-orbat-day="${dayIndex}">
-        ${escapeHtml(getDayLabel(dayIndex))}
-      </button>`;
-  }
-
-  orbatDayTabs.innerHTML = html;
-
-  orbatDayTabs.querySelectorAll("[data-orbat-day]").forEach(button => {
-    button.addEventListener("click", () => {
-      selectedOrbatDay = Number(button.dataset.orbatDay);
-      buildOrbatView();
-    });
-  });
-}
-
-function buildOrbatPersonCard(member, callsignLabel, responses) {
-  const summary = getAvailabilitySummary(responses);
-
-  return `
-    <div
-      class="orbat-person ${summary.className}"
-      data-member-id="${escapeHtml(member.id)}">
-      <strong>${escapeHtml(callsignLabel)} - ${escapeHtml(member.display_name || member.user_id)}</strong>
-      <small>${escapeHtml(member.naval_rank || "Candidate")}</small>
-      <small>${escapeHtml(summary.lineOne)}</small>
-      ${summary.lineTwo ? `<small>${escapeHtml(summary.lineTwo)}</small>` : ""}
-    </div>`;
-}
-
-function buildEmptyOrbatPerson(callsignLabel) {
-  return `
-    <div class="orbat-person empty">
-      <strong>${escapeHtml(callsignLabel)}</strong>
-      <small>Unassigned</small>
-      <small>No member assigned to this callsign.</small>
-    </div>`;
-}
-
-function buildOrbatSection(section, dayIndex) {
-  let html = `
-    <div class="orbat-section">
-      <div class="orbat-section-title">${escapeHtml(section.title)}</div>
-      <div class="orbat-slot-grid">`;
-
-  if (section.type === "candidate") {
-    const candidates = getCandidateMembers();
-
-    if (!candidates.length) {
-      html += `
-        <div class="orbat-person empty">
-          <strong>Candidate</strong>
-          <small>No candidates found.</small>
-        </div>`;
-    } else {
-      for (const candidate of candidates) {
-        const responses = getPositiveMemberResponsesForDay(candidate.id, dayIndex);
-        html += buildOrbatPersonCard(candidate, "Candidate", responses);
-      }
-    }
-  } else {
-    for (const callsign of section.slots) {
-      const member = getProfileByCallsign(callsign);
-
-      if (!member) {
-        html += buildEmptyOrbatPerson(callsign);
-        continue;
-      }
-
-      const responses = getPositiveMemberResponsesForDay(member.id, dayIndex);
-      html += buildOrbatPersonCard(member, callsign, responses);
-    }
-  }
-
-  html += `
-      </div>
-    </div>`;
-
-  return html;
-}
-
-function buildOrbatView() {
-  if (!orbatView || !orbatDayContent) return;
-
-  orbatWeekTitle.textContent = getWeekTitle();
-  buildOrbatDayTabs();
-
-  let html = `
-    <div class="orbat-day-panel">
-      <div class="orbat-day-panel-header">${escapeHtml(getDayLabel(selectedOrbatDay))}</div>`;
-
-  for (const section of ORBAT_STRUCTURE) {
-    html += buildOrbatSection(section, selectedOrbatDay);
-  }
-
-  html += "</div>";
-
-  orbatDayContent.innerHTML = html;
-
-  orbatDayContent.querySelectorAll("[data-member-id]").forEach(card => {
-    card.addEventListener("click", () => {
-      showOrbatMemberDetails(card.dataset.memberId, selectedOrbatDay);
-    });
-  });
-}
-
-function showOrbatMemberDetails(memberId, dayIndex) {
-  const member = profilesById.get(memberId);
-
-  if (!member) {
-    return;
-  }
-
-  const responses = getMemberResponsesForDay(memberId, dayIndex);
-
-  const responseHtml = responses.length
-    ? responses.map(row => {
-        return `
-          <div class="orbat-detail-row">
-            <div class="orbat-detail-label">${escapeHtml(labelForDateTime(row.slot_start))}</div>
-            <div>${escapeHtml(availabilityLabel(row.availability))}</div>
-          </div>`;
-      }).join("")
-    : `
-      <div class="orbat-detail-row">
-        <div class="orbat-detail-label">Availability</div>
-        <div>No response submitted for this day.</div>
-      </div>`;
-
-  const steam = member.steam_name || member.steam_id || "-";
-  const discord = member.discord_name || member.discord_id || "-";
-
-  orbatDetailCard.innerHTML = `
-    <h3>Individual Details</h3>
-
-    <div class="orbat-detail-row">
-      <div class="orbat-detail-label">Name</div>
-      <div>${escapeHtml(member.display_name || member.user_id)}</div>
-    </div>
-
-    <div class="orbat-detail-row">
-      <div class="orbat-detail-label">Rank</div>
-      <div>${escapeHtml(member.naval_rank || "-")}</div>
-    </div>
-
-    <div class="orbat-detail-row">
-      <div class="orbat-detail-label">Callsign</div>
-      <div>${escapeHtml(member.callsign || "Candidate")}</div>
-    </div>
-
-    <div class="orbat-detail-row">
-      <div class="orbat-detail-label">Steam</div>
-      <div>${escapeHtml(steam)}</div>
-    </div>
-
-    <div class="orbat-detail-row">
-      <div class="orbat-detail-label">Discord</div>
-      <div>${escapeHtml(discord)}</div>
-    </div>
-
-    <div class="orbat-detail-row">
-      <div class="orbat-detail-label">Day</div>
-      <div>${escapeHtml(getDayLabel(dayIndex))}</div>
-    </div>
-
-    ${responseHtml}
-  `;
-}
-
-function shiftSelectedWeek(days) {
-  const current = weekInput.value;
-
-  if (!current) {
-    return;
-  }
-
-  weekInput.value = addDaysToIsoDate(current, days);
-  loadResponses();
-}
-
-function buildMyTable() {
-  const table = document.getElementById("my-table");
-
-  let html = "<tr><th class='time-col'>Time</th>";
-
-  for (let d = 0; d < 7; d++) {
-    html += `<th>${dayHeader(d)}</th>`;
-  }
-
-  html += "</tr>";
-
-  for (let s = 0; s < SLOTS_PER_DAY; s++) {
-    html += `<tr><td class="time-col">${escapeHtml(labelForSlot(0, s))}</td>`;
-
-    for (let d = 0; d < 7; d++) {
-      const key = slotKey(localSlotToUtc(d, s));
-      const value = mySlots.get(key) || null;
-
-      html += `
-      <td class="${myClass(value)}"
-          data-day="${d}"
-          data-slot="${s}"
-          title="Click or drag to change. Current: ${escapeHtml(availabilityLabel(value) || "Empty")}">
-        ${escapeHtml(compactAvailabilityLabel(value))}
-      </td>`;
-    }
-
-    html += "</tr>";
-  }
-
-  table.innerHTML = html;
-
-  table.querySelectorAll("td[data-day]").forEach(cell => {
-
-  cell.addEventListener("mousedown", event => {
-    if (event.button !== 0) return;
-
-    event.preventDefault();
-
-    const d = Number(cell.dataset.day);
-    const s = Number(cell.dataset.slot);
-
-    const key = slotKey(localSlotToUtc(d, s));
-
-    isDraggingAvailability = true;
-    dragAvailabilityValue = cycleAvailability(mySlots.get(key));
-    dragChangedAvailability = false;
-
-    setAvailabilityCell(cell, dragAvailabilityValue);
-  });
-
-  cell.addEventListener("mouseenter", () => {
-    if (!isDraggingAvailability) return;
-
-    setAvailabilityCell(cell, dragAvailabilityValue);
-  });
-
-});
-}
-
-function normalizeCallsign(value) {
-  return String(value || "").trim().toUpperCase();
+  return members.filter(member => !String(member.callsign || "").trim());
 }
 
 function isGreenTeamMember(member) {
@@ -1768,7 +1379,6 @@ function isFullTroopMember(member) {
 
 function getFilteredHeatmapMembers() {
   const filter = heatmapFilter?.value || "full_troop";
-
   return members.filter(member => {
     if (filter === "green") return isGreenTeamMember(member);
     if (filter === "golf") return isGolfTeamMember(member);
@@ -1776,7 +1386,6 @@ function getFilteredHeatmapMembers() {
     if (filter === "india") return isIndiaTeamMember(member);
     if (filter === "headquarters") return isHeadquartersMember(member);
     if (filter === "full_troop_green") return true;
-
     return isFullTroopMember(member);
   });
 }
@@ -1787,15 +1396,13 @@ function getFilteredHeatmapMemberIds() {
 
 function responsesForSlot(key) {
   const allowedIds = getFilteredHeatmapMemberIds();
-
   return allResponses.filter(row => {
-    return allowedIds.has(row.user_id) &&
-      new Date(row.slot_start).toISOString() === key;
+    return allowedIds.has(row.user_id) && new Date(row.slot_start).toISOString() === key;
   });
 }
 
 function localDateIsoFromSlot(slotIso) {
-  const parts = getZonedParts(new Date(slotIso), scheduleTimezone());
+  const parts = getZonedParts(new Date(slotIso), displayTimezone());
   return `${parts.year}-${zp(parts.month)}-${zp(parts.day)}`;
 }
 
@@ -1814,7 +1421,6 @@ function getLoaMemberIdsForSlot(slotIso, existingResponseIds) {
     if (!allowedIds.has(loa.requester_id)) continue;
     if (existingResponseIds.has(loa.requester_id)) continue;
     if (!loaCoversSlot(loa, slotIso)) continue;
-
     loaIds.add(loa.requester_id);
   }
 
@@ -1829,13 +1435,11 @@ function aggregateSlot(key) {
   const peopleAvailable = [];
   const peopleMaybe = [];
   const peopleUnavailable = [];
-
   const rows = responsesForSlot(key);
   const existingResponseIds = new Set();
 
   for (const row of rows) {
     existingResponseIds.add(row.user_id);
-
     const name = getProfileName(row.user_id);
 
     if (row.availability === "available") {
@@ -1851,13 +1455,11 @@ function aggregateSlot(key) {
   }
 
   const allowedIds = getFilteredHeatmapMemberIds();
-
-  if (allowedIds.has(authUser.id) && mySlots.has(key)) {
+  if (authUser && allowedIds.has(authUser.id) && mySlots.has(key)) {
     const existingOwn = rows.some(r => r.user_id === authUser.id);
-
     if (!existingOwn) {
       const ownValue = mySlots.get(key);
-      const ownName = profile.display_name;
+      const ownName = profile?.display_name || "Me";
 
       if (ownValue === "available") {
         available++;
@@ -1875,19 +1477,16 @@ function aggregateSlot(key) {
   }
 
   const loaMemberIds = getLoaMemberIdsForSlot(key, existingResponseIds);
-
   for (const memberId of loaMemberIds) {
     unavailable++;
     peopleUnavailable.push(`${getProfileName(memberId)} (LOA)`);
   }
 
   const responseCount = available + maybe + unavailable;
-
   const totalMembers = hideUnansweredCheckbox?.checked
     ? Math.max(responseCount, 1)
     : Math.max(getFilteredHeatmapMembers().length, 1);
   const score = (available + maybe * 0.5) / totalMembers;
-  const grade = scoreToGrade(score, responseCount);
 
   return {
     available,
@@ -1896,7 +1495,7 @@ function aggregateSlot(key) {
     responseCount,
     totalMembers,
     score,
-    grade,
+    grade: scoreToGrade(score, responseCount),
     peopleAvailable,
     peopleMaybe,
     peopleUnavailable
@@ -1918,12 +1517,52 @@ function buildHoverTitle(ag, slotIso) {
   ].join("\n");
 }
 
-function buildHeatmap() {
-  const table = document.getElementById("heatmap-table");
+function getResponsesForDay(dayIndex) {
+  const dayStart = localSlotToUtc(dayIndex, 0);
+  const nextDayStart = localSlotToUtc(dayIndex + 1, 0);
 
+  return allResponses.filter(row => {
+    const rowDate = new Date(row.slot_start);
+    return rowDate >= dayStart && rowDate < nextDayStart;
+  });
+}
+
+function getMemberResponsesForDay(memberId, dayIndex) {
+  return getResponsesForDay(dayIndex)
+    .filter(row => row.user_id === memberId)
+    .sort((a, b) => new Date(a.slot_start) - new Date(b.slot_start));
+}
+
+function getPositiveMemberResponsesForDay(memberId, dayIndex) {
+  return getMemberResponsesForDay(memberId, dayIndex)
+    .filter(row => row.availability === "available" || row.availability === "maybe");
+}
+
+function getAvailabilitySummary(responses) {
+  if (!responses.length) {
+    return { className: "empty", lineOne: "No availability submitted", lineTwo: "" };
+  }
+
+  const available = responses.filter(row => row.availability === "available");
+  const maybe = responses.filter(row => row.availability === "maybe");
+  const sorted = [...responses].sort((a, b) => new Date(a.slot_start) - new Date(b.slot_start));
+  const lineParts = [];
+
+  if (available.length) lineParts.push(`Available: ${available.length}`);
+  if (maybe.length) lineParts.push(`Maybe: ${maybe.length}`);
+
+  return {
+    className: available.length ? "available" : "maybe",
+    lineOne: lineParts.join(" | "),
+    lineTwo: `First: ${labelForDateTime(sorted[0].slot_start)} | Last: ${labelForDateTime(sorted[sorted.length - 1].slot_start)}`
+  };
+}
+
+function buildMyTable() {
+  const table = document.getElementById("my-table");
   let html = "<tr><th class='time-col'>Time</th>";
 
-  for (let d = 0; d < 7; d++) {
+  for (let d = 0; d < DAYS_PER_WEEK; d++) {
     html += `<th>${dayHeader(d)}</th>`;
   }
 
@@ -1932,9 +1571,62 @@ function buildHeatmap() {
   for (let s = 0; s < SLOTS_PER_DAY; s++) {
     html += `<tr><td class="time-col">${escapeHtml(labelForSlot(0, s))}</td>`;
 
-    for (let d = 0; d < 7; d++) {
-      const slotDate = localSlotToUtc(d, s);
-      const key = slotKey(slotDate);
+    for (let d = 0; d < DAYS_PER_WEEK; d++) {
+      const key = slotKey(localSlotToUtc(d, s));
+      const value = mySlots.get(key) || null;
+
+      html += `
+        <td class="${myClass(value)}"
+            data-day="${d}"
+            data-slot="${s}"
+            title="Click or drag to change. Current: ${escapeHtml(availabilityLabel(value) || "Empty")}">
+          ${escapeHtml(compactAvailabilityLabel(value))}
+        </td>`;
+    }
+
+    html += "</tr>";
+  }
+
+  table.innerHTML = html;
+
+  table.querySelectorAll("td[data-day]").forEach(cell => {
+    cell.addEventListener("mousedown", event => {
+      if (event.button !== 0) return;
+      event.preventDefault();
+
+      const d = Number(cell.dataset.day);
+      const s = Number(cell.dataset.slot);
+      const key = slotKey(localSlotToUtc(d, s));
+
+      isDraggingAvailability = true;
+      dragAvailabilityValue = cycleAvailability(mySlots.get(key));
+      dragChangedAvailability = false;
+
+      setAvailabilityCell(cell, dragAvailabilityValue);
+    });
+
+    cell.addEventListener("mouseenter", () => {
+      if (!isDraggingAvailability) return;
+      setAvailabilityCell(cell, dragAvailabilityValue);
+    });
+  });
+}
+
+function buildHeatmap() {
+  const table = document.getElementById("heatmap-table");
+  let html = "<tr><th class='time-col'>Time</th>";
+
+  for (let d = 0; d < DAYS_PER_WEEK; d++) {
+    html += `<th>${dayHeader(d)}</th>`;
+  }
+
+  html += "</tr>";
+
+  for (let s = 0; s < SLOTS_PER_DAY; s++) {
+    html += `<tr><td class="time-col">${escapeHtml(labelForSlot(0, s))}</td>`;
+
+    for (let d = 0; d < DAYS_PER_WEEK; d++) {
+      const key = slotKey(localSlotToUtc(d, s));
       const ag = aggregateSlot(key);
       const percent = Math.round(ag.score * 100);
       const title = buildHoverTitle(ag, key);
@@ -1955,7 +1647,7 @@ function buildHeatmap() {
 function buildBestList() {
   const entries = [];
 
-  for (let d = 0; d < 7; d++) {
+  for (let d = 0; d < DAYS_PER_WEEK; d++) {
     for (let s = 0; s < SLOTS_PER_DAY; s++) {
       const key = slotKey(localSlotToUtc(d, s));
       const ag = aggregateSlot(key);
@@ -1963,8 +1655,6 @@ function buildBestList() {
       if (ag.responseCount > 0) {
         entries.push({
           slotIso: key,
-          day: d,
-          slot: s,
           score: ag.score,
           available: ag.available,
           maybe: ag.maybe,
@@ -1988,9 +1678,7 @@ function buildBestList() {
     return;
   }
 
-  const top = entries.slice(0, 8);
-
-  list.innerHTML = top.map(e => {
+  list.innerHTML = entries.slice(0, 8).map(e => {
     const pct = Math.round(e.score * 100);
     return `
       <li>
@@ -2025,6 +1713,175 @@ function buildChangesList() {
   }).join("");
 }
 
+function buildOrbatPersonCard(member, callsignLabel, responses) {
+  const summary = getAvailabilitySummary(responses);
+
+  return `
+    <div class="orbat-person ${summary.className}" data-member-id="${escapeHtml(member.id)}">
+      <strong>${escapeHtml(callsignLabel)} - ${escapeHtml(member.display_name || member.user_id)}</strong>
+      <small>${escapeHtml(member.naval_rank || "Candidate")}</small>
+      <small>${escapeHtml(summary.lineOne)}</small>
+      ${summary.lineTwo ? `<small>${escapeHtml(summary.lineTwo)}</small>` : ""}
+    </div>`;
+}
+
+function buildEmptyOrbatPerson(callsignLabel) {
+  return `
+    <div class="orbat-person empty">
+      <strong>${escapeHtml(callsignLabel)}</strong>
+      <small>Unassigned</small>
+      <small>No member assigned to this callsign.</small>
+    </div>`;
+}
+
+function buildOrbatSection(section, dayIndex) {
+  let html = `
+    <div class="orbat-section">
+      <div class="orbat-section-title">${escapeHtml(section.title)}</div>
+      <div class="orbat-slot-grid">`;
+
+  if (section.type === "candidate") {
+    const candidates = getCandidateMembers();
+
+    if (!candidates.length) {
+      html += `
+        <div class="orbat-person empty">
+          <strong>Candidate</strong>
+          <small>No candidates found.</small>
+        </div>`;
+    } else {
+      for (const candidate of candidates) {
+        html += buildOrbatPersonCard(candidate, "Candidate", getPositiveMemberResponsesForDay(candidate.id, dayIndex));
+      }
+    }
+  } else {
+    for (const callsign of section.slots) {
+      const member = getProfileByCallsign(callsign);
+      if (!member) {
+        html += buildEmptyOrbatPerson(callsign);
+        continue;
+      }
+      html += buildOrbatPersonCard(member, callsign, getPositiveMemberResponsesForDay(member.id, dayIndex));
+    }
+  }
+
+  html += "</div></div>";
+  return html;
+}
+
+function buildOrbatDayTabs() {
+  let html = "";
+
+  for (let dayIndex = 0; dayIndex < DAYS_PER_WEEK; dayIndex++) {
+    html += `
+      <button class="orbat-day-tab ${dayIndex === selectedOrbatDay ? "active" : ""}"
+              type="button"
+              data-orbat-day="${dayIndex}">
+        ${escapeHtml(getDayLabel(dayIndex))}
+      </button>`;
+  }
+
+  orbatDayTabs.innerHTML = html;
+
+  orbatDayTabs.querySelectorAll("[data-orbat-day]").forEach(button => {
+    button.addEventListener("click", () => {
+      selectedOrbatDay = Number(button.dataset.orbatDay);
+      buildOrbatView();
+    });
+  });
+}
+
+function buildOrbatView() {
+  if (!orbatView || !orbatDayContent) return;
+
+  orbatWeekTitle.textContent = getWeekTitle();
+  buildOrbatDayTabs();
+
+  let html = `
+    <div class="orbat-day-panel">
+      <div class="orbat-day-panel-header">${escapeHtml(getDayLabel(selectedOrbatDay))}</div>`;
+
+  for (const section of ORBAT_STRUCTURE) {
+    html += buildOrbatSection(section, selectedOrbatDay);
+  }
+
+  html += "</div>";
+  orbatDayContent.innerHTML = html;
+
+  orbatDayContent.querySelectorAll("[data-member-id]").forEach(card => {
+    card.addEventListener("click", () => {
+      showOrbatMemberDetails(card.dataset.memberId, selectedOrbatDay);
+    });
+  });
+}
+
+function showOrbatMemberDetails(memberId, dayIndex) {
+  const member = profilesById.get(memberId);
+  if (!member) return;
+
+  const responses = getMemberResponsesForDay(memberId, dayIndex);
+  const responseHtml = responses.length
+    ? responses.map(row => {
+        return `
+          <div class="orbat-detail-row">
+            <div class="orbat-detail-label">${escapeHtml(labelForDateTime(row.slot_start))}</div>
+            <div>${escapeHtml(availabilityLabel(row.availability))}</div>
+          </div>`;
+      }).join("")
+    : `
+      <div class="orbat-detail-row">
+        <div class="orbat-detail-label">Availability</div>
+        <div>No response submitted for this day.</div>
+      </div>`;
+
+  const steam = member.steam_name || member.steam_id || "-";
+  const discord = member.discord_name || member.discord_id || "-";
+
+  orbatDetailCard.innerHTML = `
+    <h3>Individual Details</h3>
+    <div class="orbat-detail-row"><div class="orbat-detail-label">Name</div><div>${escapeHtml(member.display_name || member.user_id)}</div></div>
+    <div class="orbat-detail-row"><div class="orbat-detail-label">Rank</div><div>${escapeHtml(member.naval_rank || "-")}</div></div>
+    <div class="orbat-detail-row"><div class="orbat-detail-label">Callsign</div><div>${escapeHtml(member.callsign || "Candidate")}</div></div>
+    <div class="orbat-detail-row"><div class="orbat-detail-label">Steam</div><div>${escapeHtml(steam)}</div></div>
+    <div class="orbat-detail-row"><div class="orbat-detail-label">Discord</div><div>${escapeHtml(discord)}</div></div>
+    <div class="orbat-detail-row"><div class="orbat-detail-label">Day</div><div>${escapeHtml(getDayLabel(dayIndex))}</div></div>
+    ${responseHtml}
+  `;
+}
+
+function setScheduleView(viewName) {
+  activeScheduleView = viewName;
+
+  if (viewName === "orbat") {
+    calendarView.classList.add("hidden");
+    orbatView.classList.remove("hidden");
+    calendarViewBtn.classList.remove("active");
+    orbatViewBtn.classList.add("active");
+    buildOrbatView();
+    return;
+  }
+
+  orbatView.classList.add("hidden");
+  calendarView.classList.remove("hidden");
+  orbatViewBtn.classList.remove("active");
+  calendarViewBtn.classList.add("active");
+}
+
+function rebuildViews() {
+  document.getElementById("dash-timezone").textContent = displayTimezone();
+  buildMyTable();
+  buildHeatmap();
+  buildBestList();
+  buildChangesList();
+  if (activeScheduleView === "orbat") buildOrbatView();
+}
+
+function shiftSelectedWeek(days) {
+  if (!weekInput.value) return;
+  weekInput.value = addDaysToIsoDate(weekInput.value, days);
+  loadResponses();
+}
+
 async function loadSessionAndProfile() {
   const { data, error } = await supabase.auth.getSession();
 
@@ -2034,11 +1891,9 @@ async function loadSessionAndProfile() {
   }
 
   authUser = data.session.user;
-
   showAdminLinksIfAllowed(authUser.email);
 
   const fallbackUserId = getUserIdFromEmail(authUser.email);
-
   profile = {
     id: authUser.id,
     user_id: fallbackUserId,
@@ -2060,21 +1915,16 @@ async function loadSessionAndProfile() {
     .eq("id", authUser.id)
     .single();
 
-  if (profileData) {
-    profile = profileData;
-  }
+  if (profileData) profile = profileData;
 
   document.getElementById("session-label").textContent = profile.display_name;
   document.getElementById("sidebar-name").textContent = profile.display_name;
   document.getElementById("sidebar-role").textContent = profile.role;
-
-  const navAvatar = document.getElementById("nav-avatar");
-  if (navAvatar && profile.avatar_url) {
-    navAvatar.src = profile.avatar_url;
-  }
-
   document.getElementById("dash-user").textContent = profile.display_name;
   document.getElementById("dash-userid").textContent = profile.user_id;
+
+  const navAvatar = document.getElementById("nav-avatar");
+  if (navAvatar && profile.avatar_url) navAvatar.src = profile.avatar_url;
 
   return true;
 }
@@ -2119,13 +1969,7 @@ async function loadLoas() {
 }
 
 async function loadResponses() {
-  const { start, end } = getWeekRangeUtc();
-
-  const loadStart = new Date(start);
-  loadStart.setUTCDate(loadStart.getUTCDate() - 1);
-
-  const loadEnd = new Date(end);
-  loadEnd.setUTCDate(loadEnd.getUTCDate() + 1);
+  const { loadStart, loadEnd } = getBufferedWeekRangeUtc();
 
   const { data, error } = await supabase
     .from("scheduling_responses")
@@ -2141,7 +1985,11 @@ async function loadResponses() {
 
   allResponses = data || [];
   await loadLoas();
+
   mySlots.clear();
+  dirtySlots.clear();
+  deletedSlots.clear();
+  hasUnsavedAvailabilityChanges = false;
 
   for (const row of allResponses) {
     if (row.user_id === authUser.id) {
@@ -2149,17 +1997,8 @@ async function loadResponses() {
     }
   }
 
-  document.getElementById("dash-timezone").textContent = displayTimezone();
   document.getElementById("dash-updated").textContent = utcNowLabel();
-
-  buildMyTable();
-  buildHeatmap();
-  buildBestList();
-  buildChangesList();
-
-  if (activeScheduleView === "orbat") {
-    buildOrbatView();
-  }
+  rebuildViews();
 }
 
 async function saveAvailability() {
@@ -2167,8 +2006,10 @@ async function saveAvailability() {
   saveBtn.textContent = "Saving...";
 
   const upsertRows = [];
+  for (const key of dirtySlots) {
+    const value = mySlots.get(key);
+    if (!value) continue;
 
-  for (const [key, value] of mySlots.entries()) {
     upsertRows.push({
       user_id: authUser.id,
       slot_start: key,
@@ -2181,9 +2022,7 @@ async function saveAvailability() {
   if (upsertRows.length) {
     const { error } = await supabase
       .from("scheduling_responses")
-      .upsert(upsertRows, {
-        onConflict: "user_id,slot_start"
-      });
+      .upsert(upsertRows, { onConflict: "user_id,slot_start" });
 
     if (error) {
       setStatus("Failed to save availability: " + error.message, false);
@@ -2194,13 +2033,11 @@ async function saveAvailability() {
   }
 
   if (deletedSlots.size) {
-    const deleteKeys = Array.from(deletedSlots);
-
     const { error } = await supabase
       .from("scheduling_responses")
       .delete()
       .eq("user_id", authUser.id)
-      .in("slot_start", deleteKeys);
+      .in("slot_start", Array.from(deletedSlots));
 
     if (error) {
       setStatus("Failed to delete cleared slots: " + error.message, false);
@@ -2210,11 +2047,11 @@ async function saveAvailability() {
     }
   }
 
+  dirtySlots.clear();
   deletedSlots.clear();
   hasUnsavedAvailabilityChanges = false;
 
   setStatus("Availability saved successfully.", true);
-
   saveBtn.disabled = false;
   saveBtn.textContent = "Save";
 
@@ -2222,62 +2059,46 @@ async function saveAvailability() {
 }
 
 async function clearMyWeek() {
-  const confirmed = confirm("Clear all of your availability for this selected week?");
+  const confirmed = confirm("Clear all of your availability for the currently visible selected week?");
   if (!confirmed) return;
 
-  const { start, end } = getWeekRangeUtc();
-
-  const loadStart = new Date(start);
-  loadStart.setUTCDate(loadStart.getUTCDate() - 1);
-
-  const loadEnd = new Date(end);
-  loadEnd.setUTCDate(loadEnd.getUTCDate() + 1);
-
+  const keys = visibleSlotKeys();
   const { error } = await supabase
     .from("scheduling_responses")
     .delete()
     .eq("user_id", authUser.id)
-    .gte("slot_start", loadStart.toISOString())
-    .lt("slot_start", loadEnd.toISOString());
+    .in("slot_start", keys);
 
   if (error) {
     setStatus("Failed to clear week: " + error.message, false);
     return;
   }
 
-  mySlots.clear();
+  for (const key of keys) mySlots.delete(key);
+  dirtySlots.clear();
   deletedSlots.clear();
   hasUnsavedAvailabilityChanges = false;
-  setStatus("Your week was cleared.", true);
+  setStatus("Your visible week was cleared.", true);
 
   await loadResponses();
 }
 
 function setupRealtime() {
-  if (realtimeChannel) {
-    supabase.removeChannel(realtimeChannel);
-  }
+  if (realtimeChannel) supabase.removeChannel(realtimeChannel);
 
   let reloadTimer = null;
-
   realtimeChannel = supabase
     .channel("scheduling-live")
     .on(
       "postgres_changes",
-      {
-        event: "*",
-        schema: "public",
-        table: "scheduling_responses"
-      },
+      { event: "*", schema: "public", table: "scheduling_responses" },
       () => {
         clearTimeout(reloadTimer);
-
         reloadTimer = setTimeout(async () => {
           if (hasUnsavedAvailabilityChanges) {
             setStatus("Live updates paused because you have unsaved availability changes.", false);
             return;
           }
-
           await loadResponses();
         }, 300);
       }
@@ -2291,6 +2112,24 @@ async function doLogout() {
 }
 
 window.doLogout = doLogout;
+window.schedulingDebug = {
+  get state() {
+    return {
+      timezone: displayTimezone(),
+      week: weekInput.value,
+      allResponses: allResponses.length,
+      mySlots: mySlots.size,
+      dirtySlots: dirtySlots.size,
+      deletedSlots: deletedSlots.size,
+      visibleSlotKeys: visibleSlotKeys()
+    };
+  },
+  localSlotToUtc,
+  visibleSlotKeys,
+  getBufferedWeekRangeUtc,
+  mySlots,
+  allResponses
+};
 
 saveBtn.addEventListener("click", saveAvailability);
 refreshBtn.addEventListener("click", loadResponses);
@@ -2311,57 +2150,43 @@ hideUnansweredCheckbox.addEventListener("change", () => {
   buildBestList();
 });
 
-calendarViewBtn.addEventListener("click", () => {
-  setScheduleView("calendar");
-});
-
-orbatViewBtn.addEventListener("click", () => {
-  setScheduleView("orbat");
-});
-
-orbatPrevWeekBtn.addEventListener("click", () => {
-  shiftSelectedWeek(-7);
-});
-
-orbatCurrentWeekBtn.addEventListener("click", () => {
-  buildOrbatView();
-});
-
-orbatNextWeekBtn.addEventListener("click", () => {
-  shiftSelectedWeek(7);
-});
+calendarViewBtn.addEventListener("click", () => setScheduleView("calendar"));
+orbatViewBtn.addEventListener("click", () => setScheduleView("orbat"));
+orbatPrevWeekBtn.addEventListener("click", () => shiftSelectedWeek(-7));
+orbatCurrentWeekBtn.addEventListener("click", () => buildOrbatView());
+orbatNextWeekBtn.addEventListener("click", () => shiftSelectedWeek(7));
 
 document.addEventListener("mouseup", finishAvailabilityDrag);
 window.addEventListener("blur", finishAvailabilityDrag);
 
-timezoneSelect.addEventListener("change", () => {
+timezoneSelect.addEventListener("change", async () => {
   localStorage.setItem("schedulingTimezone", timezoneSelect.value);
-  document.getElementById("dash-timezone").textContent = displayTimezone();
 
-  buildMyTable();
-  buildHeatmap();
-  buildBestList();
-  buildChangesList();
-
-  if (activeScheduleView === "orbat") {
-    buildOrbatView();
+  if (hasUnsavedAvailabilityChanges) {
+    rebuildViews();
+    setStatus("Timezone changed. Unsaved availability was kept in memory. Save or refresh to sync.", false);
+    return;
   }
+
+  await loadResponses();
+});
+
+weekInput.addEventListener("change", async () => {
+  if (hasUnsavedAvailabilityChanges) {
+    const discard = confirm("You have unsaved availability changes. Change week and discard them?");
+    if (!discard) return;
+  }
+  await loadResponses();
 });
 
 async function init() {
+  const savedTz = localStorage.getItem("schedulingTimezone");
+  if (savedTz) timezoneSelect.value = savedTz;
+
   weekInput.value = getNextMonday();
 
-  const savedTz = localStorage.getItem("schedulingTimezone");
-
-  if (savedTz) {
-    timezoneSelect.value = savedTz;
-  }
-
   const ok = await loadSessionAndProfile();
-
-  if (!ok) {
-    return;
-  }
+  if (!ok) return;
 
   await loadProfiles();
   await loadResponses();
@@ -2370,6 +2195,7 @@ async function init() {
 
 init();
 </script>
+
 
 </body>
 
