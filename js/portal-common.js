@@ -91,6 +91,8 @@ export async function bootPortalChrome() {
     document.querySelectorAll(".admin-only-link").forEach(link => {
       link.style.display = "";
     });
+
+    document.getElementById("system-section")?.style.removeProperty("display");
   }
 
   window.doLogout = async function doLogout() {

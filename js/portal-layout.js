@@ -41,8 +41,10 @@ export function renderPortalLayout(activePage = "") {
         <div class="sidebar-section">Resources</div>
         <a class="sidebar-link ${activePage === "documentation" ? "active" : ""}" href="/member/documentation/">Documentation</a>
 
+       <div id="system-section" style="display:none;">
         <div class="sidebar-section">System</div>
-        <a class="sidebar-link admin-only-link ${activePage === "admin" ? "active" : ""}" href="/member/admin/" style="${activePage === "admin" ? "" : "display:none;"}">Admin</a>
+        <a class="sidebar-link admin-only-link ${activePage === "admin" ? "active" : ""}" href="/member/admin/">Admin</a>
+      </div>
     `;
   }
 }
