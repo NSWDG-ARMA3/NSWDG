@@ -1349,15 +1349,17 @@ function aggregate(slotStart) {
     ? Math.max(scopedMembers.length, 1)
     : Math.max(available + maybe + unavailable, 1);
 
+  const responseCount = available + maybe + unavailable;
+
   const count = includeBlanksCheckbox.checked
-    ? available + maybe + unavailable + blank
-    : available + maybe + unavailable;
+    ? responseCount + blank
+    : responseCount;
 
   const score = count ? (available + maybe * 0.5) / denominator : 0;
 
   let grade = "gray";
 
-  if (count > 0) {
+  if (responseCount > 0) {
     if (score >= 0.75) grade = "green";
     else if (score >= 0.5) grade = "yellow";
     else if (score >= 0.25) grade = "orange";
