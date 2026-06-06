@@ -865,6 +865,13 @@
                 </label>
               </div>
 
+              <div class="form-group">
+                <label class="checkbox-label">
+                  <input type="checkbox" id="hide-unanswered-checkbox">
+                  <span>Hide members without availability</span>
+                </label>
+              </div>
+
                 <button class="btn btn-primary" id="save-btn" type="button">Save</button>
                 <button class="btn btn-secondary" id="refresh-btn" type="button">Refresh</button>
                 <button class="btn btn-danger" id="clear-btn" type="button">Clear Mine</button>
@@ -1012,6 +1019,7 @@ const refreshBtn = document.getElementById("refresh-btn");
 const clearBtn = document.getElementById("clear-btn");
 const heatmapFilter = document.getElementById("heatmap-filter");
 const includeLoaCheckbox = document.getElementById("include-loa-checkbox");
+const hideUnansweredCheckbox = document.getElementById("hide-unanswered-checkbox");
 
 const calendarViewBtn = document.getElementById("calendar-view-btn");
 const orbatViewBtn = document.getElementById("orbat-view-btn");
@@ -1861,7 +1869,9 @@ function aggregateSlot(key) {
     peopleUnavailable.push(`${getProfileName(memberId)} (LOA)`);
   }
 
-  const totalMembers = Math.max(getFilteredHeatmapMembers().length, 1);
+  const totalMembers = hideUnansweredCheckbox?.checked
+    ? Math.max(responseCount, 1)
+    : Math.max(getFilteredHeatmapMembers().length, 1);
   const responseCount = available + maybe + unavailable;
   const score = (available + maybe * 0.5) / totalMembers;
   const grade = scoreToGrade(score, responseCount);
@@ -2258,6 +2268,11 @@ heatmapFilter.addEventListener("change", () => {
 });
 
 includeLoaCheckbox.addEventListener("change", () => {
+  buildHeatmap();
+  buildBestList();
+});
+
+hideUnansweredCheckbox.addEventListener("change", () => {
   buildHeatmap();
   buildBestList();
 });
