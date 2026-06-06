@@ -4,6 +4,7 @@ import { renderPortalLayout } from "/js/portal-layout.js";
 renderPortalLayout("training");
 
 const TEAM_LEADER_CALLSIGNS = ["EG1", "EH1", "EI1"];
+const TROOP_HQ_CALLSIGNS = ["E31", "E32"];
 const HQ_ROLES = ["ADMIN", "HQ", "TROOP_HQ"];
 const SPECIAL_UNIT_WIDE_EMAILS = ["evans@navy.mil"];
 
@@ -86,7 +87,8 @@ async function loadSessionAndProfile() {
     role: "MEMBER",
     status: "ACTIVE",
     avatar_url: null,
-    callsign: null
+    callsign: null,
+    naval_rank: null
   };
 
   const profileResult = await supabase
@@ -99,9 +101,9 @@ async function loadSessionAndProfile() {
     state.profile = { ...state.profile, ...profileResult.data };
   }
 
-  el.sessionLabel.textContent = state.profile.display_name;
-  el.sidebarName.textContent = state.profile.display_name;
-  el.sidebarRole.textContent = state.profile.role;
+  if (el.sessionLabel) el.sessionLabel.textContent = state.profile.display_name;
+  if (el.sidebarName) el.sidebarName.textContent = state.profile.display_name;
+  if (el.sidebarRole) el.sidebarRole.textContent = state.profile.role;
 
   if (el.navAvatar && state.profile.avatar_url) {
     el.navAvatar.src = state.profile.avatar_url;
@@ -152,14 +154,24 @@ async function loadData() {
   }
 }
 
-function canHostUnitWide() {
-  const email = String(state.authUser?.email || "").trim().toLowerCase();
+function isTroopHq() {
   const role = String(state.profile?.role || "").trim().toUpperCase();
   const callsign = String(state.profile?.callsign || "").trim().toUpperCase();
 
-  return SPECIAL_UNIT_WIDE_EMAILS.includes(email)
-    || HQ_ROLES.includes(role)
-    || TEAM_LEADER_CALLSIGNS.includes(callsign);
+  return HQ_ROLES.includes(role) || TROOP_HQ_CALLSIGNS.includes(callsign);
+}
+
+function isTeamLeader() {
+  const callsign = String(state.profile?.callsign || "").trim().toUpperCase();
+  return TEAM_LEADER_CALLSIGNS.includes(callsign);
+}
+
+function isEvans() {
+  return String(state.authUser?.email || "").trim().toLowerCase() === "evans@navy.mil";
+}
+
+function canHostUnitWide() {
+  return isTroopHq() || isTeamLeader() || isEvans();
 }
 
 function canCreateSelectedCategory() {
@@ -169,8 +181,12 @@ function canCreateSelectedCategory() {
 
 function canManageSession(session) {
   if (!session) return false;
-  if (session.host_id === state.authUser.id) return true;
-  return canHostUnitWide();
+  return session.host_id === state.authUser.id || isTroopHq() || isEvans();
+}
+
+function canAarSession(session) {
+  if (!session) return false;
+  return session.host_id === state.authUser.id || isTroopHq() || isTeamLeader();
 }
 
 async function saveTraining() {
@@ -273,18 +289,24 @@ function renderSessions() {
       <tbody>
         ${rows.map(session => {
           const counts = getAttendanceCounts(session.id);
+
           return `
             <tr>
               <td>${escapeHtml(formatDateTime(session.start_at))}</td>
               <td>${categoryBadge(session.category)}</td>
-              <td><strong>${escapeHtml(session.title)}</strong><br><span class="muted">${escapeHtml(session.location || "-")}</span></td>
+              <td>
+                <strong>${escapeHtml(session.title)}</strong><br>
+                <span class="muted">${escapeHtml(session.location || "-")}</span>
+              </td>
               <td>${statusBadge(session.status)}</td>
               <td>
                 <span class="badge badge-green">${counts.attending} Attending</span>
                 <span class="badge badge-red">${counts.notAttending} Not Attending</span>
               </td>
               <td>${escapeHtml(getProfileName(session.host_id))}</td>
-              <td><button class="btn btn-secondary" type="button" data-open-session="${session.id}">Open</button></td>
+              <td>
+                <button class="btn btn-secondary" type="button" data-open-session="${session.id}">Open</button>
+              </td>
             </tr>
           `;
         }).join("")}
@@ -295,6 +317,7 @@ function renderSessions() {
   el.output.querySelectorAll("[data-open-session]").forEach(button => {
     button.addEventListener("click", () => {
       const session = state.sessions.find(s => Number(s.id) === Number(button.dataset.openSession));
+
       if (session) {
         state.activeSessionId = session.id;
         renderViewer(session);
@@ -307,93 +330,171 @@ function renderViewer(session) {
   const attendanceRows = state.attendance.filter(a => Number(a.session_id) === Number(session.id));
   const attending = attendanceRows.filter(a => a.attendance === "ATTENDING");
   const notAttending = attendanceRows.filter(a => a.attendance === "NOT_ATTENDING");
+
   const noResponse = state.profiles.filter(profile => {
     return !attendanceRows.some(a => a.user_id === profile.id);
   });
 
   const myAttendance = attendanceRows.find(a => a.user_id === state.authUser.id);
   const canManage = canManageSession(session);
+  const canAar = canAarSession(session);
 
   el.viewer.className = "viewer";
+
   el.viewer.innerHTML = `
-    <h2>${escapeHtml(session.title)}</h2>
+    <div class="training-detail-card">
+      <div class="training-detail-header">
+        <div>
+          <div class="training-eyebrow">Training Session</div>
+          <h2>${escapeHtml(session.title)}</h2>
+          <div class="training-badges">
+            ${categoryBadge(session.category)}
+            ${statusBadge(session.status)}
+          </div>
+        </div>
 
-    <div>${categoryBadge(session.category)} ${statusBadge(session.status)}</div>
+        <div class="training-time-box">
+          <span>Start</span>
+          <strong>${escapeHtml(formatDateTime(session.start_at))}</strong>
+        </div>
+      </div>
 
-    <h3>Schedule</h3>
-    <div><strong>Start:</strong> ${escapeHtml(formatDateTime(session.start_at))}</div>
-    <div><strong>End:</strong> ${escapeHtml(session.end_at ? formatDateTime(session.end_at) : "-")}</div>
-    <div><strong>Location:</strong> ${escapeHtml(session.location || "-")}</div>
-    <div><strong>Host:</strong> ${escapeHtml(getProfileName(session.host_id))}</div>
+      <div class="training-info-grid">
+        <div class="training-info-item">
+          <span>End</span>
+          <strong>${escapeHtml(session.end_at ? formatDateTime(session.end_at) : "-")}</strong>
+        </div>
 
-    <h3>Description</h3>
-    <div>${escapeHtml(session.description || "-").replaceAll("\n", "<br>")}</div>
+        <div class="training-info-item">
+          <span>Location</span>
+          <strong>${escapeHtml(session.location || "-")}</strong>
+        </div>
 
-    <h3>Your Response</h3>
-    <div class="button-row">
-      <button class="btn btn-green" type="button" id="attending-button">Attending</button>
-      <button class="btn btn-danger" type="button" id="not-attending-button">Not Attending</button>
+        <div class="training-info-item">
+          <span>Host</span>
+          <strong>${escapeHtml(getProfileName(session.host_id))}</strong>
+        </div>
+
+        <div class="training-info-item">
+          <span>Your Status</span>
+          <strong>${escapeHtml(myAttendance ? attendanceLabel(myAttendance.attendance) : "No Response")}</strong>
+        </div>
+      </div>
+
+      <div class="training-section">
+        <h3>Description</h3>
+        <div class="training-description">
+          ${escapeHtml(session.description || "-").replaceAll("\n", "<br>")}
+        </div>
+      </div>
+
+      <div class="training-section response-section">
+        <h3>Your Response</h3>
+
+        <div class="response-buttons">
+          <button class="response-btn response-attending" type="button" id="attending-button">
+            <span>✓</span>
+            Attending
+          </button>
+
+          <button class="response-btn response-not-attending" type="button" id="not-attending-button">
+            <span>✕</span>
+            Not Attending
+          </button>
+        </div>
+      </div>
+
+      <div class="training-section">
+        <h3>Availability Overview</h3>
+
+        <div class="attendance-summary-grid">
+          <div class="summary-card green">
+            <span>${attending.length}</span>
+            <strong>Attending</strong>
+          </div>
+
+          <div class="summary-card red">
+            <span>${notAttending.length}</span>
+            <strong>Not Attending</strong>
+          </div>
+
+          <div class="summary-card yellow">
+            <span>${noResponse.length}</span>
+            <strong>No Response</strong>
+          </div>
+
+          <div class="summary-card blue">
+            <span>${state.profiles.length}</span>
+            <strong>Total Members</strong>
+          </div>
+        </div>
+
+        <div class="attendance-grid upgraded">
+          <div class="attendance-box">
+            <strong>Attending</strong>
+            ${renderNameList(attending)}
+          </div>
+
+          <div class="attendance-box">
+            <strong>Not Attending</strong>
+            ${renderNameList(notAttending)}
+          </div>
+
+          <div class="attendance-box">
+            <strong>No Response</strong>
+            ${renderProfileList(noResponse)}
+          </div>
+        </div>
+      </div>
+
+      <div class="training-section">
+        <h3>After Action Review</h3>
+        ${renderAar(session, canAar)}
+
+        ${canAar ? `
+          <div class="button-row aar-actions">
+            <button class="btn btn-primary" type="button" id="save-aar-button">Save AAR</button>
+          </div>
+        ` : ""}
+      </div>
+
+      ${canManage ? `
+        <div class="danger-zone">
+          <div>
+            <strong>Danger Zone</strong>
+            <span>Delete this training session permanently.</span>
+          </div>
+
+          <button class="btn btn-danger" type="button" id="delete-training-button">Delete Training</button>
+        </div>
+      ` : ""}
     </div>
-    <div class="muted">Current: ${escapeHtml(myAttendance ? attendanceLabel(myAttendance.attendance) : "No response")}</div>
-
-    <h3>Availability</h3>
-    <div>
-      <span class="badge badge-green">${attending.length} Attending</span>
-      <span class="badge badge-red">${notAttending.length} Not Attending</span>
-      <span class="badge badge-yellow">${noResponse.length} No Response</span>
-      <span class="badge badge-blue">${state.profiles.length} Total Members</span>
-    </div>
-
-    <div class="attendance-grid">
-      <div class="attendance-box">
-        <strong>Attending</strong>
-        ${renderNameList(attending)}
-      </div>
-
-      <div class="attendance-box">
-        <strong>Not Attending</strong>
-        ${renderNameList(notAttending)}
-      </div>
-
-      <div class="attendance-box">
-        <strong>No Response</strong>
-        ${renderProfileList(noResponse)}
-      </div>
-
-      <div class="attendance-box">
-        <strong>Summary</strong>
-        ${attending.length} / ${state.profiles.length} attending<br>
-        ${notAttending.length} / ${state.profiles.length} not attending
-      </div>
-    </div>
-
-    <h3>After Action Review</h3>
-    ${renderAar(session, canManage)}
-
-    ${canManage ? `
-      <div class="button-row">
-        <button class="btn btn-primary" type="button" id="save-aar-button">Save AAR</button>
-        <button class="btn btn-danger" type="button" id="delete-training-button">Delete Training</button>
-      </div>
-    ` : ""}
   `;
 
   document.getElementById("attending-button").addEventListener("click", () => saveAttendance(session.id, "ATTENDING"));
   document.getElementById("not-attending-button").addEventListener("click", () => saveAttendance(session.id, "NOT_ATTENDING"));
 
-  if (canManage) {
+  if (canAar) {
     document.getElementById("save-aar-button").addEventListener("click", () => saveAar(session.id));
+  }
+
+  if (canManage) {
     document.getElementById("delete-training-button").addEventListener("click", () => deleteTraining(session.id));
   }
 }
 
-function renderAar(session, canManage) {
-  if (!canManage) {
+function renderAar(session, canAar) {
+  if (!canAar) {
     return `
-      <div><strong>AAR:</strong><br>${escapeHtml(session.aar_text || "-").replaceAll("\n", "<br>")}</div>
-      <div><strong>Sustains:</strong><br>${escapeHtml(session.aar_sustains || "-").replaceAll("\n", "<br>")}</div>
-      <div><strong>Improves:</strong><br>${escapeHtml(session.aar_improves || "-").replaceAll("\n", "<br>")}</div>
-      <div><strong>Actions:</strong><br>${escapeHtml(session.aar_actions || "-").replaceAll("\n", "<br>")}</div>
+      <div class="training-description">
+        <div><strong>AAR:</strong><br>${escapeHtml(session.aar_text || "-").replaceAll("\n", "<br>")}</div>
+        <br>
+        <div><strong>Sustains:</strong><br>${escapeHtml(session.aar_sustains || "-").replaceAll("\n", "<br>")}</div>
+        <br>
+        <div><strong>Improves:</strong><br>${escapeHtml(session.aar_improves || "-").replaceAll("\n", "<br>")}</div>
+        <br>
+        <div><strong>Actions:</strong><br>${escapeHtml(session.aar_actions || "-").replaceAll("\n", "<br>")}</div>
+      </div>
     `;
   }
 
@@ -445,7 +546,7 @@ async function saveAttendance(sessionId, attendance) {
 async function saveAar(sessionId) {
   const session = state.sessions.find(s => Number(s.id) === Number(sessionId));
 
-  if (!canManageSession(session)) {
+  if (!canAarSession(session)) {
     alert("You do not have permission to save this AAR.");
     return;
   }
@@ -496,6 +597,7 @@ async function deleteTraining(sessionId) {
   state.activeSessionId = null;
   el.viewer.className = "empty-state";
   el.viewer.textContent = "Select a training session to view attendance and AAR.";
+
   await loadData();
 }
 
@@ -524,8 +626,10 @@ function renderProfileList(profiles) {
 
 function profileLabel(profile, fallback) {
   if (!profile) return fallback;
+
   const rank = profile.naval_rank ? `${profile.naval_rank} ` : "";
   const callsign = profile.callsign ? ` [${profile.callsign}]` : "";
+
   return `${rank}${profile.display_name}${callsign}`;
 }
 
@@ -546,12 +650,14 @@ function statusBadge(status) {
   if (status === "COMPLETED") return `<span class="badge badge-green">Completed</span>`;
   if (status === "CANCELLED") return `<span class="badge badge-red">Cancelled</span>`;
   if (status === "DRAFT") return `<span class="badge badge-yellow">Draft</span>`;
+
   return `<span class="badge badge-blue">Scheduled</span>`;
 }
 
 function attendanceLabel(value) {
   if (value === "ATTENDING") return "Attending";
   if (value === "NOT_ATTENDING") return "Not Attending";
+
   return "No response";
 }
 
