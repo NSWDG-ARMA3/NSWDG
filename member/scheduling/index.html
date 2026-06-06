@@ -2085,7 +2085,17 @@ window.addEventListener("blur", finishAvailabilityDrag);
 
 timezoneSelect.addEventListener("change", () => {
   localStorage.setItem("schedulingTimezone", timezoneSelect.value);
-  rebuildViews();
+
+  document.getElementById("dash-timezone").textContent = timezoneSelect.value;
+
+  buildMyTable();
+  buildHeatmap();
+  buildBestList();
+  buildChangesList();
+
+  if (activeScheduleView === "orbat") {
+    buildOrbatView();
+  }
 });
 
 weekInput.addEventListener("change", async () => {
