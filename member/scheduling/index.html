@@ -732,46 +732,10 @@
     <p>Scheduling and availability</p>
   </header>
 
-  <nav class="portal-nav">
-    <a href="/member/">Home</a>
-    <a class="active" href="/member/scheduling/">Scheduling</a>
-    <a href="/member/loa/">LOA</a>
-    <a href="/member/documentation/">Documentation</a>
-    <a href="/member/operational/">Operational</a>
-    <a href="/member/training/">Training</a>
-    <a href="/member/profile/">Profile</a>
-    <a class="admin-only-link" href="/member/admin/" style="display: none;">Admin</a>
-
-    <div class="nav-right">
-      <img id="nav-avatar" class="nav-avatar" src="/nsw.png" alt="">
-      <span>Logged in as: <span id="session-label">Loading...</span></span>
-      <a onclick="doLogout()" style="cursor: pointer;">Log Out</a>
-    </div>
-  </nav>
+  <div id="portal-nav" class="portal-nav"></div>
 
   <div class="portal-body">
-    <aside class="sidebar">
-      <div class="sidebar-user-box">
-        <strong id="sidebar-name">Loading...</strong>
-        Role: <span id="sidebar-role">Loading...</span>
-      </div>
-
-      <div class="sidebar-section">Personnel</div>
-      <a class="sidebar-link" href="/member/profile/">Profile</a>
-      <a class="sidebar-link active" href="/member/scheduling/">Scheduling</a>
-      <a class="sidebar-link" href="/member/loa/">LOA</a>
-      <a class="sidebar-link" href="/member/qualifications/">Qualifications</a>
-
-      <div class="sidebar-section">Operations & Training</div>
-      <a class="sidebar-link" href="/member/operational/">Operational</a>
-      <a class="sidebar-link" href="/member/training/">Training</a>
-
-      <div class="sidebar-section">Resources</div>
-      <a class="sidebar-link" href="/member/documentation/">Documentation</a>
-
-      <div class="sidebar-section admin-only-link" style="display: none;">System</div>
-      <a class="sidebar-link admin-only-link" href="/member/admin/" style="display: none;">Admin</a>
-    </aside>
+    <div id="portal-sidebar" class="sidebar"></div>
 
     <main class="portal-main">
       <div class="page-head">
