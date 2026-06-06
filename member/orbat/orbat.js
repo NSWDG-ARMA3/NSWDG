@@ -8,14 +8,14 @@ const SPECIAL_ACCESS_EMAILS = ["carver@navy.mil", "evans@navy.mil"];
 const OFFICER_RANKS = new Set(["Ensign", "Lieutenant Junior Grade", "Lieutenant", "Lieutenant Commander", "Commander",
 "Captain"]);
 const SPECIALIST_ROLES = {
-EX1: "Master-at-Arms (Military Working Dog Handler)",
-EN1: "Explosive Ordnance Disposal Technician",
-ER1: "Information Systems Technician",
-EY1: "Cryptologic Technician",
-EU1: "Combat Controller",
-EU2: "Combat Controller",
-EP1: "Pararescueman",
-EP2: "Pararescueman"
+EX1: "Master-at-Arms (Military Working Dog Handler/MWDH)",
+EN1: "Explosive Ordnance Disposal Technician (EOD)",
+ER1: "Information Systems Technician (IST)",
+EY1: "Cryptologic Technician (CT)",
+EU1: "Combat Controller (CCT)",
+EU2: "Combat Controller (CCT)",
+EP1: "Pararescueman (PJ)",
+EP2: "Pararescueman (PJ)"
 };
 
 function getBillet(callsign) {
@@ -188,18 +188,18 @@ subtitle: "Red Squadron • 3 Troop",
 slots: ["E31", "E32"]
 },
 {
-title: "Golf Team",
-subtitle: "Assault Element",
+title: "3 Troop, Golf Team",
+subtitle: "Assault",
 slots: ["EG1", "EG2", "EG3", "EG4", "EG5", "EG6"]
 },
 {
-title: "Hotel Team",
-subtitle: "Assault Element",
+title: "3 Troop, Hotel Team",
+subtitle: "Assault",
 slots: ["EH1", "EH2", "EH3", "EH4", "EH5", "EH6"]
 },
 {
-title: "India Team",
-subtitle: "Reconnaissance Element",
+title: "3 Troop, India Team",
+subtitle: "Reconnaissance",
 slots: ["EI1", "EI2", "EI3", "EI4", "EI5", "EI6"]
 },
 {
