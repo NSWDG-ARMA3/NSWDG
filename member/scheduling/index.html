@@ -2227,12 +2227,18 @@ async function clearMyWeek() {
 
   const { start, end } = getWeekRangeUtc();
 
+  const loadStart = new Date(start);
+  loadStart.setUTCDate(loadStart.getUTCDate() - 1);
+
+  const loadEnd = new Date(end);
+  loadEnd.setUTCDate(loadEnd.getUTCDate() + 1);
+
   const { error } = await supabase
     .from("scheduling_responses")
     .delete()
     .eq("user_id", authUser.id)
-    .gte("slot_start", start.toISOString())
-    .lt("slot_start", end.toISOString());
+    .gte("slot_start", loadStart.toISOString())
+    .lt("slot_start", loadEnd.toISOString());
 
   if (error) {
     setStatus("Failed to clear week: " + error.message, false);
@@ -2240,6 +2246,7 @@ async function clearMyWeek() {
   }
 
   mySlots.clear();
+  deletedSlots.clear();
   hasUnsavedAvailabilityChanges = false;
   setStatus("Your week was cleared.", true);
 
@@ -2327,18 +2334,14 @@ orbatNextWeekBtn.addEventListener("click", () => {
 document.addEventListener("mouseup", finishAvailabilityDrag);
 window.addEventListener("blur", finishAvailabilityDrag);
 
-timezoneSelect.addEventListener("change", () => {
+timezoneSelect.addEventListener("change", async () => {
   localStorage.setItem("schedulingTimezone", timezoneSelect.value);
   document.getElementById("dash-timezone").textContent = displayTimezone();
 
-  buildMyTable();
-  buildHeatmap();
-  buildBestList();
-  buildChangesList();
+  deletedSlots.clear();
+  hasUnsavedAvailabilityChanges = false;
 
-  if (activeScheduleView === "orbat") {
-    buildOrbatView();
-  }
+  await loadResponses();
 });
 
 weekInput.addEventListener("change", async () => {
