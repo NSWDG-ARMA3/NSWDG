@@ -497,182 +497,141 @@
     }
 
     .orbat-toolbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 10px;
-    flex-wrap: wrap;
-    margin-bottom: 10px;
-  }
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
 
-  .orbat-day-tabs {
-    display: grid;
-    grid-template-columns: repeat(7, minmax(90px, 1fr));
-    gap: 6px;
-    margin-bottom: 12px;
-  }
+.orbat-day-tabs {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(76px, 1fr));
+  gap: 5px;
+  margin-bottom: 10px;
+}
 
-  .orbat-day-tab {
-    border: 1px solid var(--line);
-    background: #fff;
-    border-radius: 6px;
-    padding: 7px 8px;
-    cursor: pointer;
-    text-align: left;
-    font-size: 11px;
-  }
+.orbat-day-tab {
+  border: 1px solid var(--line);
+  background: #fff;
+  border-radius: 5px;
+  padding: 6px 7px;
+  cursor: pointer;
+  text-align: left;
+  font-size: 10px;
+}
 
-  .orbat-day-tab strong {
-    display: block;
-    color: var(--blue);
-    font-size: 12px;
-  }
+.orbat-day-tab strong {
+  display: block;
+  color: var(--blue);
+  font-size: 11px;
+}
 
-  .orbat-day-tab span {
-    display: block;
-    color: var(--muted);
-    font-size: 10px;
-    margin-top: 2px;
-  }
+.orbat-day-tab span {
+  display: block;
+  color: var(--muted);
+  font-size: 9px;
+  margin-top: 1px;
+}
 
-  .orbat-day-tab.active {
-    background: var(--blue);
-    border-color: var(--blue);
-  }
+.orbat-day-tab.active {
+  background: var(--blue);
+  border-color: var(--blue);
+}
 
-  .orbat-day-tab.active strong,
-  .orbat-day-tab.active span {
-    color: #fff;
-  }
+.orbat-day-tab.active strong,
+.orbat-day-tab.active span {
+  color: #fff;
+}
 
-  .orbat-board {
-    display: grid;
-    gap: 10px;
-  }
+.orbat-compact-wrap {
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: #fff;
+}
 
-  .orbat-hour {
-    border: 1px solid var(--line);
-    border-radius: 7px;
-    background: #fff;
-    overflow: hidden;
-  }
+.orbat-compact-table {
+  width: 100%;
+  min-width: 980px;
+  border-collapse: collapse;
+  font-size: 10px;
+}
 
-  .orbat-hour-head {
-    background: #eef2f7;
-    border-bottom: 1px solid var(--line);
-    padding: 7px 10px;
-    display: flex;
-    justify-content: space-between;
-    gap: 10px;
-    align-items: center;
-  }
+.orbat-compact-table th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--blue);
+  color: #fff;
+  padding: 7px 6px;
+  border-right: 1px solid rgba(255, 255, 255, 0.18);
+  text-align: left;
+  white-space: nowrap;
+}
 
-  .orbat-hour-time {
-    font-weight: bold;
-    color: var(--blue);
-    font-size: 12px;
-  }
+.orbat-compact-table td {
+  border-top: 1px solid #e1e6ec;
+  border-right: 1px solid #edf0f3;
+  padding: 5px 6px;
+  vertical-align: top;
+  min-height: 32px;
+}
 
-  .orbat-hour-total {
-    color: var(--muted);
-    font-size: 10px;
-  }
+.orbat-compact-table tr:nth-child(even) td {
+  background: #fafbfc;
+}
 
-  .orbat-sections {
-    display: grid;
-    gap: 8px;
-    padding: 8px;
-  }
+.orbat-time-cell {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  background: #f1f5f9 !important;
+  color: var(--blue);
+  font-weight: bold;
+  width: 64px;
+  white-space: nowrap;
+}
 
-  .orbat-section {
-    border: 1px solid #dde4ec;
-    border-radius: 6px;
-    overflow: hidden;
-    background: #fbfcfd;
-  }
+.orbat-group-cell {
+  min-width: 130px;
+}
 
-  .orbat-section-head {
-    padding: 6px 8px;
-    background: #f1f5f9;
-    border-bottom: 1px solid #dde4ec;
-    display: flex;
-    justify-content: space-between;
-    gap: 8px;
-    align-items: center;
-  }
+.orbat-group-label {
+  display: block;
+  color: var(--muted);
+  font-size: 9px;
+  margin-bottom: 3px;
+}
 
-  .orbat-section-title {
-    color: var(--blue);
-    font-weight: bold;
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.35px;
-  }
+.orbat-person {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid #b7c2cf;
+  background: #fff;
+  border-radius: 999px;
+  padding: 2px 6px;
+  margin: 1px;
+  cursor: pointer;
+  font-size: 9px;
+  line-height: 1.35;
+  max-width: 140px;
+}
 
-  .orbat-section-count {
-    font-size: 10px;
-    color: var(--muted);
-  }
+.orbat-person:hover {
+  background: #edf4fb;
+  border-color: var(--blue);
+}
 
-  .orbat-role-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-    gap: 6px;
-    padding: 8px;
-  }
-
-  .orbat-role {
-    border: 1px solid #e5e7eb;
-    border-radius: 5px;
-    background: #fff;
-    padding: 6px;
-  }
-
-  .orbat-role-code {
-    display: inline-block;
-    min-width: 42px;
-    background: var(--blue);
-    color: #fff;
-    border-radius: 4px;
-    padding: 3px 6px;
-    font-size: 10px;
-    font-weight: bold;
-    text-align: center;
-    margin-bottom: 5px;
-  }
-
-  .orbat-people {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 4px;
-  }
-
-  .orbat-person {
-    display: inline-flex;
-    align-items: center;
-    border: 1px solid #b7c2cf;
-    background: #fff;
-    border-radius: 999px;
-    padding: 3px 8px;
-    cursor: pointer;
-    font-size: 10px;
-    line-height: 1.4;
-    max-width: 180px;
-  }
-
-  .orbat-person:hover {
-    background: #edf4fb;
-    border-color: var(--blue);
-  }
-
-  .orbat-empty {
-    border: 1px dashed var(--line);
-    border-radius: 6px;
-    padding: 12px;
-    color: var(--muted);
-    background: #fafafa;
-    text-align: center;
-  }
+.orbat-empty {
+  border: 1px dashed var(--line);
+  border-radius: 6px;
+  padding: 12px;
+  color: var(--muted);
+  background: #fafafa;
+  text-align: center;
+}
 
     .modal {
       display: none;
@@ -962,32 +921,32 @@
     const SLOT_MINUTES = 60;
     const SLOTS_PER_DAY = 24;
 
-    const ORBAT = [
-      {
-        title: "Green Team",
-        slots: ["Candidate"]
-      },
-      {
-        title: "Red Squadron, 3 Troop, Golf Assault",
-        slots: ["EG1", "EG2", "EG3", "EG4", "EG5", "EG6"]
-      },
-      {
-        title: "Red Squadron, 3 Troop, Hotel Assault",
-        slots: ["EH1", "EH2", "EH3", "EH4", "EH5", "EH6"]
-      },
-      {
-        title: "Red Squadron, 3 Troop, India Recce",
-        slots: ["EI1", "EI2", "EI3", "EI4", "EI5", "EI6"]
-      },
-      {
-        title: "Red Squadron, 3 Troop, Headquarters",
-        slots: ["E31", "E32"]
-      },
-      {
-        title: "Red Squadron, 3 Troop, Enablers",
-        slots: ["EX1", "EN1", "ER1", "EY1", "EU1", "EU2", "EP1", "EP2"]
-      }
-    ];
+    const ORBAT_COMPACT_GROUPS = [
+    {
+      title: "Green",
+      slots: ["Candidate"]
+    },
+    {
+      title: "Golf",
+      slots: ["EG1", "EG2", "EG3", "EG4", "EG5", "EG6"]
+    },
+    {
+      title: "Hotel",
+      slots: ["EH1", "EH2", "EH3", "EH4", "EH5", "EH6"]
+    },
+    {
+      title: "India",
+      slots: ["EI1", "EI2", "EI3", "EI4", "EI5", "EI6"]
+    },
+    {
+      title: "HQ",
+      slots: ["E31", "E32"]
+    },
+    {
+      title: "Enablers",
+      slots: ["EX1", "EN1", "ER1", "EY1", "EU1", "EU2", "EP1", "EP2"]
+    }
+  ];
 
     let authUser = null;
     let profile = null;
@@ -1510,104 +1469,90 @@
       }
     }
 
-   function buildOrbatSlot(slot) {
+  function buildOrbat() {
+  $("orbat-week-title").textContent = `ORBAT Availability, Week of ${weekInput.value}`;
+  $("orbat-summary").textContent = `${scheduleTimezone()} · selected day only · available members`;
+
+  buildTabs();
+
+  let html = `
+    <div class="orbat-compact-wrap">
+      <table class="orbat-compact-table">
+        <thead>
+          <tr>
+            <th style="width: 64px;">Time</th>
+            ${ORBAT_COMPACT_GROUPS.map((group) => {
+              return `<th>${escapeHtml(group.title)}</th>`;
+            }).join("")}
+          </tr>
+        </thead>
+        <tbody>`;
+
+  let hasAny = false;
+
+  for (let slot = 0; slot < SLOTS_PER_DAY; slot++) {
     const key = slotKey(slotUtc(selectedOrbatDay, slot));
-    const sections = [];
-    let totalAvailable = 0;
+    const groupHtml = [];
 
-    for (const section of ORBAT) {
-      const roles = [];
-      let sectionCount = 0;
+    for (const group of ORBAT_COMPACT_GROUPS) {
+      const people = [];
 
-      for (const callsignCode of section.slots) {
+      for (const callsignCode of group.slots) {
         const list = availableMembersForCode(callsignCode, key);
 
-        if (!list.length) {
-          continue;
+        for (const member of list) {
+          people.push({
+            member,
+            callsignCode
+          });
         }
-
-        sectionCount += list.length;
-        totalAvailable += list.length;
-
-        roles.push(`
-          <div class="orbat-role">
-            <div class="orbat-role-code">${escapeHtml(callsignCode)}</div>
-            <div class="orbat-people">
-              ${list.map((member) => {
-                return `
-                  <span
-                    class="orbat-person"
-                    data-id="${escapeHtml(member.id)}"
-                    data-slot="${escapeHtml(key)}"
-                    title="${escapeHtml(member.display_name)}">
-                    ${escapeHtml(member.display_name)}
-                  </span>`;
-              }).join("")}
-            </div>
-          </div>`);
       }
 
-      if (roles.length) {
-        sections.push(`
-          <section class="orbat-section">
-            <div class="orbat-section-head">
-              <div class="orbat-section-title">${escapeHtml(section.title)}</div>
-              <div class="orbat-section-count">${sectionCount} available</div>
-            </div>
-            <div class="orbat-role-grid">
-              ${roles.join("")}
-            </div>
-          </section>`);
+      if (people.length) {
+        hasAny = true;
       }
+
+      groupHtml.push(`
+        <td class="orbat-group-cell">
+          ${people.length ? people.map(({ member, callsignCode }) => {
+            return `
+              <span
+                class="orbat-person"
+                data-id="${escapeHtml(member.id)}"
+                data-slot="${escapeHtml(key)}"
+                title="${escapeHtml(callsignCode)} · ${escapeHtml(member.display_name)}">
+                ${escapeHtml(callsignCode)} ${escapeHtml(member.display_name)}
+              </span>`;
+          }).join("") : "<span class='muted'>-</span>"}
+        </td>`);
     }
 
-    return {
-      key,
-      totalAvailable,
-      html: sections.join("")
-    };
-  }
+    const rowHasPeople = groupHtml.join("").includes("orbat-person");
 
-  function buildOrbat() {
-    $("orbat-week-title").textContent = `ORBAT Availability, Week of ${weekInput.value}`;
-    $("orbat-summary").textContent = `${scheduleTimezone()} · available members only · click a member for details`;
-
-    buildTabs();
-
-    let html = "<div class='orbat-board'>";
-    let activeSlots = 0;
-
-    for (let slot = 0; slot < SLOTS_PER_DAY; slot++) {
-      const built = buildOrbatSlot(slot);
-
-      if (!built.totalAvailable) {
-        continue;
-      }
-
-      activeSlots += 1;
-
-      html += `
-        <article class="orbat-hour">
-          <div class="orbat-hour-head">
-            <div class="orbat-hour-time">${escapeHtml(slotLabel(selectedOrbatDay, slot))}</div>
-            <div class="orbat-hour-total">${built.totalAvailable} available</div>
-          </div>
-          <div class="orbat-sections">
-            ${built.html}
-          </div>
-        </article>`;
+    if (!rowHasPeople) {
+      continue;
     }
 
-    html += "</div>";
-
-    $("orbat-day-content").innerHTML = activeSlots
-      ? html
-      : "<div class='orbat-empty'>No available members for this selected day.</div>";
-
-    $("orbat-day-content").querySelectorAll(".orbat-person").forEach((element) => {
-      element.onclick = () => openPerson(element.dataset.id, element.dataset.slot);
-    });
+    html += `
+      <tr>
+        <td class="orbat-time-cell">${escapeHtml(slotLabel(selectedOrbatDay, slot))}</td>
+        ${groupHtml.join("")}
+      </tr>`;
   }
+
+  html += `
+        </tbody>
+      </table>
+    </div>`;
+
+  $("orbat-day-content").innerHTML = hasAny
+    ? html
+    : "<div class='orbat-empty'>No available members for this selected day.</div>";
+
+  $("orbat-day-content").querySelectorAll(".orbat-person").forEach((element) => {
+    element.onclick = () => openPerson(element.dataset.id, element.dataset.slot);
+  });
+}
 
     function openPerson(userId, key) {
       const member = profilesById.get(userId);
