@@ -998,8 +998,10 @@
 const SLOT_MINUTES = 60;
 const SLOTS_PER_DAY = 24;
 
+const STORAGE_TIMEZONE = "UTC";
+
 function scheduleTimezone() {
-  return displayTimezone();
+  return STORAGE_TIMEZONE;
 }
 
 function displayTimezone() {
@@ -1260,11 +1262,13 @@ function escapeHtml(value) {
 }
 
 function labelForSlot(dayIndex, slotIndex) {
-  const totalMinutes = slotIndex * SLOT_MINUTES;
-  const hour = Math.floor(totalMinutes / 60);
-  const minute = totalMinutes % 60;
+  const slotDate = localSlotToUtc(dayIndex, slotIndex);
 
-  return `${zp(hour)}:${zp(minute)}`;
+  return getFormatter(displayTimezone(), {
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23"
+  }).format(slotDate);
 }
 
 function labelForDateTime(utcIso) {
@@ -2302,11 +2306,18 @@ orbatNextWeekBtn.addEventListener("click", () => {
 document.addEventListener("mouseup", finishAvailabilityDrag);
 window.addEventListener("blur", finishAvailabilityDrag);
 
-timezoneSelect.addEventListener("change", async () => {
+timezoneSelect.addEventListener("change", () => {
   localStorage.setItem("schedulingTimezone", timezoneSelect.value);
   document.getElementById("dash-timezone").textContent = displayTimezone();
 
-  await loadResponses();
+  buildMyTable();
+  buildHeatmap();
+  buildBestList();
+  buildChangesList();
+
+  if (activeScheduleView === "orbat") {
+    buildOrbatView();
+  }
 });
 
 weekInput.addEventListener("change", async () => {
