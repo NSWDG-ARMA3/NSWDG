@@ -1344,18 +1344,16 @@ function aggregate(slotStart) {
       peopleBlank.push(member.display_name);
     }
   }
-
-  const denominator = includeBlanksCheckbox.checked
-    ? Math.max(scopedMembers.length, 1)
-    : Math.max(available + maybe + unavailable, 1);
-
+  
   const responseCount = available + maybe + unavailable;
+
+  const denominator = Math.max(responseCount, 1);
 
   const count = includeBlanksCheckbox.checked
     ? responseCount + blank
     : responseCount;
 
-  const score = count ? (available + maybe * 0.5) / denominator : 0;
+  const score = responseCount ? (available + maybe * 0.5) / denominator : 0;
 
   let grade = "gray";
 
