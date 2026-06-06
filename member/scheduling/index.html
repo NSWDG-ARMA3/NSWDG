@@ -997,7 +997,16 @@
 
 const SLOT_MINUTES = 60;
 const SLOTS_PER_DAY = 24;
+
+// This must never depend on the user's display dropdown.
+// Pick one fixed timezone for the schedule grid.
+const SCHEDULE_TIMEZONE = "UTC";
+
 function scheduleTimezone() {
+  return SCHEDULE_TIMEZONE;
+}
+
+function displayTimezone() {
   return timezoneSelect?.value || "UTC";
 }
 
@@ -1008,6 +1017,7 @@ let members = [];
 let allResponses = [];
 let allLoas = [];
 let mySlots = new Map();
+let hasUnsavedAvailabilityChanges = false;
 
 let activeScheduleView = "calendar";
 let selectedOrbatDay = 0;
@@ -1101,6 +1111,7 @@ function setAvailabilityCell(cell, value) {
 
   updateAvailabilityCellDisplay(cell, value);
   dragChangedAvailability = true;
+  hasUnsavedAvailabilityChanges = true;
 }
 
 function finishAvailabilityDrag() {
@@ -1261,7 +1272,7 @@ function labelForSlot(dayIndex, slotIndex) {
 }
 
 function labelForDateTime(utcIso) {
-  const tz = timezoneSelect.value;
+  const tz = displayTimezone();
   const d = new Date(utcIso);
 
   return getFormatter(tz, {
@@ -1275,7 +1286,7 @@ function labelForDateTime(utcIso) {
 }
 
 function labelForUpdateTime(utcIso) {
-  const tz = timezoneSelect.value;
+  const tz = displayTimezone();
   const d = new Date(utcIso);
 
   return getFormatter(tz, {
@@ -1289,7 +1300,7 @@ function labelForUpdateTime(utcIso) {
 
 function dayHeader(dayIndex) {
   const utcDate = localSlotToUtc(dayIndex, 12);
-  const tz = timezoneSelect.value;
+  const tz = displayTimezone();
 
   const weekday = getFormatter(tz, {
     weekday: "short"
@@ -1430,11 +1441,11 @@ function getAvailabilitySummary(responses) {
 function getDayLabel(dayIndex) {
   const utcDate = localSlotToUtc(dayIndex, 12);
 
-  const weekday = getFormatter(timezoneSelect.value, {
+  const weekday = getFormatter(displayTimezone(), {
     weekday: "short"
   }).format(utcDate);
 
-  const dateLabel = getFormatter(timezoneSelect.value, {
+  const dateLabel = getFormatter(displayTimezone(), {
     day: "2-digit",
     month: "short"
   }).format(utcDate);
@@ -1446,13 +1457,13 @@ function getWeekTitle() {
   const start = localSlotToUtc(0, 0);
   const end = localSlotToUtc(6, 23);
 
-  const startLabel = getFormatter(timezoneSelect.value, {
+  const startLabel = getFormatter(displayTimezone(), {
     day: "2-digit",
     month: "short",
     year: "numeric"
   }).format(start);
 
-  const endLabel = getFormatter(timezoneSelect.value, {
+  const endLabel = getFormatter(displayTimezone(), {
     day: "2-digit",
     month: "short",
     year: "numeric"
@@ -1869,10 +1880,11 @@ function aggregateSlot(key) {
     peopleUnavailable.push(`${getProfileName(memberId)} (LOA)`);
   }
 
+  const responseCount = available + maybe + unavailable;
+
   const totalMembers = hideUnansweredCheckbox?.checked
     ? Math.max(responseCount, 1)
     : Math.max(getFilteredHeatmapMembers().length, 1);
-  const responseCount = available + maybe + unavailable;
   const score = (available + maybe * 0.5) / totalMembers;
   const grade = scoreToGrade(score, responseCount);
 
@@ -2130,7 +2142,7 @@ async function loadResponses() {
     }
   }
 
-  document.getElementById("dash-timezone").textContent = timezoneSelect.value;
+  document.getElementById("dash-timezone").textContent = displayTimezone();
   document.getElementById("dash-updated").textContent = utcNowLabel();
 
   buildMyTable();
@@ -2149,20 +2161,6 @@ async function saveAvailability() {
   saveBtn.disabled = true;
   saveBtn.textContent = "Saving...";
 
-  const { error: deleteError } = await supabase
-    .from("scheduling_responses")
-    .delete()
-    .eq("user_id", authUser.id)
-    .gte("slot_start", start.toISOString())
-    .lt("slot_start", end.toISOString());
-
-  if (deleteError) {
-    setStatus("Failed to clear old availability: " + deleteError.message, false);
-    saveBtn.disabled = false;
-    saveBtn.textContent = "Save";
-    return;
-  }
-
   const rows = [];
 
   for (const [key, value] of mySlots.entries()) {
@@ -2179,18 +2177,20 @@ async function saveAvailability() {
     }
   }
 
-  if (rows.length > 0) {
-    const { error: insertError } = await supabase
-      .from("scheduling_responses")
-      .insert(rows);
+  const { error } = await supabase.rpc("replace_my_scheduling_responses", {
+    p_start: start.toISOString(),
+    p_end: end.toISOString(),
+    p_rows: rows
+  });
 
-    if (insertError) {
-      setStatus("Failed to save availability: " + insertError.message, false);
-      saveBtn.disabled = false;
-      saveBtn.textContent = "Save";
-      return;
-    }
+  if (error) {
+    setStatus("Failed to save availability: " + error.message, false);
+    saveBtn.disabled = false;
+    saveBtn.textContent = "Save";
+    return;
   }
+
+  hasUnsavedAvailabilityChanges = false;
 
   setStatus("Availability saved successfully.", true);
 
@@ -2219,6 +2219,7 @@ async function clearMyWeek() {
   }
 
   mySlots.clear();
+  hasUnsavedAvailabilityChanges = false;
   setStatus("Your week was cleared.", true);
 
   await loadResponses();
@@ -2244,6 +2245,11 @@ function setupRealtime() {
         clearTimeout(reloadTimer);
 
         reloadTimer = setTimeout(async () => {
+          if (hasUnsavedAvailabilityChanges) {
+            setStatus("Live updates paused because you have unsaved availability changes.", false);
+            return;
+          }
+
           await loadResponses();
         }, 300);
       }
@@ -2302,7 +2308,16 @@ window.addEventListener("blur", finishAvailabilityDrag);
 
 timezoneSelect.addEventListener("change", () => {
   localStorage.setItem("schedulingTimezone", timezoneSelect.value);
-  loadResponses();
+  document.getElementById("dash-timezone").textContent = displayTimezone();
+
+  buildMyTable();
+  buildHeatmap();
+  buildBestList();
+  buildChangesList();
+
+  if (activeScheduleView === "orbat") {
+    buildOrbatView();
+  }
 });
 
 weekInput.addEventListener("change", async () => {

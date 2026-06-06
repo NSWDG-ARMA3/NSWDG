@@ -137,8 +137,8 @@ function labelForUpdateTime(utcIso) {
 
 function dayHeader(dayIndex) {
   const utcDate = localSlotToUtc(dayIndex, 12);
-  const weekday = getFormatter(timezoneSelect.value, { weekday: "short" }).format(utcDate);
-  const dateLabel = getFormatter(timezoneSelect.value, { day: "2-digit", month: "short" }).format(utcDate);
+  const weekday = getFormatter(displayTimezone(), { weekday: "short" }).format(utcDate);
+  const dateLabel = getFormatter(displayTimezone(), { day: "2-digit", month: "short" }).format(utcDate);
   return `${escapeHtml(weekday)}<small>${escapeHtml(dateLabel)}</small>`;
 }
 
