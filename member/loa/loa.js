@@ -69,16 +69,27 @@ function profileMeta(userId) {
 function canReviewLocally(row) {
   if (!authUser || !profile) return false;
   if (row.requester_id === authUser.id) return false;
-  if (row.status !== "PENDING") return false;
+  if (String(row.status || "").toUpperCase() !== "PENDING") return false;
 
-  const role = String(profile.role || "").toUpperCase();
-  const callsign = String(profile.callsign || "");
+  const email = String(authUser.email || "").trim().toLowerCase();
+  const role = String(profile.role || "").trim().toUpperCase().replaceAll(" ", "_");
+  const callsign = String(profile.callsign || "").trim().toUpperCase();
 
-  if (role === "ADMIN" || role === "TROOP_HQ" || role === "HQ") return true;
+  if (email === "evans@navy.mil") return true;
+
+  if (
+    role === "ADMIN" ||
+    role === "HQ" ||
+    role === "TROOP_HQ" ||
+    role === "TROOPHQ"
+  ) {
+    return true;
+  }
+
   if (callsign === "E31" || callsign === "E32") return true;
 
   const requester = profilesById.get(row.requester_id);
-  const requesterCallsign = String(requester?.callsign || "");
+  const requesterCallsign = String(requester?.callsign || "").trim().toUpperCase();
 
   const enablerCallsigns = ["EX1", "EN1", "ER1", "EY1", "EU1", "EU2", "EP1", "EP2"];
   if (enablerCallsigns.includes(requesterCallsign)) return false;
@@ -88,7 +99,9 @@ function canReviewLocally(row) {
   const reviewerPrefix = callsign.slice(0, 2);
   const requesterPrefix = requesterCallsign.slice(0, 2);
 
-  return callsign === reviewerPrefix + "1" && reviewerPrefix === requesterPrefix;
+  return callsign === reviewerPrefix + "1"
+    && reviewerPrefix === requesterPrefix
+    && callsign !== requesterCallsign;
 }
 
 function canCancelLocally(row) {
