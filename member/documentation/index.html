@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NSW Operations Portal - Documentation</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NSW Operations Portal - Documentation</title>
 
   <meta property="og:title" content="RSQDN, Navy Portal">
   <meta property="og:image" content="../../nsw.png">
@@ -12,524 +13,528 @@
 
   <link rel="shortcut icon" href="../../nsw.png" type="image/x-icon">
 
-
-<style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    background: #f0f0f0;
-    color: #1a1a1a;
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 12px;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .gov-banner {
-    background: #1a1a1a;
-    color: #ccc;
-    font-size: 11px;
-    padding: 3px 12px;
-  }
-
-  .site-header {
-    background: #1d3f5e;
-    color: #fff;
-    padding: 10px 16px;
-    border-bottom: 3px solid #c8a800;
-  }
-
-  .site-header h1 {
-    font-size: 16px;
-    font-weight: bold;
-  }
-
-  .site-header p {
-    font-size: 11px;
-    color: #c5d8ec;
-    margin-top: 2px;
-  }
-
-  .screen {
-    display: flex;
-    flex: 1;
-    flex-direction: column;
-  }
-
-  .portal-nav {
-    background: #1d3f5e;
-    display: flex;
-    align-items: stretch;
-    border-bottom: 2px solid #c8a800;
-    flex-shrink: 0;
-  }
-
-  .portal-nav a {
-    color: #cde;
-    text-decoration: none;
-    font-size: 12px;
-    padding: 8px 12px;
-    display: block;
-    border-right: 1px solid #00284e;
-    cursor: pointer;
-    white-space: nowrap;
-  }
-
-  .portal-nav a:hover {
-    background: #1d3f5e;
-    color: #fff;
-  }
-
-  .portal-nav a.active {
-    background: #1d3f5e;
-    color: #fff;
-    font-weight: bold;
-    border-bottom: 2px solid #c8a800;
-  }
-
-  .nav-right {
-    margin-left: auto;
-    display: flex;
-    align-items: center;
-    padding: 0 12px;
-    font-size: 11px;
-    color: #7a9ab8;
-    gap: 10px;
-  }
-
-  .nav-avatar {
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 1px solid #7a9ab8;
-  background: #e8e8e8;
-  flex-shrink: 0;
-}
-
-  .nav-right a {
-    border: none !important;
-    padding: 4px 0 !important;
-    font-size: 11px;
-    color: #7a9ab8;
-  }
-
-  .portal-body {
-    display: flex;
-    flex: 1;
-    min-height: 0;
-  }
-
-  .sidebar {
-    width: 180px;
-    background: #e8e8e8;
-    border-right: 1px solid #bbb;
-    flex-shrink: 0;
-    padding: 12px 0;
-  }
-
-  .sidebar-user-box {
-    padding: 7px 12px 10px;
-    border-bottom: 1px solid #ccc;
-    margin-bottom: 6px;
-    font-size: 11px;
-    color: #444;
-    line-height: 1.6;
-  }
-
-  .sidebar-user-box strong {
-    display: block;
-    font-size: 12px;
-    color: #1a1a1a;
-  }
-
-  .sidebar-section {
-    font-size: 10px;
-    font-weight: bold;
-    color: #777;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    padding: 8px 12px 4px;
-  }
-
-  .sidebar-link {
-    display: block;
-    padding: 5px 12px;
-    font-size: 12px;
-    color: #1d3f5e;
-    text-decoration: none;
-    cursor: pointer;
-    border-left: 3px solid transparent;
-  }
-
-  .sidebar-link:hover {
-    background: #dde;
-    border-left-color: #1d3f5e;
-  }
-
-  .sidebar-link.active {
-    background: #d0dae8;
-    border-left-color: #1d3f5e;
-    font-weight: bold;
-    color: #1d3f5e;
-  }
-
-  .portal-main {
-    flex: 1;
-    padding: 16px 18px;
-    background: #fff;
-    overflow-y: auto;
-  }
-
-  .page-title {
-    font-size: 15px;
-    font-weight: bold;
-    color: #1d3f5e;
-    border-bottom: 1px solid #ccc;
-    padding-bottom: 6px;
-    margin-bottom: 10px;
-  }
-
-  .notice-box {
-    border: 1px solid #bbb;
-    padding: 8px 10px;
-    font-size: 11px;
-    margin-bottom: 10px;
-    line-height: 1.6;
-    background: #fafafa;
-  }
-
-  .notice-box h4 {
-    font-size: 11px;
-    font-weight: bold;
-    margin-bottom: 4px;
-    color: #1d3f5e;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-
-  .notice-box.warning {
-    background: #fffbe6;
-    border-color: #c8a800;
-  }
-
-  .layout {
-    display: grid;
-    grid-template-columns: 340px 1fr;
-    gap: 12px;
-    align-items: start;
-  }
-
-  .panel {
-    border: 1px solid #ccc;
-    background: #fafafa;
-    padding: 10px;
-    margin-bottom: 12px;
-  }
-
-  .panel h3 {
-    font-size: 12px;
-    color: #1d3f5e;
-    margin-bottom: 8px;
-    text-transform: uppercase;
-    letter-spacing: 0.4px;
-  }
-
-  .form-group {
-    margin-bottom: 8px;
-  }
-
-  .form-group label {
-    display: block;
-    font-size: 11px;
-    font-weight: bold;
-    margin-bottom: 3px;
-  }
-
-  .form-group input,
-  .form-group select,
-  .form-group textarea {
-    width: 100%;
-    border: 1px solid #888;
-    padding: 5px 6px;
-    font-size: 11px;
-    font-family: Arial, Helvetica, sans-serif;
-    background: #fff;
-  }
-
-  .form-group textarea {
-    min-height: 65px;
-    resize: vertical;
-  }
-
-  .form-group input:focus,
-  .form-group select:focus,
-  .form-group textarea:focus {
-    outline: 2px solid #1d3f5e;
-  }
-
-  .btn {
-    border: 1px solid;
-    padding: 5px 12px;
-    font-size: 11px;
-    font-family: Arial, Helvetica, sans-serif;
-    cursor: pointer;
-  }
-
-  .btn-primary {
-    background: #1d3f5e;
-    color: #fff;
-    border-color: #1d3f5e;
-  }
-
-  .btn-primary:hover {
-    background: #1d3f5e;
-  }
-
-  .btn-secondary {
-    background: #f0f0f0;
-    color: #333;
-    border-color: #aaa;
-  }
-
-  .btn-secondary:hover {
-    background: #e0e0e0;
-  }
-
-  .btn-danger {
-    background: #c00;
-    color: #fff;
-    border-color: #900;
-  }
-
-  .btn-danger:hover {
-    background: #900;
-  }
-
-  .btn:disabled {
-    background: #aaa;
-    border-color: #888;
-    cursor: default;
-  }
-
-  .search-row {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 10px;
-  }
-
-  .search-row input {
-    flex: 1;
-    border: 1px solid #888;
-    padding: 6px 8px;
-    font-size: 12px;
-  }
-
-  .docs-table {
-    border-collapse: collapse;
-    width: 100%;
-    font-size: 11px;
-  }
-
-  .docs-table th {
-    background: #1d3f5e;
-    color: #fff;
-    text-align: left;
-    padding: 5px 6px;
-    font-size: 10px;
-  }
-
-  .docs-table td {
-    padding: 6px;
-    border-bottom: 1px solid #ddd;
-    vertical-align: top;
-  }
-
-  .docs-table tr:nth-child(even) td {
-    background: #f5f7fa;
-  }
-
-  .docs-table a {
-    color: #1d3f5e;
-    font-weight: bold;
-    text-decoration: none;
-  }
-
-  .docs-table a:hover {
-    text-decoration: underline;
-  }
-
-  .badge {
-    display: inline-block;
-    font-size: 10px;
-    padding: 1px 6px;
-    border: 1px solid;
-    font-weight: bold;
-    text-transform: uppercase;
-  }
-
-  .badge-blue {
-    color: #1d3f5e;
-    border-color: #1d3f5e;
-    background: #eef2f8;
-  }
-
-  .badge-gray {
-    color: #555;
-    border-color: #aaa;
-    background: #f5f5f5;
-  }
-
-  .status-line {
-    margin-top: 8px;
-    font-size: 11px;
-    padding: 6px 8px;
-    border: 1px solid #bbb;
-    background: #fafafa;
-    display: none;
-  }
-
-  .status-line.visible {
-    display: block;
-  }
-
-  .status-line.ok {
-    border-color: #2a7a2a;
-    background: #f0f7f0;
-    color: #1a4a1a;
-  }
-
-  .status-line.err {
-    border-color: #c00;
-    background: #fdf0f0;
-    color: #800;
-  }
-
-  .muted {
-    color: #777;
-    font-size: 10px;
-  }
-
-  .empty-state {
-    text-align: center;
-    color: #777;
-    padding: 20px;
-    border: 1px dashed #bbb;
-    background: #fafafa;
-  }
-
-  .page-footer {
-    background: #1a1a1a;
-    color: #888;
-    font-size: 11px;
-    text-align: center;
-    padding: 7px;
-    flex-shrink: 0;
-  }
-
-  @media (max-width: 1000px) {
-    .layout {
-      grid-template-columns: 1fr;
-    }
-  }
-
-  @media (max-width: 800px) {
-    .sidebar {
-      display: none;
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
 
-    .portal-main {
-      padding: 12px;
+    body {
+      background: #f0f0f0;
+      color: #1a1a1a;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 12px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .gov-banner {
+      background: #1a1a1a;
+      color: #ccc;
+      font-size: 11px;
+      padding: 3px 12px;
+    }
+
+    .site-header {
+      background: #1d3f5e;
+      color: #fff;
+      padding: 10px 16px;
+      border-bottom: 3px solid #c8a800;
+    }
+
+    .site-header h1 {
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .site-header p {
+      font-size: 11px;
+      color: #c5d8ec;
+      margin-top: 2px;
+    }
+
+    .screen {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+    }
+
+    .portal-nav {
+      background: #1d3f5e;
+      display: flex;
+      align-items: stretch;
+      border-bottom: 2px solid #c8a800;
+      flex-shrink: 0;
+    }
+
+    .portal-nav a {
+      color: #cde;
+      text-decoration: none;
+      font-size: 12px;
+      padding: 8px 12px;
+      display: block;
+      border-right: 1px solid #00284e;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .portal-nav a:hover {
+      background: #1d3f5e;
+      color: #fff;
+    }
+
+    .portal-nav a.active {
+      background: #1d3f5e;
+      color: #fff;
+      font-weight: bold;
+      border-bottom: 2px solid #c8a800;
     }
 
     .nav-right {
-      display: none;
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      font-size: 11px;
+      color: #7a9ab8;
+      gap: 10px;
+    }
+
+    .nav-avatar {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1px solid #7a9ab8;
+      background: #e8e8e8;
+      flex-shrink: 0;
+    }
+
+    .nav-right a {
+      border: none !important;
+      padding: 4px 0 !important;
+      font-size: 11px;
+      color: #7a9ab8;
+    }
+
+    .portal-body {
+      display: flex;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .sidebar {
+      width: 180px;
+      background: #e8e8e8;
+      border-right: 1px solid #bbb;
+      flex-shrink: 0;
+      padding: 12px 0;
+    }
+
+    .sidebar-user-box {
+      padding: 7px 12px 10px;
+      border-bottom: 1px solid #ccc;
+      margin-bottom: 6px;
+      font-size: 11px;
+      color: #444;
+      line-height: 1.6;
+    }
+
+    .sidebar-user-box strong {
+      display: block;
+      font-size: 12px;
+      color: #1a1a1a;
+    }
+
+    .sidebar-section {
+      font-size: 10px;
+      font-weight: bold;
+      color: #777;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 8px 12px 4px;
+    }
+
+    .sidebar-link {
+      display: block;
+      padding: 5px 12px;
+      font-size: 12px;
+      color: #1d3f5e;
+      text-decoration: none;
+      cursor: pointer;
+      border-left: 3px solid transparent;
+    }
+
+    .sidebar-link:hover {
+      background: #dde;
+      border-left-color: #1d3f5e;
+    }
+
+    .sidebar-link.active {
+      background: #d0dae8;
+      border-left-color: #1d3f5e;
+      font-weight: bold;
+      color: #1d3f5e;
+    }
+
+    .portal-main {
+      flex: 1;
+      padding: 16px 18px;
+      background: #fff;
+      overflow-y: auto;
+    }
+
+    .page-title {
+      font-size: 15px;
+      font-weight: bold;
+      color: #1d3f5e;
+      border-bottom: 1px solid #ccc;
+      padding-bottom: 6px;
+      margin-bottom: 10px;
+    }
+
+    .notice-box {
+      border: 1px solid #bbb;
+      padding: 8px 10px;
+      font-size: 11px;
+      margin-bottom: 10px;
+      line-height: 1.6;
+      background: #fafafa;
+    }
+
+    .notice-box h4 {
+      font-size: 11px;
+      font-weight: bold;
+      margin-bottom: 4px;
+      color: #1d3f5e;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .notice-box.warning {
+      background: #fffbe6;
+      border-color: #c8a800;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 340px 1fr;
+      gap: 12px;
+      align-items: start;
+    }
+
+    .panel {
+      border: 1px solid #ccc;
+      background: #fafafa;
+      padding: 10px;
+      margin-bottom: 12px;
+    }
+
+    .panel h3 {
+      font-size: 12px;
+      color: #1d3f5e;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .form-group {
+      margin-bottom: 8px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 11px;
+      font-weight: bold;
+      margin-bottom: 3px;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      border: 1px solid #888;
+      padding: 5px 6px;
+      font-size: 11px;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #fff;
+    }
+
+    .form-group textarea {
+      min-height: 65px;
+      resize: vertical;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: 2px solid #1d3f5e;
+    }
+
+    .btn {
+      border: 1px solid;
+      padding: 5px 12px;
+      font-size: 11px;
+      font-family: Arial, Helvetica, sans-serif;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      background: #1d3f5e;
+      color: #fff;
+      border-color: #1d3f5e;
+    }
+
+    .btn-primary:hover {
+      background: #1d3f5e;
+    }
+
+    .btn-secondary {
+      background: #f0f0f0;
+      color: #333;
+      border-color: #aaa;
+    }
+
+    .btn-secondary:hover {
+      background: #e0e0e0;
+    }
+
+    .btn-danger {
+      background: #c00;
+      color: #fff;
+      border-color: #900;
+    }
+
+    .btn-danger:hover {
+      background: #900;
+    }
+
+    .btn:disabled {
+      background: #aaa;
+      border-color: #888;
+      cursor: default;
     }
 
     .search-row {
-      flex-direction: column;
+      display: flex;
+      gap: 8px;
+      margin-bottom: 10px;
     }
-  }
 
-  .modal-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.55);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    z-index: 9999;
+    .search-row input {
+      flex: 1;
+      border: 1px solid #888;
+      padding: 6px 8px;
+      font-size: 12px;
+    }
+
+    .docs-table {
+      border-collapse: collapse;
+      width: 100%;
+      font-size: 11px;
+    }
+
+    .docs-table th {
+      background: #1d3f5e;
+      color: #fff;
+      text-align: left;
+      padding: 5px 6px;
+      font-size: 10px;
+    }
+
+    .docs-table td {
+      padding: 6px;
+      border-bottom: 1px solid #ddd;
+      vertical-align: top;
+    }
+
+    .docs-table tr:nth-child(even) td {
+      background: #f5f7fa;
+    }
+
+    .docs-table a {
+      color: #1d3f5e;
+      font-weight: bold;
+      text-decoration: none;
+    }
+
+    .docs-table a:hover {
+      text-decoration: underline;
+    }
+
+    .badge {
+      display: inline-block;
+      font-size: 10px;
+      padding: 1px 6px;
+      border: 1px solid;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+
+    .badge-blue {
+      color: #1d3f5e;
+      border-color: #1d3f5e;
+      background: #eef2f8;
+    }
+
+    .badge-gray {
+      color: #555;
+      border-color: #aaa;
+      background: #f5f5f5;
+    }
+
+    .status-line {
+      margin-top: 8px;
+      font-size: 11px;
+      padding: 6px 8px;
+      border: 1px solid #bbb;
+      background: #fafafa;
+      display: none;
+    }
+
+    .status-line.visible {
+      display: block;
+    }
+
+    .status-line.ok {
+      border-color: #2a7a2a;
+      background: #f0f7f0;
+      color: #1a4a1a;
+    }
+
+    .status-line.err {
+      border-color: #c00;
+      background: #fdf0f0;
+      color: #800;
+    }
+
+    .muted {
+      color: #777;
+      font-size: 10px;
+    }
+
+    .empty-state {
+      text-align: center;
+      color: #777;
+      padding: 20px;
+      border: 1px dashed #bbb;
+      background: #fafafa;
+    }
+
+    .page-footer {
+      background: #1a1a1a;
+      color: #888;
+      font-size: 11px;
+      text-align: center;
+      padding: 7px;
+      flex-shrink: 0;
+    }
+
+    @media (max-width: 1000px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 800px) {
+      .sidebar {
+        display: none;
+      }
+
+      .portal-main {
+        padding: 12px;
+      }
+
+      .nav-right {
+        display: none;
+      }
+
+      .search-row {
+        flex-direction: column;
+      }
+    }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.55);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
     }
 
     .modal-overlay.visible {
-    display: flex;
+      display: flex;
     }
 
     .modal-box {
-    width: 320px;
-    background: #fff;
-    border: 2px solid #1d3f5e;
-    padding: 14px;
-    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
+      width: 320px;
+      background: #fff;
+      border: 2px solid #1d3f5e;
+      padding: 14px;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
     }
 
     .modal-box h3 {
-    font-size: 13px;
-    color: #1d3f5e;
-    margin-bottom: 8px;
-    text-transform: uppercase;
+      font-size: 13px;
+      color: #1d3f5e;
+      margin-bottom: 8px;
+      text-transform: uppercase;
     }
 
     .modal-box p {
-    font-size: 12px;
-    line-height: 1.5;
-    margin-bottom: 12px;
+      font-size: 12px;
+      line-height: 1.5;
+      margin-bottom: 12px;
     }
 
     .modal-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 8px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
     }
-</style>
+  </style>
 </head>
 
 <body>
 
-<div class="gov-banner">U.S. Department of the Navy &nbsp;|&nbsp; Official Government System &nbsp;|&nbsp; Authorized Users Only</div>
+  <div class="gov-banner">U.S. Department of the Navy &nbsp;|&nbsp; Official Government System &nbsp;|&nbsp; Authorized
+    Users Only</div>
 
-<div class="site-header">
-  <h1>Naval Special Warfare Command - Operations Portal</h1>
-  <p>NSW-OPS // UNCLASSIFIED // FOR OFFICIAL USE ONLY</p>
-</div>
-
-<div class="screen">
-
-  <div class="portal-nav">
-  <a href="/member/">Home</a>
-  <a href="/member/scheduling/">Scheduling</a>
-  <a class="active" href="/member/documentation/">Documentation</a>
-  <a href="/member/operational/">Operational</a>
-  <a href="/member/profile/">Profile</a>
-  <a class="admin-only-link" href="/member/admin/" style="display:none;">Admin</a>
-
-  <div class="nav-right">
-    <img id="nav-avatar" class="nav-avatar" src="../../nsw.png" alt="Profile picture">
-    <span>Logged in as: <span id="session-label">Loading...</span></span>
-    <a onclick="doLogout()">Log Out</a>
+  <div class="site-header">
+    <h1>Naval Special Warfare Command - Operations Portal</h1>
+    <p>NSW-OPS // UNCLASSIFIED // FOR OFFICIAL USE ONLY</p>
   </div>
-</div>
 
-  <div class="portal-body">
+  <div class="screen">
 
-    <div class="sidebar">
-      <div class="sidebar-user-box">
-        <strong id="sidebar-name">Loading...</strong>
-        Role: <span id="sidebar-role">Loading...</span>
+    <div class="portal-nav">
+      <a href="/member/">Home</a>
+      <a href="/member/scheduling/">Scheduling</a>
+      <a class="active" href="/member/documentation/">Documentation</a>
+      <a href="/member/operational/">Operational</a>
+      <a href="/member/profile/">Profile</a>
+      <a class="admin-only-link" href="/member/admin/" style="display:none;">Admin</a>
+
+      <div class="nav-right">
+        <img id="nav-avatar" class="nav-avatar" src="../../nsw.png" alt="Profile picture">
+        <span>Logged in as: <span id="session-label">Loading...</span></span>
+        <a onclick="doLogout()">Log Out</a>
       </div>
+    </div>
 
-      <div class="sidebar-section">Navigation</div>
+    <div class="portal-body">
+
+      <div class="sidebar">
+        <div class="sidebar-user-box">
+          <strong id="sidebar-name">Loading...</strong>
+          Role: <span id="sidebar-role">Loading...</span>
+        </div>
+
+        <div class="sidebar-section">Navigation</div>
         <a class="sidebar-link" href="/member/">Home / Dashboard</a>
         <a class="sidebar-link" href="/member/scheduling/">Scheduling</a>
         <a class="sidebar-link active" href="/member/documentation/">Documentation</a>
@@ -538,99 +543,113 @@
         <div class="sidebar-section">Account</div>
         <a class="sidebar-link admin-only-link" href="/member/admin/" style="display:none;">Admin</a>
         <a class="sidebar-link" href="/member/profile/">Profile</a>
-    </div>
-
-    <div class="portal-main">
-      <div class="page-title">Documentation - SOP Library</div>
-
-      <div class="notice-box warning">
-        <h4>Instructions</h4>
-        Upload SOPs, training references, PDFs, images, or other documentation. Files are stored in Supabase Storage.
-        Metadata is stored in the database so the library can be searched.
       </div>
 
-      <div class="layout">
+      <div class="portal-main">
+        <div class="page-title">Documentation - SOP Library</div>
 
-        <div>
-          <div class="panel" id="upload-panel">
-            <h3>Upload Document</h3>
-
-            <div class="form-group">
-              <label for="doc-title">Title</label>
-              <input id="doc-title" type="text" placeholder="Example: CQB SOP v1">
-            </div>
-
-            <div class="form-group">
-              <label for="doc-category">Category</label>
-              <select id="doc-category">
-                <option value="SOP">SOP</option>
-                <option value="Training">Training</option>
-                <option value="Reference">Reference</option>
-                <option value="Checklist">Checklist</option>
-                <option value="Other">Other</option>
-              </select>
-            </div>
-
-            <div class="form-group">
-              <label for="doc-description">Description</label>
-              <textarea id="doc-description" placeholder="Short description of the document..."></textarea>
-            </div>
-
-            <div class="form-group">
-              <label for="doc-file">File</label>
-              <input id="doc-file" type="file">
-            </div>
-
-            <button class="btn btn-primary" id="upload-btn">Upload</button>
-            <div id="upload-status" class="status-line"></div>
-          </div>
-
-          <div class="panel">
-            <h3>Library Info</h3>
-            <table class="docs-table">
-              <tr><th>Field</th><th>Value</th></tr>
-              <tr><td>Total Files</td><td id="total-files">0</td></tr>
-              <tr><td>Filtered Results</td><td id="filtered-files">0</td></tr>
-              <tr><td>Last Updated</td><td id="last-updated">Loading...</td></tr>
-            </table>
-          </div>
+        <div class="notice-box warning">
+          <h4>Instructions</h4>
+          Upload SOPs, training references, PDFs, images, or other documentation. Files are stored in Supabase Storage.
+          Metadata is stored in the database so the library can be searched.
         </div>
 
-        <div>
-          <div class="panel">
-            <h3>Search Documentation</h3>
+        <div class="layout">
 
-            <div class="search-row">
-              <input id="search-input" type="text" placeholder="Search by title, category, description, or filename...">
-              <button class="btn btn-secondary" id="clear-search-btn">Clear</button>
-              <button class="btn btn-secondary" id="refresh-btn">Refresh</button>
+          <div>
+            <div class="panel" id="upload-panel">
+              <h3>Upload Document</h3>
+
+              <div class="form-group">
+                <label for="doc-title">Title</label>
+                <input id="doc-title" type="text" placeholder="Example: CQB SOP v1">
+              </div>
+
+              <div class="form-group">
+                <label for="doc-category">Category</label>
+                <select id="doc-category">
+                  <option value="SOP">SOP</option>
+                  <option value="Training">Training</option>
+                  <option value="Reference">Reference</option>
+                  <option value="Checklist">Checklist</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="doc-description">Description</label>
+                <textarea id="doc-description" placeholder="Short description of the document..."></textarea>
+              </div>
+
+              <div class="form-group">
+                <label for="doc-file">File</label>
+                <input id="doc-file" type="file">
+              </div>
+
+              <button class="btn btn-primary" id="upload-btn">Upload</button>
+              <div id="upload-status" class="status-line"></div>
             </div>
 
-            <div id="docs-output"></div>
+            <div class="panel">
+              <h3>Library Info</h3>
+              <table class="docs-table">
+                <tr>
+                  <th>Field</th>
+                  <th>Value</th>
+                </tr>
+                <tr>
+                  <td>Total Files</td>
+                  <td id="total-files">0</td>
+                </tr>
+                <tr>
+                  <td>Filtered Results</td>
+                  <td id="filtered-files">0</td>
+                </tr>
+                <tr>
+                  <td>Last Updated</td>
+                  <td id="last-updated">Loading...</td>
+                </tr>
+              </table>
+            </div>
           </div>
-        </div>
 
+          <div>
+            <div class="panel">
+              <h3>Search Documentation</h3>
+
+              <div class="search-row">
+                <input id="search-input" type="text"
+                  placeholder="Search by title, category, description, or filename...">
+                <button class="btn btn-secondary" id="clear-search-btn">Clear</button>
+                <button class="btn btn-secondary" id="refresh-btn">Refresh</button>
+              </div>
+
+              <div id="docs-output"></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+    <div class="page-footer">Naval Special Warfare Command - Operations Portal &nbsp;|&nbsp; UNCLASSIFIED // FOUO
+      &nbsp;|&nbsp; Contact your unit S6 for technical support</div>
+  </div>
+
+  <div id="delete-modal" class="modal-overlay">
+    <div class="modal-box">
+      <h3>Delete Document</h3>
+      <p id="delete-modal-text"></p>
+
+      <div class="modal-actions">
+        <button class="btn btn-secondary" id="delete-cancel-btn">Cancel</button>
+        <button class="btn btn-danger" id="delete-confirm-btn">Delete</button>
       </div>
     </div>
-
   </div>
 
-  <div class="page-footer">Naval Special Warfare Command - Operations Portal &nbsp;|&nbsp; UNCLASSIFIED // FOUO &nbsp;|&nbsp; Contact your unit S6 for technical support</div>
-</div>
-
-<div id="delete-modal" class="modal-overlay">
-  <div class="modal-box">
-    <h3>Delete Document</h3>
-    <p id="delete-modal-text"></p>
-
-    <div class="modal-actions">
-      <button class="btn btn-secondary" id="delete-cancel-btn">Cancel</button>
-      <button class="btn btn-danger" id="delete-confirm-btn">Delete</button>
-    </div>
-  </div>
-</div>
-
-<script type="module">
+  <script type="module">
     const DOCUMENTATION_ADMINS = [
   "evans@navy.mil",
   "carver@navy.mil"
@@ -1068,4 +1087,5 @@ init();
 </script>
 
 </body>
+
 </html>

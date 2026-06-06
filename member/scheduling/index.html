@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NSW Operations Portal - Scheduling</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NSW Operations Portal - Scheduling</title>
 
   <meta property="og:title" content="RSQDN, Navy Portal">
   <meta property="og:image" content="../../nsw.png">
@@ -12,908 +13,966 @@
 
   <link rel="shortcut icon" href="../../nsw.png" type="image/x-icon">
 
-
-<style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    background: #f0f0f0;
-    color: #1a1a1a;
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 12px;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .availability-grid td {
-    user-select: none;
-  }
-
-  .gov-banner {
-    background: #1a1a1a;
-    color: #ccc;
-    font-size: 11px;
-    padding: 3px 12px;
-  }
-
-  .site-header {
-    background: #1d3f5e;
-    color: #fff;
-    padding: 10px 16px;
-    border-bottom: 3px solid #c8a800;
-  }
-
-  .site-header h1 {
-    font-size: 16px;
-    font-weight: bold;
-  }
-
-  .site-header p {
-    font-size: 11px;
-    color: #c5d8ec;
-    margin-top: 2px;
-  }
-
-  .screen {
-    display: flex;
-    flex: 1;
-    flex-direction: column;
-  }
-
-  .portal-nav {
-    background: #1d3f5e;
-    display: flex;
-    align-items: stretch;
-    border-bottom: 2px solid #c8a800;
-    flex-shrink: 0;
-  }
-
-  .portal-nav a {
-    color: #cde;
-    text-decoration: none;
-    font-size: 12px;
-    padding: 8px 12px;
-    display: block;
-    border-right: 1px solid #00284e;
-    cursor: pointer;
-    white-space: nowrap;
-  }
-
-  .portal-nav a:hover {
-    background: #1d3f5e;
-    color: #fff;
-  }
-
-  .portal-nav a.active {
-    background: #1d3f5e;
-    color: #fff;
-    font-weight: bold;
-    border-bottom: 2px solid #c8a800;
-  }
-
-  .nav-right {
-    margin-left: auto;
-    display: flex;
-    align-items: center;
-    padding: 0 12px;
-    font-size: 11px;
-    color: #7a9ab8;
-    gap: 10px;
-  }
-
-  .nav-avatar {
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 1px solid #7a9ab8;
-  background: #e8e8e8;
-  flex-shrink: 0;
-}
-
-  .nav-right a {
-    border: none !important;
-    padding: 4px 0 !important;
-    font-size: 11px;
-    color: #7a9ab8;
-  }
-
-  .portal-body {
-    display: flex;
-    flex: 1;
-    min-height: 0;
-  }
-
-  .sidebar {
-    width: 180px;
-    background: #e8e8e8;
-    border-right: 1px solid #bbb;
-    flex-shrink: 0;
-    padding: 12px 0;
-  }
-
-  .sidebar-user-box {
-    padding: 7px 12px 10px;
-    border-bottom: 1px solid #ccc;
-    margin-bottom: 6px;
-    font-size: 11px;
-    color: #444;
-    line-height: 1.6;
-  }
-
-  .sidebar-user-box strong {
-    display: block;
-    font-size: 12px;
-    color: #1a1a1a;
-  }
-
-  .sidebar-section {
-    font-size: 10px;
-    font-weight: bold;
-    color: #777;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    padding: 8px 12px 4px;
-  }
-
-  .sidebar-link {
-    display: block;
-    padding: 5px 12px;
-    font-size: 12px;
-    color: #1d3f5e;
-    text-decoration: none;
-    cursor: pointer;
-    border-left: 3px solid transparent;
-  }
-
-  .sidebar-link:hover {
-    background: #dde;
-    border-left-color: #1d3f5e;
-  }
-
-  .sidebar-link.active {
-    background: #d0dae8;
-    border-left-color: #1d3f5e;
-    font-weight: bold;
-    color: #1d3f5e;
-  }
-
-  .portal-main {
-    flex: 1;
-    padding: 16px 18px;
-    background: #fff;
-    overflow-y: auto;
-  }
-
-  .page-title {
-    font-size: 15px;
-    font-weight: bold;
-    color: #1d3f5e;
-    border-bottom: 1px solid #ccc;
-    padding-bottom: 6px;
-    margin-bottom: 10px;
-  }
-
-  .notice-box {
-    border: 1px solid #bbb;
-    padding: 8px 10px;
-    font-size: 11px;
-    margin-bottom: 10px;
-    line-height: 1.6;
-    background: #fafafa;
-  }
-
-  .notice-box h4 {
-    font-size: 11px;
-    font-weight: bold;
-    margin-bottom: 4px;
-    color: #1d3f5e;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-
-  .notice-box.warning {
-    background: #fffbe6;
-    border-color: #c8a800;
-  }
-
-  .top-layout {
-    display: grid;
-    grid-template-columns: 1fr 340px;
-    gap: 12px;
-    align-items: start;
-  }
-
-  .compact-panel {
-    border: 1px solid #ccc;
-    background: #fafafa;
-    padding: 10px;
-    margin-bottom: 12px;
-  }
-
-  .compact-panel h3 {
-    font-size: 12px;
-    color: #1d3f5e;
-    margin-bottom: 8px;
-    text-transform: uppercase;
-    letter-spacing: 0.4px;
-  }
-
-  .form-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    align-items: flex-end;
-    margin-bottom: 8px;
-  }
-
-  .form-group label {
-    display: block;
-    font-size: 11px;
-    font-weight: bold;
-    margin-bottom: 3px;
-  }
-
-  .form-group input,
-  .form-group select {
-    border: 1px solid #888;
-    padding: 4px 6px;
-    font-size: 11px;
-    font-family: Arial, Helvetica, sans-serif;
-    background: #fff;
-    height: 26px;
-  }
-
-  .form-group input:focus,
-  .form-group select:focus {
-    outline: 2px solid #1d3f5e;
-  }
-
-  .btn {
-    border: 1px solid;
-    padding: 4px 10px;
-    font-size: 11px;
-    font-family: Arial, Helvetica, sans-serif;
-    cursor: pointer;
-    height: 26px;
-  }
-
-  .btn-primary {
-    background: #1d3f5e;
-    color: #fff;
-    border-color: #1d3f5e;
-  }
-
-  .btn-primary:hover {
-    background: #1d3f5e;
-  }
-
-  .btn-secondary {
-    background: #f0f0f0;
-    color: #333;
-    border-color: #aaa;
-  }
-
-  .btn-secondary:hover {
-    background: #e0e0e0;
-  }
-
-  .btn-danger {
-    background: #c00;
-    color: #fff;
-    border-color: #900;
-  }
-
-  .btn-danger:hover {
-    background: #900;
-  }
-
-  .legend {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 7px;
-    font-size: 10px;
-    margin-bottom: 8px;
-  }
-
-  .legend-item {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-  }
-
-  .legend-box {
-    width: 16px;
-    height: 10px;
-    border: 1px solid #777;
-  }
-
-  .grade-gray { background: #d0d0d0; }
-  .grade-red { background: #c7352d; color: #fff; }
-  .grade-orange { background: #e6862d; color: #111; }
-  .grade-yellow { background: #e8d84a; color: #111; }
-  .grade-green { background: #3d9b4f; color: #fff; }
-
-  .mine-empty { background: #fff; }
-  .mine-available { background: #e4f6e7; color: #1a5a1a; font-weight: bold; }
-  .mine-maybe { background: #fff7c7; color: #6a5a00; font-weight: bold; }
-  .mine-unavailable { background: #f7dddd; color: #800; font-weight: bold; }
-
-  .info-table {
-    border-collapse: collapse;
-    width: 100%;
-    font-size: 11px;
-    margin-bottom: 10px;
-  }
-
-  .info-table th {
-    background: #1d3f5e;
-    color: #fff;
-    text-align: left;
-    padding: 4px 6px;
-    font-size: 10px;
-  }
-
-  .info-table td {
-    padding: 4px 6px;
-    border-bottom: 1px solid #ddd;
-    vertical-align: top;
-  }
-
-  .info-table tr:nth-child(even) td {
-    background: #f5f7fa;
-  }
-
-  .availability-wrap {
-    overflow-x: auto;
-    border: 1px solid #bbb;
-    margin-bottom: 12px;
-    max-width: 100%;
-  }
-
-  .availability-grid {
-    border-collapse: collapse;
-    min-width: 820px;
-    width: 100%;
-    font-size: 10px;
-  }
-
-  .view-toggle-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    margin-left: auto;
-    align-items: flex-end;
-  }
-
-  .view-toggle-row .btn.active {
-    background: #1d3f5e;
-    color: #fff;
-    border-color: #1d3f5e;
-  }
-
-  .schedule-view {
-    display: block;
-  }
-
-  .schedule-view.hidden {
-    display: none;
-  }
-
-  .orbat-week-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 10px;
-    flex-wrap: wrap;
-    border: 1px solid #ccc;
-    background: #fafafa;
-    padding: 8px 10px;
-    margin-bottom: 10px;
-    font-size: 11px;
-  }
-
-  .orbat-week-title {
-    font-weight: bold;
-    color: #1d3f5e;
-    text-transform: uppercase;
-    letter-spacing: 0.4px;
-  }
-
-  .orbat-day-tabs {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 4px;
-    margin-bottom: 10px;
-  }
-
-  .orbat-day-tab {
-    border: 1px solid #aaa;
-    background: #f0f0f0;
-    color: #333;
-    font-size: 11px;
-    font-family: Arial, Helvetica, sans-serif;
-    padding: 4px 8px;
-    cursor: pointer;
-  }
-
-  .orbat-day-tab:hover {
-    background: #e0e0e0;
-  }
-
-  .orbat-day-tab.active {
-    background: #1d3f5e;
-    color: #fff;
-    border-color: #1d3f5e;
-  }
-
-  .orbat-layout {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) 280px;
-    gap: 12px;
-    align-items: start;
-  }
-
-  .orbat-day-panel {
-    border: 1px solid #ccc;
-    background: #fff;
-    margin-bottom: 12px;
-  }
-
-  .orbat-day-panel-header {
-    background: #1d3f5e;
-    color: #fff;
-    padding: 6px 8px;
-    font-size: 12px;
-    font-weight: bold;
-  }
-
-  .orbat-section {
-    border-top: 1px solid #ddd;
-  }
-
-  .orbat-section:first-child {
-    border-top: none;
-  }
-
-  .orbat-section-title {
-    background: #e8e8e8;
-    border-bottom: 1px solid #ccc;
-    color: #1a1a1a;
-    font-weight: bold;
-    font-size: 11px;
-    padding: 5px 8px;
-  }
-
-  .orbat-slot-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
-    gap: 6px;
-    padding: 8px;
-  }
-
-  .orbat-person {
-    border: 1px solid #ccc;
-    background: #fafafa;
-    padding: 6px;
-    font-size: 11px;
-    cursor: pointer;
-    min-height: 48px;
-  }
-
-  .orbat-person:hover {
-    background: #eef3f8;
-    border-color: #1d3f5e;
-  }
-
-  .orbat-person.available {
-    border-left: 4px solid #218838;
-  }
-
-  .orbat-person.maybe {
-    border-left: 4px solid #c8a800;
-  }
-
-  .orbat-person.unavailable {
-    border-left: 4px solid #b02a37;
-    opacity: 0.75;
-  }
-
-  .orbat-person.empty {
-    border-left: 4px solid #999;
-  }
-
-  .orbat-person strong {
-    display: block;
-    color: #1d3f5e;
-    margin-bottom: 2px;
-  }
-
-  .orbat-person small {
-    display: block;
-    color: #555;
-    line-height: 1.4;
-  }
-
-  .orbat-empty {
-    padding: 8px;
-    font-size: 11px;
-    color: #777;
-  }
-
-  .orbat-detail-card {
-    border: 1px solid #ccc;
-    background: #fafafa;
-    padding: 10px;
-    font-size: 11px;
-  }
-
-  .orbat-detail-card h3 {
-    font-size: 12px;
-    color: #1d3f5e;
-    margin-bottom: 8px;
-    text-transform: uppercase;
-    letter-spacing: 0.4px;
-  }
-
-  .orbat-detail-row {
-    display: grid;
-    grid-template-columns: 90px 1fr;
-    gap: 6px;
-    border-bottom: 1px solid #ddd;
-    padding: 4px 0;
-  }
-
-  .orbat-detail-row:last-child {
-    border-bottom: none;
-  }
-
-  .orbat-detail-label {
-    color: #666;
-    font-weight: bold;
-  }
-
-  .orbat-time-block {
-    border: 1px solid #ddd;
-    margin-bottom: 8px;
-    background: #fff;
-  }
-
-  .orbat-time-title {
-    background: #f0f0f0;
-    border-bottom: 1px solid #ddd;
-    font-weight: bold;
-    font-size: 11px;
-    padding: 5px 8px;
-  }
-
-  @media (max-width: 1000px) {
-    .orbat-layout {
-      grid-template-columns: 1fr;
-    }
-  }
-
-  .availability-grid th {
-    background: #1d3f5e;
-    color: #fff;
-    padding: 4px 5px;
-    border: 1px solid #00284e;
-    text-align: center;
-    position: sticky;
-    top: 0;
-    z-index: 2;
-  }
-
-  .availability-grid th small {
-    display: block;
-    font-size: 9px;
-    color: #c5d8ec;
-    font-weight: normal;
-    line-height: 1.2;
-  }
-
-  .availability-grid td {
-    border: 1px solid #ccc;
-    padding: 3px 4px;
-    text-align: center;
-    min-width: 86px;
-    height: 22px;
-    cursor: pointer;
-  }
-
-  .availability-grid .time-col {
-    background: #f5f5f5;
-    color: #333;
-    font-weight: bold;
-    position: sticky;
-    left: 0;
-    z-index: 1;
-    min-width: 58px;
-    cursor: default;
-  }
-
-  .heat-cell {
-    font-weight: bold;
-  }
-
-  .heat-cell small {
-    display: block;
-    font-size: 9px;
-    font-weight: normal;
-    opacity: 0.9;
-    line-height: 1.1;
-  }
-
-  .cell-detail {
-    font-size: 9px;
-    opacity: 0.95;
-  }
-
-  .best-list,
-  .changes-list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-
-  .best-list li,
-  .changes-list li {
-    border-bottom: 1px solid #ddd;
-    padding: 5px 0;
-    font-size: 11px;
-    line-height: 1.35;
-  }
-
-  .best-list li:last-child,
-  .changes-list li:last-child {
-    border-bottom: none;
-  }
-
-  .muted {
-    color: #777;
-    font-size: 10px;
-  }
-
-  .status-line {
-    margin-top: 8px;
-    font-size: 11px;
-    padding: 6px 8px;
-    border: 1px solid #bbb;
-    background: #fafafa;
-    display: none;
-  }
-
-  .status-line.visible {
-    display: block;
-  }
-
-  .status-line.ok {
-    border-color: #2a7a2a;
-    background: #f0f7f0;
-    color: #1a4a1a;
-  }
-
-  .status-line.err {
-    border-color: #c00;
-    background: #fdf0f0;
-    color: #800;
-  }
-
-  .page-footer {
-    background: #1a1a1a;
-    color: #888;
-    font-size: 11px;
-    text-align: center;
-    padding: 7px;
-    flex-shrink: 0;
-  }
-
-  @media (max-width: 1000px) {
-    .top-layout {
-      grid-template-columns: 1fr;
-    }
-  }
-
-  @media (max-width: 800px) {
-    .sidebar {
-      display: none;
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
 
-    .portal-main {
-      padding: 12px;
+    body {
+      background: #f0f0f0;
+      color: #1a1a1a;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 12px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .availability-grid td {
+      user-select: none;
+    }
+
+    .gov-banner {
+      background: #1a1a1a;
+      color: #ccc;
+      font-size: 11px;
+      padding: 3px 12px;
+    }
+
+    .site-header {
+      background: #1d3f5e;
+      color: #fff;
+      padding: 10px 16px;
+      border-bottom: 3px solid #c8a800;
+    }
+
+    .site-header h1 {
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .site-header p {
+      font-size: 11px;
+      color: #c5d8ec;
+      margin-top: 2px;
+    }
+
+    .screen {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+    }
+
+    .portal-nav {
+      background: #1d3f5e;
+      display: flex;
+      align-items: stretch;
+      border-bottom: 2px solid #c8a800;
+      flex-shrink: 0;
+    }
+
+    .portal-nav a {
+      color: #cde;
+      text-decoration: none;
+      font-size: 12px;
+      padding: 8px 12px;
+      display: block;
+      border-right: 1px solid #00284e;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .portal-nav a:hover {
+      background: #1d3f5e;
+      color: #fff;
+    }
+
+    .portal-nav a.active {
+      background: #1d3f5e;
+      color: #fff;
+      font-weight: bold;
+      border-bottom: 2px solid #c8a800;
     }
 
     .nav-right {
-      display: none;
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      font-size: 11px;
+      color: #7a9ab8;
+      gap: 10px;
+    }
+
+    .nav-avatar {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1px solid #7a9ab8;
+      background: #e8e8e8;
+      flex-shrink: 0;
+    }
+
+    .nav-right a {
+      border: none !important;
+      padding: 4px 0 !important;
+      font-size: 11px;
+      color: #7a9ab8;
+    }
+
+    .portal-body {
+      display: flex;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .sidebar {
+      width: 180px;
+      background: #e8e8e8;
+      border-right: 1px solid #bbb;
+      flex-shrink: 0;
+      padding: 12px 0;
+    }
+
+    .sidebar-user-box {
+      padding: 7px 12px 10px;
+      border-bottom: 1px solid #ccc;
+      margin-bottom: 6px;
+      font-size: 11px;
+      color: #444;
+      line-height: 1.6;
+    }
+
+    .sidebar-user-box strong {
+      display: block;
+      font-size: 12px;
+      color: #1a1a1a;
+    }
+
+    .sidebar-section {
+      font-size: 10px;
+      font-weight: bold;
+      color: #777;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 8px 12px 4px;
+    }
+
+    .sidebar-link {
+      display: block;
+      padding: 5px 12px;
+      font-size: 12px;
+      color: #1d3f5e;
+      text-decoration: none;
+      cursor: pointer;
+      border-left: 3px solid transparent;
+    }
+
+    .sidebar-link:hover {
+      background: #dde;
+      border-left-color: #1d3f5e;
+    }
+
+    .sidebar-link.active {
+      background: #d0dae8;
+      border-left-color: #1d3f5e;
+      font-weight: bold;
+      color: #1d3f5e;
+    }
+
+    .portal-main {
+      flex: 1;
+      padding: 16px 18px;
+      background: #fff;
+      overflow-y: auto;
+    }
+
+    .page-title {
+      font-size: 15px;
+      font-weight: bold;
+      color: #1d3f5e;
+      border-bottom: 1px solid #ccc;
+      padding-bottom: 6px;
+      margin-bottom: 10px;
+    }
+
+    .notice-box {
+      border: 1px solid #bbb;
+      padding: 8px 10px;
+      font-size: 11px;
+      margin-bottom: 10px;
+      line-height: 1.6;
+      background: #fafafa;
+    }
+
+    .notice-box h4 {
+      font-size: 11px;
+      font-weight: bold;
+      margin-bottom: 4px;
+      color: #1d3f5e;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .notice-box.warning {
+      background: #fffbe6;
+      border-color: #c8a800;
+    }
+
+    .top-layout {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 12px;
+      align-items: start;
+    }
+
+    .compact-panel {
+      border: 1px solid #ccc;
+      background: #fafafa;
+      padding: 10px;
+      margin-bottom: 12px;
+    }
+
+    .compact-panel h3 {
+      font-size: 12px;
+      color: #1d3f5e;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .form-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: flex-end;
+      margin-bottom: 8px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 11px;
+      font-weight: bold;
+      margin-bottom: 3px;
+    }
+
+    .form-group input,
+    .form-group select {
+      border: 1px solid #888;
+      padding: 4px 6px;
+      font-size: 11px;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #fff;
+      height: 26px;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: 2px solid #1d3f5e;
+    }
+
+    .btn {
+      border: 1px solid;
+      padding: 4px 10px;
+      font-size: 11px;
+      font-family: Arial, Helvetica, sans-serif;
+      cursor: pointer;
+      height: 26px;
+    }
+
+    .btn-primary {
+      background: #1d3f5e;
+      color: #fff;
+      border-color: #1d3f5e;
+    }
+
+    .btn-primary:hover {
+      background: #1d3f5e;
+    }
+
+    .btn-secondary {
+      background: #f0f0f0;
+      color: #333;
+      border-color: #aaa;
+    }
+
+    .btn-secondary:hover {
+      background: #e0e0e0;
+    }
+
+    .btn-danger {
+      background: #c00;
+      color: #fff;
+      border-color: #900;
+    }
+
+    .btn-danger:hover {
+      background: #900;
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      font-size: 10px;
+      margin-bottom: 8px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .legend-box {
+      width: 16px;
+      height: 10px;
+      border: 1px solid #777;
+    }
+
+    .grade-gray {
+      background: #d0d0d0;
+    }
+
+    .grade-red {
+      background: #c7352d;
+      color: #fff;
+    }
+
+    .grade-orange {
+      background: #e6862d;
+      color: #111;
+    }
+
+    .grade-yellow {
+      background: #e8d84a;
+      color: #111;
+    }
+
+    .grade-green {
+      background: #3d9b4f;
+      color: #fff;
+    }
+
+    .mine-empty {
+      background: #fff;
+    }
+
+    .mine-available {
+      background: #e4f6e7;
+      color: #1a5a1a;
+      font-weight: bold;
+    }
+
+    .mine-maybe {
+      background: #fff7c7;
+      color: #6a5a00;
+      font-weight: bold;
+    }
+
+    .mine-unavailable {
+      background: #f7dddd;
+      color: #800;
+      font-weight: bold;
+    }
+
+    .info-table {
+      border-collapse: collapse;
+      width: 100%;
+      font-size: 11px;
+      margin-bottom: 10px;
+    }
+
+    .info-table th {
+      background: #1d3f5e;
+      color: #fff;
+      text-align: left;
+      padding: 4px 6px;
+      font-size: 10px;
+    }
+
+    .info-table td {
+      padding: 4px 6px;
+      border-bottom: 1px solid #ddd;
+      vertical-align: top;
+    }
+
+    .info-table tr:nth-child(even) td {
+      background: #f5f7fa;
+    }
+
+    .availability-wrap {
+      overflow-x: auto;
+      border: 1px solid #bbb;
+      margin-bottom: 12px;
+      max-width: 100%;
     }
 
     .availability-grid {
-      min-width: 760px;
+      border-collapse: collapse;
+      min-width: 820px;
+      width: 100%;
+      font-size: 10px;
     }
-  }
-</style>
+
+    .view-toggle-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-left: auto;
+      align-items: flex-end;
+    }
+
+    .view-toggle-row .btn.active {
+      background: #1d3f5e;
+      color: #fff;
+      border-color: #1d3f5e;
+    }
+
+    .schedule-view {
+      display: block;
+    }
+
+    .schedule-view.hidden {
+      display: none;
+    }
+
+    .orbat-week-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      border: 1px solid #ccc;
+      background: #fafafa;
+      padding: 8px 10px;
+      margin-bottom: 10px;
+      font-size: 11px;
+    }
+
+    .orbat-week-title {
+      font-weight: bold;
+      color: #1d3f5e;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .orbat-day-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-bottom: 10px;
+    }
+
+    .orbat-day-tab {
+      border: 1px solid #aaa;
+      background: #f0f0f0;
+      color: #333;
+      font-size: 11px;
+      font-family: Arial, Helvetica, sans-serif;
+      padding: 4px 8px;
+      cursor: pointer;
+    }
+
+    .orbat-day-tab:hover {
+      background: #e0e0e0;
+    }
+
+    .orbat-day-tab.active {
+      background: #1d3f5e;
+      color: #fff;
+      border-color: #1d3f5e;
+    }
+
+    .orbat-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 280px;
+      gap: 12px;
+      align-items: start;
+    }
+
+    .orbat-day-panel {
+      border: 1px solid #ccc;
+      background: #fff;
+      margin-bottom: 12px;
+    }
+
+    .orbat-day-panel-header {
+      background: #1d3f5e;
+      color: #fff;
+      padding: 6px 8px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .orbat-section {
+      border-top: 1px solid #ddd;
+    }
+
+    .orbat-section:first-child {
+      border-top: none;
+    }
+
+    .orbat-section-title {
+      background: #e8e8e8;
+      border-bottom: 1px solid #ccc;
+      color: #1a1a1a;
+      font-weight: bold;
+      font-size: 11px;
+      padding: 5px 8px;
+    }
+
+    .orbat-slot-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+      gap: 6px;
+      padding: 8px;
+    }
+
+    .orbat-person {
+      border: 1px solid #ccc;
+      background: #fafafa;
+      padding: 6px;
+      font-size: 11px;
+      cursor: pointer;
+      min-height: 48px;
+    }
+
+    .orbat-person:hover {
+      background: #eef3f8;
+      border-color: #1d3f5e;
+    }
+
+    .orbat-person.available {
+      border-left: 4px solid #218838;
+    }
+
+    .orbat-person.maybe {
+      border-left: 4px solid #c8a800;
+    }
+
+    .orbat-person.unavailable {
+      border-left: 4px solid #b02a37;
+      opacity: 0.75;
+    }
+
+    .orbat-person.empty {
+      border-left: 4px solid #999;
+    }
+
+    .orbat-person strong {
+      display: block;
+      color: #1d3f5e;
+      margin-bottom: 2px;
+    }
+
+    .orbat-person small {
+      display: block;
+      color: #555;
+      line-height: 1.4;
+    }
+
+    .orbat-empty {
+      padding: 8px;
+      font-size: 11px;
+      color: #777;
+    }
+
+    .orbat-detail-card {
+      border: 1px solid #ccc;
+      background: #fafafa;
+      padding: 10px;
+      font-size: 11px;
+    }
+
+    .orbat-detail-card h3 {
+      font-size: 12px;
+      color: #1d3f5e;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .orbat-detail-row {
+      display: grid;
+      grid-template-columns: 90px 1fr;
+      gap: 6px;
+      border-bottom: 1px solid #ddd;
+      padding: 4px 0;
+    }
+
+    .orbat-detail-row:last-child {
+      border-bottom: none;
+    }
+
+    .orbat-detail-label {
+      color: #666;
+      font-weight: bold;
+    }
+
+    .orbat-time-block {
+      border: 1px solid #ddd;
+      margin-bottom: 8px;
+      background: #fff;
+    }
+
+    .orbat-time-title {
+      background: #f0f0f0;
+      border-bottom: 1px solid #ddd;
+      font-weight: bold;
+      font-size: 11px;
+      padding: 5px 8px;
+    }
+
+    @media (max-width: 1000px) {
+      .orbat-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .availability-grid th {
+      background: #1d3f5e;
+      color: #fff;
+      padding: 4px 5px;
+      border: 1px solid #00284e;
+      text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 2;
+    }
+
+    .availability-grid th small {
+      display: block;
+      font-size: 9px;
+      color: #c5d8ec;
+      font-weight: normal;
+      line-height: 1.2;
+    }
+
+    .availability-grid td {
+      border: 1px solid #ccc;
+      padding: 3px 4px;
+      text-align: center;
+      min-width: 86px;
+      height: 22px;
+      cursor: pointer;
+    }
+
+    .availability-grid .time-col {
+      background: #f5f5f5;
+      color: #333;
+      font-weight: bold;
+      position: sticky;
+      left: 0;
+      z-index: 1;
+      min-width: 58px;
+      cursor: default;
+    }
+
+    .heat-cell {
+      font-weight: bold;
+    }
+
+    .heat-cell small {
+      display: block;
+      font-size: 9px;
+      font-weight: normal;
+      opacity: 0.9;
+      line-height: 1.1;
+    }
+
+    .cell-detail {
+      font-size: 9px;
+      opacity: 0.95;
+    }
+
+    .best-list,
+    .changes-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .best-list li,
+    .changes-list li {
+      border-bottom: 1px solid #ddd;
+      padding: 5px 0;
+      font-size: 11px;
+      line-height: 1.35;
+    }
+
+    .best-list li:last-child,
+    .changes-list li:last-child {
+      border-bottom: none;
+    }
+
+    .muted {
+      color: #777;
+      font-size: 10px;
+    }
+
+    .status-line {
+      margin-top: 8px;
+      font-size: 11px;
+      padding: 6px 8px;
+      border: 1px solid #bbb;
+      background: #fafafa;
+      display: none;
+    }
+
+    .status-line.visible {
+      display: block;
+    }
+
+    .status-line.ok {
+      border-color: #2a7a2a;
+      background: #f0f7f0;
+      color: #1a4a1a;
+    }
+
+    .status-line.err {
+      border-color: #c00;
+      background: #fdf0f0;
+      color: #800;
+    }
+
+    .page-footer {
+      background: #1a1a1a;
+      color: #888;
+      font-size: 11px;
+      text-align: center;
+      padding: 7px;
+      flex-shrink: 0;
+    }
+
+    @media (max-width: 1000px) {
+      .top-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 800px) {
+      .sidebar {
+        display: none;
+      }
+
+      .portal-main {
+        padding: 12px;
+      }
+
+      .nav-right {
+        display: none;
+      }
+
+      .availability-grid {
+        min-width: 760px;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
-<div class="gov-banner">U.S. Department of the Navy &nbsp;|&nbsp; Official Government System &nbsp;|&nbsp; Authorized Users Only</div>
+  <div class="gov-banner">U.S. Department of the Navy &nbsp;|&nbsp; Official Government System &nbsp;|&nbsp; Authorized
+    Users Only</div>
 
-<div class="site-header">
-  <h1>Naval Special Warfare Command - Operations Portal</h1>
-  <p>NSW-OPS // UNCLASSIFIED // FOR OFFICIAL USE ONLY</p>
-</div>
+  <div class="site-header">
+    <h1>Naval Special Warfare Command - Operations Portal</h1>
+    <p>NSW-OPS // UNCLASSIFIED // FOR OFFICIAL USE ONLY</p>
+  </div>
 
-<div class="screen">
+  <div class="screen">
 
     <div class="portal-nav">
-  <a href="/member/">Home</a>
-  <a class="active" href="/member/scheduling/">Scheduling</a>
-  <a href="/member/documentation/">Documentation</a>
-  <a href="/member/operational/">Operational</a>
-  <a href="/member/profile/">Profile</a>
-  <a class="admin-only-link" href="/member/admin/" style="display:none;">Admin</a>
+      <a href="/member/">Home</a>
+      <a class="active" href="/member/scheduling/">Scheduling</a>
+      <a href="/member/documentation/">Documentation</a>
+      <a href="/member/operational/">Operational</a>
+      <a href="/member/profile/">Profile</a>
+      <a class="admin-only-link" href="/member/admin/" style="display:none;">Admin</a>
 
-  <div class="nav-right">
-    <img id="nav-avatar" class="nav-avatar" src="../../nsw.png" alt="Profile picture">
-    <span>Logged in as: <span id="session-label">Loading...</span></span>
-    <a onclick="doLogout()">Log Out</a>
-  </div>
-</div>
-
-  <div class="portal-body">
-
-    <div class="sidebar">
-      <div class="sidebar-user-box">
-        <strong id="sidebar-name">Loading...</strong>
-        Role: <span id="sidebar-role">Loading...</span>
-      </div>
-
-      <div class="sidebar-section">Navigation</div>
-      <a class="sidebar-link" href="/member/">Home / Dashboard</a>
-      <a class="sidebar-link active" href="/member/scheduling/">Scheduling</a>
-      <a class="sidebar-link" href="/member/documentation/">Documentation</a>
-      <a class="sidebar-link" href="/member/operational/">Operational</a>
-
-      <div class="sidebar-section">Account</div>
-      <a class="sidebar-link admin-only-link" href="/member/admin/" style="display:none;">Admin</a>
-      <a class="sidebar-link" href="/member/profile/">Profile</a>
-    </div>
-
-    <div class="portal-main">
-      <div class="page-title">Scheduling - Weekly Availability</div>
-
-      <div class="notice-box warning">
-        <h4>Instructions</h4>
-        Click an availability cell to cycle between Available, Maybe, Unavailable, and Empty.
-       You can also hold the left mouse button and drag across cells to apply the same status to multiple slots.
-      </div>
-
-      <div class="top-layout">
-
-        <div>
-          <div class="compact-panel">
-            <h3>Controls</h3>
-
-            <div class="form-row">
-              <div class="form-group">
-                <label for="week-start">Week Starting</label>
-                <input type="date" id="week-start">
-              </div>
-
-              <div class="form-group">
-                <label for="timezone-select">Display Timezone</label>
-                <select id="timezone-select">
-                  <option value="UTC">UTC</option>
-                  <option value="Europe/Amsterdam">Europe/Amsterdam</option>
-                  <option value="Europe/London">Europe/London</option>
-                  <option value="America/New_York">America/New_York</option>
-                  <option value="America/Chicago">America/Chicago</option>
-                  <option value="America/Denver">America/Denver</option>
-                  <option value="America/Los_Angeles">America/Los_Angeles</option>
-                </select>
-              </div>
-
-              <button class="btn btn-primary" id="save-btn" type="button">Save</button>
-              <button class="btn btn-secondary" id="refresh-btn" type="button">Refresh</button>
-              <button class="btn btn-danger" id="clear-btn" type="button">Clear Mine</button>
-
-              <div class="view-toggle-row">
-                <button class="btn btn-secondary active" id="calendar-view-btn" type="button">Calendar View</button>
-                <button class="btn btn-secondary" id="orbat-view-btn" type="button">ORBAT View</button>
-              </div>
-            </div>
-
-            <div class="legend">
-              <div class="legend-item"><span class="legend-box grade-gray"></span> No responses</div>
-              <div class="legend-item"><span class="legend-box grade-red"></span> Bad</div>
-              <div class="legend-item"><span class="legend-box grade-orange"></span> Weak</div>
-              <div class="legend-item"><span class="legend-box grade-yellow"></span> Good</div>
-              <div class="legend-item"><span class="legend-box grade-green"></span> Best</div>
-            </div>
-
-            <table class="info-table">
-              <tr><th colspan="2">Session</th></tr>
-              <tr><td style="width:130px">Logged in as</td><td id="dash-user">Loading...</td></tr>
-              <tr><td>User ID</td><td id="dash-userid">Loading...</td></tr>
-              <tr><td>Timezone View</td><td id="dash-timezone">Loading...</td></tr>
-              <tr><td>Members Loaded</td><td id="dash-members">0</td></tr>
-              <tr><td>Last Updated</td><td id="dash-updated">Loading...</td></tr>
-            </table>
-
-            <div id="status-line" class="status-line"></div>
-          </div>
-
-          <div id="calendar-view" class="schedule-view">
-            <div class="page-title">Unit Availability Heatmap</div>
-            <div class="availability-wrap">
-              <table class="availability-grid" id="heatmap-table"></table>
-            </div>
-
-            <div class="page-title">My Availability</div>
-            <div class="availability-wrap">
-              <table class="availability-grid" id="my-table"></table>
-            </div>
-          </div>
-
-          <div id="orbat-view" class="schedule-view hidden">
-            <div class="page-title">ORBAT Availability View</div>
-
-            <div class="orbat-week-header">
-              <div>
-                <div class="orbat-week-title" id="orbat-week-title">Loading week...</div>
-                <div class="muted">Shows members by ORBAT callsign and selected daily availability.</div>
-              </div>
-
-              <div class="form-row" style="margin-bottom:0;">
-                <button class="btn btn-secondary" id="orbat-prev-week" type="button">Previous Week</button>
-                <button class="btn btn-secondary" id="orbat-current-week" type="button">Selected Week</button>
-                <button class="btn btn-secondary" id="orbat-next-week" type="button">Next Week</button>
-              </div>
-            </div>
-
-            <div class="orbat-day-tabs" id="orbat-day-tabs"></div>
-
-            <div class="orbat-layout">
-              <div id="orbat-day-content">
-                <div class="orbat-empty">Loading ORBAT availability...</div>
-              </div>
-
-              <div class="orbat-detail-card" id="orbat-detail-card">
-                <h3>Individual Details</h3>
-                <div class="muted">Click a name in the ORBAT view to see rank, callsign, Steam, Discord, and availability details.</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div>
-          <div class="compact-panel">
-            <h3>Best Training Windows</h3>
-            <ul class="best-list" id="best-list">
-              <li>Loading...</li>
-            </ul>
-          </div>
-
-          <div class="compact-panel">
-            <h3>Latest Availability Changes</h3>
-            <ul class="changes-list" id="changes-list">
-              <li>Loading...</li>
-            </ul>
-          </div>
-        </div>
-
+      <div class="nav-right">
+        <img id="nav-avatar" class="nav-avatar" src="../../nsw.png" alt="Profile picture">
+        <span>Logged in as: <span id="session-label">Loading...</span></span>
+        <a onclick="doLogout()">Log Out</a>
       </div>
     </div>
 
+    <div class="portal-body">
+
+      <div class="sidebar">
+        <div class="sidebar-user-box">
+          <strong id="sidebar-name">Loading...</strong>
+          Role: <span id="sidebar-role">Loading...</span>
+        </div>
+
+        <div class="sidebar-section">Navigation</div>
+        <a class="sidebar-link" href="/member/">Home / Dashboard</a>
+        <a class="sidebar-link active" href="/member/scheduling/">Scheduling</a>
+        <a class="sidebar-link" href="/member/documentation/">Documentation</a>
+        <a class="sidebar-link" href="/member/operational/">Operational</a>
+
+        <div class="sidebar-section">Account</div>
+        <a class="sidebar-link admin-only-link" href="/member/admin/" style="display:none;">Admin</a>
+        <a class="sidebar-link" href="/member/profile/">Profile</a>
+      </div>
+
+      <div class="portal-main">
+        <div class="page-title">Scheduling - Weekly Availability</div>
+
+        <div class="notice-box warning">
+          <h4>Instructions</h4>
+          Click an availability cell to cycle between Available, Maybe, Unavailable, and Empty.
+          You can also hold the left mouse button and drag across cells to apply the same status to multiple slots.
+        </div>
+
+        <div class="top-layout">
+
+          <div>
+            <div class="compact-panel">
+              <h3>Controls</h3>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="week-start">Week Starting</label>
+                  <input type="date" id="week-start">
+                </div>
+
+                <div class="form-group">
+                  <label for="timezone-select">Display Timezone</label>
+                  <select id="timezone-select">
+                    <option value="UTC">UTC</option>
+                    <option value="Europe/Amsterdam">Europe/Amsterdam</option>
+                    <option value="Europe/London">Europe/London</option>
+                    <option value="America/New_York">America/New_York</option>
+                    <option value="America/Chicago">America/Chicago</option>
+                    <option value="America/Denver">America/Denver</option>
+                    <option value="America/Los_Angeles">America/Los_Angeles</option>
+                  </select>
+                </div>
+
+                <button class="btn btn-primary" id="save-btn" type="button">Save</button>
+                <button class="btn btn-secondary" id="refresh-btn" type="button">Refresh</button>
+                <button class="btn btn-danger" id="clear-btn" type="button">Clear Mine</button>
+
+                <div class="view-toggle-row">
+                  <button class="btn btn-secondary active" id="calendar-view-btn" type="button">Calendar View</button>
+                  <button class="btn btn-secondary" id="orbat-view-btn" type="button">ORBAT View</button>
+                </div>
+              </div>
+
+              <div class="legend">
+                <div class="legend-item"><span class="legend-box grade-gray"></span> No responses</div>
+                <div class="legend-item"><span class="legend-box grade-red"></span> Bad</div>
+                <div class="legend-item"><span class="legend-box grade-orange"></span> Weak</div>
+                <div class="legend-item"><span class="legend-box grade-yellow"></span> Good</div>
+                <div class="legend-item"><span class="legend-box grade-green"></span> Best</div>
+              </div>
+
+              <table class="info-table">
+                <tr>
+                  <th colspan="2">Session</th>
+                </tr>
+                <tr>
+                  <td style="width:130px">Logged in as</td>
+                  <td id="dash-user">Loading...</td>
+                </tr>
+                <tr>
+                  <td>User ID</td>
+                  <td id="dash-userid">Loading...</td>
+                </tr>
+                <tr>
+                  <td>Timezone View</td>
+                  <td id="dash-timezone">Loading...</td>
+                </tr>
+                <tr>
+                  <td>Members Loaded</td>
+                  <td id="dash-members">0</td>
+                </tr>
+                <tr>
+                  <td>Last Updated</td>
+                  <td id="dash-updated">Loading...</td>
+                </tr>
+              </table>
+
+              <div id="status-line" class="status-line"></div>
+            </div>
+
+            <div id="calendar-view" class="schedule-view">
+              <div class="page-title">Unit Availability Heatmap</div>
+              <div class="availability-wrap">
+                <table class="availability-grid" id="heatmap-table"></table>
+              </div>
+
+              <div class="page-title">My Availability</div>
+              <div class="availability-wrap">
+                <table class="availability-grid" id="my-table"></table>
+              </div>
+            </div>
+
+            <div id="orbat-view" class="schedule-view hidden">
+              <div class="page-title">ORBAT Availability View</div>
+
+              <div class="orbat-week-header">
+                <div>
+                  <div class="orbat-week-title" id="orbat-week-title">Loading week...</div>
+                  <div class="muted">Shows members by ORBAT callsign and selected daily availability.</div>
+                </div>
+
+                <div class="form-row" style="margin-bottom:0;">
+                  <button class="btn btn-secondary" id="orbat-prev-week" type="button">Previous Week</button>
+                  <button class="btn btn-secondary" id="orbat-current-week" type="button">Selected Week</button>
+                  <button class="btn btn-secondary" id="orbat-next-week" type="button">Next Week</button>
+                </div>
+              </div>
+
+              <div class="orbat-day-tabs" id="orbat-day-tabs"></div>
+
+              <div class="orbat-layout">
+                <div id="orbat-day-content">
+                  <div class="orbat-empty">Loading ORBAT availability...</div>
+                </div>
+
+                <div class="orbat-detail-card" id="orbat-detail-card">
+                  <h3>Individual Details</h3>
+                  <div class="muted">Click a name in the ORBAT view to see rank, callsign, Steam, Discord, and
+                    availability details.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="compact-panel">
+              <h3>Best Training Windows</h3>
+              <ul class="best-list" id="best-list">
+                <li>Loading...</li>
+              </ul>
+            </div>
+
+            <div class="compact-panel">
+              <h3>Latest Availability Changes</h3>
+              <ul class="changes-list" id="changes-list">
+                <li>Loading...</li>
+              </ul>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+    <div class="page-footer">Naval Special Warfare Command - Operations Portal &nbsp;|&nbsp; UNCLASSIFIED // FOUO
+      &nbsp;|&nbsp; Contact your unit S6 for technical support</div>
   </div>
 
-  <div class="page-footer">Naval Special Warfare Command - Operations Portal &nbsp;|&nbsp; UNCLASSIFIED // FOUO &nbsp;|&nbsp; Contact your unit S6 for technical support</div>
-</div>
+  <script type="module">
 
-<script type="module">
-
-import { supabase } from "/js/auth.js";
+    import { supabase } from "/js/auth.js";
 
 const SLOT_MINUTES = 60;
 const SLOTS_PER_DAY = 24;
@@ -2131,4 +2190,5 @@ init();
 </script>
 
 </body>
+
 </html>

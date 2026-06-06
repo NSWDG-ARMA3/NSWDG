@@ -4,12 +4,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NSW Operations Portal - Profile</title>
+  <title>NSW Operations Portal - LOA</title>
 
   <meta property="og:title" content="RSQDN, Navy Portal">
   <meta property="og:image" content="../../nsw.png">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="http://www.rsqdn.com/member/">
+  <meta property="og:url" content="http://www.rsqdn.com/member/loa/">
 
   <link rel="shortcut icon" href="../../nsw.png" type="image/x-icon">
 
@@ -80,14 +80,13 @@
       white-space: nowrap;
     }
 
-    .portal-nav a:hover {
+    .portal-nav a:hover,
+    .portal-nav a.active {
       background: #1d3f5e;
       color: #fff;
     }
 
     .portal-nav a.active {
-      background: #1d3f5e;
-      color: #fff;
       font-weight: bold;
       border-bottom: 2px solid #c8a800;
     }
@@ -102,6 +101,13 @@
       gap: 10px;
     }
 
+    .nav-right a {
+      border: none !important;
+      padding: 4px 0 !important;
+      font-size: 11px;
+      color: #7a9ab8;
+    }
+
     .nav-avatar {
       width: 22px;
       height: 22px;
@@ -110,22 +116,6 @@
       border: 1px solid #7a9ab8;
       background: #e8e8e8;
       flex-shrink: 0;
-    }
-
-    .nav-right a {
-      border: none !important;
-      padding: 4px 0 !important;
-      font-size: 11px;
-      color: #7a9ab8;
-    }
-
-    .portal-avatar {
-      width: 22px;
-      height: 22px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 1px solid #7a9ab8;
-      background: #e8e8e8;
     }
 
     .portal-body {
@@ -227,129 +217,145 @@
       border-color: #c8a800;
     }
 
-    .notice-box.error {
-      background: #fdf0f0;
-      border-color: #c00;
-      color: #800;
-    }
-
-    .profile-layout {
+    .grid {
       display: grid;
-      grid-template-columns: 320px 1fr;
-      gap: 12px;
+      grid-template-columns: 340px 1fr;
+      gap: 14px;
       align-items: start;
     }
 
-    .compact-panel {
-      border: 1px solid #ccc;
+    .panel {
+      border: 1px solid #bbb;
       background: #fafafa;
-      padding: 10px;
-      margin-bottom: 12px;
     }
 
-    .compact-panel h3 {
-      font-size: 12px;
-      color: #1d3f5e;
-      margin-bottom: 8px;
+    .panel-title {
+      background: #1d3f5e;
+      color: #fff;
+      padding: 6px 8px;
+      font-size: 11px;
+      font-weight: bold;
       text-transform: uppercase;
-      letter-spacing: 0.4px;
+      letter-spacing: 0.5px;
+    }
+
+    .panel-body {
+      padding: 10px;
     }
 
     .form-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      align-items: flex-end;
       margin-bottom: 8px;
     }
 
-    .form-group {
-      margin-bottom: 8px;
-    }
-
-    .form-group label {
+    .form-row label {
       display: block;
       font-size: 11px;
       font-weight: bold;
       margin-bottom: 3px;
+      color: #333;
     }
 
-    .form-group input {
-      border: 1px solid #888;
-      padding: 4px 6px;
-      font-size: 11px;
-      font-family: Arial, Helvetica, sans-serif;
-      background: #fff;
-      height: 26px;
+    input,
+    textarea,
+    select {
       width: 100%;
-    }
-
-    .form-group input[type="file"] {
-      height: auto;
+      border: 1px solid #aaa;
       padding: 5px;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 12px;
+      background: #fff;
     }
 
-    .form-group input:focus {
-      outline: 2px solid #1d3f5e;
+    textarea {
+      min-height: 90px;
+      resize: vertical;
     }
 
     .btn {
       border: 1px solid;
-      padding: 4px 10px;
-      font-size: 11px;
+      padding: 5px 12px;
+      font-size: 12px;
       font-family: Arial, Helvetica, sans-serif;
       cursor: pointer;
-      height: 26px;
     }
 
     .btn-primary {
       background: #1d3f5e;
       color: #fff;
-      border-color: #1d3f5e;
+      border-color: #102a42;
     }
 
     .btn-primary:hover {
       background: #16304a;
     }
 
+    .btn-danger {
+      background: #c00;
+      color: #fff;
+      border-color: #900;
+    }
+
+    .btn-danger:hover {
+      background: #900;
+    }
+
     .btn-secondary {
-      background: #f0f0f0;
-      color: #333;
-      border-color: #aaa;
+      background: #e8e8e8;
+      color: #222;
+      border-color: #999;
     }
 
     .btn-secondary:hover {
-      background: #e0e0e0;
+      background: #ddd;
     }
 
-    .profile-avatar-large {
-      width: 140px;
-      height: 140px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 1px solid #999;
-      background: #e8e8e8;
+    .btn-row {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .status-line {
+      display: none;
+      margin-top: 8px;
+      padding: 6px 8px;
+      border: 1px solid;
+      font-size: 11px;
+      line-height: 1.5;
+    }
+
+    .status-line.visible {
       display: block;
-      margin: 8px auto 12px;
+    }
+
+    .status-line.ok {
+      color: #1a5a1a;
+      background: #eef7ee;
+      border-color: #1a5a1a;
+    }
+
+    .status-line.err {
+      color: #800;
+      background: #fdf0f0;
+      border-color: #c00;
     }
 
     .info-table {
       border-collapse: collapse;
       width: 100%;
-      font-size: 11px;
-      margin-bottom: 10px;
+      font-size: 12px;
     }
 
     .info-table th {
       background: #1d3f5e;
       color: #fff;
       text-align: left;
-      padding: 4px 6px;
-      font-size: 10px;
+      padding: 5px 8px;
+      font-size: 11px;
     }
 
     .info-table td {
-      padding: 4px 6px;
+      padding: 6px 8px;
       border-bottom: 1px solid #ddd;
       vertical-align: top;
     }
@@ -358,34 +364,50 @@
       background: #f5f7fa;
     }
 
-    .muted {
-      color: #777;
+    .badge {
+      display: inline-block;
       font-size: 10px;
+      padding: 1px 6px;
+      border: 1px solid;
+      font-weight: bold;
+      text-transform: uppercase;
     }
 
-    .status-line {
-      margin-top: 8px;
-      font-size: 11px;
-      padding: 6px 8px;
-      border: 1px solid #bbb;
-      background: #fafafa;
-      display: none;
+    .badge-pending {
+      color: #6a5a00;
+      border-color: #c8a800;
+      background: #fffbe6;
     }
 
-    .status-line.visible {
-      display: block;
+    .badge-approved {
+      color: #1a5a1a;
+      border-color: #1a5a1a;
+      background: #eef7ee;
     }
 
-    .status-line.ok {
-      border-color: #2a7a2a;
-      background: #f0f7f0;
-      color: #1a4a1a;
-    }
-
-    .status-line.err {
+    .badge-declined {
+      color: #800;
       border-color: #c00;
       background: #fdf0f0;
-      color: #800;
+    }
+
+    .badge-cancelled {
+      color: #555;
+      border-color: #777;
+      background: #eee;
+    }
+
+    .small-muted {
+      color: #666;
+      font-size: 11px;
+      line-height: 1.5;
+    }
+
+    .review-box {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      min-width: 220px;
     }
 
     .page-footer {
@@ -398,22 +420,20 @@
     }
 
     @media (max-width: 900px) {
-      .profile-layout {
+      .grid {
         grid-template-columns: 1fr;
       }
-    }
 
-    @media (max-width: 800px) {
+      .portal-body {
+        flex-direction: column;
+      }
+
       .sidebar {
-        display: none;
+        width: 100%;
       }
 
-      .portal-main {
-        padding: 12px;
-      }
-
-      .nav-right {
-        display: none;
+      .portal-nav {
+        overflow-x: auto;
       }
     }
   </style>
@@ -430,24 +450,23 @@
   </div>
 
   <div class="screen">
-
     <div class="portal-nav">
       <a href="/member/">Home</a>
       <a href="/member/scheduling/">Scheduling</a>
+      <a class="active" href="/member/loa/">LOA</a>
       <a href="/member/documentation/">Documentation</a>
       <a href="/member/operational/">Operational</a>
-      <a class="active" href="/member/profile/">Profile</a>
+      <a href="/member/profile/">Profile</a>
       <a class="admin-only-link" href="/member/admin/" style="display:none;">Admin</a>
 
       <div class="nav-right">
         <img id="nav-avatar" class="nav-avatar" src="../../nsw.png" alt="Profile picture">
         <span>Logged in as: <span id="session-label">Loading...</span></span>
-        <a onclick="doLogout()">Log Out</a>
+        <a onclick="doLogout()" style="cursor:pointer">Log Out</a>
       </div>
     </div>
 
     <div class="portal-body">
-
       <div class="sidebar">
         <div class="sidebar-user-box">
           <strong id="sidebar-name">Loading...</strong>
@@ -457,123 +476,84 @@
         <div class="sidebar-section">Navigation</div>
         <a class="sidebar-link" href="/member/">Home / Dashboard</a>
         <a class="sidebar-link" href="/member/scheduling/">Scheduling</a>
+        <a class="sidebar-link active" href="/member/loa/">LOA</a>
         <a class="sidebar-link" href="/member/documentation/">Documentation</a>
         <a class="sidebar-link" href="/member/operational/">Operational</a>
 
         <div class="sidebar-section">Account</div>
         <a class="sidebar-link admin-only-link" href="/member/admin/" style="display:none;">Admin</a>
-        <a class="sidebar-link active" href="/member/profile/">Profile</a>
+        <a class="sidebar-link" href="/member/profile/">Profile</a>
       </div>
 
       <div class="portal-main">
-        <div class="page-title">Profile</div>
+        <div class="page-title">Leave of Absence</div>
 
         <div class="notice-box warning">
-          <h4>Account Notice</h4>
-          You can update your password and profile picture here. Rank, callsign, Steam, Discord, and member details are
-          controlled by leadership.
+          <h4>LOA Policy</h4>
+          Submit an LOA when you will be absent for a planned period. Your team leader can approve your LOA if you are
+          in a fireteam. Enabler LOAs can only be approved by Troop HQ.
         </div>
 
-        <div class="profile-layout">
-
-          <div>
-            <div class="compact-panel">
-              <h3>Profile Picture</h3>
-
-              <img id="profile-avatar" class="profile-avatar-large" src="../../nsw.png" alt="Profile picture">
-
-              <form id="avatar-form">
-                <div class="form-group">
-                  <label for="avatar-file">Upload Image</label>
-                  <input id="avatar-file" type="file" accept="image/png,image/jpeg,image/webp">
+        <div class="grid">
+          <div class="panel">
+            <div class="panel-title">Submit LOA</div>
+            <div class="panel-body">
+              <form id="loa-form">
+                <div class="form-row">
+                  <label for="start-date">Start Date</label>
+                  <input id="start-date" type="date" required>
                 </div>
 
-                <button class="btn btn-primary" type="submit">Save Picture</button>
+                <div class="form-row">
+                  <label for="end-date">End Date</label>
+                  <input id="end-date" type="date" required>
+                </div>
+
+                <div class="form-row">
+                  <label for="reason">Reason</label>
+                  <textarea id="reason" required maxlength="2000" placeholder="Reason for LOA"></textarea>
+                </div>
+
+                <div class="btn-row">
+                  <button class="btn btn-primary" type="submit">Submit LOA</button>
+                  <button class="btn btn-secondary" type="button" id="refresh-btn">Refresh</button>
+                </div>
+
+                <div id="status-line" class="status-line"></div>
               </form>
-
-              <div class="muted" style="margin-top:8px;">
-                Accepted: PNG, JPG, WEBP.
-              </div>
-            </div>
-
-            <div class="compact-panel">
-              <h3>Password</h3>
-
-              <form id="password-form">
-                <div class="form-group">
-                  <label for="new-password">New Password</label>
-                  <input id="new-password" type="password" minlength="8" autocomplete="new-password" required>
-                </div>
-
-                <div class="form-group">
-                  <label for="confirm-password">Confirm Password</label>
-                  <input id="confirm-password" type="password" minlength="8" autocomplete="new-password" required>
-                </div>
-
-                <button class="btn btn-primary" type="submit">Change Password</button>
-              </form>
-            </div>
-
-            <div id="status-line" class="status-line"></div>
-          </div>
-
-          <div>
-            <table class="info-table">
-              <tr>
-                <th colspan="2">Profile Information</th>
-              </tr>
-              <tr>
-                <td style="width:130px">Display Name</td>
-                <td id="profile-display-name">Loading...</td>
-              </tr>
-              <tr>
-                <td>User ID</td>
-                <td id="profile-user-id">Loading...</td>
-              </tr>
-              <tr>
-                <td>Role</td>
-                <td id="profile-role">Loading...</td>
-              </tr>
-              <tr>
-                <td>Status</td>
-                <td id="profile-status">Loading...</td>
-              </tr>
-              <tr>
-                <td>Rank</td>
-                <td id="profile-rank">Loading...</td>
-              </tr>
-              <tr>
-                <td>Callsign</td>
-                <td id="profile-callsign">Loading...</td>
-              </tr>
-              <tr>
-                <td>Steam</td>
-                <td id="profile-steam">Loading...</td>
-              </tr>
-              <tr>
-                <td>Discord</td>
-                <td id="profile-discord">Loading...</td>
-              </tr>
-            </table>
-
-            <div class="compact-panel">
-              <h3>Read Only Information</h3>
-              <p class="muted">
-                If any rank, callsign, Steam, or Discord information is wrong, contact Evans or Silva.
-              </p>
             </div>
           </div>
 
+          <div class="panel">
+            <div class="panel-title">LOA Requests</div>
+            <div class="panel-body">
+              <table class="info-table">
+                <thead>
+                  <tr>
+                    <th>Member</th>
+                    <th>Dates</th>
+                    <th>Reason</th>
+                    <th>Status</th>
+                    <th>Review</th>
+                  </tr>
+                </thead>
+                <tbody id="loa-table-body">
+                  <tr>
+                    <td colspan="5">Loading...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
       </div>
-
     </div>
 
     <div class="page-footer">Naval Special Warfare Command - Operations Portal &nbsp;|&nbsp; UNCLASSIFIED // FOUO
       &nbsp;|&nbsp; Contact your unit S6 for technical support</div>
   </div>
 
-  <script type="module" src="/member/profile/profile.js"></script>
+  <script type="module" src="./loa.js"></script>
 
 </body>
 
