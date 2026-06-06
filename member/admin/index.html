@@ -310,6 +310,56 @@
       font-size: 10px;
     }
 
+
+    .attendance-panel {
+      grid-column: 1 / -1;
+    }
+
+    .attendance-toolbar {
+      display: grid;
+      grid-template-columns: 1fr 180px auto;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .attendance-cards {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .attendance-card {
+      border: 1px solid #d8d2c2;
+      background: #f8f5ed;
+      padding: 10px;
+    }
+
+    .attendance-card span {
+      display: block;
+      font-size: 10px;
+      text-transform: uppercase;
+      color: #666;
+      margin-bottom: 4px;
+    }
+
+    .attendance-card strong {
+      font-size: 16px;
+    }
+
+    .btn-small {
+      padding: 6px 8px;
+      font-size: 10px;
+    }
+
+    #attendance-details table input,
+    #attendance-details table select {
+      width: 100%;
+      min-width: 80px;
+      font-size: 11px;
+      padding: 6px;
+    }
+
     @media (max-width: 900px) {
       .admin-layout {
         grid-template-columns: 1fr;
@@ -475,6 +525,36 @@
             Delete Profile removes the row from public.profiles only. It does not delete the Supabase Auth account.
           </p>
         </section>
+
+        <section class="compact-panel attendance-panel" id="attendance-panel">
+          <h3>Attendance & Readiness</h3>
+
+          <div id="attendance-summary"></div>
+
+          <div class="attendance-toolbar">
+            <select id="attendance-session-filter">
+              <option value="">All sessions</option>
+            </select>
+
+            <select id="attendance-status-filter">
+              <option value="">All statuses</option>
+              <option value="GOOD">GOOD</option>
+              <option value="PRESENT">PRESENT</option>
+              <option value="LATE">LATE</option>
+              <option value="LEFT_EARLY">LEFT_EARLY</option>
+              <option value="PARTIAL">PARTIAL</option>
+              <option value="EXCUSED">EXCUSED</option>
+              <option value="LOA">LOA</option>
+              <option value="ABSENT">ABSENT</option>
+              <option value="NO_SHOW">NO_SHOW</option>
+            </select>
+
+            <button class="btn btn-secondary" type="button" id="refresh-attendance-btn">Refresh</button>
+          </div>
+
+          <div id="attendance-details"></div>
+        </section>
+
       </div>
     </main>
   </div>
