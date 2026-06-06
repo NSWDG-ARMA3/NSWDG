@@ -34,6 +34,7 @@ export function renderPortalLayout(activePage = "") {
       <a class="sidebar-link ${activePage === "profile" ? "active" : ""}" href="/member/profile/">Profile</a>
       <a class="sidebar-link ${activePage === "scheduling" ? "active" : ""}" href="/member/scheduling/">Scheduling</a>
       <a class="sidebar-link ${activePage === "loa" ? "active" : ""}" href="/member/loa/">LOA</a>
+      <a class="sidebar-link ${activePage === "qualifications" ? "active" : ""}" href="/member/qualifications/">Qualifications</a>
 
       <div class="sidebar-section">Operations</div>
       <a class="sidebar-link ${activePage === "operational" ? "active" : ""}" href="/member/operational/">Operational</a>
