@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -497,141 +498,166 @@
     }
 
     .orbat-toolbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-  margin-bottom: 10px;
-}
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
 
-.orbat-day-tabs {
-  display: grid;
-  grid-template-columns: repeat(7, minmax(76px, 1fr));
-  gap: 5px;
-  margin-bottom: 10px;
-}
+    .orbat-day-tabs {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(76px, 1fr));
+      gap: 5px;
+      margin-bottom: 10px;
+    }
 
-.orbat-day-tab {
-  border: 1px solid var(--line);
-  background: #fff;
-  border-radius: 5px;
-  padding: 6px 7px;
-  cursor: pointer;
-  text-align: left;
-  font-size: 10px;
-}
+    .orbat-day-tab {
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 5px;
+      padding: 6px 7px;
+      cursor: pointer;
+      text-align: left;
+      font-size: 10px;
+    }
 
-.orbat-day-tab strong {
-  display: block;
-  color: var(--blue);
-  font-size: 11px;
-}
+    .orbat-day-tab strong {
+      display: block;
+      color: var(--blue);
+      font-size: 11px;
+    }
 
-.orbat-day-tab span {
-  display: block;
-  color: var(--muted);
-  font-size: 9px;
-  margin-top: 1px;
-}
+    .orbat-day-tab span {
+      display: block;
+      color: var(--muted);
+      font-size: 9px;
+      margin-top: 1px;
+    }
 
-.orbat-day-tab.active {
-  background: var(--blue);
-  border-color: var(--blue);
-}
+    .orbat-day-tab.active {
+      background: var(--blue);
+      border-color: var(--blue);
+    }
 
-.orbat-day-tab.active strong,
-.orbat-day-tab.active span {
-  color: #fff;
-}
+    .orbat-day-tab.active strong,
+    .orbat-day-tab.active span {
+      color: #fff;
+    }
 
-.orbat-compact-wrap {
-  overflow: auto;
-  border: 1px solid var(--line);
-  border-radius: 7px;
-  background: #fff;
-}
+    .orbat-compact-wrap {
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: #fff;
+    }
 
-.orbat-compact-table {
-  width: 100%;
-  min-width: 980px;
-  border-collapse: collapse;
-  font-size: 10px;
-}
+    .orbat-compact-table {
+      width: 100%;
+      min-width: 980px;
+      border-collapse: collapse;
+      font-size: 10px;
+    }
 
-.orbat-compact-table th {
-  position: sticky;
-  top: 0;
-  z-index: 2;
-  background: var(--blue);
-  color: #fff;
-  padding: 7px 6px;
-  border-right: 1px solid rgba(255, 255, 255, 0.18);
-  text-align: left;
-  white-space: nowrap;
-}
+    .checkbox-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      justify-content: center;
+      min-height: 27px;
+    }
 
-.orbat-compact-table td {
-  border-top: 1px solid #e1e6ec;
-  border-right: 1px solid #edf0f3;
-  padding: 5px 6px;
-  vertical-align: top;
-  min-height: 32px;
-}
+    .checkbox-group label {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 10px;
+      font-weight: normal;
+      text-transform: none;
+      letter-spacing: 0;
+      margin: 0;
+    }
 
-.orbat-compact-table tr:nth-child(even) td {
-  background: #fafbfc;
-}
+    .checkbox-group input {
+      width: auto;
+      height: auto;
+      min-width: 0;
+    }
 
-.orbat-time-cell {
-  position: sticky;
-  left: 0;
-  z-index: 1;
-  background: #f1f5f9 !important;
-  color: var(--blue);
-  font-weight: bold;
-  width: 64px;
-  white-space: nowrap;
-}
+    .orbat-compact-table th {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      background: var(--blue);
+      color: #fff;
+      padding: 7px 6px;
+      border-right: 1px solid rgba(255, 255, 255, 0.18);
+      text-align: left;
+      white-space: nowrap;
+    }
 
-.orbat-group-cell {
-  min-width: 130px;
-}
+    .orbat-compact-table td {
+      border-top: 1px solid #e1e6ec;
+      border-right: 1px solid #edf0f3;
+      padding: 5px 6px;
+      vertical-align: top;
+      min-height: 32px;
+    }
 
-.orbat-group-label {
-  display: block;
-  color: var(--muted);
-  font-size: 9px;
-  margin-bottom: 3px;
-}
+    .orbat-compact-table tr:nth-child(even) td {
+      background: #fafbfc;
+    }
 
-.orbat-person {
-  display: inline-flex;
-  align-items: center;
-  border: 1px solid #b7c2cf;
-  background: #fff;
-  border-radius: 999px;
-  padding: 2px 6px;
-  margin: 1px;
-  cursor: pointer;
-  font-size: 9px;
-  line-height: 1.35;
-  max-width: 140px;
-}
+    .orbat-time-cell {
+      position: sticky;
+      left: 0;
+      z-index: 1;
+      background: #f1f5f9 !important;
+      color: var(--blue);
+      font-weight: bold;
+      width: 64px;
+      white-space: nowrap;
+    }
 
-.orbat-person:hover {
-  background: #edf4fb;
-  border-color: var(--blue);
-}
+    .orbat-group-cell {
+      min-width: 130px;
+    }
 
-.orbat-empty {
-  border: 1px dashed var(--line);
-  border-radius: 6px;
-  padding: 12px;
-  color: var(--muted);
-  background: #fafafa;
-  text-align: center;
-}
+    .orbat-group-label {
+      display: block;
+      color: var(--muted);
+      font-size: 9px;
+      margin-bottom: 3px;
+    }
+
+    .orbat-person {
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid #b7c2cf;
+      background: #fff;
+      border-radius: 999px;
+      padding: 2px 6px;
+      margin: 1px;
+      cursor: pointer;
+      font-size: 9px;
+      line-height: 1.35;
+      max-width: 140px;
+    }
+
+    .orbat-person:hover {
+      background: #edf4fb;
+      border-color: var(--blue);
+    }
+
+    .orbat-empty {
+      border: 1px dashed var(--line);
+      border-radius: 6px;
+      padding: 12px;
+      color: var(--muted);
+      background: #fafafa;
+      text-align: center;
+    }
 
     .modal {
       display: none;
@@ -751,7 +777,8 @@
       <div class="page-head">
         <div>
           <h2 class="page-title">Scheduling</h2>
-          <p class="page-subtitle">Availability is entered in your selected timezone and stored as UTC so everyone sees the same real-world times converted to their own timezone.</p>
+          <p class="page-subtitle">Availability is entered in your selected timezone and stored as UTC so everyone sees
+            the same real-world times converted to their own timezone.</p>
         </div>
 
         <div class="view-switch">
@@ -784,6 +811,31 @@
                   <option value="America/Denver">America/Denver</option>
                   <option value="America/Los_Angeles">America/Los_Angeles</option>
                 </select>
+              </div>
+
+              <div class="form-group">
+                <label for="team-filter">Team filter</label>
+                <select id="team-filter">
+                  <option value="FULL_WITH_GREEN">Full Troop + Green Team</option>
+                  <option value="FULL_NO_GREEN">Full Troop without Green Team</option>
+                  <option value="GREEN">Green Team</option>
+                  <option value="GOLF">Golf Team</option>
+                  <option value="HOTEL">Hotel Team</option>
+                  <option value="INDIA">India Team</option>
+                  <option value="HQ">Headquarters</option>
+                  <option value="ENABLERS">Enablers</option>
+                </select>
+              </div>
+
+              <div class="form-group checkbox-group">
+                <label>
+                  <input type="checkbox" id="include-loa">
+                  Include approved LOAs as unavailable
+                </label>
+                <label>
+                  <input type="checkbox" id="include-blanks" checked>
+                  Include blank responses in totals
+                </label>
               </div>
 
               <button class="btn btn-primary" id="save-btn" type="button">Save</button>
@@ -921,6 +973,30 @@
     const SLOT_MINUTES = 60;
     const SLOTS_PER_DAY = 24;
 
+    const TEAM_FILTERS = {
+      GREEN: ["Candidate"],
+      GOLF: ["EG1", "EG2", "EG3", "EG4", "EG5", "EG6"],
+      HOTEL: ["EH1", "EH2", "EH3", "EH4", "EH5", "EH6"],
+      INDIA: ["EI1", "EI2", "EI3", "EI4", "EI5", "EI6"],
+      HQ: ["E31", "E32"],
+      ENABLERS: ["EX1", "EN1", "ER1", "EY1", "EU1", "EU2", "EP1", "EP2"],
+      FULL_NO_GREEN: [
+        "EG1", "EG2", "EG3", "EG4", "EG5", "EG6",
+        "EH1", "EH2", "EH3", "EH4", "EH5", "EH6",
+        "EI1", "EI2", "EI3", "EI4", "EI5", "EI6",
+        "E31", "E32",
+        "EX1", "EN1", "ER1", "EY1", "EU1", "EU2", "EP1", "EP2"
+      ],
+      FULL_WITH_GREEN: [
+        "Candidate",
+        "EG1", "EG2", "EG3", "EG4", "EG5", "EG6",
+        "EH1", "EH2", "EH3", "EH4", "EH5", "EH6",
+        "EI1", "EI2", "EI3", "EI4", "EI5", "EI6",
+        "E31", "E32",
+        "EX1", "EN1", "ER1", "EY1", "EU1", "EU2", "EP1", "EP2"
+      ]
+    };
+
     const ORBAT_COMPACT_GROUPS = [
     {
       title: "Green",
@@ -948,6 +1024,8 @@
     }
   ];
 
+  
+
     let authUser = null;
     let profile = null;
     let members = [];
@@ -959,6 +1037,7 @@
     let realtimeChannel = null;
     let isDragging = false;
     let dragValue = null;
+    let loaRequests = [];
     let dragChanged = false;
 
     const $ = (id) => document.getElementById(id);
@@ -968,6 +1047,9 @@
     const saveBtn = $("save-btn");
     const refreshBtn = $("refresh-btn");
     const clearBtn = $("clear-btn");
+    const teamFilter = $("team-filter");
+    const includeLoaCheckbox = $("include-loa");
+    const includeBlanksCheckbox = $("include-blanks");
 
     function scheduleTimezone() {
       return timezoneSelect.value || "UTC";
@@ -1170,42 +1252,136 @@
       return profilesById.get(userId)?.display_name || userId;
     }
 
-    function aggregate(slotStart) {
-      const rows = allResponses.filter((response) => {
-        return new Date(response.slot_start).toISOString() === slotStart;
-      });
+    function selectedCallsigns() {
+  return TEAM_FILTERS[teamFilter.value] || TEAM_FILTERS.FULL_WITH_GREEN;
+}
 
-      const availableRows = rows.filter((row) => row.availability === "available");
-      const maybeRows = rows.filter((row) => row.availability === "maybe");
-      const unavailableRows = rows.filter((row) => row.availability === "unavailable");
+function filteredMembers() {
+  const allowed = new Set(selectedCallsigns());
 
-      const available = availableRows.length;
-      const maybe = maybeRows.length;
-      const unavailable = unavailableRows.length;
-      const count = rows.length;
-      const score = count ? (available + maybe * 0.5) / count : 0;
+  return members.filter((member) => {
+    const code = callsign(member);
+    return allowed.has(code);
+  });
+}
 
-      let grade = "gray";
+function slotLocalDateIso(slotStart) {
+  const parts = fmt(scheduleTimezone(), {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit"
+  }).formatToParts(new Date(slotStart));
 
-      if (count > 0) {
-        if (score >= 0.75) grade = "green";
-        else if (score >= 0.5) grade = "yellow";
-        else if (score >= 0.25) grade = "orange";
-        else grade = "red";
-      }
+  const output = {};
 
-      return {
-        count,
-        available,
-        maybe,
-        unavailable,
-        score,
-        grade,
-        peopleAvailable: availableRows.map((row) => getName(row.user_id)),
-        peopleMaybe: maybeRows.map((row) => getName(row.user_id)),
-        peopleUnavailable: unavailableRows.map((row) => getName(row.user_id))
-      };
+  for (const part of parts) {
+    if (part.type !== "literal") {
+      output[part.type] = part.value;
     }
+  }
+
+  return `${output.year}-${output.month}-${output.day}`;
+}
+
+function memberIsOnLoa(memberId, slotStart) {
+  if (!includeLoaCheckbox.checked) {
+    return false;
+  }
+
+  const localDate = slotLocalDateIso(slotStart);
+
+  return loaRequests.some((request) => {
+    return request.requester_id === memberId
+      && request.status === "APPROVED"
+      && request.start_date <= localDate
+      && request.end_date >= localDate;
+  });
+}
+
+function responseForMemberSlot(memberId, slotStart) {
+  return allResponses.find((response) => {
+    return response.user_id === memberId
+      && new Date(response.slot_start).toISOString() === slotStart;
+  }) || null;
+}
+
+function aggregate(slotStart) {
+  const scopedMembers = filteredMembers();
+
+  let available = 0;
+  let maybe = 0;
+  let unavailable = 0;
+  let blank = 0;
+
+  const peopleAvailable = [];
+  const peopleMaybe = [];
+  const peopleUnavailable = [];
+  const peopleBlank = [];
+
+  for (const member of scopedMembers) {
+    const response = responseForMemberSlot(member.id, slotStart);
+    const onLoa = memberIsOnLoa(member.id, slotStart);
+
+    if (onLoa) {
+      unavailable++;
+      peopleUnavailable.push(`${member.display_name} (LOA)`);
+      continue;
+    }
+
+    if (!response) {
+      blank++;
+      peopleBlank.push(member.display_name);
+      continue;
+    }
+
+    if (response.availability === "available") {
+      available++;
+      peopleAvailable.push(member.display_name);
+    } else if (response.availability === "maybe") {
+      maybe++;
+      peopleMaybe.push(member.display_name);
+    } else if (response.availability === "unavailable") {
+      unavailable++;
+      peopleUnavailable.push(member.display_name);
+    } else {
+      blank++;
+      peopleBlank.push(member.display_name);
+    }
+  }
+
+  const denominator = includeBlanksCheckbox.checked
+    ? Math.max(scopedMembers.length, 1)
+    : Math.max(available + maybe + unavailable, 1);
+
+  const count = includeBlanksCheckbox.checked
+    ? available + maybe + unavailable + blank
+    : available + maybe + unavailable;
+
+  const score = count ? (available + maybe * 0.5) / denominator : 0;
+
+  let grade = "gray";
+
+  if (count > 0) {
+    if (score >= 0.75) grade = "green";
+    else if (score >= 0.5) grade = "yellow";
+    else if (score >= 0.25) grade = "orange";
+    else grade = "red";
+  }
+
+  return {
+    count,
+    available,
+    maybe,
+    unavailable,
+    blank,
+    score,
+    grade,
+    peopleAvailable,
+    peopleMaybe,
+    peopleUnavailable,
+    peopleBlank
+  };
+}
 
     function updateCell(cell, value) {
       cell.className = myClass(value);
@@ -1316,7 +1492,10 @@
         aggregateResult.peopleMaybe.join(", ") || "None",
         "",
         "Unavailable:",
-        aggregateResult.peopleUnavailable.join(", ") || "None"
+        aggregateResult.peopleUnavailable.join(", ") || "None",
+        "",
+        "Blank:",
+        aggregateResult.peopleBlank.join(", ") || "None"
       ].join("\n");
     }
 
@@ -1339,7 +1518,7 @@
           html += `
             <td class="heat-cell grade-${result.grade}" title="${escapeHtml(hoverTitle(result, key))}">
               ${Math.round(result.score * 100)}%
-              <small>${result.available}A ${result.maybe}M ${result.unavailable}U</small>
+              <small>${result.available}A ${result.maybe}M ${result.unavailable}U ${result.blank}B</small>
             </td>`;
         }
 
@@ -1379,20 +1558,26 @@
             ${Math.round(slot.score * 100)}% fit,
             ${slot.available} available,
             ${slot.maybe} maybe,
-            ${slot.unavailable} unavailable
+            ${slot.unavailable} unavailable,
+            ${slot.blank} blank
           </li>`;
       }).join("");
     }
 
     function buildChanges() {
       const visibleSet = new Set(visibleSlotKeys());
+      const allowedMemberIds = new Set(filteredMembers().map((member) => member.id));
+
       const latest = [...allResponses]
-        .filter((response) => visibleSet.has(new Date(response.slot_start).toISOString()))
+        .filter((response) => {
+          return visibleSet.has(new Date(response.slot_start).toISOString())
+            && allowedMemberIds.has(response.user_id);
+        })
         .sort((a, b) => new Date(b.updated_at || b.slot_start) - new Date(a.updated_at || a.slot_start))
         .slice(0, 12);
 
       if (!latest.length) {
-        $("changes-list").innerHTML = "<li>No changes yet.</li>";
+        $("changes-list").innerHTML = "<li>No changes yet for this filter.</li>";
         return;
       }
 
@@ -1430,7 +1615,15 @@
     }
 
     function availableMembersForCode(callsignCode, key) {
+      if (!selectedCallsigns().includes(callsignCode)) {
+        return [];
+      }
+
       return membersFor(callsignCode).filter((member) => {
+        if (memberIsOnLoa(member.id, key)) {
+          return false;
+        }
+
         return availabilityFor(member.id, key) === "available";
       });
     }
@@ -1445,6 +1638,33 @@
 
       return total;
     }
+
+    function rebuildFilteredViews() {
+      $("dash-members").textContent = String(filteredMembers().length);
+
+      buildHeatmap();
+      buildBestList();
+      buildChanges();
+
+      if (activeView === "orbat") {
+        buildOrbat();
+      }
+    }
+
+    teamFilter.onchange = () => {
+      localStorage.setItem("schedulingTeamFilter", teamFilter.value);
+      rebuildFilteredViews();
+    };
+
+    includeLoaCheckbox.onchange = () => {
+      localStorage.setItem("schedulingIncludeLoa", includeLoaCheckbox.checked ? "1" : "0");
+      rebuildFilteredViews();
+    };
+
+    includeBlanksCheckbox.onchange = () => {
+      localStorage.setItem("schedulingIncludeBlanks", includeBlanksCheckbox.checked ? "1" : "0");
+      rebuildFilteredViews();
+    };
 
     function buildTabs() {
       const root = $("orbat-day-tabs");
@@ -1481,9 +1701,11 @@
         <thead>
           <tr>
             <th style="width: 64px;">Time</th>
-            ${ORBAT_COMPACT_GROUPS.map((group) => {
-              return `<th>${escapeHtml(group.title)}</th>`;
-            }).join("")}
+              ${ORBAT_COMPACT_GROUPS
+                .filter((group) => group.slots.some((slot) => selectedCallsigns().includes(slot)))
+                .map((group) => {
+                  return `<th>${escapeHtml(group.title)}</th>`;
+                }).join("")}
           </tr>
         </thead>
         <tbody>`;
@@ -1494,7 +1716,9 @@
     const key = slotKey(slotUtc(selectedOrbatDay, slot));
     const groupHtml = [];
 
-    for (const group of ORBAT_COMPACT_GROUPS) {
+    for (const group of ORBAT_COMPACT_GROUPS.filter((item) => {
+    return item.slots.some((slotCode) => selectedCallsigns().includes(slotCode));
+      })) {
       const people = [];
 
       for (const callsignCode of group.slots) {
@@ -1630,6 +1854,7 @@
       return true;
     }
 
+    
     async function loadProfiles() {
       const { data, error } = await supabase
         .from("profiles")
@@ -1646,7 +1871,29 @@
         profilesById = new Map(data.map((item) => [item.id, item]));
       }
 
-      $("dash-members").textContent = String(members.length);
+      $("dash-members").textContent = String(filteredMembers().length);
+    }
+
+    async function loadLoaRequests() {
+      const range = bufferedLoadRange();
+
+      const startDate = isoDate(range.earliest);
+      const endDate = isoDate(range.latest);
+
+      const { data, error } = await supabase
+        .from("loa_requests")
+        .select("requester_id,start_date,end_date,status")
+        .eq("status", "APPROVED")
+        .lte("start_date", endDate)
+        .gte("end_date", startDate);
+
+      if (error) {
+        loaRequests = [];
+        setStatus(`LOA data could not be loaded. ${error.message}`, false);
+        return;
+      }
+
+      loaRequests = data || [];
     }
 
     async function loadResponses() {
@@ -1677,6 +1924,8 @@
         }
       }
 
+      await loadLoaRequests();
+      $("dash-members").textContent = String(filteredMembers().length);
       $("dash-timezone").textContent = scheduleTimezone();
       $("dash-updated").textContent = utcNowLabel();
       $("calendar-title").textContent = `Week of ${weekInput.value} · ${scheduleTimezone()}`;
@@ -1740,6 +1989,7 @@
       await loadResponses();
     }
 
+    
     async function clearWeek() {
       const confirmed = confirm("Clear all of your availability for this selected week in the selected timezone?");
 
@@ -1846,10 +2096,19 @@
         return;
       }
 
+      const savedTeamFilter = localStorage.getItem("schedulingTeamFilter");
+        if (savedTeamFilter && TEAM_FILTERS[savedTeamFilter]) {
+          teamFilter.value = savedTeamFilter;
+        }
+
+        includeLoaCheckbox.checked = localStorage.getItem("schedulingIncludeLoa") === "1";
+        includeBlanksCheckbox.checked = localStorage.getItem("schedulingIncludeBlanks") !== "0";
+        
       await loadProfiles();
       await loadResponses();
       setupRealtime();
     })();
   </script>
 </body>
+
 </html>
