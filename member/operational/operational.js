@@ -336,6 +336,8 @@ function showAdminLinksIfAllowed(email) {
   document.querySelectorAll(".admin-only-link").forEach(link => {
     link.style.display = "";
   });
+
+  document.getElementById("system-section")?.style.removeProperty("display");
 }
 
 async function loadSessionAndProfile() {
