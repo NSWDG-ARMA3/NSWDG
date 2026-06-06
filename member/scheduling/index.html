@@ -1015,6 +1015,7 @@ let members = [];
 let allResponses = [];
 let allLoas = [];
 let mySlots = new Map();
+let deletedSlots = new Set();
 let hasUnsavedAvailabilityChanges = false;
 
 let activeScheduleView = "calendar";
@@ -1103,8 +1104,10 @@ function setAvailabilityCell(cell, value) {
 
   if (value) {
     mySlots.set(key, value);
+    deletedSlots.delete(key);
   } else {
     mySlots.delete(key);
+    deletedSlots.add(key);
   }
 
   updateAvailabilityCellDisplay(cell, value);
@@ -2162,21 +2165,13 @@ async function loadResponses() {
 }
 
 async function saveAvailability() {
-  const { start, end } = getWeekRangeUtc();
-
-  const loadStart = new Date(start);
-  loadStart.setUTCDate(loadStart.getUTCDate() - 1);
-
-  const loadEnd = new Date(end);
-  loadEnd.setUTCDate(loadEnd.getUTCDate() + 1);
-
   saveBtn.disabled = true;
   saveBtn.textContent = "Saving...";
 
-  const rows = [];
+  const upsertRows = [];
 
   for (const [key, value] of mySlots.entries()) {
-    rows.push({
+    upsertRows.push({
       user_id: authUser.id,
       slot_start: key,
       availability: value,
@@ -2185,19 +2180,39 @@ async function saveAvailability() {
     });
   }
 
-  const { error } = await supabase.rpc("replace_my_scheduling_responses", {
-    p_start: loadStart.toISOString(),
-    p_end: loadEnd.toISOString(),
-    p_rows: rows
-  });
+  if (upsertRows.length) {
+    const { error } = await supabase
+      .from("scheduling_responses")
+      .upsert(upsertRows, {
+        onConflict: "user_id,slot_start"
+      });
 
-  if (error) {
-    setStatus("Failed to save availability: " + error.message, false);
-    saveBtn.disabled = false;
-    saveBtn.textContent = "Save";
-    return;
+    if (error) {
+      setStatus("Failed to save availability: " + error.message, false);
+      saveBtn.disabled = false;
+      saveBtn.textContent = "Save";
+      return;
+    }
   }
 
+  if (deletedSlots.size) {
+    const deleteKeys = Array.from(deletedSlots);
+
+    const { error } = await supabase
+      .from("scheduling_responses")
+      .delete()
+      .eq("user_id", authUser.id)
+      .in("slot_start", deleteKeys);
+
+    if (error) {
+      setStatus("Failed to delete cleared slots: " + error.message, false);
+      saveBtn.disabled = false;
+      saveBtn.textContent = "Save";
+      return;
+    }
+  }
+
+  deletedSlots.clear();
   hasUnsavedAvailabilityChanges = false;
 
   setStatus("Availability saved successfully.", true);
