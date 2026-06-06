@@ -745,7 +745,6 @@
 
     const SLOT_MINUTES = 60;
     const SLOTS_PER_DAY = 24;
-    const SCHEDULE_TIMEZONE = "UTC";
 
     const ORBAT = [
       {
@@ -788,6 +787,10 @@
     let dragChanged = false;
 
     const $ = (id) => document.getElementById(id);
+
+    function scheduleTimezone() {
+    return timezoneSelect.value || "UTC";
+  }
 
     const weekInput = $("week-start");
     const timezoneSelect = $("timezone-select");
@@ -870,6 +873,7 @@
     function weekRange() {
       const startIso = weekInput.value;
       const endIso = addDays(startIso, 7);
+      const timezone = scheduleTimezone();
 
       const start = zonedToUtc(
         Number(startIso.slice(0, 4)),
@@ -877,7 +881,7 @@
         Number(startIso.slice(8, 10)),
         0,
         0,
-        SCHEDULE_TIMEZONE
+        timezone
       );
 
       const end = zonedToUtc(
@@ -886,7 +890,7 @@
         Number(endIso.slice(8, 10)),
         0,
         0,
-        SCHEDULE_TIMEZONE
+        timezone
       );
 
       return { start, end };
@@ -895,6 +899,7 @@
     function slotUtc(dayIndex, slotIndex) {
       const baseIso = addDays(weekInput.value, dayIndex);
       const minutes = slotIndex * SLOT_MINUTES;
+      const timezone = scheduleTimezone();
 
       return zonedToUtc(
         Number(baseIso.slice(0, 4)),
@@ -902,7 +907,7 @@
         Number(baseIso.slice(8, 10)),
         Math.floor(minutes / 60),
         minutes % 60,
-        SCHEDULE_TIMEZONE
+        timezone
       );
     }
 
@@ -1425,13 +1430,12 @@
     }
 
     async function loadResponses() {
-      const { start, end } = weekRange();
+      const keys = visibleSlotKeys();
 
       const { data, error } = await supabase
         .from("scheduling_responses")
         .select("user_id,slot_start,availability,note,updated_at")
-        .gte("slot_start", start.toISOString())
-        .lt("slot_start", end.toISOString())
+        .in("slot_start", keys)
         .order("slot_start", { ascending: true });
 
       if (error) {
