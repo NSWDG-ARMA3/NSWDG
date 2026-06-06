@@ -2166,7 +2166,7 @@ async function saveAvailability() {
   for (const [key, value] of mySlots.entries()) {
     const date = new Date(key);
 
-    if (date >= start && date < end) {
+    for (const [key, value] of mySlots.entries()) {
       rows.push({
         user_id: authUser.id,
         slot_start: key,
