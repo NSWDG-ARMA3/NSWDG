@@ -223,7 +223,7 @@ board.innerHTML = sections.map(section => `
     if (!member) {
     return `
       <article class="member-card vacant-card">
-        <img class="avatar" src="../../nsw.png">
+        <div class="vacant-avatar">?</div>
 
         <div>
           <div class="member-name">Vacant</div>
