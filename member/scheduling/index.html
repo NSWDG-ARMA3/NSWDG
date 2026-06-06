@@ -998,7 +998,8 @@ renderPortalLayout("scheduling");
 const SLOT_MINUTES = 60;
 const SLOTS_PER_DAY = 24;
 const DAYS_PER_WEEK = 7;
-const LOAD_BUFFER_DAYS = 3;
+const TOTAL_WEEK_SLOTS = DAYS_PER_WEEK * SLOTS_PER_DAY;
+const STORAGE_TIMEZONE = "UTC";
 
 let authUser = null;
 let profile = null;
@@ -1007,16 +1008,14 @@ let members = [];
 let allResponses = [];
 let allLoas = [];
 let mySlots = new Map();
-let dirtySlots = new Set();
 let deletedSlots = new Set();
 let hasUnsavedAvailabilityChanges = false;
-
 let activeScheduleView = "calendar";
 let selectedOrbatDay = 0;
+let realtimeChannel = null;
 let isDraggingAvailability = false;
 let dragAvailabilityValue = null;
 let dragChangedAvailability = false;
-let realtimeChannel = null;
 
 const weekInput = document.getElementById("week-start");
 const timezoneSelect = document.getElementById("timezone-select");
@@ -1026,17 +1025,14 @@ const clearBtn = document.getElementById("clear-btn");
 const heatmapFilter = document.getElementById("heatmap-filter");
 const includeLoaCheckbox = document.getElementById("include-loa-checkbox");
 const hideUnansweredCheckbox = document.getElementById("hide-unanswered-checkbox");
-
 const calendarViewBtn = document.getElementById("calendar-view-btn");
 const orbatViewBtn = document.getElementById("orbat-view-btn");
 const calendarView = document.getElementById("calendar-view");
 const orbatView = document.getElementById("orbat-view");
-
 const orbatWeekTitle = document.getElementById("orbat-week-title");
 const orbatDayTabs = document.getElementById("orbat-day-tabs");
 const orbatDayContent = document.getElementById("orbat-day-content");
 const orbatDetailCard = document.getElementById("orbat-detail-card");
-
 const orbatPrevWeekBtn = document.getElementById("orbat-prev-week");
 const orbatCurrentWeekBtn = document.getElementById("orbat-current-week");
 const orbatNextWeekBtn = document.getElementById("orbat-next-week");
@@ -1054,8 +1050,13 @@ function zp(n) {
   return String(n).padStart(2, "0");
 }
 
-function displayTimezone() {
-  return timezoneSelect?.value || "UTC";
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
 }
 
 function setStatus(message, ok) {
@@ -1064,10 +1065,12 @@ function setStatus(message, ok) {
   el.className = "status-line visible " + (ok ? "ok" : "err");
 }
 
-function utcNowLabel() {
-  const d = new Date();
-  const months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
-  return `${zp(d.getUTCHours())}${zp(d.getUTCMinutes())}Z ${d.getUTCDate()} ${months[d.getUTCMonth()]} ${d.getUTCFullYear()}`;
+function displayTimezone() {
+  return timezoneSelect?.value || STORAGE_TIMEZONE;
+}
+
+function scheduleTimezone() {
+  return STORAGE_TIMEZONE;
 }
 
 function getFormatter(timeZone, options) {
@@ -1100,98 +1103,72 @@ function getZonedParts(date, timeZone) {
 }
 
 function zonedTimeToUtc(year, month, day, hour, minute, timeZone) {
-  let utc = new Date(Date.UTC(year, month - 1, day, hour, minute));
-
-  for (let i = 0; i < 3; i++) {
-    const parts = getZonedParts(utc, timeZone);
-    const wanted = Date.UTC(year, month - 1, day, hour, minute);
-    const actual = Date.UTC(parts.year, parts.month - 1, parts.day, parts.hour, parts.minute);
-    const diff = wanted - actual;
-
-    if (diff === 0) break;
-    utc = new Date(utc.getTime() + diff);
-  }
-
-  return utc;
+  const guess = new Date(Date.UTC(year, month - 1, day, hour, minute));
+  const parts = getZonedParts(guess, timeZone);
+  const targetUtc = Date.UTC(year, month - 1, day, hour, minute);
+  const actualUtc = Date.UTC(parts.year, parts.month - 1, parts.day, parts.hour, parts.minute);
+  return new Date(guess.getTime() + (targetUtc - actualUtc));
 }
 
 function addDaysToIsoDate(iso, days) {
   const d = new Date(`${iso}T00:00:00Z`);
   d.setUTCDate(d.getUTCDate() + days);
-  return d.toISOString().split("T")[0];
+  return d.toISOString().slice(0, 10);
 }
 
-function isoDate(d) {
-  return d.toISOString().split("T")[0];
+function isoDate(date) {
+  return date.toISOString().slice(0, 10);
 }
 
 function getNextMonday() {
-  const today = new Date();
-  const day = today.getDay();
-  const diff = day === 0 ? 1 : 8 - day;
-  const monday = new Date(today);
-  monday.setDate(today.getDate() + diff);
+  const now = new Date();
+  const utcDay = now.getUTCDay();
+  const diff = utcDay === 0 ? 1 : 8 - utcDay;
+  const monday = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+  monday.setUTCDate(monday.getUTCDate() + diff);
   return isoDate(monday);
 }
 
-function localSlotToUtc(dayIndex, slotIndex, timeZone = displayTimezone()) {
-  const localDateIso = addDaysToIsoDate(weekInput.value, dayIndex);
-  const y = Number(localDateIso.slice(0, 4));
-  const m = Number(localDateIso.slice(5, 7));
-  const d = Number(localDateIso.slice(8, 10));
-  const totalMinutes = slotIndex * SLOT_MINUTES;
-  const hour = Math.floor(totalMinutes / 60);
-  const minute = totalMinutes % 60;
-
-  return zonedTimeToUtc(y, m, d, hour, minute, timeZone);
+function getWeekRangeUtc() {
+  const startIso = weekInput.value;
+  const y = Number(startIso.slice(0, 4));
+  const m = Number(startIso.slice(5, 7));
+  const d = Number(startIso.slice(8, 10));
+  const start = zonedTimeToUtc(y, m, d, 0, 0, scheduleTimezone());
+  const end = new Date(start.getTime() + DAYS_PER_WEEK * 24 * 60 * 60 * 1000);
+  return { start, end };
 }
 
-function getDisplayedWeekRangeUtc() {
-  return {
-    start: localSlotToUtc(0, 0),
-    end: localSlotToUtc(DAYS_PER_WEEK, 0)
-  };
-}
-
-function getBufferedWeekRangeUtc() {
-  const { start, end } = getDisplayedWeekRangeUtc();
-  const loadStart = new Date(start);
-  loadStart.setUTCDate(loadStart.getUTCDate() - LOAD_BUFFER_DAYS);
-
-  const loadEnd = new Date(end);
-  loadEnd.setUTCDate(loadEnd.getUTCDate() + LOAD_BUFFER_DAYS);
-
-  return { loadStart, loadEnd };
-}
-
-function visibleSlotKeys() {
-  const keys = [];
-  for (let d = 0; d < DAYS_PER_WEEK; d++) {
-    for (let s = 0; s < SLOTS_PER_DAY; s++) {
-      keys.push(slotKey(localSlotToUtc(d, s)));
-    }
-  }
-  return keys;
+function slotUtc(dayIndex, slotIndex) {
+  const { start } = getWeekRangeUtc();
+  return new Date(start.getTime() + ((dayIndex * SLOTS_PER_DAY + slotIndex) * SLOT_MINUTES * 60 * 1000));
 }
 
 function slotKey(date) {
   return date.toISOString();
 }
 
-function escapeHtml(value) {
-  return String(value ?? "")
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
+function keyForCell(dayIndex, slotIndex) {
+  return slotKey(slotUtc(dayIndex, slotIndex));
 }
 
-function labelForSlot(_dayIndex, slotIndex) {
-  const totalMinutes = slotIndex * SLOT_MINUTES;
-  const hour = Math.floor(totalMinutes / 60);
-  const minute = totalMinutes % 60;
-  return `${zp(hour)}:${zp(minute)}`;
+function isSlotInSelectedUtcWeek(slotIso) {
+  const { start, end } = getWeekRangeUtc();
+  const d = new Date(slotIso);
+  return d >= start && d < end;
+}
+
+function localDateIsoFromSlot(slotIso) {
+  const parts = getZonedParts(new Date(slotIso), displayTimezone());
+  return `${parts.year}-${zp(parts.month)}-${zp(parts.day)}`;
+}
+
+function labelForSlot(dayIndex, slotIndex) {
+  return getFormatter(displayTimezone(), {
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23"
+  }).format(slotUtc(dayIndex, slotIndex));
 }
 
 function labelForDateTime(utcIso) {
@@ -1202,6 +1179,19 @@ function labelForDateTime(utcIso) {
     hour: "2-digit",
     minute: "2-digit",
     hourCycle: "h23"
+  }).format(new Date(utcIso));
+}
+
+function labelForFullDateTime(utcIso) {
+  return getFormatter(displayTimezone(), {
+    weekday: "long",
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23",
+    timeZoneName: "short"
   }).format(new Date(utcIso));
 }
 
@@ -1216,31 +1206,48 @@ function labelForUpdateTime(utcIso) {
 }
 
 function dayHeader(dayIndex) {
-  const noon = localSlotToUtc(dayIndex, 12);
-  const weekday = getFormatter(displayTimezone(), { weekday: "short" }).format(noon);
-  const dateLabel = getFormatter(displayTimezone(), { day: "2-digit", month: "short" }).format(noon);
-  return `${escapeHtml(weekday)}<small>${escapeHtml(dateLabel)}</small>`;
+  const date = slotUtc(dayIndex, 12);
+  const weekday = getFormatter(displayTimezone(), { weekday: "short" }).format(date);
+  const dateLabel = getFormatter(displayTimezone(), { day: "2-digit", month: "short" }).format(date);
+  const utcLabel = getFormatter("UTC", { weekday: "short", day: "2-digit", month: "short" }).format(date);
+  return `${escapeHtml(weekday)}<small>${escapeHtml(dateLabel)} / ${escapeHtml(utcLabel)}Z</small>`;
 }
 
 function getDayLabel(dayIndex) {
-  const noon = localSlotToUtc(dayIndex, 12);
-  const weekday = getFormatter(displayTimezone(), { weekday: "short" }).format(noon);
-  const dateLabel = getFormatter(displayTimezone(), { day: "2-digit", month: "short" }).format(noon);
-  return `${weekday} ${dateLabel}`;
+  const date = slotUtc(dayIndex, 12);
+  return getFormatter(displayTimezone(), {
+    weekday: "short",
+    day: "2-digit",
+    month: "short"
+  }).format(date);
 }
 
 function getWeekTitle() {
-  const start = localSlotToUtc(0, 0);
-  const end = localSlotToUtc(6, 23);
-  const options = { day: "2-digit", month: "short", year: "numeric" };
-  return `${getFormatter(displayTimezone(), options).format(start)} - ${getFormatter(displayTimezone(), options).format(end)}`;
+  const { start, end } = getWeekRangeUtc();
+  const last = new Date(end.getTime() - SLOT_MINUTES * 60 * 1000);
+  const startLabel = getFormatter(displayTimezone(), {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23"
+  }).format(start);
+  const endLabel = getFormatter(displayTimezone(), {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23"
+  }).format(last);
+  return `${startLabel} - ${endLabel}`;
 }
 
-function cycleAvailability(current) {
-  if (!current) return "available";
-  if (current === "available") return "maybe";
-  if (current === "maybe") return "unavailable";
-  return null;
+function utcNowLabel() {
+  const d = new Date();
+  const months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+  return `${zp(d.getUTCHours())}${zp(d.getUTCMinutes())}Z ${d.getUTCDate()} ${months[d.getUTCMonth()]} ${d.getUTCFullYear()}`;
 }
 
 function normalizeAvailability(value) {
@@ -1271,6 +1278,13 @@ function myClass(value) {
   return "mine-empty";
 }
 
+function cycleAvailability(current) {
+  if (!current) return "available";
+  if (current === "available") return "maybe";
+  if (current === "maybe") return "unavailable";
+  return null;
+}
+
 function scoreToGrade(score, responseCount) {
   if (responseCount === 0) return "gray";
   if (score < 0.25) return "red";
@@ -1279,60 +1293,15 @@ function scoreToGrade(score, responseCount) {
   return "green";
 }
 
-function updateAvailabilityCellDisplay(cell, value) {
-  cell.className = myClass(value);
-  cell.textContent = compactAvailabilityLabel(value);
-  cell.title = `Click or drag to change. Current: ${availabilityLabel(value) || "Empty"}`;
-}
-
-function setAvailabilityCell(cell, value) {
-  const d = Number(cell.dataset.day);
-  const s = Number(cell.dataset.slot);
-  const key = slotKey(localSlotToUtc(d, s));
-  const current = mySlots.get(key) || null;
-
-  if (current === value) return;
-
-  if (value) {
-    mySlots.set(key, value);
-    dirtySlots.add(key);
-    deletedSlots.delete(key);
-  } else {
-    mySlots.delete(key);
-    dirtySlots.delete(key);
-    deletedSlots.add(key);
-  }
-
-  updateAvailabilityCellDisplay(cell, value);
-  dragChangedAvailability = true;
-  hasUnsavedAvailabilityChanges = true;
-}
-
-function finishAvailabilityDrag() {
-  if (!isDraggingAvailability) return;
-  isDraggingAvailability = false;
-  dragAvailabilityValue = null;
-
-  if (dragChangedAvailability) {
-    dragChangedAvailability = false;
-    buildHeatmap();
-    buildBestList();
-    if (activeScheduleView === "orbat") buildOrbatView();
-  }
+function getUserIdFromEmail(email) {
+  if (!email || !email.includes("@")) return "unknown";
+  return email.split("@")[0];
 }
 
 function showAdminLinksIfAllowed(email) {
   const normalized = String(email || "").trim().toLowerCase();
   if (normalized !== "evans@navy.mil" && normalized !== "carver@navy.mil") return;
-
-  document.querySelectorAll(".admin-only-link").forEach(link => {
-    link.style.display = "";
-  });
-}
-
-function getUserIdFromEmail(email) {
-  if (!email || !email.includes("@")) return "unknown";
-  return email.split("@")[0];
+  document.querySelectorAll(".admin-only-link").forEach(link => { link.style.display = ""; });
 }
 
 function getProfileName(userId) {
@@ -1396,14 +1365,7 @@ function getFilteredHeatmapMemberIds() {
 
 function responsesForSlot(key) {
   const allowedIds = getFilteredHeatmapMemberIds();
-  return allResponses.filter(row => {
-    return allowedIds.has(row.user_id) && new Date(row.slot_start).toISOString() === key;
-  });
-}
-
-function localDateIsoFromSlot(slotIso) {
-  const parts = getZonedParts(new Date(slotIso), displayTimezone());
-  return `${parts.year}-${zp(parts.month)}-${zp(parts.day)}`;
+  return allResponses.filter(row => allowedIds.has(row.user_id) && new Date(row.slot_start).toISOString() === key);
 }
 
 function loaCoversSlot(loa, slotIso) {
@@ -1413,17 +1375,14 @@ function loaCoversSlot(loa, slotIso) {
 
 function getLoaMemberIdsForSlot(slotIso, existingResponseIds) {
   if (!includeLoaCheckbox?.checked) return new Set();
-
   const allowedIds = getFilteredHeatmapMemberIds();
   const loaIds = new Set();
-
   for (const loa of allLoas) {
     if (!allowedIds.has(loa.requester_id)) continue;
     if (existingResponseIds.has(loa.requester_id)) continue;
     if (!loaCoversSlot(loa, slotIso)) continue;
     loaIds.add(loa.requester_id);
   }
-
   return loaIds;
 }
 
@@ -1431,7 +1390,6 @@ function aggregateSlot(key) {
   let available = 0;
   let maybe = 0;
   let unavailable = 0;
-
   const peopleAvailable = [];
   const peopleMaybe = [];
   const peopleUnavailable = [];
@@ -1441,7 +1399,6 @@ function aggregateSlot(key) {
   for (const row of rows) {
     existingResponseIds.add(row.user_id);
     const name = getProfileName(row.user_id);
-
     if (row.availability === "available") {
       available++;
       peopleAvailable.push(name);
@@ -1459,8 +1416,7 @@ function aggregateSlot(key) {
     const existingOwn = rows.some(r => r.user_id === authUser.id);
     if (!existingOwn) {
       const ownValue = mySlots.get(key);
-      const ownName = profile?.display_name || "Me";
-
+      const ownName = profile?.display_name || "You";
       if (ownValue === "available") {
         available++;
         peopleAvailable.push(ownName);
@@ -1471,7 +1427,6 @@ function aggregateSlot(key) {
         unavailable++;
         peopleUnavailable.push(ownName);
       }
-
       existingResponseIds.add(authUser.id);
     }
   }
@@ -1504,7 +1459,8 @@ function aggregateSlot(key) {
 
 function buildHoverTitle(ag, slotIso) {
   return [
-    labelForDateTime(slotIso),
+    labelForFullDateTime(slotIso),
+    `UTC: ${slotIso}`,
     "",
     "Available:",
     ag.peopleAvailable.length ? ag.peopleAvailable.join(", ") : "None",
@@ -1517,10 +1473,178 @@ function buildHoverTitle(ag, slotIso) {
   ].join("\n");
 }
 
-function getResponsesForDay(dayIndex) {
-  const dayStart = localSlotToUtc(dayIndex, 0);
-  const nextDayStart = localSlotToUtc(dayIndex + 1, 0);
+function updateAvailabilityCellDisplay(cell, value) {
+  const key = keyForCell(Number(cell.dataset.day), Number(cell.dataset.slot));
+  cell.className = myClass(value);
+  cell.textContent = compactAvailabilityLabel(value);
+  cell.title = `Click or drag to change. Current: ${availabilityLabel(value) || "Empty"}\n${labelForFullDateTime(key)}\nUTC: ${key}`;
+}
 
+function setAvailabilityCell(cell, value) {
+  const d = Number(cell.dataset.day);
+  const s = Number(cell.dataset.slot);
+  const key = keyForCell(d, s);
+  const current = mySlots.get(key) || null;
+  if (current === value) return;
+
+  if (value) {
+    mySlots.set(key, value);
+    deletedSlots.delete(key);
+  } else {
+    mySlots.delete(key);
+    deletedSlots.add(key);
+  }
+
+  updateAvailabilityCellDisplay(cell, value);
+  dragChangedAvailability = true;
+  hasUnsavedAvailabilityChanges = true;
+}
+
+function finishAvailabilityDrag() {
+  if (!isDraggingAvailability) return;
+  isDraggingAvailability = false;
+  dragAvailabilityValue = null;
+  if (dragChangedAvailability) {
+    dragChangedAvailability = false;
+    buildHeatmap();
+    buildBestList();
+  }
+}
+
+function buildMyTable() {
+  const table = document.getElementById("my-table");
+  let html = "<tr><th class='time-col'>Time</th>";
+  for (let d = 0; d < DAYS_PER_WEEK; d++) html += `<th>${dayHeader(d)}</th>`;
+  html += "</tr>";
+
+  for (let s = 0; s < SLOTS_PER_DAY; s++) {
+    html += `<tr><td class="time-col">${escapeHtml(labelForSlot(0, s))}</td>`;
+    for (let d = 0; d < DAYS_PER_WEEK; d++) {
+      const key = keyForCell(d, s);
+      const value = mySlots.get(key) || null;
+      html += `
+        <td class="${myClass(value)}"
+            data-day="${d}"
+            data-slot="${s}"
+            title="${escapeHtml(`Click or drag to change. Current: ${availabilityLabel(value) || "Empty"}\n${labelForFullDateTime(key)}\nUTC: ${key}`)}">
+          ${escapeHtml(compactAvailabilityLabel(value))}
+        </td>`;
+    }
+    html += "</tr>";
+  }
+
+  table.innerHTML = html;
+
+  table.querySelectorAll("td[data-day]").forEach(cell => {
+    cell.addEventListener("mousedown", event => {
+      if (event.button !== 0) return;
+      event.preventDefault();
+      const key = keyForCell(Number(cell.dataset.day), Number(cell.dataset.slot));
+      isDraggingAvailability = true;
+      dragAvailabilityValue = cycleAvailability(mySlots.get(key));
+      dragChangedAvailability = false;
+      setAvailabilityCell(cell, dragAvailabilityValue);
+    });
+
+    cell.addEventListener("mouseenter", () => {
+      if (!isDraggingAvailability) return;
+      setAvailabilityCell(cell, dragAvailabilityValue);
+    });
+  });
+}
+
+function buildHeatmap() {
+  const table = document.getElementById("heatmap-table");
+  let html = "<tr><th class='time-col'>Time</th>";
+  for (let d = 0; d < DAYS_PER_WEEK; d++) html += `<th>${dayHeader(d)}</th>`;
+  html += "</tr>";
+
+  for (let s = 0; s < SLOTS_PER_DAY; s++) {
+    html += `<tr><td class="time-col">${escapeHtml(labelForSlot(0, s))}</td>`;
+    for (let d = 0; d < DAYS_PER_WEEK; d++) {
+      const key = keyForCell(d, s);
+      const ag = aggregateSlot(key);
+      const percent = Math.round(ag.score * 100);
+      const title = buildHoverTitle(ag, key);
+      html += `
+        <td class="heat-cell grade-${ag.grade}" title="${escapeHtml(title)}">
+          ${percent}%
+          <small>${ag.available}Y ${ag.maybe}M ${ag.unavailable}N</small>
+        </td>`;
+    }
+    html += "</tr>";
+  }
+
+  table.innerHTML = html;
+}
+
+function buildBestList() {
+  const entries = [];
+  for (let d = 0; d < DAYS_PER_WEEK; d++) {
+    for (let s = 0; s < SLOTS_PER_DAY; s++) {
+      const key = keyForCell(d, s);
+      const ag = aggregateSlot(key);
+      if (ag.responseCount > 0) {
+        entries.push({
+          slotIso: key,
+          score: ag.score,
+          available: ag.available,
+          maybe: ag.maybe,
+          unavailable: ag.unavailable,
+          total: ag.totalMembers
+        });
+      }
+    }
+  }
+
+  entries.sort((a, b) => {
+    if (b.score !== a.score) return b.score - a.score;
+    if (b.available !== a.available) return b.available - a.available;
+    return a.unavailable - b.unavailable;
+  });
+
+  const list = document.getElementById("best-list");
+  if (!entries.length) {
+    list.innerHTML = "<li>No availability submitted yet.</li>";
+    return;
+  }
+
+  list.innerHTML = entries.slice(0, 8).map(e => {
+    const pct = Math.round(e.score * 100);
+    return `
+      <li>
+        <strong>${escapeHtml(labelForDateTime(e.slotIso))}</strong><br>
+        ${pct}% fit - ${e.available} available, ${e.maybe} maybe, ${e.unavailable} unavailable
+      </li>`;
+  }).join("");
+}
+
+function buildChangesList() {
+  const list = document.getElementById("changes-list");
+  if (!allResponses.length) {
+    list.innerHTML = "<li>No changes yet.</li>";
+    return;
+  }
+
+  const latest = [...allResponses]
+    .sort((a, b) => new Date(b.updated_at || b.slot_start) - new Date(a.updated_at || a.slot_start))
+    .slice(0, 12);
+
+  list.innerHTML = latest.map(row => {
+    const name = getProfileName(row.user_id);
+    const slotLabel = labelForDateTime(row.slot_start);
+    const updateLabel = labelForUpdateTime(row.updated_at || row.slot_start);
+    return `
+      <li>
+        <strong>${escapeHtml(name)}</strong> set <strong>${escapeHtml(row.availability)}</strong><br>
+        <span class="muted">${escapeHtml(slotLabel)} - updated ${escapeHtml(updateLabel)}</span>
+      </li>`;
+  }).join("");
+}
+
+function getResponsesForDay(dayIndex) {
+  const dayStart = slotUtc(dayIndex, 0);
+  const nextDayStart = slotUtc(dayIndex + 1, 0);
   return allResponses.filter(row => {
     const rowDate = new Date(row.slot_start);
     return rowDate >= dayStart && rowDate < nextDayStart;
@@ -1546,176 +1670,21 @@ function getAvailabilitySummary(responses) {
   const available = responses.filter(row => row.availability === "available");
   const maybe = responses.filter(row => row.availability === "maybe");
   const sorted = [...responses].sort((a, b) => new Date(a.slot_start) - new Date(b.slot_start));
+  const firstTime = labelForDateTime(sorted[0].slot_start);
+  const lastTime = labelForDateTime(sorted[sorted.length - 1].slot_start);
   const lineParts = [];
-
   if (available.length) lineParts.push(`Available: ${available.length}`);
   if (maybe.length) lineParts.push(`Maybe: ${maybe.length}`);
 
   return {
     className: available.length ? "available" : "maybe",
     lineOne: lineParts.join(" | "),
-    lineTwo: `First: ${labelForDateTime(sorted[0].slot_start)} | Last: ${labelForDateTime(sorted[sorted.length - 1].slot_start)}`
+    lineTwo: `First: ${firstTime} | Last: ${lastTime}`
   };
-}
-
-function buildMyTable() {
-  const table = document.getElementById("my-table");
-  let html = "<tr><th class='time-col'>Time</th>";
-
-  for (let d = 0; d < DAYS_PER_WEEK; d++) {
-    html += `<th>${dayHeader(d)}</th>`;
-  }
-
-  html += "</tr>";
-
-  for (let s = 0; s < SLOTS_PER_DAY; s++) {
-    html += `<tr><td class="time-col">${escapeHtml(labelForSlot(0, s))}</td>`;
-
-    for (let d = 0; d < DAYS_PER_WEEK; d++) {
-      const key = slotKey(localSlotToUtc(d, s));
-      const value = mySlots.get(key) || null;
-
-      html += `
-        <td class="${myClass(value)}"
-            data-day="${d}"
-            data-slot="${s}"
-            title="Click or drag to change. Current: ${escapeHtml(availabilityLabel(value) || "Empty")}">
-          ${escapeHtml(compactAvailabilityLabel(value))}
-        </td>`;
-    }
-
-    html += "</tr>";
-  }
-
-  table.innerHTML = html;
-
-  table.querySelectorAll("td[data-day]").forEach(cell => {
-    cell.addEventListener("mousedown", event => {
-      if (event.button !== 0) return;
-      event.preventDefault();
-
-      const d = Number(cell.dataset.day);
-      const s = Number(cell.dataset.slot);
-      const key = slotKey(localSlotToUtc(d, s));
-
-      isDraggingAvailability = true;
-      dragAvailabilityValue = cycleAvailability(mySlots.get(key));
-      dragChangedAvailability = false;
-
-      setAvailabilityCell(cell, dragAvailabilityValue);
-    });
-
-    cell.addEventListener("mouseenter", () => {
-      if (!isDraggingAvailability) return;
-      setAvailabilityCell(cell, dragAvailabilityValue);
-    });
-  });
-}
-
-function buildHeatmap() {
-  const table = document.getElementById("heatmap-table");
-  let html = "<tr><th class='time-col'>Time</th>";
-
-  for (let d = 0; d < DAYS_PER_WEEK; d++) {
-    html += `<th>${dayHeader(d)}</th>`;
-  }
-
-  html += "</tr>";
-
-  for (let s = 0; s < SLOTS_PER_DAY; s++) {
-    html += `<tr><td class="time-col">${escapeHtml(labelForSlot(0, s))}</td>`;
-
-    for (let d = 0; d < DAYS_PER_WEEK; d++) {
-      const key = slotKey(localSlotToUtc(d, s));
-      const ag = aggregateSlot(key);
-      const percent = Math.round(ag.score * 100);
-      const title = buildHoverTitle(ag, key);
-
-      html += `
-        <td class="heat-cell grade-${ag.grade}" title="${escapeHtml(title)}">
-          ${percent}%
-          <small>${ag.available}Y ${ag.maybe}M ${ag.unavailable}N</small>
-        </td>`;
-    }
-
-    html += "</tr>";
-  }
-
-  table.innerHTML = html;
-}
-
-function buildBestList() {
-  const entries = [];
-
-  for (let d = 0; d < DAYS_PER_WEEK; d++) {
-    for (let s = 0; s < SLOTS_PER_DAY; s++) {
-      const key = slotKey(localSlotToUtc(d, s));
-      const ag = aggregateSlot(key);
-
-      if (ag.responseCount > 0) {
-        entries.push({
-          slotIso: key,
-          score: ag.score,
-          available: ag.available,
-          maybe: ag.maybe,
-          unavailable: ag.unavailable,
-          total: ag.totalMembers
-        });
-      }
-    }
-  }
-
-  entries.sort((a, b) => {
-    if (b.score !== a.score) return b.score - a.score;
-    if (b.available !== a.available) return b.available - a.available;
-    return a.unavailable - b.unavailable;
-  });
-
-  const list = document.getElementById("best-list");
-
-  if (!entries.length) {
-    list.innerHTML = "<li>No availability submitted yet.</li>";
-    return;
-  }
-
-  list.innerHTML = entries.slice(0, 8).map(e => {
-    const pct = Math.round(e.score * 100);
-    return `
-      <li>
-        <strong>${escapeHtml(labelForDateTime(e.slotIso))}</strong><br>
-        ${pct}% fit - ${e.available} available, ${e.maybe} maybe, ${e.unavailable} unavailable
-      </li>`;
-  }).join("");
-}
-
-function buildChangesList() {
-  const list = document.getElementById("changes-list");
-
-  if (!allResponses.length) {
-    list.innerHTML = "<li>No changes yet.</li>";
-    return;
-  }
-
-  const latest = [...allResponses]
-    .sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at))
-    .slice(0, 12);
-
-  list.innerHTML = latest.map(row => {
-    const name = getProfileName(row.user_id);
-    const slotLabel = labelForDateTime(row.slot_start);
-    const updateLabel = labelForUpdateTime(row.updated_at || row.slot_start);
-
-    return `
-      <li>
-        <strong>${escapeHtml(name)}</strong> set <strong>${escapeHtml(row.availability)}</strong><br>
-        <span class="muted">${escapeHtml(slotLabel)} - updated ${escapeHtml(updateLabel)}</span>
-      </li>`;
-  }).join("");
 }
 
 function buildOrbatPersonCard(member, callsignLabel, responses) {
   const summary = getAvailabilitySummary(responses);
-
   return `
     <div class="orbat-person ${summary.className}" data-member-id="${escapeHtml(member.id)}">
       <strong>${escapeHtml(callsignLabel)} - ${escapeHtml(member.display_name || member.user_id)}</strong>
@@ -1742,7 +1711,6 @@ function buildOrbatSection(section, dayIndex) {
 
   if (section.type === "candidate") {
     const candidates = getCandidateMembers();
-
     if (!candidates.length) {
       html += `
         <div class="orbat-person empty">
@@ -1765,13 +1733,12 @@ function buildOrbatSection(section, dayIndex) {
     }
   }
 
-  html += "</div></div>";
+  html += `</div></div>`;
   return html;
 }
 
 function buildOrbatDayTabs() {
   let html = "";
-
   for (let dayIndex = 0; dayIndex < DAYS_PER_WEEK; dayIndex++) {
     html += `
       <button class="orbat-day-tab ${dayIndex === selectedOrbatDay ? "active" : ""}"
@@ -1782,7 +1749,6 @@ function buildOrbatDayTabs() {
   }
 
   orbatDayTabs.innerHTML = html;
-
   orbatDayTabs.querySelectorAll("[data-orbat-day]").forEach(button => {
     button.addEventListener("click", () => {
       selectedOrbatDay = Number(button.dataset.orbatDay);
@@ -1801,17 +1767,12 @@ function buildOrbatView() {
     <div class="orbat-day-panel">
       <div class="orbat-day-panel-header">${escapeHtml(getDayLabel(selectedOrbatDay))}</div>`;
 
-  for (const section of ORBAT_STRUCTURE) {
-    html += buildOrbatSection(section, selectedOrbatDay);
-  }
-
+  for (const section of ORBAT_STRUCTURE) html += buildOrbatSection(section, selectedOrbatDay);
   html += "</div>";
-  orbatDayContent.innerHTML = html;
 
+  orbatDayContent.innerHTML = html;
   orbatDayContent.querySelectorAll("[data-member-id]").forEach(card => {
-    card.addEventListener("click", () => {
-      showOrbatMemberDetails(card.dataset.memberId, selectedOrbatDay);
-    });
+    card.addEventListener("click", () => showOrbatMemberDetails(card.dataset.memberId, selectedOrbatDay));
   });
 }
 
@@ -1821,18 +1782,16 @@ function showOrbatMemberDetails(memberId, dayIndex) {
 
   const responses = getMemberResponsesForDay(memberId, dayIndex);
   const responseHtml = responses.length
-    ? responses.map(row => {
-        return `
-          <div class="orbat-detail-row">
-            <div class="orbat-detail-label">${escapeHtml(labelForDateTime(row.slot_start))}</div>
-            <div>${escapeHtml(availabilityLabel(row.availability))}</div>
-          </div>`;
-      }).join("")
+    ? responses.map(row => `
+        <div class="orbat-detail-row">
+          <div class="orbat-detail-label">${escapeHtml(labelForDateTime(row.slot_start))}</div>
+          <div>${escapeHtml(availabilityLabel(row.availability))}</div>
+        </div>`).join("")
     : `
-      <div class="orbat-detail-row">
-        <div class="orbat-detail-label">Availability</div>
-        <div>No response submitted for this day.</div>
-      </div>`;
+        <div class="orbat-detail-row">
+          <div class="orbat-detail-label">Availability</div>
+          <div>No response submitted for this day.</div>
+        </div>`;
 
   const steam = member.steam_name || member.steam_id || "-";
   const discord = member.discord_name || member.discord_id || "-";
@@ -1845,13 +1804,11 @@ function showOrbatMemberDetails(memberId, dayIndex) {
     <div class="orbat-detail-row"><div class="orbat-detail-label">Steam</div><div>${escapeHtml(steam)}</div></div>
     <div class="orbat-detail-row"><div class="orbat-detail-label">Discord</div><div>${escapeHtml(discord)}</div></div>
     <div class="orbat-detail-row"><div class="orbat-detail-label">Day</div><div>${escapeHtml(getDayLabel(dayIndex))}</div></div>
-    ${responseHtml}
-  `;
+    ${responseHtml}`;
 }
 
 function setScheduleView(viewName) {
   activeScheduleView = viewName;
-
   if (viewName === "orbat") {
     calendarView.classList.add("hidden");
     orbatView.classList.remove("hidden");
@@ -1884,7 +1841,6 @@ function shiftSelectedWeek(days) {
 
 async function loadSessionAndProfile() {
   const { data, error } = await supabase.auth.getSession();
-
   if (error || !data.session) {
     window.location.href = "/login/";
     return false;
@@ -1892,8 +1848,8 @@ async function loadSessionAndProfile() {
 
   authUser = data.session.user;
   showAdminLinksIfAllowed(authUser.email);
-
   const fallbackUserId = getUserIdFromEmail(authUser.email);
+
   profile = {
     id: authUser.id,
     user_id: fallbackUserId,
@@ -1913,19 +1869,21 @@ async function loadSessionAndProfile() {
     .from("profiles")
     .select("id, user_id, display_name, role, status, avatar_url, naval_rank, callsign, steam_name, steam_id, discord_name, discord_id, profile_notes")
     .eq("id", authUser.id)
-    .single();
+    .maybeSingle();
 
   if (profileData) profile = profileData;
 
-  document.getElementById("session-label").textContent = profile.display_name;
-  document.getElementById("sidebar-name").textContent = profile.display_name;
-  document.getElementById("sidebar-role").textContent = profile.role;
-  document.getElementById("dash-user").textContent = profile.display_name;
-  document.getElementById("dash-userid").textContent = profile.user_id;
-
+  const sessionLabel = document.getElementById("session-label");
+  if (sessionLabel) sessionLabel.textContent = profile.display_name;
+  const sidebarName = document.getElementById("sidebar-name");
+  if (sidebarName) sidebarName.textContent = profile.display_name;
+  const sidebarRole = document.getElementById("sidebar-role");
+  if (sidebarRole) sidebarRole.textContent = profile.role;
   const navAvatar = document.getElementById("nav-avatar");
   if (navAvatar && profile.avatar_url) navAvatar.src = profile.avatar_url;
 
+  document.getElementById("dash-user").textContent = profile.display_name;
+  document.getElementById("dash-userid").textContent = profile.user_id;
   return true;
 }
 
@@ -1949,15 +1907,19 @@ async function loadProfiles() {
 }
 
 async function loadLoas() {
-  const weekStart = weekInput.value;
-  const weekEnd = addDaysToIsoDate(weekStart, 6);
+  const { start, end } = getWeekRangeUtc();
+  const startLocal = localDateIsoFromSlot(start.toISOString());
+  const endLocal = localDateIsoFromSlot(new Date(end.getTime() - SLOT_MINUTES * 60 * 1000).toISOString());
+
+  const minDate = startLocal < endLocal ? startLocal : endLocal;
+  const maxDate = startLocal > endLocal ? startLocal : endLocal;
 
   const { data, error } = await supabase
     .from("loa_requests")
     .select("requester_id, start_date, end_date, status")
     .eq("status", "APPROVED")
-    .lte("start_date", weekEnd)
-    .gte("end_date", weekStart);
+    .lte("start_date", maxDate)
+    .gte("end_date", minDate);
 
   if (error) {
     allLoas = [];
@@ -1969,13 +1931,14 @@ async function loadLoas() {
 }
 
 async function loadResponses() {
-  const { loadStart, loadEnd } = getBufferedWeekRangeUtc();
+  const { start, end } = getWeekRangeUtc();
 
   const { data, error } = await supabase
     .from("scheduling_responses")
     .select("user_id, slot_start, availability, note, updated_at")
-    .gte("slot_start", loadStart.toISOString())
-    .lt("slot_start", loadEnd.toISOString());
+    .gte("slot_start", start.toISOString())
+    .lt("slot_start", end.toISOString())
+    .order("slot_start", { ascending: true });
 
   if (error) {
     setStatus("Failed to load scheduling data: " + error.message, false);
@@ -1984,12 +1947,8 @@ async function loadResponses() {
   }
 
   allResponses = data || [];
-  await loadLoas();
-
   mySlots.clear();
-  dirtySlots.clear();
   deletedSlots.clear();
-  hasUnsavedAvailabilityChanges = false;
 
   for (const row of allResponses) {
     if (row.user_id === authUser.id) {
@@ -1997,7 +1956,9 @@ async function loadResponses() {
     }
   }
 
+  await loadLoas();
   document.getElementById("dash-updated").textContent = utcNowLabel();
+  hasUnsavedAvailabilityChanges = false;
   rebuildViews();
 }
 
@@ -2005,24 +1966,20 @@ async function saveAvailability() {
   saveBtn.disabled = true;
   saveBtn.textContent = "Saving...";
 
-  const upsertRows = [];
-  for (const key of dirtySlots) {
-    const value = mySlots.get(key);
-    if (!value) continue;
-
-    upsertRows.push({
+  const rowsToSave = [...mySlots.entries()]
+    .filter(([key]) => isSlotInSelectedUtcWeek(key))
+    .map(([key, value]) => ({
       user_id: authUser.id,
       slot_start: key,
       availability: value,
       note: null,
       updated_at: new Date().toISOString()
-    });
-  }
+    }));
 
-  if (upsertRows.length) {
+  if (rowsToSave.length) {
     const { error } = await supabase
       .from("scheduling_responses")
-      .upsert(upsertRows, { onConflict: "user_id,slot_start" });
+      .upsert(rowsToSave, { onConflict: "user_id,slot_start" });
 
     if (error) {
       setStatus("Failed to save availability: " + error.message, false);
@@ -2032,12 +1989,13 @@ async function saveAvailability() {
     }
   }
 
-  if (deletedSlots.size) {
+  const deleteKeys = [...deletedSlots].filter(key => isSlotInSelectedUtcWeek(key));
+  if (deleteKeys.length) {
     const { error } = await supabase
       .from("scheduling_responses")
       .delete()
       .eq("user_id", authUser.id)
-      .in("slot_start", Array.from(deletedSlots));
+      .in("slot_start", deleteKeys);
 
     if (error) {
       setStatus("Failed to delete cleared slots: " + error.message, false);
@@ -2047,10 +2005,8 @@ async function saveAvailability() {
     }
   }
 
-  dirtySlots.clear();
   deletedSlots.clear();
   hasUnsavedAvailabilityChanges = false;
-
   setStatus("Availability saved successfully.", true);
   saveBtn.disabled = false;
   saveBtn.textContent = "Save";
@@ -2059,34 +2015,33 @@ async function saveAvailability() {
 }
 
 async function clearMyWeek() {
-  const confirmed = confirm("Clear all of your availability for the currently visible selected week?");
+  const confirmed = confirm("Clear all of your availability for this selected UTC week?");
   if (!confirmed) return;
 
-  const keys = visibleSlotKeys();
+  const { start, end } = getWeekRangeUtc();
   const { error } = await supabase
     .from("scheduling_responses")
     .delete()
     .eq("user_id", authUser.id)
-    .in("slot_start", keys);
+    .gte("slot_start", start.toISOString())
+    .lt("slot_start", end.toISOString());
 
   if (error) {
     setStatus("Failed to clear week: " + error.message, false);
     return;
   }
 
-  for (const key of keys) mySlots.delete(key);
-  dirtySlots.clear();
+  mySlots.clear();
   deletedSlots.clear();
   hasUnsavedAvailabilityChanges = false;
-  setStatus("Your visible week was cleared.", true);
-
+  setStatus("Your week was cleared.", true);
   await loadResponses();
 }
 
 function setupRealtime() {
   if (realtimeChannel) supabase.removeChannel(realtimeChannel);
-
   let reloadTimer = null;
+
   realtimeChannel = supabase
     .channel("scheduling-live")
     .on(
@@ -2112,78 +2067,54 @@ async function doLogout() {
 }
 
 window.doLogout = doLogout;
-window.schedulingDebug = {
-  get state() {
-    return {
-      timezone: displayTimezone(),
-      week: weekInput.value,
-      allResponses: allResponses.length,
-      mySlots: mySlots.size,
-      dirtySlots: dirtySlots.size,
-      deletedSlots: deletedSlots.size,
-      visibleSlotKeys: visibleSlotKeys()
-    };
-  },
-  localSlotToUtc,
-  visibleSlotKeys,
-  getBufferedWeekRangeUtc,
-  mySlots,
-  allResponses
-};
 
 saveBtn.addEventListener("click", saveAvailability);
 refreshBtn.addEventListener("click", loadResponses);
 clearBtn.addEventListener("click", clearMyWeek);
 
-heatmapFilter.addEventListener("change", () => {
-  buildHeatmap();
-  buildBestList();
-});
-
-includeLoaCheckbox.addEventListener("change", () => {
-  buildHeatmap();
-  buildBestList();
-});
-
-hideUnansweredCheckbox.addEventListener("change", () => {
-  buildHeatmap();
-  buildBestList();
-});
-
+heatmapFilter.addEventListener("change", () => { buildHeatmap(); buildBestList(); });
+includeLoaCheckbox.addEventListener("change", () => { buildHeatmap(); buildBestList(); });
+hideUnansweredCheckbox.addEventListener("change", () => { buildHeatmap(); buildBestList(); });
 calendarViewBtn.addEventListener("click", () => setScheduleView("calendar"));
 orbatViewBtn.addEventListener("click", () => setScheduleView("orbat"));
 orbatPrevWeekBtn.addEventListener("click", () => shiftSelectedWeek(-7));
 orbatCurrentWeekBtn.addEventListener("click", () => buildOrbatView());
 orbatNextWeekBtn.addEventListener("click", () => shiftSelectedWeek(7));
-
 document.addEventListener("mouseup", finishAvailabilityDrag);
 window.addEventListener("blur", finishAvailabilityDrag);
 
-timezoneSelect.addEventListener("change", async () => {
+timezoneSelect.addEventListener("change", () => {
   localStorage.setItem("schedulingTimezone", timezoneSelect.value);
-
-  if (hasUnsavedAvailabilityChanges) {
-    rebuildViews();
-    setStatus("Timezone changed. Unsaved availability was kept in memory. Save or refresh to sync.", false);
-    return;
-  }
-
-  await loadResponses();
+  rebuildViews();
 });
 
 weekInput.addEventListener("change", async () => {
-  if (hasUnsavedAvailabilityChanges) {
-    const discard = confirm("You have unsaved availability changes. Change week and discard them?");
-    if (!discard) return;
-  }
   await loadResponses();
 });
 
+window.schedulingDebug = {
+  supabase,
+  get authUser() { return authUser; },
+  get profile() { return profile; },
+  get members() { return members; },
+  get allResponses() { return allResponses; },
+  get mySlots() { return mySlots; },
+  get deletedSlots() { return deletedSlots; },
+  getWeekRangeUtc,
+  slotUtc,
+  keyForCell,
+  displayTimezone,
+  scheduleTimezone,
+  rebuildViews,
+  loadResponses,
+  saveAvailability
+};
+
 async function init() {
+  weekInput.value = getNextMonday();
+
   const savedTz = localStorage.getItem("schedulingTimezone");
   if (savedTz) timezoneSelect.value = savedTz;
-
-  weekInput.value = getNextMonday();
 
   const ok = await loadSessionAndProfile();
   if (!ok) return;
@@ -2195,7 +2126,6 @@ async function init() {
 
 init();
 </script>
-
 
 </body>
 
