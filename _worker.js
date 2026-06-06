@@ -12,7 +12,7 @@ const SECURITY_HEADERS = {
     "style-src 'self' 'unsafe-inline'",
     "img-src 'self' data: blob:",
     "font-src 'self' data:",
-    "connect-src 'self' https://lshdabctlaifkeptyfoz.supabase.co",
+    "connect-src 'self' https://lshdabctlaifkeptyfoz.supabase.co https://discord.com https://discordapp.com",
     "frame-ancestors 'none'",
     "base-uri 'self'",
     "form-action 'self'"

