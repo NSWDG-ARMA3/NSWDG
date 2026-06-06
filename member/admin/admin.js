@@ -46,6 +46,12 @@ function isAdminEmail(email) {
   return ADMIN_EMAILS.includes(normalized);
 }
 
+function showSharedAdminNavigation() {
+  document.querySelectorAll(".admin-only-link").forEach(link => {
+    link.style.display = "";
+  });
+}
+
 function setStatus(message, type = "ok") {
   statusLine.textContent = message;
   statusLine.className = `status-line visible ${type}`;
@@ -182,6 +188,7 @@ async function loadSessionAndProfile() {
     return false;
   }
 
+  showSharedAdminNavigation();
   showAdminContent();
   return true;
 }
