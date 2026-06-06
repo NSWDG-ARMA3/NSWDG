@@ -78,7 +78,6 @@ const content = document.getElementById("orbat-content");
 const board = document.getElementById("orbat-board");
 const statusLine = document.getElementById("status-line");
 const searchInput = document.getElementById("search-input");
-const groupFilter = document.getElementById("group-filter");
 const refreshBtn = document.getElementById("refresh-btn");
 const statTotal = document.getElementById("stat-total");
 const statGroups = document.getElementById("stat-groups");
@@ -143,19 +142,10 @@ callsignSortValue(a.callsign).localeCompare(callsignSortValue(b.callsign)) || St
 "").localeCompare(String(b.display_name || "")));
 }
 
-function renderGroupFilter() {
-const groups = [...new Set(members.map(member => callsignGroup(member.callsign)))].sort();
-const current = groupFilter.value || "ALL";
-groupFilter.innerHTML = `<option value="ALL">All Groups</option>` + groups.map(group => `<option
-  value="${escapeHtml(group)}">${escapeHtml(GROUP_LABELS[group] || group)}</option>`).join("");
-groupFilter.value = groups.includes(current) ? current : "ALL";
-}
-
 function filteredMembers() {
 const query = String(searchInput.value || "").trim().toLowerCase();
-const group = groupFilter.value || "ALL";
+const group = "ALL";
 return members.filter(member => {
-if (group !== "ALL" && callsignGroup(member.callsign) !== group) return false;
 if (query && !memberSearchText(member).includes(query)) return false;
 return true;
 });
@@ -293,7 +283,6 @@ return;
 
 content.classList.remove("hidden");
 await loadMembers();
-renderGroupFilter();
 renderBoard();
 } catch (error) {
 console.error(error);
@@ -309,7 +298,6 @@ groupFilter.addEventListener("change", renderBoard);
 refreshBtn.addEventListener("click", async () => {
 try {
 await loadMembers();
-renderGroupFilter();
 renderBoard();
 } catch (error) {
 console.error(error);
