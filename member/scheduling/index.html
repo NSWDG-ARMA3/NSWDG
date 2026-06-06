@@ -5,48 +5,1616 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>NSW Operations Portal - Scheduling</title>
   <link rel="shortcut icon" href="../../nsw.png" type="image/x-icon">
+
   <style>
-    *{box-sizing:border-box;margin:0;padding:0} body{background:#f0f0f0;color:#1a1a1a;font-family:Arial,Helvetica,sans-serif;font-size:12px;min-height:100vh;display:flex;flex-direction:column}.gov-banner{background:#111;color:#ccc;font-size:11px;padding:3px 12px}.site-header{background:#1d3f5e;color:#fff;padding:10px 16px;border-bottom:3px solid #c8a800}.site-header h1{font-size:16px}.site-header p{font-size:11px;color:#c5d8ec;margin-top:2px}.portal-nav{background:#1d3f5e;display:flex;align-items:stretch;border-bottom:2px solid #c8a800}.portal-nav a{color:#cde;text-decoration:none;font-size:12px;padding:8px 12px;border-right:1px solid #00284e;white-space:nowrap}.portal-nav a.active,.portal-nav a:hover{color:#fff;font-weight:bold}.nav-right{margin-left:auto;display:flex;align-items:center;padding:0 12px;font-size:11px;color:#cde;gap:10px}.nav-avatar{width:22px;height:22px;border-radius:50%;object-fit:cover;border:1px solid #7a9ab8;background:#e8e8e8}.portal-body{display:flex;flex:1;min-height:0}.sidebar{width:180px;background:#e8e8e8;border-right:1px solid #bbb;flex-shrink:0;padding:12px 0}.sidebar-user-box{padding:7px 12px 10px;border-bottom:1px solid #ccc;margin-bottom:6px;font-size:11px;color:#444;line-height:1.6}.sidebar-user-box strong{display:block;font-size:12px;color:#1a1a1a}.sidebar-section{font-size:10px;font-weight:bold;color:#777;text-transform:uppercase;letter-spacing:1px;padding:8px 12px 4px}.sidebar-link{display:block;padding:5px 12px;font-size:12px;color:#1d3f5e;text-decoration:none;border-left:3px solid transparent}.sidebar-link:hover,.sidebar-link.active{background:#d0dae8;border-left-color:#1d3f5e;font-weight:bold}.portal-main{flex:1;padding:16px 18px;background:#fff;overflow:auto}.page-title{font-size:15px;font-weight:bold;color:#1d3f5e;border-bottom:1px solid #ccc;padding-bottom:6px;margin-bottom:10px}.notice-box{border:1px solid #bbb;padding:8px 10px;font-size:11px;margin-bottom:10px;line-height:1.6;background:#fafafa}.notice-box h4{font-size:11px;color:#1d3f5e;text-transform:uppercase;margin-bottom:4px}.top-layout{display:grid;grid-template-columns:minmax(0,1fr)320px;gap:12px}.panel{border:1px solid #ccc;background:#fafafa;padding:10px;margin-bottom:12px}.panel h3{font-size:12px;color:#1d3f5e;margin-bottom:8px;text-transform:uppercase;letter-spacing:.4px}.form-row{display:flex;flex-wrap:wrap;gap:8px;align-items:flex-end;margin-bottom:8px}.form-group label{display:block;font-size:11px;font-weight:bold;margin-bottom:3px}.form-group input,.form-group select{border:1px solid #888;padding:4px 6px;font-size:11px;background:#fff;height:26px}.btn{border:1px solid #aaa;padding:4px 10px;font-size:11px;cursor:pointer;height:26px;background:#f0f0f0}.btn-primary{background:#1d3f5e;color:#fff;border-color:#1d3f5e}.btn-danger{background:#b40000;color:#fff;border-color:#800}.btn.active{background:#1d3f5e;color:#fff;border-color:#1d3f5e}.status-line{display:none;border:1px solid #bbb;padding:6px 8px;margin-top:8px;font-size:11px}.status-line.visible{display:block}.status-line.ok{background:#e8f7e8;border-color:#8ac58a;color:#145214}.status-line.err{background:#fde8e8;border-color:#d48a8a;color:#800}.availability-wrap{overflow:auto;border:1px solid #bbb;margin-bottom:12px;max-height:72vh}.availability-grid{border-collapse:collapse;min-width:820px;width:100%;font-size:10px}.availability-grid th{position:sticky;top:0;background:#1d3f5e;color:#fff;border:1px solid #16324b;padding:5px;z-index:2}.availability-grid td{border:1px solid #ccc;text-align:center;padding:4px;min-width:72px;height:28px;user-select:none}.time-col{position:sticky;left:0;background:#e8e8e8!important;color:#111!important;font-weight:bold;z-index:3;min-width:70px}.availability-grid th small{display:block;color:#cde;font-weight:normal}.mine-empty{background:#fff}.mine-available{background:#dff4e3;color:#145214;font-weight:bold}.mine-maybe{background:#fff5bd;color:#6a5200;font-weight:bold}.mine-unavailable{background:#f7d7d7;color:#800;font-weight:bold}.grade-gray{background:#d0d0d0}.grade-red{background:#c7352d;color:#fff}.grade-orange{background:#e6862d}.grade-yellow{background:#e8d84a}.grade-green{background:#3d9b4f;color:#fff}.heat-cell small{display:block;font-size:9px;margin-top:2px}.info-table{border-collapse:collapse;width:100%;font-size:11px;margin-bottom:10px}.info-table th{background:#1d3f5e;color:#fff;text-align:left;padding:4px 6px;font-size:10px}.info-table td{padding:4px 6px;border-bottom:1px solid #ddd;vertical-align:top}.info-table tr:nth-child(even) td{background:#f5f7fa}.best-list,.changes-list{padding-left:16px;font-size:11px;line-height:1.45}.best-list li,.changes-list li{margin-bottom:7px}.muted{color:#666}.schedule-view.hidden{display:none}.legend{display:flex;gap:8px;flex-wrap:wrap;font-size:10px;margin-bottom:8px}.legend-box{width:16px;height:10px;border:1px solid #777;display:inline-block;vertical-align:middle;margin-right:3px}.orbat-header{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}.orbat-day-tabs{display:flex;gap:4px;flex-wrap:wrap;margin:8px 0}.orbat-slot{border:1px solid #ccc;background:#fff;margin-bottom:10px}.orbat-slot h4{background:#1d3f5e;color:#fff;padding:6px 8px;font-size:12px}.orbat-section{padding:8px;border-top:1px solid #ddd}.orbat-section h5{font-size:11px;color:#1d3f5e;margin-bottom:5px}.orbat-person{display:inline-block;border:1px solid #aaa;background:#f4f4f4;margin:2px;padding:3px 5px;cursor:pointer}.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);align-items:center;justify-content:center;z-index:20}.modal.visible{display:flex}.modal-card{width:min(520px,92vw);background:#fff;border:2px solid #1d3f5e}.modal-head{background:#1d3f5e;color:#fff;padding:8px 10px;display:flex;justify-content:space-between;align-items:center}.modal-body{padding:10px}.modal-close{background:none;border:0;color:#fff;font-size:18px;cursor:pointer}@media(max-width:900px){.top-layout{grid-template-columns:1fr}.sidebar{display:none}.portal-nav{overflow-x:auto}.nav-right{display:none}}
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: #f0f0f0;
+      color: #1a1a1a;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 12px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .gov-banner {
+      background: #111;
+      color: #ccc;
+      font-size: 11px;
+      padding: 3px 12px;
+    }
+
+    .site-header {
+      background: #1d3f5e;
+      color: #fff;
+      padding: 10px 16px;
+      border-bottom: 3px solid #c8a800;
+    }
+
+    .site-header h1 {
+      font-size: 16px;
+    }
+
+    .site-header p {
+      font-size: 11px;
+      color: #c5d8ec;
+      margin-top: 2px;
+    }
+
+    .portal-nav {
+      background: #1d3f5e;
+      display: flex;
+      align-items: stretch;
+      border-bottom: 2px solid #c8a800;
+    }
+
+    .portal-nav a {
+      color: #cde;
+      text-decoration: none;
+      font-size: 12px;
+      padding: 8px 12px;
+      border-right: 1px solid #00284e;
+      white-space: nowrap;
+    }
+
+    .portal-nav a.active,
+    .portal-nav a:hover {
+      color: #fff;
+      font-weight: bold;
+    }
+
+    .nav-right {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      font-size: 11px;
+      color: #cde;
+      gap: 10px;
+    }
+
+    .nav-avatar {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1px solid #7a9ab8;
+      background: #e8e8e8;
+    }
+
+    .portal-body {
+      display: flex;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .sidebar {
+      width: 180px;
+      background: #e8e8e8;
+      border-right: 1px solid #bbb;
+      flex-shrink: 0;
+      padding: 12px 0;
+    }
+
+    .sidebar-user-box {
+      padding: 7px 12px 10px;
+      border-bottom: 1px solid #ccc;
+      margin-bottom: 6px;
+      font-size: 11px;
+      color: #444;
+      line-height: 1.6;
+    }
+
+    .sidebar-user-box strong {
+      display: block;
+      font-size: 12px;
+      color: #1a1a1a;
+    }
+
+    .sidebar-section {
+      font-size: 10px;
+      font-weight: bold;
+      color: #777;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 8px 12px 4px;
+    }
+
+    .sidebar-link {
+      display: block;
+      padding: 5px 12px;
+      font-size: 12px;
+      color: #1d3f5e;
+      text-decoration: none;
+      border-left: 3px solid transparent;
+    }
+
+    .sidebar-link:hover,
+    .sidebar-link.active {
+      background: #d0dae8;
+      border-left-color: #1d3f5e;
+      font-weight: bold;
+    }
+
+    .portal-main {
+      flex: 1;
+      padding: 16px 18px;
+      background: #fff;
+      overflow: auto;
+    }
+
+    .page-title {
+      font-size: 15px;
+      font-weight: bold;
+      color: #1d3f5e;
+      border-bottom: 1px solid #ccc;
+      padding-bottom: 6px;
+      margin-bottom: 10px;
+    }
+
+    .notice-box {
+      border: 1px solid #bbb;
+      padding: 8px 10px;
+      font-size: 11px;
+      margin-bottom: 10px;
+      line-height: 1.6;
+      background: #fafafa;
+    }
+
+    .notice-box h4 {
+      font-size: 11px;
+      color: #1d3f5e;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .top-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 320px;
+      gap: 12px;
+    }
+
+    .panel {
+      border: 1px solid #ccc;
+      background: #fafafa;
+      padding: 10px;
+      margin-bottom: 12px;
+    }
+
+    .panel h3 {
+      font-size: 12px;
+      color: #1d3f5e;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .form-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: flex-end;
+      margin-bottom: 8px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 11px;
+      font-weight: bold;
+      margin-bottom: 3px;
+    }
+
+    .form-group input,
+    .form-group select {
+      border: 1px solid #888;
+      padding: 4px 6px;
+      font-size: 11px;
+      background: #fff;
+      height: 26px;
+    }
+
+    .btn {
+      border: 1px solid #aaa;
+      padding: 4px 10px;
+      font-size: 11px;
+      cursor: pointer;
+      height: 26px;
+      background: #f0f0f0;
+    }
+
+    .btn:disabled {
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+
+    .btn-primary {
+      background: #1d3f5e;
+      color: #fff;
+      border-color: #1d3f5e;
+    }
+
+    .btn-danger {
+      background: #b40000;
+      color: #fff;
+      border-color: #800;
+    }
+
+    .btn.active {
+      background: #1d3f5e;
+      color: #fff;
+      border-color: #1d3f5e;
+    }
+
+    .status-line {
+      display: none;
+      border: 1px solid #bbb;
+      padding: 6px 8px;
+      margin-top: 8px;
+      font-size: 11px;
+    }
+
+    .status-line.visible {
+      display: block;
+    }
+
+    .status-line.ok {
+      background: #e8f7e8;
+      border-color: #8ac58a;
+      color: #145214;
+    }
+
+    .status-line.err {
+      background: #fde8e8;
+      border-color: #d48a8a;
+      color: #800;
+    }
+
+    .availability-wrap {
+      overflow: auto;
+      border: 1px solid #bbb;
+      margin-bottom: 12px;
+      max-height: 72vh;
+    }
+
+    .availability-grid {
+      border-collapse: collapse;
+      min-width: 820px;
+      width: 100%;
+      font-size: 10px;
+    }
+
+    .availability-grid th {
+      position: sticky;
+      top: 0;
+      background: #1d3f5e;
+      color: #fff;
+      border: 1px solid #16324b;
+      padding: 5px;
+      z-index: 2;
+    }
+
+    .availability-grid td {
+      border: 1px solid #ccc;
+      text-align: center;
+      padding: 4px;
+      min-width: 72px;
+      height: 28px;
+      user-select: none;
+    }
+
+    .time-col {
+      position: sticky;
+      left: 0;
+      background: #e8e8e8 !important;
+      color: #111 !important;
+      font-weight: bold;
+      z-index: 3;
+      min-width: 70px;
+    }
+
+    .availability-grid th small {
+      display: block;
+      color: #cde;
+      font-weight: normal;
+    }
+
+    .mine-empty {
+      background: #fff;
+    }
+
+    .mine-available {
+      background: #dff4e3;
+      color: #145214;
+      font-weight: bold;
+    }
+
+    .mine-maybe {
+      background: #fff5bd;
+      color: #6a5200;
+      font-weight: bold;
+    }
+
+    .mine-unavailable {
+      background: #f7d7d7;
+      color: #800;
+      font-weight: bold;
+    }
+
+    .grade-gray {
+      background: #d0d0d0;
+    }
+
+    .grade-red {
+      background: #c7352d;
+      color: #fff;
+    }
+
+    .grade-orange {
+      background: #e6862d;
+    }
+
+    .grade-yellow {
+      background: #e8d84a;
+    }
+
+    .grade-green {
+      background: #3d9b4f;
+      color: #fff;
+    }
+
+    .heat-cell small {
+      display: block;
+      font-size: 9px;
+      margin-top: 2px;
+    }
+
+    .info-table {
+      border-collapse: collapse;
+      width: 100%;
+      font-size: 11px;
+      margin-bottom: 10px;
+    }
+
+    .info-table th {
+      background: #1d3f5e;
+      color: #fff;
+      text-align: left;
+      padding: 4px 6px;
+      font-size: 10px;
+    }
+
+    .info-table td {
+      padding: 4px 6px;
+      border-bottom: 1px solid #ddd;
+      vertical-align: top;
+    }
+
+    .info-table tr:nth-child(even) td {
+      background: #f5f7fa;
+    }
+
+    .best-list,
+    .changes-list {
+      padding-left: 16px;
+      font-size: 11px;
+      line-height: 1.45;
+    }
+
+    .best-list li,
+    .changes-list li {
+      margin-bottom: 7px;
+    }
+
+    .muted {
+      color: #666;
+    }
+
+    .schedule-view.hidden {
+      display: none;
+    }
+
+    .legend {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      font-size: 10px;
+      margin-bottom: 8px;
+    }
+
+    .legend-box {
+      width: 16px;
+      height: 10px;
+      border: 1px solid #777;
+      display: inline-block;
+      vertical-align: middle;
+      margin-right: 3px;
+    }
+
+    .orbat-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .orbat-day-tabs {
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+      margin: 8px 0;
+    }
+
+    .orbat-slot {
+      border: 1px solid #ccc;
+      background: #fff;
+      margin-bottom: 10px;
+    }
+
+    .orbat-slot h4 {
+      background: #1d3f5e;
+      color: #fff;
+      padding: 6px 8px;
+      font-size: 12px;
+    }
+
+    .orbat-section {
+      padding: 8px;
+      border-top: 1px solid #ddd;
+    }
+
+    .orbat-section h5 {
+      font-size: 11px;
+      color: #1d3f5e;
+      margin-bottom: 5px;
+    }
+
+    .orbat-person {
+      display: inline-block;
+      border: 1px solid #aaa;
+      background: #f4f4f4;
+      margin: 2px;
+      padding: 3px 5px;
+      cursor: pointer;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.45);
+      align-items: center;
+      justify-content: center;
+      z-index: 20;
+    }
+
+    .modal.visible {
+      display: flex;
+    }
+
+    .modal-card {
+      width: min(520px, 92vw);
+      background: #fff;
+      border: 2px solid #1d3f5e;
+    }
+
+    .modal-head {
+      background: #1d3f5e;
+      color: #fff;
+      padding: 8px 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-body {
+      padding: 10px;
+    }
+
+    .modal-close {
+      background: none;
+      border: 0;
+      color: #fff;
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    @media (max-width: 900px) {
+      .top-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        display: none;
+      }
+
+      .portal-nav {
+        overflow-x: auto;
+      }
+
+      .nav-right {
+        display: none;
+      }
+    }
   </style>
 </head>
+
 <body>
   <div class="gov-banner">Authorized personnel only</div>
-  <header class="site-header"><h1>NSW Operations Portal</h1><p>Scheduling and availability</p></header>
-  <nav class="portal-nav"><a href="/member/">Home</a><a class="active" href="/member/scheduling/">Scheduling</a><a href="/member/loa/">LOA</a><a href="/member/documentation/">Documentation</a><a href="/member/operational/">Operational</a><a href="/member/training/">Training</a><a href="/member/profile/">Profile</a><a class="admin-only-link" href="/member/admin/" style="display:none">Admin</a><div class="nav-right"><img id="nav-avatar" class="nav-avatar" src="/nsw.png" alt=""><span>Logged in as: <span id="session-label">Loading...</span></span><a onclick="doLogout()" style="cursor:pointer">Log Out</a></div></nav>
+
+  <header class="site-header">
+    <h1>NSW Operations Portal</h1>
+    <p>Scheduling and availability</p>
+  </header>
+
+  <nav class="portal-nav">
+    <a href="/member/">Home</a>
+    <a class="active" href="/member/scheduling/">Scheduling</a>
+    <a href="/member/loa/">LOA</a>
+    <a href="/member/documentation/">Documentation</a>
+    <a href="/member/operational/">Operational</a>
+    <a href="/member/training/">Training</a>
+    <a href="/member/profile/">Profile</a>
+    <a class="admin-only-link" href="/member/admin/" style="display: none;">Admin</a>
+
+    <div class="nav-right">
+      <img id="nav-avatar" class="nav-avatar" src="/nsw.png" alt="">
+      <span>Logged in as: <span id="session-label">Loading...</span></span>
+      <a onclick="doLogout()" style="cursor: pointer;">Log Out</a>
+    </div>
+  </nav>
+
   <div class="portal-body">
-    <aside class="sidebar"><div class="sidebar-user-box"><strong id="sidebar-name">Loading...</strong>Role: <span id="sidebar-role">Loading...</span></div><div class="sidebar-section">Personnel</div><a class="sidebar-link" href="/member/profile/">Profile</a><a class="sidebar-link active" href="/member/scheduling/">Scheduling</a><a class="sidebar-link" href="/member/loa/">LOA</a><a class="sidebar-link" href="/member/qualifications/">Qualifications</a><div class="sidebar-section">Operations & Training</div><a class="sidebar-link" href="/member/operational/">Operational</a><a class="sidebar-link" href="/member/training/">Training</a><div class="sidebar-section">Resources</div><a class="sidebar-link" href="/member/documentation/">Documentation</a><div class="sidebar-section admin-only-link" style="display:none">System</div><a class="sidebar-link admin-only-link" href="/member/admin/" style="display:none">Admin</a></aside>
+    <aside class="sidebar">
+      <div class="sidebar-user-box">
+        <strong id="sidebar-name">Loading...</strong>
+        Role: <span id="sidebar-role">Loading...</span>
+      </div>
+
+      <div class="sidebar-section">Personnel</div>
+      <a class="sidebar-link" href="/member/profile/">Profile</a>
+      <a class="sidebar-link active" href="/member/scheduling/">Scheduling</a>
+      <a class="sidebar-link" href="/member/loa/">LOA</a>
+      <a class="sidebar-link" href="/member/qualifications/">Qualifications</a>
+
+      <div class="sidebar-section">Operations & Training</div>
+      <a class="sidebar-link" href="/member/operational/">Operational</a>
+      <a class="sidebar-link" href="/member/training/">Training</a>
+
+      <div class="sidebar-section">Resources</div>
+      <a class="sidebar-link" href="/member/documentation/">Documentation</a>
+
+      <div class="sidebar-section admin-only-link" style="display: none;">System</div>
+      <a class="sidebar-link admin-only-link" href="/member/admin/" style="display: none;">Admin</a>
+    </aside>
+
     <main class="portal-main">
       <h2 class="page-title">Scheduling</h2>
-      <div class="notice-box"><h4>How it works</h4>Pick the selected week, click or drag across your grid, then save. Click cycles Empty → Available → Maybe → Unavailable → Empty. The heatmap and ORBAT views update from all active member responses.</div>
+
+      <div class="notice-box">
+        <h4>How it works</h4>
+        Pick the selected week, click or drag across your grid, then save.
+        Click cycles Empty, Available, Maybe, Unavailable, Empty.
+        The heatmap and ORBAT views update from all active member responses.
+      </div>
+
       <div class="top-layout">
         <section>
-          <div class="panel"><h3>Controls</h3><div class="form-row"><div class="form-group"><label for="week-start">Week starting</label><input type="date" id="week-start"></div><div class="form-group"><label for="timezone-select">Display timezone</label><select id="timezone-select"><option value="UTC">UTC</option><option value="Europe/Amsterdam">Europe/Amsterdam</option><option value="Europe/London">Europe/London</option><option value="America/New_York">America/New_York</option><option value="America/Chicago">America/Chicago</option><option value="America/Denver">America/Denver</option><option value="America/Los_Angeles">America/Los_Angeles</option></select></div><button class="btn btn-primary" id="save-btn" type="button">Save</button><button class="btn" id="refresh-btn" type="button">Refresh</button><button class="btn btn-danger" id="clear-btn" type="button">Clear Mine</button><span style="flex:1"></span><button class="btn active" id="calendar-view-btn" type="button">Calendar</button><button class="btn" id="orbat-view-btn" type="button">ORBAT</button></div><div id="status-line" class="status-line"></div></div>
-          <div id="calendar-view" class="schedule-view"><div class="panel"><h3>Availability Heatmap</h3><div class="legend"><span><i class="legend-box grade-green"></i>Best</span><span><i class="legend-box grade-yellow"></i>Good</span><span><i class="legend-box grade-orange"></i>Limited</span><span><i class="legend-box grade-red"></i>Poor</span><span><i class="legend-box grade-gray"></i>No responses</span></div><div class="availability-wrap"><table class="availability-grid" id="heatmap-table"></table></div></div><div class="panel"><h3>My Availability</h3><div class="availability-wrap"><table class="availability-grid" id="my-table"></table></div></div></div>
-          <div id="orbat-view" class="schedule-view hidden"><div class="panel"><div class="orbat-header"><h3 id="orbat-week-title">ORBAT Availability</h3><div><button class="btn" id="orbat-prev-week" type="button">Previous Week</button><button class="btn" id="orbat-current-week" type="button">Selected Week</button><button class="btn" id="orbat-next-week" type="button">Next Week</button></div></div><div class="orbat-day-tabs" id="orbat-day-tabs"></div><div id="orbat-day-content"></div></div></div>
+          <div class="panel">
+            <h3>Controls</h3>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="week-start">Week starting</label>
+                <input type="date" id="week-start">
+              </div>
+
+              <div class="form-group">
+                <label for="timezone-select">Display timezone</label>
+                <select id="timezone-select">
+                  <option value="UTC">UTC</option>
+                  <option value="Europe/Amsterdam">Europe/Amsterdam</option>
+                  <option value="Europe/London">Europe/London</option>
+                  <option value="America/New_York">America/New_York</option>
+                  <option value="America/Chicago">America/Chicago</option>
+                  <option value="America/Denver">America/Denver</option>
+                  <option value="America/Los_Angeles">America/Los_Angeles</option>
+                </select>
+              </div>
+
+              <button class="btn btn-primary" id="save-btn" type="button">Save</button>
+              <button class="btn" id="refresh-btn" type="button">Refresh</button>
+              <button class="btn btn-danger" id="clear-btn" type="button">Clear Mine</button>
+
+              <span style="flex: 1;"></span>
+
+              <button class="btn active" id="calendar-view-btn" type="button">Calendar</button>
+              <button class="btn" id="orbat-view-btn" type="button">ORBAT</button>
+            </div>
+
+            <div id="status-line" class="status-line"></div>
+          </div>
+
+          <div id="calendar-view" class="schedule-view">
+            <div class="panel">
+              <h3>Your Availability</h3>
+              <div class="availability-wrap">
+                <table class="availability-grid" id="my-table"></table>
+              </div>
+            </div>
+
+            <div class="panel">
+              <h3>Availability Heatmap</h3>
+
+              <div class="legend">
+                <span><i class="legend-box grade-green"></i>Best</span>
+                <span><i class="legend-box grade-yellow"></i>Good</span>
+                <span><i class="legend-box grade-orange"></i>Limited</span>
+                <span><i class="legend-box grade-red"></i>Poor</span>
+                <span><i class="legend-box grade-gray"></i>No responses</span>
+              </div>
+
+              <div class="availability-wrap">
+                <table class="availability-grid" id="heatmap-table"></table>
+              </div>
+            </div>
+          </div>
+
+          <div id="orbat-view" class="schedule-view hidden">
+            <div class="panel">
+              <div class="orbat-header">
+                <h3 id="orbat-week-title">ORBAT Availability</h3>
+
+                <div>
+                  <button class="btn" id="orbat-prev-week" type="button">Previous Week</button>
+                  <button class="btn" id="orbat-current-week" type="button">Reload</button>
+                  <button class="btn" id="orbat-next-week" type="button">Next Week</button>
+                </div>
+              </div>
+
+              <div class="orbat-day-tabs" id="orbat-day-tabs"></div>
+              <div id="orbat-day-content"></div>
+            </div>
+          </div>
         </section>
-        <aside><div class="panel"><h3>Status</h3><table class="info-table"><tr><td>User</td><td id="dash-user">Loading...</td></tr><tr><td>User ID</td><td id="dash-userid">Loading...</td></tr><tr><td>Timezone</td><td id="dash-timezone">Loading...</td></tr><tr><td>Active Members</td><td id="dash-members">0</td></tr><tr><td>Updated</td><td id="dash-updated">Loading...</td></tr></table></div><div class="panel"><h3>Best Slots</h3><ol class="best-list" id="best-list"><li>Loading...</li></ol></div><div class="panel"><h3>Recent Changes</h3><ul class="changes-list" id="changes-list"><li>Loading...</li></ul></div></aside>
+
+        <aside>
+          <div class="panel">
+            <h3>Dashboard</h3>
+            <table class="info-table">
+              <tr>
+                <td>User</td>
+                <td id="dash-user">Loading...</td>
+              </tr>
+              <tr>
+                <td>User ID</td>
+                <td id="dash-userid">Loading...</td>
+              </tr>
+              <tr>
+                <td>Active members</td>
+                <td id="dash-members">0</td>
+              </tr>
+              <tr>
+                <td>Timezone</td>
+                <td id="dash-timezone">UTC</td>
+              </tr>
+              <tr>
+                <td>Updated</td>
+                <td id="dash-updated">Never</td>
+              </tr>
+            </table>
+          </div>
+
+          <div class="panel">
+            <h3>Best Times</h3>
+            <ol class="best-list" id="best-list">
+              <li>Loading...</li>
+            </ol>
+          </div>
+
+          <div class="panel">
+            <h3>Recent Changes</h3>
+            <ol class="changes-list" id="changes-list">
+              <li>Loading...</li>
+            </ol>
+          </div>
+        </aside>
       </div>
     </main>
   </div>
-  <div class="modal" id="person-modal"><div class="modal-card"><div class="modal-head"><strong id="person-modal-title">Member</strong><button class="modal-close" id="close-person-modal" type="button">×</button></div><div class="modal-body" id="person-modal-body"></div></div></div>
-<script type="module">
-import { supabase } from "/js/auth.js";
-import { bootPortalChrome, escapeHtml, avatarUrl } from "/js/portal-common.js";
-const SLOT_MINUTES=60,SLOTS_PER_DAY=24,SCHEDULE_TIMEZONE="UTC";
-const ORBAT=[{title:"Green Team",slots:["Candidate"]},{title:"Red Squadron, 3 Troop, Golf, Assault",slots:["EG1","EG2","EG3","EG4","EG5","EG6"]},{title:"Red Squadron, 3 Troop, Hotel, Assault",slots:["EH1","EH2","EH3","EH4","EH5","EH6"]},{title:"Red Squadron, 3 Troop, India, Recce",slots:["EI1","EI2","EI3","EI4","EI5","EI6"]},{title:"Red Squadron, 3 Troop, Troop Headquarters",slots:["E31","E32"]},{title:"Red Squadron, 3 Troop, Enablers",slots:["EX1","EN1","ER1","EY1","EU1","EU2","EP1","EP2"]}];
-let authUser=null,profile=null,members=[],profilesById=new Map(),allResponses=[],mySlots=new Map(),selectedOrbatDay=0,activeView="calendar",realtimeChannel=null,isDragging=false,dragValue=null,dragChanged=false;
-const $=id=>document.getElementById(id),weekInput=$("week-start"),timezoneSelect=$("timezone-select"),saveBtn=$("save-btn"),refreshBtn=$("refresh-btn"),clearBtn=$("clear-btn");
-const zp=n=>String(n).padStart(2,"0"),isoDate=d=>d.toISOString().slice(0,10),norm=v=>String(v||"").trim().toLowerCase();
-function label(v){v=norm(v);return v==="available"?"Available":v==="maybe"?"Maybe":v==="unavailable"?"Unavailable":""}function compact(v){v=norm(v);return v==="available"?"AVAIL":v==="maybe"?"MAYBE":v==="unavailable"?"NO":""}function myClass(v){v=norm(v);return v==="available"?"mine-available":v==="maybe"?"mine-maybe":v==="unavailable"?"mine-unavailable":"mine-empty"}function cycle(v){v=norm(v);return !v?"available":v==="available"?"maybe":v==="maybe"?"unavailable":null}function slotKey(d){return new Date(d).toISOString()}function setStatus(m,ok){const e=$("status-line");e.textContent=m;e.className="status-line visible "+(ok?"ok":"err")}function utcNowLabel(){const d=new Date();return `${zp(d.getUTCHours())}${zp(d.getUTCMinutes())}Z ${d.getUTCDate()} ${["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"][d.getUTCMonth()]} ${d.getUTCFullYear()}`}
-function getNextMonday(){const today=new Date(),day=today.getDay(),diff=day===0?1:8-day;today.setDate(today.getDate()+diff);return isoDate(today)}function addDays(iso,days){const d=new Date(iso+"T00:00:00Z");d.setUTCDate(d.getUTCDate()+days);return isoDate(d)}function shiftWeek(days){weekInput.value=addDays(weekInput.value,days);loadResponses()}function fmt(tz,opt){return new Intl.DateTimeFormat("en-GB",{timeZone:tz,...opt})}function getZonedParts(date,tz){const parts=new Intl.DateTimeFormat("en-GB",{timeZone:tz,year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",hourCycle:"h23"}).formatToParts(date);const o={};for(const p of parts)if(p.type!=="literal")o[p.type]=p.value;return{year:+o.year,month:+o.month,day:+o.day,hour:+o.hour,minute:+o.minute}}function zonedToUtc(y,m,d,h,min,tz){const guess=new Date(Date.UTC(y,m-1,d,h,min));const p=getZonedParts(guess,tz);const target=Date.UTC(y,m-1,d,h,min),actual=Date.UTC(p.year,p.month-1,p.day,p.hour,p.minute);return new Date(guess.getTime()+(target-actual))}function weekRange(){const s=weekInput.value;const start=zonedToUtc(+s.slice(0,4),+s.slice(5,7),+s.slice(8,10),0,0,SCHEDULE_TIMEZONE);const e=addDays(s,7);const end=zonedToUtc(+e.slice(0,4),+e.slice(5,7),+e.slice(8,10),0,0,SCHEDULE_TIMEZONE);return{start,end}}function slotUtc(day,slot){const base=addDays(weekInput.value,day);const mins=slot*SLOT_MINUTES;return zonedToUtc(+base.slice(0,4),+base.slice(5,7),+base.slice(8,10),Math.floor(mins/60),mins%60,SCHEDULE_TIMEZONE)}function slotLabel(day,slot){return fmt(timezoneSelect.value,{hour:"2-digit",minute:"2-digit",hourCycle:"h23"}).format(slotUtc(day,slot))}function dtLabel(iso){return fmt(timezoneSelect.value,{weekday:"short",day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit",hourCycle:"h23"}).format(new Date(iso))}function updLabel(iso){return fmt(timezoneSelect.value,{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit",hourCycle:"h23"}).format(new Date(iso))}function dayHeader(d){const x=slotUtc(d,12);return `${escapeHtml(fmt(timezoneSelect.value,{weekday:"short"}).format(x))}<small>${escapeHtml(fmt(timezoneSelect.value,{day:"2-digit",month:"short"}).format(x))}</small>`}
-function getName(id){return profilesById.get(id)?.display_name||id}function rowsForSlot(k){return allResponses.filter(r=>new Date(r.slot_start).toISOString()===k)}function grade(score,count){if(!count)return"gray";if(score<.25)return"red";if(score<.5)return"orange";if(score<.75)return"yellow";return"green"}function aggregate(k){let available=0,maybe=0,unavailable=0,peopleAvailable=[],peopleMaybe=[],peopleUnavailable=[];for(const r of rowsForSlot(k)){const n=getName(r.user_id);if(r.availability==="available"){available++;peopleAvailable.push(n)}else if(r.availability==="maybe"){maybe++;peopleMaybe.push(n)}else if(r.availability==="unavailable"){unavailable++;peopleUnavailable.push(n)}}const total=Math.max(members.length,1),count=available+maybe+unavailable,score=(available+maybe*.5)/total;return{available,maybe,unavailable,count,total,score,grade:grade(score,count),peopleAvailable,peopleMaybe,peopleUnavailable}}
-function updateCell(cell,v){cell.className=myClass(v);cell.textContent=compact(v);cell.title=`Click or drag to change. Current: ${label(v)||"Empty"}`}function setCell(cell,v){const k=slotKey(slotUtc(+cell.dataset.day,+cell.dataset.slot));if((mySlots.get(k)||null)===v)return;if(v)mySlots.set(k,v);else mySlots.delete(k);updateCell(cell,v);dragChanged=true}function finishDrag(){if(!isDragging)return;isDragging=false;dragValue=null;if(dragChanged){dragChanged=false;buildHeatmap();buildBestList();if(activeView==="orbat")buildOrbat()}}
-function buildMyTable(){let html="<tr><th class='time-col'>Time</th>";for(let d=0;d<7;d++)html+=`<th>${dayHeader(d)}</th>`;html+="</tr>";for(let s=0;s<SLOTS_PER_DAY;s++){html+=`<tr><td class="time-col">${escapeHtml(slotLabel(0,s))}</td>`;for(let d=0;d<7;d++){const k=slotKey(slotUtc(d,s)),v=mySlots.get(k)||null;html+=`<td class="${myClass(v)}" data-day="${d}" data-slot="${s}" title="Click or drag to change. Current: ${escapeHtml(label(v)||"Empty")}">${escapeHtml(compact(v))}</td>`}html+="</tr>"}$("my-table").innerHTML=html;$("my-table").querySelectorAll("td[data-day]").forEach(c=>{c.addEventListener("mousedown",e=>{if(e.button!==0)return;e.preventDefault();const k=slotKey(slotUtc(+c.dataset.day,+c.dataset.slot));isDragging=true;dragValue=cycle(mySlots.get(k));dragChanged=false;setCell(c,dragValue)});c.addEventListener("mouseenter",()=>{if(isDragging)setCell(c,dragValue)})})}
-function hoverTitle(ag,k){return[dtLabel(k),"","Available:",ag.peopleAvailable.join(", ")||"None","","Maybe:",ag.peopleMaybe.join(", ")||"None","","Unavailable:",ag.peopleUnavailable.join(", ")||"None"].join("\n")}function buildHeatmap(){let html="<tr><th class='time-col'>Time</th>";for(let d=0;d<7;d++)html+=`<th>${dayHeader(d)}</th>`;html+="</tr>";for(let s=0;s<SLOTS_PER_DAY;s++){html+=`<tr><td class="time-col">${escapeHtml(slotLabel(0,s))}</td>`;for(let d=0;d<7;d++){const k=slotKey(slotUtc(d,s)),ag=aggregate(k);html+=`<td class="heat-cell grade-${ag.grade}" title="${escapeHtml(hoverTitle(ag,k))}">${Math.round(ag.score*100)}%<small>${ag.available}Y ${ag.maybe}M ${ag.unavailable}N</small></td>`}html+="</tr>"}$("heatmap-table").innerHTML=html}function buildBestList(){const arr=[];for(let d=0;d<7;d++)for(let s=0;s<SLOTS_PER_DAY;s++){const k=slotKey(slotUtc(d,s)),ag=aggregate(k);if(ag.count)arr.push({k,...ag})}arr.sort((a,b)=>b.score-a.score||b.available-a.available||a.unavailable-b.unavailable);$("best-list").innerHTML=arr.length?arr.slice(0,8).map(e=>`<li><strong>${escapeHtml(dtLabel(e.k))}</strong><br>${Math.round(e.score*100)}% fit - ${e.available} available, ${e.maybe} maybe, ${e.unavailable} unavailable</li>`).join(""):"<li>No availability submitted yet.</li>"}function buildChanges(){const latest=[...allResponses].sort((a,b)=>new Date(b.updated_at||b.slot_start)-new Date(a.updated_at||a.slot_start)).slice(0,12);$("changes-list").innerHTML=latest.length?latest.map(r=>`<li><strong>${escapeHtml(getName(r.user_id))}</strong> set <strong>${escapeHtml(r.availability)}</strong><br><span class="muted">${escapeHtml(dtLabel(r.slot_start))} - updated ${escapeHtml(updLabel(r.updated_at||r.slot_start))}</span></li>`).join(""):"<li>No changes yet.</li>"}
-function callsign(m){return String(m.callsign||"").trim().toUpperCase()||"Candidate"}function membersFor(cs){return members.filter(m=>cs==="Candidate"?!String(m.callsign||"").trim():callsign(m)===cs)}function avFor(id,k){return allResponses.find(r=>r.user_id===id&&new Date(r.slot_start).toISOString()===k)?.availability||null}function buildTabs(){const root=$("orbat-day-tabs");root.innerHTML="";for(let d=0;d<7;d++){const b=document.createElement("button");b.className="btn"+(d===selectedOrbatDay?" active":"");b.innerHTML=dayHeader(d).replace("<small>"," ").replace("</small>","");b.onclick=()=>{selectedOrbatDay=d;buildOrbat()};root.appendChild(b)}}function buildOrbat(){$("orbat-week-title").textContent=`ORBAT Availability - Week of ${weekInput.value} - ${timezoneSelect.value}`;buildTabs();let html="";for(let s=0;s<SLOTS_PER_DAY;s++){const k=slotKey(slotUtc(selectedOrbatDay,s));let slotHtml="";for(const section of ORBAT){let sec="";for(const cs of section.slots){const list=membersFor(cs).filter(m=>avFor(m.id,k)==="available");if(list.length)sec+=`<div><strong>${escapeHtml(cs)}</strong> ${list.map(m=>`<span class="orbat-person" data-id="${escapeHtml(m.id)}" data-slot="${escapeHtml(k)}">${escapeHtml(m.display_name)}</span>`).join("")}</div>`}if(sec)slotHtml+=`<div class="orbat-section"><h5>${escapeHtml(section.title)}</h5>${sec}</div>`}if(slotHtml)html+=`<div class="orbat-slot"><h4>${escapeHtml(dtLabel(k))}</h4>${slotHtml}</div>`}$("orbat-day-content").innerHTML=html||"<div class='notice-box'>No available members for this day.</div>";$("orbat-day-content").querySelectorAll(".orbat-person").forEach(e=>e.onclick=()=>openPerson(e.dataset.id,e.dataset.slot))}function openPerson(id,k){const m=profilesById.get(id);if(!m)return;$("person-modal-title").textContent=m.display_name||m.user_id;$("person-modal-body").innerHTML=`<div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:8px"><img src="${escapeHtml(avatarUrl(m.avatar_url)||"/nsw.png")}" alt="" style="width:72px;height:72px;border-radius:50%;object-fit:cover;border:1px solid #c8a800"><div><strong>${escapeHtml(callsign(m))}</strong><br><span class="muted">${escapeHtml(m.naval_rank||"Candidate")}</span></div></div><table class="info-table"><tr><td>Availability</td><td>${escapeHtml(label(avFor(id,k))||"No response")}</td></tr><tr><td>Time</td><td>${escapeHtml(dtLabel(k))}</td></tr><tr><td>Discord</td><td>${escapeHtml(m.discord_name||"Not set")}</td></tr><tr><td>Steam</td><td>${escapeHtml(m.steam_name||"Not set")}</td></tr></table>`;$("person-modal").classList.add("visible")}
-function setView(v){activeView=v;$("calendar-view").classList.toggle("hidden",v!=="calendar");$("orbat-view").classList.toggle("hidden",v!=="orbat");$("calendar-view-btn").classList.toggle("active",v==="calendar");$("orbat-view-btn").classList.toggle("active",v==="orbat");if(v==="orbat")buildOrbat()}async function loadSession(){const loaded=await bootPortalChrome();if(!loaded)return false;authUser=loaded.user;profile=loaded.profile;$("dash-user").textContent=profile.display_name;$("dash-userid").textContent=profile.user_id;return true}async function loadProfiles(){const {data,error}=await supabase.from("profiles").select("id,user_id,display_name,role,status,avatar_url,naval_rank,callsign,discord_name,steam_name").eq("status","ACTIVE").order("display_name",{ascending:true});if(error||!data){members=[profile];profilesById=new Map([[profile.id,profile]]);setStatus("Profiles could not be loaded. Showing only your account. "+(error?.message||""),false)}else{members=data;profilesById=new Map(data.map(p=>[p.id,p]))}$("dash-members").textContent=String(members.length)}async function loadResponses(){const {start,end}=weekRange();const {data,error}=await supabase.from("scheduling_responses").select("user_id,slot_start,availability,note,updated_at").gte("slot_start",start.toISOString()).lt("slot_start",end.toISOString()).order("slot_start",{ascending:true});if(error){allResponses=[];mySlots.clear();setStatus("Failed to load scheduling data: "+error.message,false)}else{allResponses=data||[];mySlots.clear();for(const r of allResponses)if(r.user_id===authUser.id)mySlots.set(new Date(r.slot_start).toISOString(),r.availability)}$("dash-timezone").textContent=timezoneSelect.value;$("dash-updated").textContent=utcNowLabel();buildMyTable();buildHeatmap();buildBestList();buildChanges();if(activeView==="orbat")buildOrbat()}async function saveAvailability(){const {start,end}=weekRange();saveBtn.disabled=true;saveBtn.textContent="Saving...";const {error:delErr}=await supabase.from("scheduling_responses").delete().eq("user_id",authUser.id).gte("slot_start",start.toISOString()).lt("slot_start",end.toISOString());if(delErr){setStatus("Failed to clear old availability: "+delErr.message,false);saveBtn.disabled=false;saveBtn.textContent="Save";return}const rows=[...mySlots.entries()].filter(([k])=>{const d=new Date(k);return d>=start&&d<end}).map(([k,v])=>({user_id:authUser.id,slot_start:k,availability:v,note:null,updated_at:new Date().toISOString()}));if(rows.length){const {error:insErr}=await supabase.from("scheduling_responses").insert(rows);if(insErr){setStatus("Failed to save availability: "+insErr.message,false);saveBtn.disabled=false;saveBtn.textContent="Save";return}}setStatus("Availability saved successfully.",true);saveBtn.disabled=false;saveBtn.textContent="Save";await loadResponses()}async function clearWeek(){if(!confirm("Clear all of your availability for this selected week?"))return;const {start,end}=weekRange();const {error}=await supabase.from("scheduling_responses").delete().eq("user_id",authUser.id).gte("slot_start",start.toISOString()).lt("slot_start",end.toISOString());if(error){setStatus("Failed to clear week: "+error.message,false);return}mySlots.clear();setStatus("Your week was cleared.",true);await loadResponses()}function setupRealtime(){if(realtimeChannel)supabase.removeChannel(realtimeChannel);let t=null;realtimeChannel=supabase.channel("scheduling-live").on("postgres_changes",{event:"*",schema:"public",table:"scheduling_responses"},()=>{clearTimeout(t);t=setTimeout(loadResponses,300)}).subscribe()}window.doLogout=async()=>{await supabase.auth.signOut();location.href="/login/"};
-saveBtn.onclick=saveAvailability;refreshBtn.onclick=loadResponses;clearBtn.onclick=clearWeek;$("calendar-view-btn").onclick=()=>setView("calendar");$("orbat-view-btn").onclick=()=>setView("orbat");$("orbat-prev-week").onclick=()=>shiftWeek(-7);$("orbat-current-week").onclick=()=>loadResponses();$("orbat-next-week").onclick=()=>shiftWeek(7);$("close-person-modal").onclick=()=>$("person-modal").classList.remove("visible");$("person-modal").onclick=e=>{if(e.target.id==="person-modal")e.currentTarget.classList.remove("visible")};document.addEventListener("mouseup",finishDrag);window.addEventListener("blur",finishDrag);timezoneSelect.onchange=()=>{localStorage.setItem("schedulingTimezone",timezoneSelect.value);loadResponses()};weekInput.onchange=loadResponses;
-(async function init(){weekInput.value=getNextMonday();const saved=localStorage.getItem("schedulingTimezone");if(saved)timezoneSelect.value=saved;if(!(await loadSession()))return;await loadProfiles();await loadResponses();setupRealtime()})();
-</script>
+
+  <div class="modal" id="person-modal">
+    <div class="modal-card">
+      <div class="modal-head">
+        <strong id="person-modal-title">Member</strong>
+        <button class="modal-close" id="close-person-modal" type="button">×</button>
+      </div>
+      <div class="modal-body" id="person-modal-body"></div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { supabase } from "/js/auth.js";
+    import { bootPortalChrome, escapeHtml, avatarUrl } from "/js/portal-common.js";
+
+    const SLOT_MINUTES = 60;
+    const SLOTS_PER_DAY = 24;
+    const SCHEDULE_TIMEZONE = "UTC";
+
+    const ORBAT = [
+      {
+        title: "Green Team",
+        slots: ["Candidate"]
+      },
+      {
+        title: "Red Squadron, 3 Troop, Golf, Assault",
+        slots: ["EG1", "EG2", "EG3", "EG4", "EG5", "EG6"]
+      },
+      {
+        title: "Red Squadron, 3 Troop, Hotel, Assault",
+        slots: ["EH1", "EH2", "EH3", "EH4", "EH5", "EH6"]
+      },
+      {
+        title: "Red Squadron, 3 Troop, India, Recce",
+        slots: ["EI1", "EI2", "EI3", "EI4", "EI5", "EI6"]
+      },
+      {
+        title: "Red Squadron, 3 Troop, Troop Headquarters",
+        slots: ["E31", "E32"]
+      },
+      {
+        title: "Red Squadron, 3 Troop, Enablers",
+        slots: ["EX1", "EN1", "ER1", "EY1", "EU1", "EU2", "EP1", "EP2"]
+      }
+    ];
+
+    let authUser = null;
+    let profile = null;
+    let members = [];
+    let profilesById = new Map();
+    let allResponses = [];
+    let mySlots = new Map();
+    let selectedOrbatDay = 0;
+    let activeView = "calendar";
+    let realtimeChannel = null;
+    let isDragging = false;
+    let dragValue = null;
+    let dragChanged = false;
+
+    const $ = (id) => document.getElementById(id);
+
+    const weekInput = $("week-start");
+    const timezoneSelect = $("timezone-select");
+    const saveBtn = $("save-btn");
+    const refreshBtn = $("refresh-btn");
+    const clearBtn = $("clear-btn");
+
+    function slotKey(date) {
+      return new Date(date).toISOString();
+    }
+
+    function isoDate(date) {
+      return date.toISOString().slice(0, 10);
+    }
+
+    function getNextMonday() {
+      const today = new Date();
+      const day = today.getDay();
+      const diff = day === 0 ? 1 : 8 - day;
+      today.setDate(today.getDate() + diff);
+      return isoDate(today);
+    }
+
+    function addDays(iso, days) {
+      const date = new Date(`${iso}T00:00:00Z`);
+      date.setUTCDate(date.getUTCDate() + days);
+      return isoDate(date);
+    }
+
+    function shiftWeek(days) {
+      weekInput.value = addDays(weekInput.value, days);
+      loadResponses();
+    }
+
+    function fmt(timezone, options) {
+      return new Intl.DateTimeFormat("en-GB", {
+        timeZone: timezone,
+        ...options
+      });
+    }
+
+    function getZonedParts(date, timezone) {
+      const parts = new Intl.DateTimeFormat("en-GB", {
+        timeZone: timezone,
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        hourCycle: "h23"
+      }).formatToParts(date);
+
+      const output = {};
+
+      for (const part of parts) {
+        if (part.type !== "literal") {
+          output[part.type] = part.value;
+        }
+      }
+
+      return {
+        year: Number(output.year),
+        month: Number(output.month),
+        day: Number(output.day),
+        hour: Number(output.hour),
+        minute: Number(output.minute)
+      };
+    }
+
+    function zonedToUtc(year, month, day, hour, minute, timezone) {
+      const guess = new Date(Date.UTC(year, month - 1, day, hour, minute));
+      const parts = getZonedParts(guess, timezone);
+
+      const target = Date.UTC(year, month - 1, day, hour, minute);
+      const actual = Date.UTC(parts.year, parts.month - 1, parts.day, parts.hour, parts.minute);
+
+      return new Date(guess.getTime() + (target - actual));
+    }
+
+    function weekRange() {
+      const startIso = weekInput.value;
+      const endIso = addDays(startIso, 7);
+
+      const start = zonedToUtc(
+        Number(startIso.slice(0, 4)),
+        Number(startIso.slice(5, 7)),
+        Number(startIso.slice(8, 10)),
+        0,
+        0,
+        SCHEDULE_TIMEZONE
+      );
+
+      const end = zonedToUtc(
+        Number(endIso.slice(0, 4)),
+        Number(endIso.slice(5, 7)),
+        Number(endIso.slice(8, 10)),
+        0,
+        0,
+        SCHEDULE_TIMEZONE
+      );
+
+      return { start, end };
+    }
+
+    function slotUtc(dayIndex, slotIndex) {
+      const baseIso = addDays(weekInput.value, dayIndex);
+      const minutes = slotIndex * SLOT_MINUTES;
+
+      return zonedToUtc(
+        Number(baseIso.slice(0, 4)),
+        Number(baseIso.slice(5, 7)),
+        Number(baseIso.slice(8, 10)),
+        Math.floor(minutes / 60),
+        minutes % 60,
+        SCHEDULE_TIMEZONE
+      );
+    }
+
+    function visibleSlotKeys() {
+      const keys = [];
+
+      for (let day = 0; day < 7; day++) {
+        for (let slot = 0; slot < SLOTS_PER_DAY; slot++) {
+          keys.push(slotKey(slotUtc(day, slot)));
+        }
+      }
+
+      return keys;
+    }
+
+    function slotLabel(dayIndex, slotIndex) {
+      return fmt(timezoneSelect.value, {
+        hour: "2-digit",
+        minute: "2-digit",
+        hourCycle: "h23"
+      }).format(slotUtc(dayIndex, slotIndex));
+    }
+
+    function dtLabel(iso) {
+      return fmt(timezoneSelect.value, {
+        weekday: "short",
+        day: "2-digit",
+        month: "short",
+        hour: "2-digit",
+        minute: "2-digit",
+        hourCycle: "h23"
+      }).format(new Date(iso));
+    }
+
+    function updLabel(iso) {
+      return fmt(timezoneSelect.value, {
+        day: "2-digit",
+        month: "short",
+        hour: "2-digit",
+        minute: "2-digit",
+        hourCycle: "h23"
+      }).format(new Date(iso));
+    }
+
+    function dayHeader(dayIndex) {
+      const date = slotUtc(dayIndex, 12);
+      const weekday = fmt(timezoneSelect.value, { weekday: "short" }).format(date);
+      const dayMonth = fmt(timezoneSelect.value, { day: "2-digit", month: "short" }).format(date);
+
+      return `${escapeHtml(weekday)}<small>${escapeHtml(dayMonth)}</small>`;
+    }
+
+    function setStatus(message, ok) {
+      const el = $("status-line");
+      el.textContent = message;
+      el.className = `status-line visible ${ok ? "ok" : "err"}`;
+    }
+
+    function utcNowLabel() {
+      return new Date().toISOString().slice(0, 19).replace("T", " ") + " UTC";
+    }
+
+    function label(value) {
+      if (value === "available") return "Available";
+      if (value === "maybe") return "Maybe";
+      if (value === "unavailable") return "Unavailable";
+      return "";
+    }
+
+    function compact(value) {
+      if (value === "available") return "A";
+      if (value === "maybe") return "M";
+      if (value === "unavailable") return "U";
+      return "";
+    }
+
+    function cycle(value) {
+      if (!value) return "available";
+      if (value === "available") return "maybe";
+      if (value === "maybe") return "unavailable";
+      return null;
+    }
+
+    function myClass(value) {
+      if (value === "available") return "mine-available";
+      if (value === "maybe") return "mine-maybe";
+      if (value === "unavailable") return "mine-unavailable";
+      return "mine-empty";
+    }
+
+    function getName(userId) {
+      return profilesById.get(userId)?.display_name || userId;
+    }
+
+    function aggregate(slotStart) {
+      const rows = allResponses.filter((response) => {
+        return new Date(response.slot_start).toISOString() === slotStart;
+      });
+
+      const availableRows = rows.filter((row) => row.availability === "available");
+      const maybeRows = rows.filter((row) => row.availability === "maybe");
+      const unavailableRows = rows.filter((row) => row.availability === "unavailable");
+
+      const available = availableRows.length;
+      const maybe = maybeRows.length;
+      const unavailable = unavailableRows.length;
+      const count = rows.length;
+      const score = count ? (available + maybe * 0.5) / count : 0;
+
+      let grade = "gray";
+
+      if (count > 0) {
+        if (score >= 0.75) grade = "green";
+        else if (score >= 0.5) grade = "yellow";
+        else if (score >= 0.25) grade = "orange";
+        else grade = "red";
+      }
+
+      return {
+        count,
+        available,
+        maybe,
+        unavailable,
+        score,
+        grade,
+        peopleAvailable: availableRows.map((row) => getName(row.user_id)),
+        peopleMaybe: maybeRows.map((row) => getName(row.user_id)),
+        peopleUnavailable: unavailableRows.map((row) => getName(row.user_id))
+      };
+    }
+
+    function updateCell(cell, value) {
+      cell.className = myClass(value);
+      cell.textContent = compact(value);
+      cell.title = `Click or drag to change. Current: ${label(value) || "Empty"}`;
+    }
+
+    function setCell(cell, value) {
+      const key = slotKey(slotUtc(Number(cell.dataset.day), Number(cell.dataset.slot)));
+
+      if ((mySlots.get(key) || null) === value) {
+        return;
+      }
+
+      if (value) {
+        mySlots.set(key, value);
+      } else {
+        mySlots.delete(key);
+      }
+
+      updateCell(cell, value);
+      dragChanged = true;
+    }
+
+    function finishDrag() {
+      if (!isDragging) {
+        return;
+      }
+
+      isDragging = false;
+      dragValue = null;
+
+      if (dragChanged) {
+        dragChanged = false;
+        buildHeatmap();
+        buildBestList();
+
+        if (activeView === "orbat") {
+          buildOrbat();
+        }
+      }
+    }
+
+    function buildMyTable() {
+      let html = "<tr><th class='time-col'>Time</th>";
+
+      for (let day = 0; day < 7; day++) {
+        html += `<th>${dayHeader(day)}</th>`;
+      }
+
+      html += "</tr>";
+
+      for (let slot = 0; slot < SLOTS_PER_DAY; slot++) {
+        html += `<tr><td class="time-col">${escapeHtml(slotLabel(0, slot))}</td>`;
+
+        for (let day = 0; day < 7; day++) {
+          const key = slotKey(slotUtc(day, slot));
+          const value = mySlots.get(key) || null;
+
+          html += `
+            <td
+              class="${myClass(value)}"
+              data-day="${day}"
+              data-slot="${slot}"
+              title="Click or drag to change. Current: ${escapeHtml(label(value) || "Empty")}">
+              ${escapeHtml(compact(value))}
+            </td>`;
+        }
+
+        html += "</tr>";
+      }
+
+      $("my-table").innerHTML = html;
+
+      $("my-table").querySelectorAll("td[data-day]").forEach((cell) => {
+        cell.addEventListener("mousedown", (event) => {
+          if (event.button !== 0) {
+            return;
+          }
+
+          event.preventDefault();
+
+          const key = slotKey(slotUtc(Number(cell.dataset.day), Number(cell.dataset.slot)));
+
+          isDragging = true;
+          dragValue = cycle(mySlots.get(key));
+          dragChanged = false;
+
+          setCell(cell, dragValue);
+        });
+
+        cell.addEventListener("mouseenter", () => {
+          if (isDragging) {
+            setCell(cell, dragValue);
+          }
+        });
+      });
+    }
+
+    function hoverTitle(aggregateResult, key) {
+      return [
+        dtLabel(key),
+        "",
+        "Available:",
+        aggregateResult.peopleAvailable.join(", ") || "None",
+        "",
+        "Maybe:",
+        aggregateResult.peopleMaybe.join(", ") || "None",
+        "",
+        "Unavailable:",
+        aggregateResult.peopleUnavailable.join(", ") || "None"
+      ].join("\n");
+    }
+
+    function buildHeatmap() {
+      let html = "<tr><th class='time-col'>Time</th>";
+
+      for (let day = 0; day < 7; day++) {
+        html += `<th>${dayHeader(day)}</th>`;
+      }
+
+      html += "</tr>";
+
+      for (let slot = 0; slot < SLOTS_PER_DAY; slot++) {
+        html += `<tr><td class="time-col">${escapeHtml(slotLabel(0, slot))}</td>`;
+
+        for (let day = 0; day < 7; day++) {
+          const key = slotKey(slotUtc(day, slot));
+          const result = aggregate(key);
+
+          html += `
+            <td class="heat-cell grade-${result.grade}" title="${escapeHtml(hoverTitle(result, key))}">
+              ${Math.round(result.score * 100)}%
+              <small>${result.available}Y ${result.maybe}M ${result.unavailable}N</small>
+            </td>`;
+        }
+
+        html += "</tr>";
+      }
+
+      $("heatmap-table").innerHTML = html;
+    }
+
+    function buildBestList() {
+      const slots = [];
+
+      for (let day = 0; day < 7; day++) {
+        for (let slot = 0; slot < SLOTS_PER_DAY; slot++) {
+          const key = slotKey(slotUtc(day, slot));
+          const result = aggregate(key);
+
+          if (result.count) {
+            slots.push({ key, ...result });
+          }
+        }
+      }
+
+      slots.sort((a, b) => {
+        return b.score - a.score || b.available - a.available || a.unavailable - b.unavailable;
+      });
+
+      if (!slots.length) {
+        $("best-list").innerHTML = "<li>No availability submitted yet.</li>";
+        return;
+      }
+
+      $("best-list").innerHTML = slots.slice(0, 8).map((slot) => {
+        return `
+          <li>
+            <strong>${escapeHtml(dtLabel(slot.key))}</strong><br>
+            ${Math.round(slot.score * 100)}% fit,
+            ${slot.available} available,
+            ${slot.maybe} maybe,
+            ${slot.unavailable} unavailable
+          </li>`;
+      }).join("");
+    }
+
+    function buildChanges() {
+      const latest = [...allResponses]
+        .sort((a, b) => new Date(b.updated_at || b.slot_start) - new Date(a.updated_at || a.slot_start))
+        .slice(0, 12);
+
+      if (!latest.length) {
+        $("changes-list").innerHTML = "<li>No changes yet.</li>";
+        return;
+      }
+
+      $("changes-list").innerHTML = latest.map((response) => {
+        return `
+          <li>
+            <strong>${escapeHtml(getName(response.user_id))}</strong>
+            set <strong>${escapeHtml(response.availability)}</strong><br>
+            <span class="muted">
+              ${escapeHtml(dtLabel(response.slot_start))},
+              updated ${escapeHtml(updLabel(response.updated_at || response.slot_start))}
+            </span>
+          </li>`;
+      }).join("");
+    }
+
+    function callsign(member) {
+      return String(member.callsign || "").trim().toUpperCase() || "Candidate";
+    }
+
+    function membersFor(callsignCode) {
+      return members.filter((member) => {
+        if (callsignCode === "Candidate") {
+          return !String(member.callsign || "").trim();
+        }
+
+        return callsign(member) === callsignCode;
+      });
+    }
+
+    function availabilityFor(userId, key) {
+      return allResponses.find((response) => {
+        return response.user_id === userId && new Date(response.slot_start).toISOString() === key;
+      })?.availability || null;
+    }
+
+    function buildTabs() {
+      const root = $("orbat-day-tabs");
+      root.innerHTML = "";
+
+      for (let day = 0; day < 7; day++) {
+        const button = document.createElement("button");
+        button.className = `btn${day === selectedOrbatDay ? " active" : ""}`;
+        button.innerHTML = dayHeader(day).replace("<small>", " ").replace("</small>", "");
+
+        button.onclick = () => {
+          selectedOrbatDay = day;
+          buildOrbat();
+        };
+
+        root.appendChild(button);
+      }
+    }
+
+    function buildOrbat() {
+      $("orbat-week-title").textContent = `ORBAT Availability, Week of ${weekInput.value}, ${timezoneSelect.value}`;
+
+      buildTabs();
+
+      let html = "";
+
+      for (let slot = 0; slot < SLOTS_PER_DAY; slot++) {
+        const key = slotKey(slotUtc(selectedOrbatDay, slot));
+        let slotHtml = "";
+
+        for (const section of ORBAT) {
+          let sectionHtml = "";
+
+          for (const callsignCode of section.slots) {
+            const list = membersFor(callsignCode).filter((member) => {
+              return availabilityFor(member.id, key) === "available";
+            });
+
+            if (list.length) {
+              sectionHtml += `
+                <div>
+                  <strong>${escapeHtml(callsignCode)}</strong>
+                  ${list.map((member) => {
+                    return `
+                      <span
+                        class="orbat-person"
+                        data-id="${escapeHtml(member.id)}"
+                        data-slot="${escapeHtml(key)}">
+                        ${escapeHtml(member.display_name)}
+                      </span>`;
+                  }).join("")}
+                </div>`;
+            }
+          }
+
+          if (sectionHtml) {
+            slotHtml += `
+              <div class="orbat-section">
+                <h5>${escapeHtml(section.title)}</h5>
+                ${sectionHtml}
+              </div>`;
+          }
+        }
+
+        if (slotHtml) {
+          html += `
+            <div class="orbat-slot">
+              <h4>${escapeHtml(dtLabel(key))}</h4>
+              ${slotHtml}
+            </div>`;
+        }
+      }
+
+      $("orbat-day-content").innerHTML = html || "<div class='notice-box'>No available members for this day.</div>";
+
+      $("orbat-day-content").querySelectorAll(".orbat-person").forEach((element) => {
+        element.onclick = () => openPerson(element.dataset.id, element.dataset.slot);
+      });
+    }
+
+    function openPerson(userId, key) {
+      const member = profilesById.get(userId);
+
+      if (!member) {
+        return;
+      }
+
+      $("person-modal-title").textContent = member.display_name || member.user_id;
+
+      $("person-modal-body").innerHTML = `
+        <div style="display: flex; gap: 10px; align-items: flex-start; margin-bottom: 8px;">
+          <img
+            src="${escapeHtml(avatarUrl(member.avatar_url) || "/nsw.png")}"
+            alt=""
+            style="width: 72px; height: 72px; border-radius: 50%; object-fit: cover; border: 1px solid #c8a800;">
+          <div>
+            <strong>${escapeHtml(callsign(member))}</strong><br>
+            <span class="muted">${escapeHtml(member.naval_rank || "Candidate")}</span>
+          </div>
+        </div>
+
+        <table class="info-table">
+          <tr>
+            <td>Availability</td>
+            <td>${escapeHtml(label(availabilityFor(userId, key)) || "No response")}</td>
+          </tr>
+          <tr>
+            <td>Time</td>
+            <td>${escapeHtml(dtLabel(key))}</td>
+          </tr>
+          <tr>
+            <td>Discord</td>
+            <td>${escapeHtml(member.discord_name || "Not set")}</td>
+          </tr>
+          <tr>
+            <td>Steam</td>
+            <td>${escapeHtml(member.steam_name || "Not set")}</td>
+          </tr>
+        </table>`;
+
+      $("person-modal").classList.add("visible");
+    }
+
+    function setView(view) {
+      activeView = view;
+
+      $("calendar-view").classList.toggle("hidden", view !== "calendar");
+      $("orbat-view").classList.toggle("hidden", view !== "orbat");
+      $("calendar-view-btn").classList.toggle("active", view === "calendar");
+      $("orbat-view-btn").classList.toggle("active", view === "orbat");
+
+      if (view === "orbat") {
+        buildOrbat();
+      }
+    }
+
+    async function loadSession() {
+      const loaded = await bootPortalChrome();
+
+      if (!loaded) {
+        return false;
+      }
+
+      authUser = loaded.user;
+      profile = loaded.profile;
+
+      $("dash-user").textContent = profile.display_name;
+      $("dash-userid").textContent = profile.user_id;
+
+      return true;
+    }
+
+    async function loadProfiles() {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("id,user_id,display_name,role,status,avatar_url,naval_rank,callsign,discord_name,steam_name")
+        .eq("status", "ACTIVE")
+        .order("display_name", { ascending: true });
+
+      if (error || !data) {
+        members = [profile];
+        profilesById = new Map([[profile.id, profile]]);
+        setStatus(`Profiles could not be loaded. Showing only your account. ${error?.message || ""}`, false);
+      } else {
+        members = data;
+        profilesById = new Map(data.map((item) => [item.id, item]));
+      }
+
+      $("dash-members").textContent = String(members.length);
+    }
+
+    async function loadResponses() {
+      const { start, end } = weekRange();
+
+      const { data, error } = await supabase
+        .from("scheduling_responses")
+        .select("user_id,slot_start,availability,note,updated_at")
+        .gte("slot_start", start.toISOString())
+        .lt("slot_start", end.toISOString())
+        .order("slot_start", { ascending: true });
+
+      if (error) {
+        allResponses = [];
+        mySlots.clear();
+        setStatus(`Failed to load scheduling data: ${error.message}`, false);
+      } else {
+        allResponses = data || [];
+        mySlots.clear();
+
+        for (const response of allResponses) {
+          if (response.user_id === authUser.id) {
+            mySlots.set(new Date(response.slot_start).toISOString(), response.availability);
+          }
+        }
+      }
+
+      $("dash-timezone").textContent = timezoneSelect.value;
+      $("dash-updated").textContent = utcNowLabel();
+
+      buildMyTable();
+      buildHeatmap();
+      buildBestList();
+      buildChanges();
+
+      if (activeView === "orbat") {
+        buildOrbat();
+      }
+    }
+
+    async function saveAvailability() {
+      saveBtn.disabled = true;
+      saveBtn.textContent = "Saving...";
+
+      const keys = visibleSlotKeys();
+      const keySet = new Set(keys);
+
+      const { error: deleteError } = await supabase
+        .from("scheduling_responses")
+        .delete()
+        .eq("user_id", authUser.id)
+        .in("slot_start", keys);
+
+      if (deleteError) {
+        setStatus(`Failed to clear old availability: ${deleteError.message}`, false);
+        saveBtn.disabled = false;
+        saveBtn.textContent = "Save";
+        return;
+      }
+
+      const rows = [...mySlots.entries()]
+        .filter(([key]) => keySet.has(key))
+        .map(([key, value]) => ({
+          user_id: authUser.id,
+          slot_start: key,
+          availability: value,
+          note: null,
+          updated_at: new Date().toISOString()
+        }));
+
+      if (rows.length) {
+        const { error: insertError } = await supabase
+          .from("scheduling_responses")
+          .insert(rows);
+
+        if (insertError) {
+          setStatus(`Failed to save availability: ${insertError.message}`, false);
+          saveBtn.disabled = false;
+          saveBtn.textContent = "Save";
+          return;
+        }
+      }
+
+      setStatus("Availability saved successfully.", true);
+      saveBtn.disabled = false;
+      saveBtn.textContent = "Save";
+      await loadResponses();
+    }
+
+    async function clearWeek() {
+      const confirmed = confirm("Clear all of your availability for this selected week?");
+
+      if (!confirmed) {
+        return;
+      }
+
+      const keys = visibleSlotKeys();
+
+      const { error } = await supabase
+        .from("scheduling_responses")
+        .delete()
+        .eq("user_id", authUser.id)
+        .in("slot_start", keys);
+
+      if (error) {
+        setStatus(`Failed to clear week: ${error.message}`, false);
+        return;
+      }
+
+      mySlots.clear();
+      setStatus("Your week was cleared.", true);
+      await loadResponses();
+    }
+
+    function setupRealtime() {
+      if (realtimeChannel) {
+        supabase.removeChannel(realtimeChannel);
+      }
+
+      let timer = null;
+
+      realtimeChannel = supabase
+        .channel("scheduling-live")
+        .on(
+          "postgres_changes",
+          {
+            event: "*",
+            schema: "public",
+            table: "scheduling_responses"
+          },
+          () => {
+            clearTimeout(timer);
+            timer = setTimeout(loadResponses, 300);
+          }
+        )
+        .subscribe();
+    }
+
+    window.doLogout = async () => {
+      await supabase.auth.signOut();
+      location.href = "/login/";
+    };
+
+    saveBtn.onclick = saveAvailability;
+    refreshBtn.onclick = loadResponses;
+    clearBtn.onclick = clearWeek;
+
+    $("calendar-view-btn").onclick = () => setView("calendar");
+    $("orbat-view-btn").onclick = () => setView("orbat");
+
+    $("orbat-prev-week").onclick = () => shiftWeek(-7);
+    $("orbat-current-week").onclick = () => loadResponses();
+    $("orbat-next-week").onclick = () => shiftWeek(7);
+
+    $("close-person-modal").onclick = () => {
+      $("person-modal").classList.remove("visible");
+    };
+
+    $("person-modal").onclick = (event) => {
+      if (event.target.id === "person-modal") {
+        event.currentTarget.classList.remove("visible");
+      }
+    };
+
+    document.addEventListener("mouseup", finishDrag);
+    window.addEventListener("blur", finishDrag);
+
+    timezoneSelect.onchange = () => {
+      localStorage.setItem("schedulingTimezone", timezoneSelect.value);
+      loadResponses();
+    };
+
+    weekInput.onchange = loadResponses;
+
+    (async function init() {
+      weekInput.value = getNextMonday();
+
+      const savedTimezone = localStorage.getItem("schedulingTimezone");
+
+      if (savedTimezone) {
+        timezoneSelect.value = savedTimezone;
+      }
+
+      const sessionLoaded = await loadSession();
+
+      if (!sessionLoaded) {
+        return;
+      }
+
+      await loadProfiles();
+      await loadResponses();
+      setupRealtime();
+    })();
+  </script>
 </body>
 </html>
