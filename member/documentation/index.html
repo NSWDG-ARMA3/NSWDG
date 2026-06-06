@@ -498,10 +498,6 @@
     }
   </style>
 </head>
-<script>
-import { renderPortalLayout } from "/js/portal-layout.js";
-renderPortalLayout("documentation");
-</script>
 
 <body>
 
@@ -626,11 +622,15 @@ renderPortalLayout("documentation");
   </div>
 
   <script type="module">
-    const DOCUMENTATION_ADMINS = [
+import { supabase } from "/js/auth.js";
+import { renderPortalLayout } from "/js/portal-layout.js";
+
+renderPortalLayout("documentation");
+
+const DOCUMENTATION_ADMINS = [
   "evans@navy.mil",
   "carver@navy.mil"
 ];
-import { supabase } from "/js/auth.js";
 
 const BUCKET_NAME = "sop-documents";
 

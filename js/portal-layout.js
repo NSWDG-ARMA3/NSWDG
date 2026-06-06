@@ -10,7 +10,7 @@ export function renderPortalLayout(activePage = "") {
       <a class="${activePage === "documentation" ? "active" : ""}" href="/member/documentation/">Documentation</a>
       <a class="${activePage === "operational" ? "active" : ""}" href="/member/operational/">Operational</a>
       <a class="${activePage === "profile" ? "active" : ""}" href="/member/profile/">Profile</a>
-      <a class="admin-only-link ${activePage === "admin" ? "active" : ""}" href="/member/admin/" style="display:none;">Admin</a>
+      <a class="admin-only-link ${activePage === "admin" ? "active" : ""}" href="/member/admin/" style="${activePage === "admin" ? "" : "display:none;"}">Admin</a>
 
       <div class="nav-right">
         <img id="nav-avatar" class="nav-avatar" src="/nsw.png" alt="Profile picture">
@@ -35,7 +35,7 @@ export function renderPortalLayout(activePage = "") {
       <a class="sidebar-link ${activePage === "operational" ? "active" : ""}" href="/member/operational/">Operational</a>
 
       <div class="sidebar-section">Account</div>
-      <a class="sidebar-link admin-only-link ${activePage === "admin" ? "active" : ""}" href="/member/admin/" style="display:none;">Admin</a>
+      <a class="sidebar-link admin-only-link ${activePage === "admin" ? "active" : ""}" href="/member/admin/" style="${activePage === "admin" ? "" : "display:none;"}">Admin</a>
       <a class="sidebar-link ${activePage === "profile" ? "active" : ""}" href="/member/profile/">Profile</a>
     `;
   }
