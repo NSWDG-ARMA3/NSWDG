@@ -804,6 +804,13 @@
 
               <button class="btn btn-primary" id="save-btn" type="button">Save</button>
               <button class="btn" id="refresh-btn" type="button">Refresh</button>
+
+              <div class="form-group">
+                <label for="copy-weeks-count">Copy forward weeks</label>
+                <input type="number" id="copy-weeks-count" min="1" max="12" value="1">
+              </div>
+
+              <button class="btn" id="copy-forward-btn" type="button">Copy Forward</button>
               <button class="btn btn-danger" id="clear-btn" type="button">Clear Mine</button>
             </div>
 
@@ -1014,6 +1021,8 @@
     const saveBtn = $("save-btn");
     const refreshBtn = $("refresh-btn");
     const clearBtn = $("clear-btn");
+    const copyForwardBtn = $("copy-forward-btn");
+    const copyWeeksCountInput = $("copy-weeks-count");
     const teamFilter = $("team-filter");
     const includeLoaCheckbox = $("include-loa");
     const includeBlanksCheckbox = $("include-blanks");
@@ -1093,8 +1102,8 @@
       return new Date(guess.getTime() + (target - actual));
     }
 
-    function slotUtc(dayIndex, slotIndex) {
-      const baseIso = addDays(weekInput.value, dayIndex);
+    function slotUtcForWeek(weekIso, dayIndex, slotIndex) {
+      const baseIso = addDays(weekIso, dayIndex);
       const minutes = slotIndex * SLOT_MINUTES;
       const timezone = scheduleTimezone();
 
@@ -1108,16 +1117,34 @@
       );
     }
 
-    function visibleSlotKeys() {
+    function slotUtc(dayIndex, slotIndex) {
+      return slotUtcForWeek(weekInput.value, dayIndex, slotIndex);
+    }
+
+    function visibleSlotKeysForWeek(weekIso) {
       const keys = [];
 
       for (let day = 0; day < 7; day++) {
         for (let slot = 0; slot < SLOTS_PER_DAY; slot++) {
-          keys.push(slotKey(slotUtc(day, slot)));
+          keys.push(slotKey(slotUtcForWeek(weekIso, day, slot)));
         }
       }
 
       return keys;
+    }
+
+    function visibleSlotKeys() {
+      return visibleSlotKeysForWeek(weekInput.value);
+    }
+
+    function chunkArray(items, size) {
+      const chunks = [];
+
+      for (let index = 0; index < items.length; index += size) {
+        chunks.push(items.slice(index, index + size));
+      }
+
+      return chunks;
     }
 
     function bufferedLoadRange() {
@@ -1956,7 +1983,88 @@ function aggregate(slotStart) {
       await loadResponses();
     }
 
-    
+
+    async function copyWeekForward() {
+      const weekCount = Number.parseInt(copyWeeksCountInput.value, 10);
+
+      if (!Number.isInteger(weekCount) || weekCount < 1 || weekCount > 12) {
+        setStatus("Copy forward weeks must be between 1 and 12.", false);
+        return;
+      }
+
+      const sourceWeek = weekInput.value;
+      const sourceKeys = visibleSlotKeysForWeek(sourceWeek);
+      const sourceValues = sourceKeys.map(key => mySlots.get(key) || null);
+
+      if (!sourceValues.some(Boolean)) {
+        setStatus("There is no availability in the selected week to copy.", false);
+        return;
+      }
+
+      const confirmed = confirm(`Copy your selected week to the next ${weekCount} week(s)? This overwrites only your availability in those target weeks.`);
+
+      if (!confirmed) {
+        return;
+      }
+
+      copyForwardBtn.disabled = true;
+      copyForwardBtn.textContent = "Copying...";
+
+      const rows = [];
+
+      for (let weekOffset = 1; weekOffset <= weekCount; weekOffset++) {
+        const targetWeek = addDays(sourceWeek, weekOffset * 7);
+        const targetKeys = visibleSlotKeysForWeek(targetWeek);
+
+        for (const keyChunk of chunkArray(targetKeys, 100)) {
+          const { error: deleteError } = await supabase
+            .from("scheduling_responses")
+            .delete()
+            .eq("user_id", authUser.id)
+            .in("slot_start", keyChunk);
+
+          if (deleteError) {
+            setStatus(`Failed to clear target week ${targetWeek}: ${deleteError.message}`, false);
+            copyForwardBtn.disabled = false;
+            copyForwardBtn.textContent = "Copy Forward";
+            return;
+          }
+        }
+
+        sourceValues.forEach((value, index) => {
+          if (!value) {
+            return;
+          }
+
+          rows.push({
+            user_id: authUser.id,
+            slot_start: targetKeys[index],
+            availability: value,
+            note: null,
+            updated_at: new Date().toISOString()
+          });
+        });
+      }
+
+      for (const rowChunk of chunkArray(rows, 500)) {
+        const { error: insertError } = await supabase
+          .from("scheduling_responses")
+          .insert(rowChunk);
+
+        if (insertError) {
+          setStatus(`Failed to copy availability: ${insertError.message}`, false);
+          copyForwardBtn.disabled = false;
+          copyForwardBtn.textContent = "Copy Forward";
+          return;
+        }
+      }
+
+      setStatus(`Copied your selected week to the next ${weekCount} week(s).`, true);
+      copyForwardBtn.disabled = false;
+      copyForwardBtn.textContent = "Copy Forward";
+      await loadResponses();
+    }
+
     async function clearWeek() {
       const confirmed = confirm("Clear all of your availability for this selected week in the selected timezone?");
 
@@ -2013,6 +2121,7 @@ function aggregate(slotStart) {
 
     saveBtn.onclick = saveAvailability;
     refreshBtn.onclick = loadResponses;
+    copyForwardBtn.onclick = copyWeekForward;
     clearBtn.onclick = clearWeek;
 
     $("calendar-view-btn").onclick = () => setView("calendar");
