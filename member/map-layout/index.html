@@ -3,21 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NSW Operations Portal - Map Layout</title>
-  <link rel="shortcut icon" href="../../nsw.png" type="image/x-icon">
+  <title>NSW Portal - Map Layout</title>
+  <link rel="shortcut icon" href="/nsw.png" type="image/x-icon">
 
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      background: #f0f0f0;
-      color: #1a1a1a;
       font-family: Arial, Helvetica, sans-serif;
       font-size: 12px;
+      background: #f0f0f0;
+      color: #111;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
@@ -32,33 +28,18 @@
 
     .site-header {
       background: #1d3f5e;
-      color: #fff;
+      color: white;
       padding: 10px 16px;
       border-bottom: 3px solid #c8a800;
     }
 
-    .site-header h1 {
-      font-size: 16px;
-    }
-
-    .site-header p {
-      font-size: 11px;
-      color: #c5d8ec;
-      margin-top: 2px;
-    }
-
-    .screen {
-      display: flex;
-      flex: 1;
-      flex-direction: column;
-    }
+    .site-header h1 { font-size: 16px; }
+    .site-header p { font-size: 11px; color: #c5d8ec; margin-top: 2px; }
 
     .portal-nav {
       background: #1d3f5e;
       display: flex;
-      align-items: stretch;
       border-bottom: 2px solid #c8a800;
-      flex-shrink: 0;
     }
 
     .portal-nav a {
@@ -66,71 +47,27 @@
       text-decoration: none;
       font-size: 12px;
       padding: 8px 12px;
-      display: block;
       border-right: 1px solid #00284e;
-      cursor: pointer;
-      white-space: nowrap;
     }
 
     .portal-nav a.active {
-      color: #fff;
+      color: white;
       font-weight: bold;
       border-bottom: 2px solid #c8a800;
     }
 
-    .nav-right {
-      margin-left: auto;
-      display: flex;
-      align-items: center;
-      padding: 0 12px;
-      font-size: 11px;
-      color: #7a9ab8;
-      gap: 10px;
-    }
-
-    .nav-right a {
-      border: none !important;
-      padding: 4px 0 !important;
-      font-size: 11px;
-      color: #7a9ab8;
-    }
-
-    .nav-avatar {
-      width: 22px;
-      height: 22px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 1px solid #7a9ab8;
-      background: #e8e8e8;
-    }
-
     .portal-body {
-      display: flex;
       flex: 1;
+      display: flex;
       min-height: 0;
     }
 
     .sidebar {
-      width: 180px;
+      width: 185px;
       background: #e8e8e8;
       border-right: 1px solid #bbb;
-      flex-shrink: 0;
       padding: 12px 0;
-    }
-
-    .sidebar-user-box {
-      padding: 7px 12px 10px;
-      border-bottom: 1px solid #ccc;
-      margin-bottom: 6px;
-      font-size: 11px;
-      color: #444;
-      line-height: 1.6;
-    }
-
-    .sidebar-user-box strong {
-      display: block;
-      font-size: 12px;
-      color: #1a1a1a;
+      flex-shrink: 0;
     }
 
     .sidebar-section {
@@ -148,7 +85,6 @@
       font-size: 12px;
       color: #1d3f5e;
       text-decoration: none;
-      cursor: pointer;
       border-left: 3px solid transparent;
     }
 
@@ -160,8 +96,8 @@
 
     .portal-main {
       flex: 1;
+      background: white;
       padding: 16px 18px;
-      background: #fff;
       overflow: hidden;
       display: flex;
       flex-direction: column;
@@ -175,7 +111,6 @@
       border-bottom: 1px solid #ccc;
       padding-bottom: 6px;
       margin-bottom: 10px;
-      flex-shrink: 0;
     }
 
     .map-toolbar {
@@ -186,7 +121,6 @@
       gap: 8px;
       align-items: center;
       margin-bottom: 10px;
-      flex-shrink: 0;
     }
 
     .map-toolbar button {
@@ -197,13 +131,9 @@
       cursor: pointer;
     }
 
-    .map-toolbar button:hover {
-      background: #e0e0e0;
-    }
-
-    .map-layout {
+    .map-wrap {
       display: grid;
-      grid-template-columns: 1fr 280px;
+      grid-template-columns: 1fr 290px;
       gap: 10px;
       flex: 1;
       min-height: 0;
@@ -214,13 +144,11 @@
       overflow: hidden;
       border: 1px solid #aaa;
       background: #ddd;
+      min-height: 520px;
       cursor: grab;
-      min-height: 500px;
     }
 
-    .map-viewport.dragging {
-      cursor: grabbing;
-    }
+    .map-viewport.dragging { cursor: grabbing; }
 
     .map-stage {
       position: absolute;
@@ -231,8 +159,8 @@
 
     .map-stage img {
       display: block;
-      width: 1600px;
-      height: auto;
+      width: 1672px;
+      height: 941px;
       user-select: none;
       pointer-events: none;
     }
@@ -241,18 +169,16 @@
       position: absolute;
       left: 0;
       top: 0;
-      width: 1600px;
-      height: 1000px;
-      pointer-events: none;
+      width: 1672px;
+      height: 941px;
     }
 
     .map-zone {
-      fill: rgba(29, 63, 94, 0.15);
-      stroke: rgba(29, 63, 94, 0.85);
+      fill: rgba(29, 63, 94, 0.12);
+      stroke: rgba(29, 63, 94, 0.8);
       stroke-width: 2;
       cursor: pointer;
       pointer-events: all;
-      transition: fill 0.12s ease, stroke 0.12s ease;
     }
 
     .map-zone:hover {
@@ -261,8 +187,8 @@
     }
 
     .map-zone.selected {
-      fill: rgba(200, 168, 0, 0.5);
-      stroke: rgba(120, 80, 0, 1);
+      fill: rgba(200, 168, 0, 0.55);
+      stroke: rgba(100, 70, 0, 1);
       stroke-width: 3;
     }
 
@@ -288,29 +214,25 @@
 
     .info-row strong {
       display: block;
-      color: #333;
       font-size: 11px;
       text-transform: uppercase;
+      color: #333;
     }
 
-    .zone-list {
-      margin-top: 10px;
-    }
+    .zone-list { margin-top: 10px; }
 
     .zone-list button {
       width: 100%;
       text-align: left;
       border: 1px solid #ccc;
-      background: #fff;
+      background: white;
       padding: 6px;
       margin-bottom: 4px;
       font-size: 11px;
       cursor: pointer;
     }
 
-    .zone-list button:hover {
-      background: #eef2f8;
-    }
+    .zone-list button:hover { background: #eef2f8; }
 
     .page-footer {
       background: #1a1a1a;
@@ -318,70 +240,89 @@
       font-size: 11px;
       text-align: center;
       padding: 7px;
-      flex-shrink: 0;
     }
 
     @media (max-width: 900px) {
-      .sidebar {
-        display: none;
-      }
-
-      .map-layout {
-        grid-template-columns: 1fr;
-      }
-
-      .nav-right {
-        display: none;
-      }
+      .sidebar { display: none; }
+      .map-wrap { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 
 <body>
-  <div class="gov-banner">U.S. Department of the Navy &nbsp;|&nbsp; Official Government System &nbsp;|&nbsp; Authorized Users Only</div>
+  <div class="gov-banner">U.S. Department of the Navy | Official Government System | Authorized Users Only</div>
 
-  <div class="site-header">
+  <header class="site-header">
     <h1>Naval Special Warfare Command - Operations Portal</h1>
     <p>NSW-OPS // UNCLASSIFIED // FOR OFFICIAL USE ONLY</p>
-  </div>
+  </header>
 
-  <div class="screen">
-    <div id="portal-nav" class="portal-nav"></div>
+  <nav class="portal-nav">
+    <a href="/member/">Dashboard</a>
+    <a href="/member/training/">Training</a>
+    <a href="/member/map-layout/" class="active">Map Layout</a>
+    <a href="/member/documents/">Documents</a>
+    <a href="/member/orbat/">ORBAT</a>
+    <a href="/member/account/">Account</a>
+  </nav>
 
-    <div class="portal-body">
-      <div id="portal-sidebar" class="sidebar"></div>
+  <div class="portal-body">
+    <aside class="sidebar">
+      <div class="sidebar-section">Operations</div>
+      <a class="sidebar-link" href="/member/">Dashboard</a>
+      <a class="sidebar-link" href="/member/training/">Training</a>
+      <a class="sidebar-link active" href="/member/map-layout/">Map Layout</a>
+      <a class="sidebar-link" href="/member/orbat/">ORBAT</a>
 
-      <main class="portal-main">
-        <div class="page-title">Map Layout - Midsouth Facility</div>
+      <div class="sidebar-section">Resources</div>
+      <a class="sidebar-link" href="/member/documents/">Documents</a>
+      <a class="sidebar-link" href="/member/account/">Account</a>
+    </aside>
 
-        <div class="map-toolbar">
-          <button id="zoom-in">Zoom In</button>
-          <button id="zoom-out">Zoom Out</button>
-          <button id="reset-map">Reset</button>
-          <span id="zoom-label">100%</span>
+    <main class="portal-main">
+      <div class="page-title">Map Layout - Midsouth Facility</div>
+
+      <div class="map-toolbar">
+        <button id="zoom-in" type="button">Zoom In</button>
+        <button id="zoom-out" type="button">Zoom Out</button>
+        <button id="reset-map" type="button">Reset</button>
+        <span id="zoom-label">100%</span>
+      </div>
+
+      <div class="map-wrap">
+        <div id="map-viewport" class="map-viewport">
+          <div id="map-stage" class="map-stage">
+            <img src="./images/midsouth-layout.png" alt="Midsouth Facility Layout" draggable="false">
+            <svg id="map-overlay" class="map-overlay" viewBox="0 0 1672 941" preserveAspectRatio="none"></svg>
+          </div>
         </div>
 
-        <div class="map-layout">
-          <div id="map-viewport" class="map-viewport">
-            <div id="map-stage" class="map-stage">
-              <img src="/assets/maps/midsouth-layout.png" alt="Midsouth Facility Map" draggable="false">
-              <svg id="map-overlay" class="map-overlay" viewBox="0 0 1600 1000" preserveAspectRatio="none"></svg>
-            </div>
+        <aside class="info-panel">
+          <h3>Selected Area</h3>
+
+          <div class="info-row">
+            <strong>Designation</strong>
+            <span id="selected-code">None selected</span>
           </div>
 
-          <aside class="info-panel">
-            <h3>Selected Area</h3>
+          <div class="info-row">
+            <strong>Name</strong>
+            <span id="selected-name">Hover or click an area.</span>
+          </div>
 
-            <div class="info-row">
-              <strong>Designation</strong>
-              <span id="selected-code">None selected</span>
-            </div>
+          <div class="info-row">
+            <strong>Description</strong>
+            <span id="selected-description">Mouse wheel zooms. Drag pans the map.</span>
+          </div>
 
-            <div class="info-row">
-              <strong>Name</strong>
-              <span id="selected-name">Hover or click an area.</span>
-            </div>
+          <div id="zone-list" class="zone-list"></div>
+        </aside>
+      </div>
+    </main>
+  </div>
 
-            <div class="info-row">
-              <strong>Description</strong>
-              <span id="selected-description">Use mouse wheel to zoom. Drag the map to pan.</
+  <footer class="page-footer">Naval Special Warfare Command - Operations Portal | UNCLASSIFIED // FOUO</footer>
+
+  <script type="module" src="./map-layout.js"></script>
+</body>
+</html>

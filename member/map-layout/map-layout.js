@@ -1,387 +1,348 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NSW Operations Portal - Map Layout</title>
-  <link rel="shortcut icon" href="../../nsw.png" type="image/x-icon">
+const MAP_WIDTH = 1672;
+const MAP_HEIGHT = 941;
 
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+const zones = [
+  {
+    id: "a10",
+    code: "A10",
+    name: "Firing Range",
+    description: "Large western firing range.",
+    points: "95,145 275,75 515,82 560,165 567,455 115,455 95,385"
+  },
+  {
+    id: "a9c",
+    code: "A9C",
+    name: "A9C CQB Block",
+    description: "North-west CQB block.",
+    points: "616,95 707,95 707,210 616,210"
+  },
+  {
+    id: "a9d",
+    code: "A9D",
+    name: "A9D CQB Block",
+    description: "North-central CQB block.",
+    points: "707,95 773,95 773,210 707,210"
+  },
+  {
+    id: "a9b",
+    code: "A9B",
+    name: "A9B Structure",
+    description: "Western internal A9 structure.",
+    points: "616,210 742,210 742,315 616,315"
+  },
+  {
+    id: "a9a",
+    code: "A9A",
+    name: "A9A Structure",
+    description: "Southern A9 structure.",
+    points: "616,315 760,315 760,382 616,382"
+  },
+  {
+    id: "a8",
+    code: "A8",
+    name: "A8",
+    description: "Central training structure.",
+    points: "784,309 891,309 891,340 784,340"
+  },
+  {
+    id: "a7",
+    code: "A7",
+    name: "A7",
+    description: "Small eastern training structure.",
+    points: "971,247 1049,247 1049,274 971,274"
+  },
+  {
+    id: "a6",
+    code: "A6",
+    name: "A6",
+    description: "South-west compound building.",
+    points: "655,368 736,368 736,504 655,504"
+  },
+  {
+    id: "a5",
+    code: "A5",
+    name: "A5",
+    description: "Main central building block.",
+    points: "784,360 970,360 970,457 784,457"
+  },
+  {
+    id: "a4a",
+    code: "A4A",
+    name: "A4A",
+    description: "Central-west training lane.",
+    points: "310,510 780,510 820,575 520,615 285,585"
+  },
+  {
+    id: "a4b",
+    code: "A4B",
+    name: "A4B",
+    description: "Western small compound.",
+    points: "150,480 300,480 300,560 150,560"
+  },
+  {
+    id: "a3b",
+    code: "A3B",
+    name: "A3B",
+    description: "South-west parking and lane area.",
+    points: "160,640 520,640 520,815 160,815"
+  },
+  {
+    id: "a3a",
+    code: "A3A",
+    name: "A3A",
+    description: "Southern long training lane.",
+    points: "520,640 855,640 855,820 520,820"
+  },
+  {
+    id: "b1",
+    code: "B1",
+    name: "Killhouse B1",
+    description: "Central-south killhouse.",
+    points: "1015,495 1088,495 1088,695 985,695 955,610 980,495"
+  },
+  {
+    id: "a1",
+    code: "A1",
+    name: "A1",
+    description: "Eastern open training area.",
+    points: "1102,318 1275,318 1275,540 1102,540"
+  },
+  {
+    id: "a2",
+    code: "A2",
+    name: "A2",
+    description: "South-east training area.",
+    points: "1100,558 1248,558 1248,805 1100,805"
+  },
+  {
+    id: "b2",
+    code: "B2",
+    name: "Killhouse B2",
+    description: "South-east killhouse.",
+    points: "1025,745 1248,745 1248,800 1025,800"
+  },
+  {
+    id: "b3",
+    code: "B3",
+    name: "Killhouse B3",
+    description: "North-east killhouse complex.",
+    points: "1075,82 1285,82 1285,225 1075,225"
+  }
+];
 
-    body {
-      background: #f0f0f0;
-      color: #1a1a1a;
-      font-family: Arial, Helvetica, sans-serif;
-      font-size: 12px;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
+const viewport = document.getElementById("map-viewport");
+const stage = document.getElementById("map-stage");
+const overlay = document.getElementById("map-overlay");
+const zoomLabel = document.getElementById("zoom-label");
 
-    .gov-banner {
-      background: #1a1a1a;
-      color: #ccc;
-      font-size: 11px;
-      padding: 3px 12px;
-    }
+const selectedCode = document.getElementById("selected-code");
+const selectedName = document.getElementById("selected-name");
+const selectedDescription = document.getElementById("selected-description");
+const zoneList = document.getElementById("zone-list");
 
-    .site-header {
-      background: #1d3f5e;
-      color: #fff;
-      padding: 10px 16px;
-      border-bottom: 3px solid #c8a800;
-    }
+let scale = 0.62;
+let translateX = 20;
+let translateY = 20;
 
-    .site-header h1 {
-      font-size: 16px;
-    }
+let dragging = false;
+let dragStartX = 0;
+let dragStartY = 0;
+let startX = 0;
+let startY = 0;
+let selectedZoneId = null;
 
-    .site-header p {
-      font-size: 11px;
-      color: #c5d8ec;
-      margin-top: 2px;
-    }
+function applyTransform() {
+  stage.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
+  zoomLabel.textContent = `${Math.round(scale * 100)}%`;
+}
 
-    .screen {
-      display: flex;
-      flex: 1;
-      flex-direction: column;
-    }
+function clampScale(value) {
+  return Math.max(0.25, Math.min(5, value));
+}
 
-    .portal-nav {
-      background: #1d3f5e;
-      display: flex;
-      align-items: stretch;
-      border-bottom: 2px solid #c8a800;
-      flex-shrink: 0;
-    }
+function setInfo(zone) {
+  selectedCode.textContent = zone.code;
+  selectedName.textContent = zone.name;
+  selectedDescription.textContent = zone.description;
+}
 
-    .portal-nav a {
-      color: #cde;
-      text-decoration: none;
-      font-size: 12px;
-      padding: 8px 12px;
-      display: block;
-      border-right: 1px solid #00284e;
-      cursor: pointer;
-      white-space: nowrap;
-    }
+function clearInfo() {
+  selectedCode.textContent = "None selected";
+  selectedName.textContent = "Hover or click an area.";
+  selectedDescription.textContent = "Mouse wheel zooms. Drag pans the map.";
+}
 
-    .portal-nav a.active {
-      color: #fff;
-      font-weight: bold;
-      border-bottom: 2px solid #c8a800;
-    }
+function selectZone(zoneId) {
+  selectedZoneId = zoneId;
 
-    .nav-right {
-      margin-left: auto;
-      display: flex;
-      align-items: center;
-      padding: 0 12px;
-      font-size: 11px;
-      color: #7a9ab8;
-      gap: 10px;
-    }
+  const zone = zones.find(item => item.id === zoneId);
+  if (!zone) return;
 
-    .nav-right a {
-      border: none !important;
-      padding: 4px 0 !important;
-      font-size: 11px;
-      color: #7a9ab8;
-    }
+  setInfo(zone);
 
-    .nav-avatar {
-      width: 22px;
-      height: 22px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 1px solid #7a9ab8;
-      background: #e8e8e8;
-    }
+  document.querySelectorAll(".map-zone").forEach(element => {
+    element.classList.toggle("selected", element.dataset.zoneId === zoneId);
+  });
+}
 
-    .portal-body {
-      display: flex;
-      flex: 1;
-      min-height: 0;
-    }
+function clearSelection() {
+  selectedZoneId = null;
 
-    .sidebar {
-      width: 180px;
-      background: #e8e8e8;
-      border-right: 1px solid #bbb;
-      flex-shrink: 0;
-      padding: 12px 0;
-    }
+  document.querySelectorAll(".map-zone").forEach(element => {
+    element.classList.remove("selected");
+  });
 
-    .sidebar-user-box {
-      padding: 7px 12px 10px;
-      border-bottom: 1px solid #ccc;
-      margin-bottom: 6px;
-      font-size: 11px;
-      color: #444;
-      line-height: 1.6;
-    }
+  clearInfo();
+}
 
-    .sidebar-user-box strong {
-      display: block;
-      font-size: 12px;
-      color: #1a1a1a;
-    }
+function renderZones() {
+  overlay.setAttribute("viewBox", `0 0 ${MAP_WIDTH} ${MAP_HEIGHT}`);
+  overlay.innerHTML = "";
+  zoneList.innerHTML = "";
 
-    .sidebar-section {
-      font-size: 10px;
-      font-weight: bold;
-      color: #777;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      padding: 8px 12px 4px;
-    }
+  zones.forEach(zone => {
+    const polygon = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
 
-    .sidebar-link {
-      display: block;
-      padding: 5px 12px;
-      font-size: 12px;
-      color: #1d3f5e;
-      text-decoration: none;
-      cursor: pointer;
-      border-left: 3px solid transparent;
-    }
+    polygon.setAttribute("points", zone.points);
+    polygon.setAttribute("class", "map-zone");
+    polygon.dataset.zoneId = zone.id;
 
-    .sidebar-link.active {
-      background: #d0dae8;
-      border-left-color: #1d3f5e;
-      font-weight: bold;
-    }
+    polygon.addEventListener("mouseenter", () => {
+      setInfo(zone);
+    });
 
-    .portal-main {
-      flex: 1;
-      padding: 16px 18px;
-      background: #fff;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      min-width: 0;
-    }
-
-    .page-title {
-      font-size: 15px;
-      font-weight: bold;
-      color: #1d3f5e;
-      border-bottom: 1px solid #ccc;
-      padding-bottom: 6px;
-      margin-bottom: 10px;
-      flex-shrink: 0;
-    }
-
-    .map-toolbar {
-      border: 1px solid #ccc;
-      background: #fafafa;
-      padding: 8px;
-      display: flex;
-      gap: 8px;
-      align-items: center;
-      margin-bottom: 10px;
-      flex-shrink: 0;
-    }
-
-    .map-toolbar button {
-      border: 1px solid #888;
-      background: #f0f0f0;
-      padding: 5px 10px;
-      font-size: 11px;
-      cursor: pointer;
-    }
-
-    .map-toolbar button:hover {
-      background: #e0e0e0;
-    }
-
-    .map-layout {
-      display: grid;
-      grid-template-columns: 1fr 280px;
-      gap: 10px;
-      flex: 1;
-      min-height: 0;
-    }
-
-    .map-viewport {
-      position: relative;
-      overflow: hidden;
-      border: 1px solid #aaa;
-      background: #ddd;
-      cursor: grab;
-      min-height: 500px;
-    }
-
-    .map-viewport.dragging {
-      cursor: grabbing;
-    }
-
-    .map-stage {
-      position: absolute;
-      left: 0;
-      top: 0;
-      transform-origin: 0 0;
-    }
-
-    .map-stage img {
-      display: block;
-      width: 1600px;
-      height: auto;
-      user-select: none;
-      pointer-events: none;
-    }
-
-    .map-overlay {
-      position: absolute;
-      left: 0;
-      top: 0;
-      width: 1600px;
-      height: 1000px;
-      pointer-events: none;
-    }
-
-    .map-zone {
-      fill: rgba(29, 63, 94, 0.15);
-      stroke: rgba(29, 63, 94, 0.85);
-      stroke-width: 2;
-      cursor: pointer;
-      pointer-events: all;
-      transition: fill 0.12s ease, stroke 0.12s ease;
-    }
-
-    .map-zone:hover {
-      fill: rgba(200, 168, 0, 0.35);
-      stroke: rgba(200, 168, 0, 1);
-    }
-
-    .map-zone.selected {
-      fill: rgba(200, 168, 0, 0.5);
-      stroke: rgba(120, 80, 0, 1);
-      stroke-width: 3;
-    }
-
-    .info-panel {
-      border: 1px solid #ccc;
-      background: #fafafa;
-      padding: 10px;
-      overflow-y: auto;
-    }
-
-    .info-panel h3 {
-      font-size: 13px;
-      color: #1d3f5e;
-      margin-bottom: 8px;
-      text-transform: uppercase;
-    }
-
-    .info-row {
-      border-bottom: 1px solid #ddd;
-      padding: 6px 0;
-      line-height: 1.5;
-    }
-
-    .info-row strong {
-      display: block;
-      color: #333;
-      font-size: 11px;
-      text-transform: uppercase;
-    }
-
-    .zone-list {
-      margin-top: 10px;
-    }
-
-    .zone-list button {
-      width: 100%;
-      text-align: left;
-      border: 1px solid #ccc;
-      background: #fff;
-      padding: 6px;
-      margin-bottom: 4px;
-      font-size: 11px;
-      cursor: pointer;
-    }
-
-    .zone-list button:hover {
-      background: #eef2f8;
-    }
-
-    .page-footer {
-      background: #1a1a1a;
-      color: #888;
-      font-size: 11px;
-      text-align: center;
-      padding: 7px;
-      flex-shrink: 0;
-    }
-
-    @media (max-width: 900px) {
-      .sidebar {
-        display: none;
+    polygon.addEventListener("mouseleave", () => {
+      if (!selectedZoneId) {
+        clearInfo();
+      } else {
+        const selectedZone = zones.find(item => item.id === selectedZoneId);
+        if (selectedZone) setInfo(selectedZone);
       }
+    });
 
-      .map-layout {
-        grid-template-columns: 1fr;
-      }
+    polygon.addEventListener("click", event => {
+      event.stopPropagation();
+      selectZone(zone.id);
+    });
 
-      .nav-right {
-        display: none;
-      }
-    }
-  </style>
-</head>
+    overlay.appendChild(polygon);
 
-<body>
-  <div class="gov-banner">U.S. Department of the Navy &nbsp;|&nbsp; Official Government System &nbsp;|&nbsp; Authorized Users Only</div>
+    const button = document.createElement("button");
+    button.type = "button";
+    button.textContent = `${zone.code} - ${zone.name}`;
+    button.addEventListener("click", () => {
+      selectZone(zone.id);
+      centerZone(zone);
+    });
 
-  <div class="site-header">
-    <h1>Naval Special Warfare Command - Operations Portal</h1>
-    <p>NSW-OPS // UNCLASSIFIED // FOR OFFICIAL USE ONLY</p>
-  </div>
+    zoneList.appendChild(button);
+  });
+}
 
-  <div class="screen">
-    <div id="portal-nav" class="portal-nav"></div>
+function zoomAt(clientX, clientY, nextScale) {
+  const rect = viewport.getBoundingClientRect();
 
-    <div class="portal-body">
-      <div id="portal-sidebar" class="sidebar"></div>
+  const mouseX = clientX - rect.left;
+  const mouseY = clientY - rect.top;
 
-      <main class="portal-main">
-        <div class="page-title">Map Layout - Midsouth Facility</div>
+  const mapX = (mouseX - translateX) / scale;
+  const mapY = (mouseY - translateY) / scale;
 
-        <div class="map-toolbar">
-          <button id="zoom-in">Zoom In</button>
-          <button id="zoom-out">Zoom Out</button>
-          <button id="reset-map">Reset</button>
-          <span id="zoom-label">100%</span>
-        </div>
+  scale = clampScale(nextScale);
 
-        <div class="map-layout">
-          <div id="map-viewport" class="map-viewport">
-            <div id="map-stage" class="map-stage">
-              <img src="/assets/maps/midsouth-layout.png" alt="Midsouth Facility Map" draggable="false">
-              <svg id="map-overlay" class="map-overlay" viewBox="0 0 1600 1000" preserveAspectRatio="none"></svg>
-            </div>
-          </div>
+  translateX = mouseX - mapX * scale;
+  translateY = mouseY - mapY * scale;
 
-          <aside class="info-panel">
-            <h3>Selected Area</h3>
+  applyTransform();
+}
 
-            <div class="info-row">
-              <strong>Designation</strong>
-              <span id="selected-code">None selected</span>
-            </div>
+function resetMap() {
+  const rect = viewport.getBoundingClientRect();
 
-            <div class="info-row">
-              <strong>Name</strong>
-              <span id="selected-name">Hover or click an area.</span>
-            </div>
+  scale = Math.min(rect.width / MAP_WIDTH, rect.height / MAP_HEIGHT) * 0.96;
+  scale = clampScale(scale);
 
-            <div class="info-row">
-              <strong>Description</strong>
-              <span id="selected-description">Use mouse wheel to zoom. Drag the map to pan.</
+  translateX = (rect.width - MAP_WIDTH * scale) / 2;
+  translateY = (rect.height - MAP_HEIGHT * scale) / 2;
+
+  applyTransform();
+}
+
+function centerZone(zone) {
+  const coords = zone.points
+    .trim()
+    .split(" ")
+    .map(pair => pair.split(",").map(Number));
+
+  const xs = coords.map(pair => pair[0]);
+  const ys = coords.map(pair => pair[1]);
+
+  const centerX = (Math.min(...xs) + Math.max(...xs)) / 2;
+  const centerY = (Math.min(...ys) + Math.max(...ys)) / 2;
+
+  const rect = viewport.getBoundingClientRect();
+
+  scale = Math.max(scale, 1.15);
+  scale = clampScale(scale);
+
+  translateX = rect.width / 2 - centerX * scale;
+  translateY = rect.height / 2 - centerY * scale;
+
+  applyTransform();
+}
+
+viewport.addEventListener("wheel", event => {
+  event.preventDefault();
+
+  const nextScale = event.deltaY < 0 ? scale * 1.15 : scale / 1.15;
+  zoomAt(event.clientX, event.clientY, nextScale);
+}, { passive: false });
+
+viewport.addEventListener("mousedown", event => {
+  dragging = true;
+  viewport.classList.add("dragging");
+
+  dragStartX = event.clientX;
+  dragStartY = event.clientY;
+  startX = translateX;
+  startY = translateY;
+});
+
+window.addEventListener("mousemove", event => {
+  if (!dragging) return;
+
+  translateX = startX + event.clientX - dragStartX;
+  translateY = startY + event.clientY - dragStartY;
+
+  applyTransform();
+});
+
+window.addEventListener("mouseup", () => {
+  dragging = false;
+  viewport.classList.remove("dragging");
+});
+
+viewport.addEventListener("click", () => {
+  clearSelection();
+});
+
+document.getElementById("zoom-in").addEventListener("click", () => {
+  const rect = viewport.getBoundingClientRect();
+  zoomAt(rect.left + rect.width / 2, rect.top + rect.height / 2, scale * 1.2);
+});
+
+document.getElementById("zoom-out").addEventListener("click", () => {
+  const rect = viewport.getBoundingClientRect();
+  zoomAt(rect.left + rect.width / 2, rect.top + rect.height / 2, scale / 1.2);
+});
+
+document.getElementById("reset-map").addEventListener("click", () => {
+  resetMap();
+});
+
+window.addEventListener("resize", () => {
+  resetMap();
+});
+
+renderZones();
+resetMap();
