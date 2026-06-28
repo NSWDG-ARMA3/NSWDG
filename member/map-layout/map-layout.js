@@ -11,6 +11,17 @@ const zones = [
     x: 1344,
     y: 282,
     radius: 24
+  },
+
+  {
+    id: "locker_room",
+    code: "NEW",
+    name: "Locker Room",
+    description: "The Green Team locker room is a clean, functional space featuring green benches and lockers, secure storage, shower facilities, tactical gear racks, and preparation areas designed for efficient team organization and deployment.",
+    type: "Facility",
+    x: 1435,
+    y: 197,
+    radius: 24
   }
 ];
 
