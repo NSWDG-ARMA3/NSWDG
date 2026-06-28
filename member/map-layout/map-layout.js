@@ -3,13 +3,13 @@ const MAP_HEIGHT = 941;
 
 const zones = [
   {
-    id: "classroom",
-    code: "CLS",
-    name: "Classroom",
-    description: "Primary classroom used for Green Team instruction, briefs, and classroom training.",
+    id: "new_marker",
+    code: "NEW",
+    name: "New Marker",
+    description: "Describe this location.",
     type: "Facility",
-    x: 1135,
-    y: 105,
+    x: 1344,
+    y: 282,
     radius: 24
   }
 ];
