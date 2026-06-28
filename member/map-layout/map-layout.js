@@ -3,10 +3,10 @@ const MAP_HEIGHT = 941;
 
 const zones = [
   {
-    id: "new_marker",
+    id: "classroom",
     code: "NEW",
-    name: "New Marker",
-    description: "Describe this location.",
+    name: "Classroom",
+    description: "Primary classroom used for Green Team instruction, briefs, and classroom training.",
     type: "Facility",
     x: 1344,
     y: 282,
@@ -69,7 +69,7 @@ function copyMarkerCode(x, y) {
   const roundedY = Math.round(y);
 
   const markerCode = `{
-  id: "new_marker",
+  id: "classroom",
   code: "NEW",
   name: "New Marker",
   description: "Describe this location.",
