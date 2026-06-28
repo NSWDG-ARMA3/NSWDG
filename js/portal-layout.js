@@ -171,6 +171,7 @@ export function renderPortalLayout(activePage = "") {
       <a class="${activePage === "documentation" ? "active" : ""}" href="/member/documentation/">Documentation</a>
       <a class="${activePage === "operational" ? "active" : ""}" href="/member/operational/">Operational</a>
       <a class="${activePage === "training" ? "active" : ""}" href="/member/training/">Training</a>
+      <a class="${activePage === "map-layout" ? "active" : ""}" href="/member/map-layout/">Map Layout</a>
       <a class="orbat-only-link ${activePage === "orbat" ? "active" : ""}" href="/member/orbat/" style="display:none;">ORBAT</a>
       <a class="${activePage === "profile" ? "active" : ""}" href="/member/profile/">Profile</a>
       <a class="admin-only-link ${activePage === "admin" ? "active" : ""}" href="/member/admin/" style="display:none;">Admin</a>
@@ -202,6 +203,7 @@ export function renderPortalLayout(activePage = "") {
       <div class="sidebar-section">Operations & Training</div>
       <a class="sidebar-link ${activePage === "operational" ? "active" : ""}" href="/member/operational/">Operational</a>
       <a class="sidebar-link ${activePage === "training" ? "active" : ""}" href="/member/training/">Training</a>
+      <a class="sidebar-link ${activePage === "map-layout" ? "active" : ""}" href="/member/map-layout/">Map Layout</a>
 
       <div class="sidebar-section">Resources</div>
       <a class="sidebar-link ${activePage === "documentation" ? "active" : ""}" href="/member/documentation/">Documentation</a>
