@@ -24,11 +24,19 @@ const selectedName = document.getElementById("selected-name");
 const selectedDescription = document.getElementById("selected-description");
 const zoneList = document.getElementById("zone-list");
 
+const zoomInButton = document.getElementById("zoom-in");
+const zoomOutButton = document.getElementById("zoom-out");
+const resetMapButton = document.getElementById("reset-map");
+const pickPointButton = document.getElementById("pick-point");
+
 let scale = 0.62;
 let translateX = 20;
 let translateY = 20;
 
 let dragging = false;
+let didDrag = false;
+let pickMode = false;
+
 let dragStartX = 0;
 let dragStartY = 0;
 let startX = 0;
@@ -54,6 +62,36 @@ function clearInfo() {
   selectedCode.textContent = "None selected";
   selectedName.textContent = "Hover or click an area.";
   selectedDescription.textContent = "Mouse wheel zooms. Drag pans the map.";
+}
+
+function copyMarkerCode(x, y) {
+  const roundedX = Math.round(x);
+  const roundedY = Math.round(y);
+
+  const markerCode = `{
+  id: "new_marker",
+  code: "NEW",
+  name: "New Marker",
+  description: "Describe this location.",
+  type: "Facility",
+  x: ${roundedX},
+  y: ${roundedY},
+  radius: 24
+}`;
+
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(markerCode)
+      .then(() => {
+        alert(`Marker copied to clipboard.\n\nx: ${roundedX}, y: ${roundedY}`);
+      })
+      .catch(() => {
+        window.prompt("Copy this marker code:", markerCode);
+      });
+
+    return;
+  }
+
+  window.prompt("Copy this marker code:", markerCode);
 }
 
 function selectZone(zoneId) {
@@ -138,6 +176,9 @@ function renderZones() {
 
     markerGroup.addEventListener("click", event => {
       event.stopPropagation();
+
+      if (pickMode) return;
+
       selectZone(zone.id);
     });
 
@@ -152,6 +193,7 @@ function renderZones() {
     button.type = "button";
     button.textContent = `${zone.code} - ${zone.name}`;
     button.addEventListener("click", () => {
+      if (pickMode) return;
       selectZone(zone.id);
     });
 
@@ -200,6 +242,25 @@ function centerZone(zone) {
   applyTransform();
 }
 
+function getMapCoordinates(event) {
+  const rect = viewport.getBoundingClientRect();
+
+  const mouseX = event.clientX - rect.left;
+  const mouseY = event.clientY - rect.top;
+
+  return {
+    x: (mouseX - translateX) / scale,
+    y: (mouseY - translateY) / scale
+  };
+}
+
+function setPickMode(enabled) {
+  pickMode = enabled;
+  pickPointButton.classList.toggle("active", pickMode);
+  viewport.classList.toggle("pick-mode", pickMode);
+  pickPointButton.textContent = pickMode ? "Pick Point: ON" : "Pick Point";
+}
+
 viewport.addEventListener("wheel", event => {
   event.preventDefault();
 
@@ -209,6 +270,7 @@ viewport.addEventListener("wheel", event => {
 
 viewport.addEventListener("mousedown", event => {
   dragging = true;
+  didDrag = false;
   viewport.classList.add("dragging");
 
   dragStartX = event.clientX;
@@ -220,8 +282,15 @@ viewport.addEventListener("mousedown", event => {
 window.addEventListener("mousemove", event => {
   if (!dragging) return;
 
-  translateX = startX + event.clientX - dragStartX;
-  translateY = startY + event.clientY - dragStartY;
+  const deltaX = event.clientX - dragStartX;
+  const deltaY = event.clientY - dragStartY;
+
+  if (Math.abs(deltaX) > 3 || Math.abs(deltaY) > 3) {
+    didDrag = true;
+  }
+
+  translateX = startX + deltaX;
+  translateY = startY + deltaY;
 
   applyTransform();
 });
@@ -232,36 +301,33 @@ window.addEventListener("mouseup", () => {
 });
 
 viewport.addEventListener("click", event => {
-  if (dragging) return;
-
-  const rect = viewport.getBoundingClientRect();
-
-  const mouseX = event.clientX - rect.left;
-  const mouseY = event.clientY - rect.top;
-
-  const mapX = (mouseX - translateX) / scale;
-  const mapY = (mouseY - translateY) / scale;
+  if (didDrag) return;
 
   if (pickMode) {
-    copyMarkerCode(mapX, mapY);
+    const coords = getMapCoordinates(event);
+    copyMarkerCode(coords.x, coords.y);
     return;
   }
 
   clearSelection();
 });
 
-document.getElementById("zoom-in").addEventListener("click", () => {
+zoomInButton.addEventListener("click", () => {
   const rect = viewport.getBoundingClientRect();
   zoomAt(rect.left + rect.width / 2, rect.top + rect.height / 2, scale * 1.2);
 });
 
-document.getElementById("zoom-out").addEventListener("click", () => {
+zoomOutButton.addEventListener("click", () => {
   const rect = viewport.getBoundingClientRect();
   zoomAt(rect.left + rect.width / 2, rect.top + rect.height / 2, scale / 1.2);
 });
 
-document.getElementById("reset-map").addEventListener("click", () => {
+resetMapButton.addEventListener("click", () => {
   resetMap();
+});
+
+pickPointButton.addEventListener("click", () => {
+  setPickMode(!pickMode);
 });
 
 window.addEventListener("resize", () => {
