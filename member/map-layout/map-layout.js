@@ -231,7 +231,22 @@ window.addEventListener("mouseup", () => {
   viewport.classList.remove("dragging");
 });
 
-viewport.addEventListener("click", () => {
+viewport.addEventListener("click", event => {
+  if (dragging) return;
+
+  const rect = viewport.getBoundingClientRect();
+
+  const mouseX = event.clientX - rect.left;
+  const mouseY = event.clientY - rect.top;
+
+  const mapX = (mouseX - translateX) / scale;
+  const mapY = (mouseY - translateY) / scale;
+
+  if (pickMode) {
+    copyMarkerCode(mapX, mapY);
+    return;
+  }
+
   clearSelection();
 });
 

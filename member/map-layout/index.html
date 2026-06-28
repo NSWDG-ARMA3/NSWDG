@@ -315,6 +315,32 @@
         <button id="zoom-in" type="button">Zoom In</button>
         <button id="zoom-out" type="button">Zoom Out</button>
         <button id="reset-map" type="button">Reset</button>
+        <button id="pick-point" type="button">Pick Point</button>
+        <script>
+          function copyMarkerCode(x, y) {
+            const code = `{
+            id: "new_marker",
+            code: "NEW",
+            name: "New Marker",
+            description: "Describe this location.",
+            type: "Facility",
+            x: ${Math.round(x)},
+            y: ${Math.round(y)},
+            radius: 24
+          }`;
+
+            navigator.clipboard.writeText(code);
+            alert(`Marker copied:\n\nx: ${Math.round(x)}, y: ${Math.round(y)}`);
+          }
+
+          document.getElementById("pick-point").addEventListener("click", () => {
+          pickMode = !pickMode;
+
+          document.getElementById("pick-point").textContent = pickMode
+            ? "Pick Point: ON"
+            : "Pick Point";
+        });
+        </script>
         <span id="zoom-label">100%</span>
       </div>
 
