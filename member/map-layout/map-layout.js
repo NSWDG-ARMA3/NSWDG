@@ -3,130 +3,14 @@ const MAP_HEIGHT = 941;
 
 const zones = [
   {
-    id: "a10",
-    code: "A10",
-    name: "Firing Range",
-    description: "Large western firing range.",
-    points: "95,145 275,75 515,82 560,165 567,455 115,455 95,385"
-  },
-  {
-    id: "a9c",
-    code: "A9C",
-    name: "A9C CQB Block",
-    description: "North-west CQB block.",
-    points: "616,95 707,95 707,210 616,210"
-  },
-  {
-    id: "a9d",
-    code: "A9D",
-    name: "A9D CQB Block",
-    description: "North-central CQB block.",
-    points: "707,95 773,95 773,210 707,210"
-  },
-  {
-    id: "a9b",
-    code: "A9B",
-    name: "A9B Structure",
-    description: "Western internal A9 structure.",
-    points: "616,210 742,210 742,315 616,315"
-  },
-  {
-    id: "a9a",
-    code: "A9A",
-    name: "A9A Structure",
-    description: "Southern A9 structure.",
-    points: "616,315 760,315 760,382 616,382"
-  },
-  {
-    id: "a8",
-    code: "A8",
-    name: "A8",
-    description: "Central training structure.",
-    points: "784,309 891,309 891,340 784,340"
-  },
-  {
-    id: "a7",
-    code: "A7",
-    name: "A7",
-    description: "Small eastern training structure.",
-    points: "971,247 1049,247 1049,274 971,274"
-  },
-  {
-    id: "a6",
-    code: "A6",
-    name: "A6",
-    description: "South-west compound building.",
-    points: "655,368 736,368 736,504 655,504"
-  },
-  {
-    id: "a5",
-    code: "A5",
-    name: "A5",
-    description: "Main central building block.",
-    points: "784,360 970,360 970,457 784,457"
-  },
-  {
-    id: "a4a",
-    code: "A4A",
-    name: "A4A",
-    description: "Central-west training lane.",
-    points: "310,510 780,510 820,575 520,615 285,585"
-  },
-  {
-    id: "a4b",
-    code: "A4B",
-    name: "A4B",
-    description: "Western small compound.",
-    points: "150,480 300,480 300,560 150,560"
-  },
-  {
-    id: "a3b",
-    code: "A3B",
-    name: "A3B",
-    description: "South-west parking and lane area.",
-    points: "160,640 520,640 520,815 160,815"
-  },
-  {
-    id: "a3a",
-    code: "A3A",
-    name: "A3A",
-    description: "Southern long training lane.",
-    points: "520,640 855,640 855,820 520,820"
-  },
-  {
-    id: "b1",
-    code: "B1",
-    name: "Killhouse B1",
-    description: "Central-south killhouse.",
-    points: "1015,495 1088,495 1088,695 985,695 955,610 980,495"
-  },
-  {
-    id: "a1",
-    code: "A1",
-    name: "A1",
-    description: "Eastern open training area.",
-    points: "1102,318 1275,318 1275,540 1102,540"
-  },
-  {
-    id: "a2",
-    code: "A2",
-    name: "A2",
-    description: "South-east training area.",
-    points: "1100,558 1248,558 1248,805 1100,805"
-  },
-  {
-    id: "b2",
-    code: "B2",
-    name: "Killhouse B2",
-    description: "South-east killhouse.",
-    points: "1025,745 1248,745 1248,800 1025,800"
-  },
-  {
-    id: "b3",
-    code: "B3",
-    name: "Killhouse B3",
-    description: "North-east killhouse complex.",
-    points: "1075,82 1285,82 1285,225 1075,225"
+    id: "classroom",
+    code: "CLS",
+    name: "Classroom",
+    description: "Primary classroom used for Green Team instruction, briefs, and classroom training.",
+    type: "Facility",
+    x: 1135,
+    y: 105,
+    radius: 24
   }
 ];
 
@@ -157,7 +41,7 @@ function applyTransform() {
 }
 
 function clampScale(value) {
-  return Math.max(0.25, Math.min(5, value));
+  return Math.max(0.25, Math.min(6, value));
 }
 
 function setInfo(zone) {
@@ -183,6 +67,8 @@ function selectZone(zoneId) {
   document.querySelectorAll(".map-zone").forEach(element => {
     element.classList.toggle("selected", element.dataset.zoneId === zoneId);
   });
+
+  centerZone(zone);
 }
 
 function clearSelection() {
@@ -195,44 +81,78 @@ function clearSelection() {
   clearInfo();
 }
 
+function restoreInfoAfterHover() {
+  if (!selectedZoneId) {
+    clearInfo();
+    return;
+  }
+
+  const selectedZone = zones.find(item => item.id === selectedZoneId);
+  if (selectedZone) setInfo(selectedZone);
+}
+
 function renderZones() {
   overlay.setAttribute("viewBox", `0 0 ${MAP_WIDTH} ${MAP_HEIGHT}`);
   overlay.innerHTML = "";
   zoneList.innerHTML = "";
 
   zones.forEach(zone => {
-    const polygon = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+    const markerGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    markerGroup.classList.add("map-marker-group");
+    markerGroup.dataset.zoneId = zone.id;
 
-    polygon.setAttribute("points", zone.points);
-    polygon.setAttribute("class", "map-zone");
-    polygon.dataset.zoneId = zone.id;
+    const pulse = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    pulse.setAttribute("cx", zone.x);
+    pulse.setAttribute("cy", zone.y);
+    pulse.setAttribute("r", zone.radius + 10);
+    pulse.setAttribute("class", "map-zone-pulse");
 
-    polygon.addEventListener("mouseenter", () => {
+    const marker = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    marker.setAttribute("cx", zone.x);
+    marker.setAttribute("cy", zone.y);
+    marker.setAttribute("r", zone.radius);
+    marker.setAttribute("class", "map-zone");
+    marker.dataset.zoneId = zone.id;
+
+    const dot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    dot.setAttribute("cx", zone.x);
+    dot.setAttribute("cy", zone.y);
+    dot.setAttribute("r", 5);
+    dot.setAttribute("class", "map-zone-dot");
+
+    const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    label.setAttribute("x", zone.x + zone.radius + 8);
+    label.setAttribute("y", zone.y + 5);
+    label.setAttribute("class", "map-zone-label");
+    label.textContent = zone.name;
+
+    markerGroup.addEventListener("mouseenter", () => {
       setInfo(zone);
+      marker.classList.add("hovered");
     });
 
-    polygon.addEventListener("mouseleave", () => {
-      if (!selectedZoneId) {
-        clearInfo();
-      } else {
-        const selectedZone = zones.find(item => item.id === selectedZoneId);
-        if (selectedZone) setInfo(selectedZone);
-      }
+    markerGroup.addEventListener("mouseleave", () => {
+      marker.classList.remove("hovered");
+      restoreInfoAfterHover();
     });
 
-    polygon.addEventListener("click", event => {
+    markerGroup.addEventListener("click", event => {
       event.stopPropagation();
       selectZone(zone.id);
     });
 
-    overlay.appendChild(polygon);
+    markerGroup.appendChild(pulse);
+    markerGroup.appendChild(marker);
+    markerGroup.appendChild(dot);
+    markerGroup.appendChild(label);
+
+    overlay.appendChild(markerGroup);
 
     const button = document.createElement("button");
     button.type = "button";
     button.textContent = `${zone.code} - ${zone.name}`;
     button.addEventListener("click", () => {
       selectZone(zone.id);
-      centerZone(zone);
     });
 
     zoneList.appendChild(button);
@@ -269,24 +189,13 @@ function resetMap() {
 }
 
 function centerZone(zone) {
-  const coords = zone.points
-    .trim()
-    .split(" ")
-    .map(pair => pair.split(",").map(Number));
-
-  const xs = coords.map(pair => pair[0]);
-  const ys = coords.map(pair => pair[1]);
-
-  const centerX = (Math.min(...xs) + Math.max(...xs)) / 2;
-  const centerY = (Math.min(...ys) + Math.max(...ys)) / 2;
-
   const rect = viewport.getBoundingClientRect();
 
-  scale = Math.max(scale, 1.15);
+  scale = Math.max(scale, 1.8);
   scale = clampScale(scale);
 
-  translateX = rect.width / 2 - centerX * scale;
-  translateY = rect.height / 2 - centerY * scale;
+  translateX = rect.width / 2 - zone.x * scale;
+  translateY = rect.height / 2 - zone.y * scale;
 
   applyTransform();
 }

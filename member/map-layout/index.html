@@ -173,23 +173,52 @@
       height: 941px;
     }
 
-    .map-zone {
-      fill: rgba(29, 63, 94, 0.12);
-      stroke: rgba(29, 63, 94, 0.8);
-      stroke-width: 2;
+    .map-marker-group {
       cursor: pointer;
       pointer-events: all;
     }
 
+    .map-zone {
+      fill: rgba(29, 63, 94, 0.22);
+      stroke: rgba(29, 63, 94, 0.95);
+      stroke-width: 3;
+      transition: fill 0.15s ease, stroke 0.15s ease, stroke-width 0.15s ease;
+    }
+
+    .map-zone.hovered,
     .map-zone:hover {
-      fill: rgba(200, 168, 0, 0.35);
+      fill: rgba(200, 168, 0, 0.45);
       stroke: rgba(200, 168, 0, 1);
+      stroke-width: 4;
     }
 
     .map-zone.selected {
-      fill: rgba(200, 168, 0, 0.55);
+      fill: rgba(200, 168, 0, 0.65);
       stroke: rgba(100, 70, 0, 1);
-      stroke-width: 3;
+      stroke-width: 5;
+    }
+
+    .map-zone-pulse {
+      fill: rgba(29, 63, 94, 0.08);
+      stroke: rgba(29, 63, 94, 0.35);
+      stroke-width: 1;
+      pointer-events: none;
+    }
+
+    .map-zone-dot {
+      fill: #1d3f5e;
+      pointer-events: none;
+    }
+
+    .map-zone-label {
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 18px;
+      font-weight: bold;
+      fill: #1d3f5e;
+      paint-order: stroke;
+      stroke: white;
+      stroke-width: 4px;
+      pointer-events: none;
     }
 
     .info-panel {
