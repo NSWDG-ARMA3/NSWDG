@@ -633,6 +633,53 @@
     .training-highlight {
       animation: trainingFocus 3s ease-out;
     }
+
+  .discord-corner-notice {
+    position: fixed;
+    right: 18px;
+    bottom: 18px;
+    width: 320px;
+    background: #f7f7f7;
+    border: 1px solid #bba952;
+    border-left: 4px solid #bba952;
+    color: #333;
+    z-index: 150;
+    padding: 12px 14px;
+    font-size: 12px;
+    line-height: 1.5;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+    transform: translateX(120%);
+    transition: transform 0.35s ease;
+  }
+
+  .discord-corner-notice.visible {
+    transform: translateX(0);
+  }
+
+  .discord-corner-notice h4 {
+    font-size: 13px;
+    color: #1d3f5e;
+    margin-bottom: 6px;
+  }
+
+  .discord-corner-notice button {
+    margin-top: 8px;
+    background: #1d3f5e;
+    color: #ddd;
+    border: 1px solid #16304a;
+    padding: 4px 10px;
+    font-size: 11px;
+    cursor: pointer;
+  }
+
+  @media (max-width: 520px) {
+    .discord-corner-notice {
+      left: 12px;
+      right: 12px;
+      bottom: 12px;
+      width: auto;
+    }
+  }
   </style>
 </head>
 
@@ -841,6 +888,14 @@
     </div>
   </div>
 
+  <div class="discord-corner-notice" id="discordNotice">
+    <h4>Application Information Notice</h4>
+    <p>
+      Discord invites are sent by staff after your interview. Joining Discord without completing the website application process will not result in acceptance or review.
+    </p>
+    <button type="button" onclick="closeDiscordNotice()">Got it</button>
+  </div>
+
   <script>
     function openModal(id) {
       var modal = document.getElementById(id);
@@ -886,6 +941,18 @@
         section.classList.add('training-highlight');
       }, 250);
     }
+
+  function closeDiscordNotice() {
+    var notice = document.getElementById('discordNotice');
+    if (notice) notice.classList.remove('visible');
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(function() {
+      var notice = document.getElementById('discordNotice');
+      if (notice) notice.classList.add('visible');
+    }, 700);
+  });
   </script>
 
 </body>
