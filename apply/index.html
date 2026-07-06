@@ -864,7 +864,7 @@
         <div class="status-main">
           <span class="status-label">Recruitment Status</span>
           <h2>Applications are open for all listed roles</h2>
-          <p>Recruitment is currently accepting applicants for NSWDG, OPFOR, and Zeus positions. Applicants should choose the role that best fits their interest, experience, and availability.</p>
+          <p>Recruitment is currently accepting applicants for NSWDG, SOAR, Special Tactics, OPFOR, and Zeus positions.</p>
         </div>
         <div class="status-side">
           <span class="status-label">Screening Notice</span>
@@ -880,6 +880,26 @@
             <li>Direct action focused gameplay</li>
             <li>GWOT-era kit and tactics interest</li>
             <li>Team-based training and evaluations</li>
+          </ul>
+        </div>
+
+        <div class="role-card">
+          <h3>SOAR Candidate</h3>
+          <p>Aviation support role focused on 160th SOAR-style rotary-wing operations, insertions, extractions, resupply, casualty evacuation, and air-ground coordination.</p>
+          <ul>
+            <li>Rotary-wing aviation support</li>
+            <li>Aircrew and pilot coordination</li>
+            <li>Ground force integration</li>
+          </ul>
+        </div>
+
+        <div class="role-card">
+          <h3>Special Tactics Candidate</h3>
+          <p>Special Tactics support role focused on 24th STS-style CCT, PJ, or EOD tasks integrated with NSWDG operations.</p>
+          <ul>
+            <li>CCT, PJ, or EOD specialty path</li>
+            <li>Air-ground and technical support</li>
+            <li>Integrated support to assault forces</li>
           </ul>
         </div>
 
@@ -1078,9 +1098,11 @@
             <div class="field-wrap">
               <select id="roleApplied" name="roleApplied">
                 <option value="">Select a role</option>
-                <option value="NSWDG Candidate">NSWDG Candidate</option>
-                <option value="OPFOR Candidate">OPFOR Candidate</option>
-                <option value="Zeus Candidate">Zeus Candidate</option>
+                  <option value="NSWDG Candidate">NSWDG Candidate</option>
+                  <option value="SOAR Candidate">SOAR Candidate</option>
+                  <option value="Special Tactics Candidate">Special Tactics Candidate</option>
+                  <option value="OPFOR Candidate">OPFOR Candidate</option>
+                  <option value="Zeus Candidate">Zeus Candidate</option>
               </select>
               <span class="char-counter"></span>
             </div>
@@ -1179,39 +1201,83 @@
         help: 'NSWDG applicants are reviewed for tactical maturity, GWOT/DEVGRU interest, teamwork, schedule fit, and willingness to learn unit procedures.',
         questions: [
           { id: 'unitConflict', min: 15, max: 700, rows: 4, text: 'Are you currently in any other Arma 3 units or communities? If yes, explain how they differ from this group and whether there are any schedule or loyalty conflicts.' },
-          { id: 'gwotInterest', min: 100, max: 700, rows: 5, text: 'Describe your interest in GWOT-era NSWDG/DEVGRU kit, tactics, atmosphere, and historical recreation. What specifically draws you to this style of unit? Additionally detail your expectation of a community recreating this subject matter.' },
+          { id: 'gwotInterest', min: 100, max: 700, rows: 5, text: 'Describe your interest in GWOT-era NSWDG/DEVGRU kit, tactics, atmosphere, and historical recreation.' },
           { id: 'armaExperience', min: 100, max: 700, rows: 5, text: 'What is your previous Arma 3 or mil-sim experience, how many hours do you have, and what roles have you usually played?' },
-          { id: 'teamworkDiscipline', min: 75, max: 700, rows: 5, text: 'Give an example of how you handle orders, corrections, or criticism during a mission when things are stressful or not going your way.' },
+          { id: 'teamworkDiscipline', min: 75, max: 700, rows: 5, text: 'Give an example of how you handle orders, corrections, or criticism during a mission.' },
           { id: 'specialInterest', min: 50, max: 700, rows: 5, text: 'What NSWDG role or specialty interests you most, such as assaulter, breacher, medic, JTAC, marksman, MFF, or reconnaissance, and why?' },
-          { id: 'availability', min: 25, max: 700, rows: 5, text: 'What does your normal weekly availability look like? Include days, times, timezone, and any recurring limits we should know about.' },
-          { id: 'technicalReadiness', min: 10, max: 500, rows: 4, text: 'Do you have a working microphone, TeamSpeak, Arma 3 installed, required mod space, and a stable enough setup to attend operations?' },
+          { id: 'availability', min: 25, max: 700, rows: 5, text: 'What does your normal weekly availability look like? Include days, times, timezone, and recurring limits.' },
+          { id: 'technicalReadiness', min: 10, max: 500, rows: 4, text: 'Do you have a working microphone, TeamSpeak, Arma 3 installed, required mod space, and a stable setup?' },
           { id: 'voiceInterview', min: 3, max: 300, rows: 3, text: 'Are you willing to complete a voice interview if your application is accepted?' }
         ]
       },
+
+      'SOAR Candidate': {
+        help: 'SOAR applicants are reviewed for aviation interest, crew coordination, radio discipline, reliability, and ability to support ground force operations.',
+        questions: [
+          { id: 'unitConflict', min: 15, max: 700, rows: 4, text: 'Are you currently in any other Arma 3 units or communities? If yes, explain whether this would conflict with a SOAR aviation role.' },
+          { id: 'soarInterest', min: 100, max: 700, rows: 5, text: 'Why are you interested in a 160th SOAR-style aviation role in this community?' },
+          { id: 'aviationExperience', min: 100, max: 700, rows: 5, text: 'Describe your Arma 3 aviation experience. Include rotary-wing, fixed-wing, transport, CAS, insertions, extractions, and night operations if applicable.' },
+          { id: 'airframePreference', min: 50, max: 700, rows: 4, text: 'Which aviation role interests you most, such as pilot, crew chief, door gunner, flight lead, or mission support, and why?' },
+          { id: 'groundCoordination', min: 75, max: 700, rows: 5, text: 'How would you coordinate with a ground force during an infil, exfil, resupply, casualty evacuation, or fire support task?' },
+          { id: 'radioDiscipline', min: 75, max: 700, rows: 5, text: 'Explain your understanding of radio discipline, brevity, and calm communication during aviation support.' },
+          { id: 'availability', min: 25, max: 700, rows: 5, text: 'What does your normal weekly availability look like? Include days, times, timezone, and recurring limits.' },
+          { id: 'technicalReadiness', min: 10, max: 500, rows: 4, text: 'Do you have a working microphone, TeamSpeak, Arma 3 installed, required mod space, and a stable setup?' },
+          { id: 'voiceInterview', min: 3, max: 300, rows: 3, text: 'Are you willing to complete a voice interview and aviation evaluation if your application is accepted?' }
+        ]
+      },
+
+      'Special Tactics Candidate': {
+        help: 'Special Tactics applicants are reviewed for interest in 24th STS-style support roles, communication, medical or technical roleplay maturity, and ability to integrate with ground teams.',
+        questions: [
+          { id: 'unitConflict', min: 15, max: 700, rows: 4, text: 'Are you currently in any other Arma 3 units or communities? If yes, explain whether this would conflict with a Special Tactics role.' },
+          {
+            id: 'specialTacticsSpecialty',
+            type: 'select',
+            min: 1,
+            max: 60,
+            text: 'Which Special Tactics specialty are you applying for?',
+            options: [
+              { value: 'Combat Controller (CCT)', label: 'Combat Controller (CCT)' },
+              { value: 'Pararescue (PJ)', label: 'Pararescue (PJ)' },
+              { value: 'Explosive Ordnance Disposal Technician (EOD)', label: 'Explosive Ordnance Disposal Technician (EOD)' }
+            ]
+          },
+          { id: 'stsInterest', min: 100, max: 700, rows: 5, text: 'Why are you interested in a 24th STS-style role in this community?' },
+          { id: 'specialtyExperience', min: 100, max: 700, rows: 5, text: 'Describe any experience you have with JTAC/CCT tasks, pararescue or medical gameplay, EOD tasks, demolitions, breaching, air-ground integration, or technical support roles.' },
+          { id: 'airGroundIntegration', min: 75, max: 700, rows: 5, text: 'How would you support NSWDG personnel during an operation while staying integrated with the ground force instead of acting independently?' },
+          { id: 'roleScenario', min: 100, max: 700, rows: 5, text: 'Describe how you would act during a mission where the team needs your specialty under pressure.' },
+          { id: 'communicationStyle', min: 75, max: 700, rows: 5, text: 'Explain how you handle radio communication, coordination, and corrections during stressful operations.' },
+          { id: 'availability', min: 25, max: 700, rows: 5, text: 'What does your normal weekly availability look like? Include days, times, timezone, and recurring limits.' },
+          { id: 'technicalReadiness', min: 10, max: 500, rows: 4, text: 'Do you have a working microphone, TeamSpeak, Arma 3 installed, required mod space, and a stable setup?' },
+          { id: 'voiceInterview', min: 3, max: 300, rows: 3, text: 'Are you willing to complete a voice interview and role discussion if your application is accepted?' }
+        ]
+      },
+
       'OPFOR Candidate': {
-        help: 'OPFOR applicants are reviewed for immersion, restraint, independent thinking, reliability, and ability to create believable opposition without treating missions like public PvP.',
+        help: 'OPFOR applicants are reviewed for immersion, restraint, independent thinking, reliability, and ability to create believable opposition.',
         questions: [
           { id: 'unitConflict', min: 15, max: 700, rows: 4, text: 'Are you currently in any other Arma 3 units or communities? If yes, explain whether this would conflict with an OPFOR campaign role.' },
-          { id: 'opforMotivation', min: 100, max: 700, rows: 5, text: 'Why do you want to play OPFOR instead of a main friendly-force role? Describe what makes opposing-force gameplay interesting to you.' },
-          { id: 'armaExperience', min: 75, max: 700, rows: 5, text: 'Describe your Arma 3 experience, including PvE, PvP, Zeus, insurgency, patrol, logistics, reconnaissance, or leadership experience if applicable.' },
-          { id: 'immersionRestraint', min: 100, max: 700, rows: 5, text: 'OPFOR must be believable and fair, not just focused on winning. How would you balance immersion, challenge, and restraint during missions?' },
+          { id: 'opforMotivation', min: 100, max: 700, rows: 5, text: 'Why do you want to play OPFOR instead of a main friendly-force role?' },
+          { id: 'armaExperience', min: 75, max: 700, rows: 5, text: 'Describe your Arma 3 experience, including PvE, PvP, Zeus, insurgency, logistics, reconnaissance, or leadership experience.' },
+          { id: 'immersionRestraint', min: 100, max: 700, rows: 5, text: 'How would you balance immersion, challenge, and restraint during missions?' },
           { id: 'planningStyle', min: 75, max: 700, rows: 5, text: 'How would you approach planning an ambush, raid, reconnaissance task, or defensive action against a better-equipped force?' },
-          { id: 'availability', min: 25, max: 700, rows: 5, text: 'What does your normal weekly availability look like? Include days, times, timezone, and any recurring limits we should know about.' },
-          { id: 'technicalReadiness', min: 10, max: 500, rows: 4, text: 'Do you have a working microphone, TeamSpeak, Arma 3 installed, required mod space, and a stable enough setup to attend operations?' },
+          { id: 'availability', min: 25, max: 700, rows: 5, text: 'What does your normal weekly availability look like?' },
+          { id: 'technicalReadiness', min: 10, max: 500, rows: 4, text: 'Do you have a working microphone, TeamSpeak, Arma 3 installed, required mod space, and a stable setup?' },
           { id: 'voiceInterview', min: 3, max: 300, rows: 3, text: 'Are you willing to complete a voice interview if your application is accepted?' }
         ]
       },
+
       'Zeus Candidate': {
-        help: 'Zeus applicants are reviewed for mission design judgement, technical competence, communication, consistency, restraint, and ability to support the campaign without over-controlling players.',
+        help: 'Zeus applicants are reviewed for mission design judgement, technical competence, communication, consistency, and restraint.',
         questions: [
           { id: 'unitConflict', min: 15, max: 700, rows: 4, text: 'Are you currently in any other Arma 3 units or communities? If yes, explain whether there are schedule, staff, or mission-development conflicts.' },
-          { id: 'zeusExperience', min: 100, max: 700, rows: 5, text: 'Describe your Zeus, Eden Editor, scripting, modding, mission-making, or staff experience. Include examples if you have them. If you are interested in the BLUFOR side of Mission Support are you comfortable with some elements of mission planning, radio communication and tactical operations command tasks?' },
-          { id: 'missionDesign', min: 100, max: 700, rows: 5, text: 'How do you design a believable operation from briefing to execution? Explain how you handle pacing, enemy placement, objectives, and player freedom.' },
-          { id: 'liveAdaptation', min: 100, max: 700, rows: 5, text: 'During a live mission, the players ignore the expected route and break your plan. What do you do to keep the mission believable and functional?' },
+          { id: 'zeusExperience', min: 100, max: 700, rows: 5, text: 'Describe your Zeus, Eden Editor, scripting, modding, mission-making, or staff experience.' },
+          { id: 'missionDesign', min: 100, max: 700, rows: 5, text: 'How do you design a believable operation from briefing to execution?' },
+          { id: 'liveAdaptation', min: 100, max: 700, rows: 5, text: 'During a live mission, the players ignore the expected route and break your plan. What do you do?' },
           { id: 'feedbackLeadership', min: 75, max: 700, rows: 5, text: 'How do you handle feedback from leadership and players when a mission does not go well?' },
-          { id: 'availability', min: 25, max: 700, rows: 5, text: 'What does your normal weekly availability look like? Include prep time, operation attendance, timezone, and any recurring limits.' },
-          { id: 'technicalReadiness', min: 10, max: 500, rows: 4, text: 'Do you have a working microphone, TeamSpeak, Arma 3 installed, required mod space, and a stable enough setup to Zeus or build missions?' },
-          { id: 'paidPosition', min: 3, max: 500, rows: 4, text: 'This role may involve possible paid position discussions. Are you applying as a volunteer, interested in possible paid work, or open to either?' },
+          { id: 'availability', min: 25, max: 700, rows: 5, text: 'What does your normal weekly availability look like?' },
+          { id: 'technicalReadiness', min: 10, max: 500, rows: 4, text: 'Do you have a working microphone, TeamSpeak, Arma 3 installed, required mod space, and a stable setup?' },
+          { id: 'paidPosition', min: 3, max: 500, rows: 4, text: 'Are you applying as a volunteer, interested in possible paid work, or open to either?' },
           { id: 'voiceInterview', min: 3, max: 300, rows: 3, text: 'Are you willing to complete a voice interview and practical Zeus discussion if your application is accepted?' }
         ]
       }
@@ -1296,12 +1362,41 @@
       return element ? element.value.trim() : '';
     }
 
+    function escapeHtml(value) {
+      return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
     function makeQuestionGroup(question, number) {
       QUESTION_LOOKUP[question.id] = question.text;
 
+      if (question.type === 'select') {
+        var options = '<option value="">Select an option</option>';
+
+        question.options.forEach(function(option) {
+          options += '<option value="' + escapeHtml(option.value) + '">' + escapeHtml(option.label) + '</option>';
+        });
+
+        return '' +
+          '<div class="form-group dynamic-question" data-min="' + question.min + '" data-max="' + question.max + '" data-skip-length="true">' +
+            '<label for="' + question.id + '">' + number + '. ' + escapeHtml(question.text) + '</label>' +
+            '<div class="field-wrap">' +
+              '<select id="' + question.id + '" name="' + question.id + '">' +
+                options +
+              '</select>' +
+              '<span class="char-counter"></span>' +
+            '</div>' +
+            '<div class="field-error"></div>' +
+          '</div>';
+      }
+
       return '' +
         '<div class="form-group dynamic-question" data-min="' + question.min + '" data-max="' + question.max + '">' +
-          '<label for="' + question.id + '">' + number + '. ' + question.text + '</label>' +
+          '<label for="' + question.id + '">' + number + '. ' + escapeHtml(question.text) + '</label>' +
           '<div class="field-wrap">' +
             '<textarea id="' + question.id + '" name="' + question.id + '" rows="' + question.rows + '"></textarea>' +
             '<span class="char-counter"></span>' +
@@ -1418,6 +1513,11 @@
 
       clearError(group);
       updateCounter(group);
+
+      if (field.tagName === 'SELECT' && !value) {
+        setError(group, 'Please select an option.');
+        return false;
+      }
 
       if (field.tagName !== 'SELECT' && count < min) {
         setError(group, 'This answer is too short. Minimum: ' + min + ' characters. Current: ' + count + '.');
