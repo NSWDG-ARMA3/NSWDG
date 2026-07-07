@@ -278,31 +278,31 @@ async function loadMembers() {
 }
 
 async function loadAttendanceData() {
-  const [summaryResult, detailsResult, historyResult] = await Promise.all([
-    supabase.from("member_attendance_summary").select("*").order("compliance_status", { ascending: true }).order("overall_percent", { ascending: true }),
-    supabase.from("member_attendance_event_details").select("*").order("start_at", { ascending: false }),
-    supabase.from("member_training_history").select("*").order("start_at", { ascending: false })
+  attendanceSummaryRows = [];
+  attendanceDetailRows = [];
+  trainingHistoryRows = [];
+
+  const [detailsResult, historyResult] = await Promise.all([
+    supabase
+      .from("member_training_history")
+      .select("*")
+      .order("start_at", { ascending: false }),
+
+    supabase
+      .from("member_training_history")
+      .select("*")
+      .order("start_at", { ascending: false })
   ]);
 
-  if (summaryResult.error) {
-    console.error(summaryResult.error);
-    attendanceSummaryRows = [];
-    if (attendanceSummary) attendanceSummary.innerHTML = `<div class="notice-box error">Attendance summary failed: ${escapeHtml(summaryResult.error.message)}</div>`;
-    return;
-  }
-
   if (detailsResult.error) {
-    console.error(detailsResult.error);
+    console.error("Attendance details failed:", detailsResult.error);
     attendanceDetailRows = [];
-    if (attendanceDetails) attendanceDetails.innerHTML = `<div class="notice-box error">Attendance details failed: ${escapeHtml(detailsResult.error.message)}</div>`;
-    return;
+  } else {
+    attendanceDetailRows = detailsResult.data || [];
   }
-
-  attendanceSummaryRows = summaryResult.data || [];
-  attendanceDetailRows = detailsResult.data || [];
 
   if (historyResult.error) {
-    console.error(historyResult.error);
+    console.error("Training history failed:", historyResult.error);
     trainingHistoryRows = [];
   } else {
     trainingHistoryRows = historyResult.data || [];
@@ -310,33 +310,61 @@ async function loadAttendanceData() {
 }
 
 function renderAttendancePanel() {
-  if (!selectedProfile || !attendancePanel) return;
+  if (!selectedProfile || !attendancePanel || !attendanceDetails) return;
 
-  const summary = attendanceSummaryRows.find(row => row.profile_id === selectedProfile.id);
-  if (!summary) {
-    attendanceSummary.innerHTML = `<div class="notice-box">No attendance data for this member.</div>`;
-    attendanceDetails.innerHTML = "";
+  const statusFilter = attendanceStatusFilter?.value || "";
+
+  let rows = attendanceDetailRows
+    .filter(row => row.profile_id === selectedProfile.id)
+    .sort((a, b) => new Date(b.start_at) - new Date(a.start_at));
+
+  if (statusFilter) {
+    rows = rows.filter(row => row.resolved_status === statusFilter);
+  }
+
+  const lateRows = rows.filter(row => row.resolved_status === "LATE");
+  const totalLateMinutes = lateRows.reduce((sum, row) => sum + Number(row.minutes_late || 0), 0);
+
+  if (attendanceSummary) {
+    attendanceSummary.innerHTML = `
+      <div class="attendance-cards">
+        ${metricCard("Rows", rows.length)}
+        ${metricCard("Times Late", lateRows.length)}
+        ${metricCard("Late Minutes", totalLateMinutes)}
+        ${metricCard("Selected", selectedProfile.display_name || selectedProfile.user_id)}
+      </div>
+    `;
+  }
+
+  if (!rows.length) {
+    attendanceDetails.innerHTML = `<div class="notice-box">No completed training rows for this member.</div>`;
     return;
   }
 
-  attendanceSummary.innerHTML = `
-    <div class="attendance-cards">
-      ${metricCard("Status", summary.compliance_status)}
-      ${metricCard("Overall", `${formatPercent(summary.overall_percent)} / ${Number(summary.min_overall_percent).toFixed(0)}%`)}
-      ${metricCard("Mandatory", `${formatPercent(summary.mandatory_percent)} / ${Number(summary.min_mandatory_percent).toFixed(0)}%`)}
-      ${metricCard("Attended", `${summary.attended_events}/${summary.total_required_events}`)}
-      ${metricCard("Unexcused", `${summary.unexcused_absences}/${summary.max_unexcused_absences}`)}
-      ${metricCard("No-shows", `${summary.no_shows}/${summary.max_no_shows}`)}
-      ${metricCard("Late", summary.late_events)}
-      ${metricCard("LOA", summary.loa_events)}
-    </div>
-    <div class="notice-box">
-      Standard: ${escapeHtml(summary.standard_name)} | Window: ${escapeHtml(summary.evaluation_window_days)} days | Last attended: ${escapeHtml(formatDateTime(summary.last_attended_at))}
+  attendanceDetails.innerHTML = `
+    <div class="attendance-table-wrap">
+      <table class="attendance-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Training</th>
+            <th>Current</th>
+            <th>Mark As</th>
+            <th>Late Minutes</th>
+            <th>Admin Note</th>
+            <th>Save</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows.map(renderAttendanceRow).join("")}
+        </tbody>
+      </table>
     </div>
   `;
 
-  populateSessionFilter();
-  renderAttendanceDetails();
+  attendanceDetails.querySelectorAll("[data-save-attendance]").forEach(button => {
+    button.addEventListener("click", () => saveAttendanceMark(button.dataset.saveAttendance));
+  });
 }
 
 function metricCard(label, value) {
@@ -400,28 +428,64 @@ function renderAttendanceDetails() {
 
 function renderAttendanceRow(row) {
   const id = `${row.session_id}-${row.profile_id}`;
+  const currentStatus = row.resolved_status || "NO_RESPONSE";
+
   return `
     <tr data-attendance-row="${escapeHtml(id)}">
       <td>${escapeHtml(formatDateTime(row.start_at))}</td>
-      <td><strong>${escapeHtml(row.title)}</strong><br><span class="muted">${escapeHtml(row.category || "-")}</span></td>
-      <td>${row.mandatory ? "Yes" : "No"}</td>
-      <td>${escapeHtml(row.rsvp_status || "NO_RESPONSE")}</td>
+
+      <td>
+        <strong>${escapeHtml(row.title)}</strong><br>
+        <span class="muted">${escapeHtml(row.category || "-")}</span>
+      </td>
+
+      <td>
+        <strong>${escapeHtml(currentStatus)}</strong>
+        ${Number(row.minutes_late || 0) > 0 ? `<br><span class="muted">${escapeHtml(row.minutes_late)} min late</span>` : ""}
+      </td>
+
       <td>
         <select data-field="actual_status">
-          ${statusOption("PRESENT", row.resolved_status)}
-          ${statusOption("LATE", row.resolved_status)}
-          ${statusOption("LEFT_EARLY", row.resolved_status)}
-          ${statusOption("PARTIAL", row.resolved_status)}
-          ${statusOption("EXCUSED", row.resolved_status)}
-          ${statusOption("LOA", row.resolved_status)}
-          ${statusOption("ABSENT", row.resolved_status)}
-          ${statusOption("NO_SHOW", row.resolved_status)}
+          ${statusOption("PRESENT", currentStatus)}
+          ${statusOption("LATE", currentStatus)}
+          ${statusOption("LEFT_EARLY", currentStatus)}
+          ${statusOption("PARTIAL", currentStatus)}
+          ${statusOption("EXCUSED", currentStatus)}
+          ${statusOption("LOA", currentStatus)}
+          ${statusOption("ABSENT", currentStatus)}
+          ${statusOption("NO_SHOW", currentStatus)}
         </select>
       </td>
-      <td><input data-field="minutes_late" type="number" min="0" value="${escapeHtml(row.minutes_late || 0)}"></td>
-      <td><input data-field="minutes_left_early" type="number" min="0" value="${escapeHtml(row.minutes_left_early || 0)}"></td>
-      <td><input data-field="admin_note" type="text" value="${escapeHtml(row.admin_note || "")}" maxlength="1000"></td>
-      <td><button class="btn btn-primary btn-small" type="button" data-save-attendance="${escapeHtml(id)}" data-session-id="${escapeHtml(row.session_id)}" data-profile-id="${escapeHtml(row.profile_id)}">Save</button></td>
+
+      <td>
+        <input
+          class="attendance-late-input"
+          data-field="minutes_late"
+          type="number"
+          min="0"
+          step="1"
+          value="${escapeHtml(row.minutes_late || 0)}">
+      </td>
+
+      <td>
+        <input
+          class="attendance-note-input"
+          data-field="admin_note"
+          type="text"
+          value="${escapeHtml(row.admin_note || "")}"
+          maxlength="1000">
+      </td>
+
+      <td>
+        <button
+          class="btn btn-primary btn-small"
+          type="button"
+          data-save-attendance="${escapeHtml(id)}"
+          data-session-id="${escapeHtml(row.session_id)}"
+          data-profile-id="${escapeHtml(row.profile_id)}">
+          Save
+        </button>
+      </td>
     </tr>
   `;
 }

@@ -597,8 +597,93 @@
             </div>
           </form>
 
+          <style>
+            .attendance-panel {
+  margin-top: 12px;
+  border: 1px solid #ccc;
+  background: #f8f8f8;
+  padding: 10px;
+}
+
+.attendance-panel h3 {
+  font-size: 12px;
+  color: #1d3f5e;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.attendance-toolbar {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.attendance-table-wrap {
+  overflow-x: auto;
+}
+
+.attendance-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+}
+
+.attendance-table th,
+.attendance-table td {
+  border: 1px solid #ccc;
+  padding: 6px;
+  font-size: 11px;
+  vertical-align: middle;
+}
+
+.attendance-table th {
+  background: #e8e8e8;
+  color: #1d3f5e;
+  text-align: left;
+}
+
+.attendance-table select,
+.attendance-table input {
+  width: 100%;
+  min-width: 80px;
+  font-size: 11px;
+  padding: 4px;
+}
+
+.attendance-late-input {
+  max-width: 90px;
+}
+
+.attendance-note-input {
+  min-width: 160px;
+}
+          </style>
           <div id="status-line" class="status-line"></div>
           <div id="training-history-panel" class="training-history-panel"></div>
+          <div id="attendance-panel" class="attendance-panel">
+            <h3>Attendance Marking</h3>
+
+            <div class="attendance-toolbar">
+              <select id="attendance-status-filter">
+                <option value="">All Statuses</option>
+                <option value="PRESENT">Present</option>
+                <option value="LATE">Late</option>
+                <option value="LEFT_EARLY">Left Early</option>
+                <option value="PARTIAL">Partial</option>
+                <option value="EXCUSED">Excused</option>
+                <option value="LOA">LOA</option>
+                <option value="ABSENT">Absent</option>
+                <option value="NO_SHOW">No Show</option>
+                <option value="NO_RESPONSE">No Response</option>
+              </select>
+
+              <button class="btn btn-primary" id="refresh-attendance-btn" type="button">Refresh</button>
+            </div>
+
+            <div id="attendance-summary"></div>
+            <div id="attendance-details"></div>
+          </div>
 
           <p class="muted" style="margin-top:10px;">
             Delete Profile removes the row from public.profiles only. It does not delete the Supabase Auth account.
