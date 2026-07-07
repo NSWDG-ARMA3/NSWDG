@@ -14,6 +14,7 @@ const state = {
   sessions: [],
   attendance: [],
   profiles: [],
+  loaRequests: [],
   activeSessionId: null
 };
 
@@ -115,7 +116,7 @@ async function loadSessionAndProfile() {
 }
 
 async function loadData() {
-  const [sessionsResult, attendanceResult, profilesResult] = await Promise.all([
+  const [sessionsResult, attendanceResult, profilesResult, loaResult] = await Promise.all([
     supabase
       .from("training_sessions")
       .select("*")
@@ -129,7 +130,12 @@ async function loadData() {
       .from("profiles")
       .select("id,user_id,display_name,role,status,avatar_url,callsign,naval_rank")
       .eq("status", "ACTIVE")
-      .order("display_name", { ascending: true })
+      .order("display_name", { ascending: true }),
+
+    supabase
+      .from("loa_requests")
+      .select("*")
+      .eq("status", "APPROVED")
   ]);
 
   if (sessionsResult.error) {
@@ -142,10 +148,10 @@ async function loadData() {
     return;
   }
 
-  state.sessions = sessionsResult.data || [];
+  state.sessions = (sessionsResult.data || []).filter(canViewSession);
   state.attendance = attendanceResult.data || [];
   state.profiles = profilesResult.data || [];
-  state.sessions = (sessionsResult.data || []).filter(canViewSession);
+  state.loaRequests = loaResult.data || [];
 
   renderSessions();
 
@@ -339,12 +345,19 @@ function renderSessions() {
 
 function renderViewer(session) {
   const attendanceRows = state.attendance.filter(a => Number(a.session_id) === Number(session.id));
+
   const attending = attendanceRows.filter(a => a.attendance === "ATTENDING");
   const notAttending = attendanceRows.filter(a => a.attendance === "NOT_ATTENDING");
 
   const noResponse = state.profiles.filter(profile => {
     return !attendanceRows.some(a => a.user_id === profile.id);
   });
+
+  const loaRows = getLoaForSession(session);
+  const loaUserIds = new Set(loaRows.map(loa => loa.requester_id));
+
+  const showingUp = attending.filter(row => !loaUserIds.has(row.user_id));
+  const blockedByLoa = state.profiles.filter(profile => loaUserIds.has(profile.id));
 
   const myAttendance = attendanceRows.find(a => a.user_id === state.authUser.id);
   const canManage = canManageSession(session);
@@ -353,118 +366,154 @@ function renderViewer(session) {
   el.viewer.className = "viewer";
 
   el.viewer.innerHTML = `
-    <div class="training-detail-card">
-      <div class="training-detail-header">
+    <div class="training-v2-card">
+      <div class="training-v2-header">
         <div>
           <div class="training-eyebrow">Training Session</div>
           <h2>${escapeHtml(session.title)}</h2>
+
           <div class="training-badges">
             ${categoryBadge(session.category)}
             ${statusBadge(session.status)}
           </div>
         </div>
 
-        <div class="training-time-box">
-          <span>Start</span>
+        <div class="training-v2-time">
+          <span>Start Time</span>
           <strong>${escapeHtml(formatDateTime(session.start_at))}</strong>
+          <small>Eastern Time</small>
         </div>
       </div>
 
-      <div class="training-info-grid">
-        <div class="training-info-item">
+      <div class="training-v2-meta">
+        <div>
           <span>End</span>
           <strong>${escapeHtml(session.end_at ? formatDateTime(session.end_at) : "-")}</strong>
         </div>
 
-        <div class="training-info-item">
+        <div>
           <span>Location</span>
           <strong>${escapeHtml(session.location || "-")}</strong>
         </div>
 
-        <div class="training-info-item">
+        <div>
           <span>Host</span>
           <strong>${escapeHtml(getProfileName(session.host_id))}</strong>
         </div>
 
-        <div class="training-info-item">
-          <span>Your Status</span>
+        <div>
+          <span>Your Response</span>
           <strong>${escapeHtml(myAttendance ? attendanceLabel(myAttendance.attendance) : "No Response")}</strong>
         </div>
       </div>
 
-      <div class="training-section">
-        <h3>Description</h3>
-        <div class="training-description">
-          ${escapeHtml(session.description || "-").replaceAll("\n", "<br>")}
+      <div class="training-v2-section">
+        <div class="training-v2-section-head">
+          <h3>Quick Overview</h3>
+        </div>
+
+        <div class="training-v2-stats">
+          <div class="stat-card green">
+            <b>${showingUp.length}</b>
+            <span>Showing Up</span>
+          </div>
+
+          <div class="stat-card red">
+            <b>${notAttending.length}</b>
+            <span>Not Attending</span>
+          </div>
+
+          <div class="stat-card yellow">
+            <b>${noResponse.length}</b>
+            <span>No Response</span>
+          </div>
+
+          <div class="stat-card blue">
+            <b>${blockedByLoa.length}</b>
+            <span>Approved LOA</span>
+          </div>
+
+          <div class="stat-card dark">
+            <b>${state.profiles.length}</b>
+            <span>Total Members</span>
+          </div>
         </div>
       </div>
 
-      <div class="training-section response-section">
-        <h3>Your Response</h3>
+      <div class="training-v2-section">
+        <div class="training-v2-section-head">
+          <h3>Your Response</h3>
+        </div>
 
         <div class="response-buttons">
           <button class="response-btn response-attending" type="button" id="attending-button">
-            <span>✓</span>
-            Attending
+            ✓ Attending
           </button>
 
           <button class="response-btn response-not-attending" type="button" id="not-attending-button">
-            <span>✕</span>
-            Not Attending
+            ✕ Not Attending
           </button>
         </div>
       </div>
 
-      <div class="training-section">
-        <h3>Availability Overview</h3>
+      <details class="training-v2-details" open>
+        <summary>Attendance Roster</summary>
 
-        <div class="attendance-summary-grid">
-          <div class="summary-card green">
-            <span>${attending.length}</span>
-            <strong>Attending</strong>
+        ${canManage ? `
+          <div class="admin-attendance-note">
+            Admin mode: drag members between columns to manually set their response.
+          </div>
+        ` : ""}
+
+        <div class="training-roster-grid ${canManage ? "admin-attendance-board" : ""}">
+          <div class="roster-column green ${canManage ? "admin-drop-zone" : ""}" data-admin-attendance="ATTENDING">
+            <div class="roster-column-head">
+              <strong>Showing Up</strong>
+              <span>${showingUp.length}</span>
+            </div>
+            ${canManage ? renderDraggableAttendanceRows(showingUp, "ATTENDING") : renderNameList(showingUp)}
           </div>
 
-          <div class="summary-card red">
-            <span>${notAttending.length}</span>
-            <strong>Not Attending</strong>
+          <div class="roster-column red ${canManage ? "admin-drop-zone" : ""}" data-admin-attendance="NOT_ATTENDING">
+            <div class="roster-column-head">
+              <strong>Not Attending</strong>
+              <span>${notAttending.length}</span>
+            </div>
+            ${canManage ? renderDraggableAttendanceRows(notAttending, "NOT_ATTENDING") : renderNameList(notAttending)}
           </div>
 
-          <div class="summary-card yellow">
-            <span>${noResponse.length}</span>
-            <strong>No Response</strong>
-          </div>
-
-          <div class="summary-card blue">
-            <span>${state.profiles.length}</span>
-            <strong>Total Members</strong>
+          <div class="roster-column yellow ${canManage ? "admin-drop-zone" : ""}" data-admin-attendance="">
+            <div class="roster-column-head">
+              <strong>No Response</strong>
+              <span>${noResponse.length}</span>
+            </div>
+            ${canManage ? renderDraggableProfiles(noResponse) : renderProfileList(noResponse)}
           </div>
         </div>
+      </details>
 
-        ${canManage
-          ? renderAdminAttendanceBoard(session, attending, notAttending, noResponse)
-          : `
-            <div class="attendance-grid upgraded">
-              <div class="attendance-box">
-                <strong>Attending</strong>
-                ${renderNameList(attending)}
-              </div>
+      <details class="training-v2-details">
+        <summary>LOA Coverage</summary>
 
-              <div class="attendance-box">
-                <strong>Not Attending</strong>
-                ${renderNameList(notAttending)}
-              </div>
+        <div class="training-v2-description">
+          ${blockedByLoa.length
+            ? renderProfileCards(blockedByLoa)
+            : `<span class="muted">No approved LOA found for this training date.</span>`
+          }
+        </div>
+      </details>
 
-              <div class="attendance-box">
-                <strong>No Response</strong>
-                ${renderProfileList(noResponse)}
-              </div>
-            </div>
-          `
-        }
-      </div>
+      <details class="training-v2-details" open>
+        <summary>Description</summary>
 
-      <div class="training-section">
-        <h3>After Action Review</h3>
+        <div class="training-v2-description">
+          ${escapeHtml(session.description || "-").replaceAll("\n", "<br>")}
+        </div>
+      </details>
+
+      <details class="training-v2-details">
+        <summary>After Action Review</summary>
+
         ${renderAar(session, canAar)}
 
         ${canAar ? `
@@ -472,34 +521,138 @@ function renderViewer(session) {
             <button class="btn btn-primary" type="button" id="save-aar-button">Save AAR</button>
           </div>
         ` : ""}
-      </div>
+      </details>
 
       ${canManage ? `
-        <div class="danger-zone">
-          <div>
-            <strong>Danger Zone</strong>
-            <span>Delete this training session permanently.</span>
-          </div>
+        <details class="training-v2-details danger-details">
+          <summary>Danger Zone</summary>
 
-          <button class="btn btn-danger" type="button" id="delete-training-button">Delete Training</button>
-        </div>
+          <div class="danger-zone">
+            <div>
+              <strong>Delete Training</strong>
+              <span>This permanently deletes the training session.</span>
+            </div>
+
+            <button class="btn btn-danger" type="button" id="delete-training-button">Delete Training</button>
+          </div>
+        </details>
       ` : ""}
     </div>
   `;
 
   document.getElementById("attending-button").addEventListener("click", () => saveAttendance(session.id, "ATTENDING"));
   document.getElementById("not-attending-button").addEventListener("click", () => saveAttendance(session.id, "NOT_ATTENDING"));
-    if (canManage) {
+
+  if (canManage) {
     bindAdminAttendanceBoard(session.id);
+    document.getElementById("delete-training-button").addEventListener("click", () => deleteTraining(session.id));
   }
 
   if (canAar) {
     document.getElementById("save-aar-button").addEventListener("click", () => saveAar(session.id));
   }
+}
 
-  if (canManage) {
-    document.getElementById("delete-training-button").addEventListener("click", () => deleteTraining(session.id));
+function getLoaForSession(session) {
+  if (!session?.start_at) return [];
+
+  const sessionDate = new Date(session.start_at).toISOString().slice(0, 10);
+
+  return state.loaRequests.filter(loa => {
+    return loa.start_date <= sessionDate && loa.end_date >= sessionDate;
+  });
+}
+
+function renderProfileCards(profiles) {
+  if (!profiles.length) return `<span class="muted">None</span>`;
+
+  return profiles.map(profile => `
+    <div class="profile-mini-card">
+      <strong>${escapeHtml(profile.display_name)}</strong>
+      <span>${escapeHtml(profile.naval_rank || "No rank")}${profile.callsign ? ` [${escapeHtml(profile.callsign)}]` : ""}</span>
+    </div>
+  `).join("");
+}
+
+function renderDraggableAttendanceRows(rows, attendance) {
+  if (!rows.length) return `<span class="muted">None</span>`;
+
+  return rows.map(row => {
+    const profile = state.profiles.find(p => p.id === row.user_id);
+
+    return `
+      <div
+        class="admin-attendance-user"
+        draggable="true"
+        data-user-id="${escapeHtml(row.user_id)}"
+        data-current-attendance="${escapeHtml(attendance)}"
+      >
+        ${escapeHtml(profileLabel(profile, row.user_id))}
+      </div>
+    `;
+  }).join("");
+}
+
+function renderDraggableProfiles(profiles) {
+  if (!profiles.length) return `<span class="muted">None</span>`;
+
+  return profiles.map(profile => `
+    <div
+      class="admin-attendance-user"
+      draggable="true"
+      data-user-id="${escapeHtml(profile.id)}"
+      data-current-attendance=""
+    >
+      ${escapeHtml(profileLabel(profile, profile.id))}
+    </div>
+  `).join("");
+}
+
+function bindAdminAttendanceBoard(sessionId) {
+  document.querySelectorAll(".admin-attendance-user").forEach(card => {
+    card.addEventListener("dragstart", event => {
+      event.dataTransfer.setData("text/plain", card.dataset.userId);
+      event.dataTransfer.effectAllowed = "move";
+    });
+  });
+
+  document.querySelectorAll(".admin-drop-zone").forEach(zone => {
+    zone.addEventListener("dragover", event => {
+      event.preventDefault();
+      zone.classList.add("drag-over");
+    });
+
+    zone.addEventListener("dragleave", () => {
+      zone.classList.remove("drag-over");
+    });
+
+    zone.addEventListener("drop", async event => {
+      event.preventDefault();
+      zone.classList.remove("drag-over");
+
+      const userId = event.dataTransfer.getData("text/plain");
+      const attendance = zone.dataset.adminAttendance || null;
+
+      if (!userId) return;
+
+      await adminSetAttendance(sessionId, userId, attendance);
+    });
+  });
+}
+
+async function adminSetAttendance(sessionId, userId, attendance) {
+  const result = await supabase.rpc("admin_set_training_response", {
+    p_session_id: Number(sessionId),
+    p_user_id: userId,
+    p_attendance: attendance
+  });
+
+  if (result.error) {
+    alert("Admin attendance update failed: " + result.error.message);
+    return;
   }
+
+  await loadData();
 }
 
 function renderAar(session, canAar) {
