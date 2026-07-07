@@ -497,22 +497,26 @@ function statusOption(value, selected) {
 async function saveAttendanceMark(rowId) {
   const button = attendanceDetails.querySelector(`[data-save-attendance="${CSS.escape(rowId)}"]`);
   const row = attendanceDetails.querySelector(`[data-attendance-row="${CSS.escape(rowId)}"]`);
+
   if (!button || !row) return;
 
   button.disabled = true;
   button.textContent = "Saving";
 
-  const actualStatus = row.querySelector('[data-field="actual_status"]').value;
-  const minutesLate = Number(row.querySelector('[data-field="minutes_late"]').value || 0);
-  const minutesLeftEarly = Number(row.querySelector('[data-field="minutes_left_early"]').value || 0);
-  const adminNote = row.querySelector('[data-field="admin_note"]').value.trim();
+  const actualStatusInput = row.querySelector('[data-field="actual_status"]');
+  const minutesLateInput = row.querySelector('[data-field="minutes_late"]');
+  const adminNoteInput = row.querySelector('[data-field="admin_note"]');
+
+  const actualStatus = actualStatusInput ? actualStatusInput.value : "PRESENT";
+  const minutesLate = minutesLateInput ? Number(minutesLateInput.value || 0) : 0;
+  const adminNote = adminNoteInput ? adminNoteInput.value.trim() : "";
 
   const { error } = await supabase.rpc("admin_mark_training_attendance", {
     target_session_id: Number(button.dataset.sessionId),
     target_profile_id: button.dataset.profileId,
     new_actual_status: actualStatus,
-    new_minutes_late: minutesLate,
-    new_minutes_left_early: minutesLeftEarly,
+    new_minutes_late: actualStatus === "LATE" ? minutesLate : 0,
+    new_minutes_left_early: 0,
     new_excused: actualStatus === "EXCUSED" || actualStatus === "LOA",
     new_admin_note: adminNote
   });
@@ -526,9 +530,11 @@ async function saveAttendanceMark(rowId) {
   }
 
   setStatus("Attendance updated.", "ok");
+
   await loadAttendanceData();
   renderMemberList();
   renderAttendancePanel();
+  renderTrainingHistory();
 }
 
 async function saveSelectedProfile(event) {
