@@ -359,6 +359,25 @@
   font-size: 12px;
 }
 
+.training-v2-aar {
+  padding: 16px;
+}
+
+.training-v2-aar textarea {
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 12px;
+}
+
+.training-v2-aar label {
+  display: block;
+  margin: 10px 0 4px;
+}
+
+.training-v2-aar .button-row {
+  margin-top: 12px;
+}
+
 .training-v2-section {
   padding: 16px;
   border-bottom: 1px solid #d8dee6;
@@ -371,20 +390,24 @@
   align-items: center;
   margin-bottom: 10px;
 }
-
-.training-v2-section h3,
-.training-v2-details summary {
-  font-size: 12px;
-  color: #1d3f5e;
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  font-weight: bold;
+.training-v2-details > textarea,
+.training-v2-details > label,
+.training-v2-details > .button-row {
+  margin-left: 16px;
+  margin-right: 16px;
+  width: calc(100% - 32px);
 }
 
-.training-v2-stats {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 10px;
+.training-v2-details > textarea {
+  display: block;
+  box-sizing: border-box;
+  margin-bottom: 12px;
+}
+
+.training-v2-details > label {
+  display: block;
+  margin-top: 12px;
+  margin-bottom: 4px;
 }
 
 .stat-card {

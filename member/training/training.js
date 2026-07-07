@@ -510,17 +510,21 @@ function renderViewer(session) {
           ${escapeHtml(session.description || "-").replaceAll("\n", "<br>")}
         </div>
       </details>
-
+      
       <details class="training-v2-details">
         <summary>After Action Review</summary>
 
-        ${renderAar(session, canAar)}
+        <div class="training-v2-aar">
 
-        ${canAar ? `
-          <div class="button-row aar-actions">
-            <button class="btn btn-primary" type="button" id="save-aar-button">Save AAR</button>
-          </div>
-        ` : ""}
+          ${renderAar(session, canAar)}
+
+          ${canAar ? `
+            <div class="button-row aar-actions">
+              <button class="btn btn-primary" type="button" id="save-aar-button">Save AAR</button>
+            </div>
+          ` : ""}
+
+        </div>
       </details>
 
       ${canManage ? `
