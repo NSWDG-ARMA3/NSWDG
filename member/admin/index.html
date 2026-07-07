@@ -369,6 +369,78 @@
         display: none;
       }
     }
+
+    .training-history-panel {
+  margin-top: 12px;
+  border: 1px solid #ccc;
+  background: #f8f8f8;
+  padding: 10px;
+}
+
+.training-history-panel h3 {
+  font-size: 12px;
+  color: #1d3f5e;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.training-history-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.training-history-card {
+  border: 1px solid #d8d2c2;
+  background: #fff;
+  padding: 10px;
+}
+
+.training-history-card span {
+  display: block;
+  font-size: 10px;
+  text-transform: uppercase;
+  color: #666;
+  margin-bottom: 4px;
+}
+
+.training-history-card strong {
+  font-size: 18px;
+}
+
+.training-history-last10 {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.history-pill {
+  border: 1px solid #aaa;
+  background: #fff;
+  padding: 5px 7px;
+  font-size: 11px;
+  font-weight: bold;
+}
+
+.history-pill.good {
+  color: #1f6b2a;
+  border-color: #1f6b2a;
+}
+
+.history-pill.bad {
+  color: #9b1c1c;
+  border-color: #9b1c1c;
+}
+
+.history-pill.loa {
+  color: #1d3f5e;
+  border-color: #1d3f5e;
+}
+
+.history-pill.neutral {
+  color: #777;
+}
   </style>
 </head>
 
@@ -520,6 +592,7 @@
           </form>
 
           <div id="status-line" class="status-line"></div>
+          <div id="training-history-panel" class="training-history-panel"></div>
 
           <p class="muted" style="margin-top:10px;">
             Delete Profile removes the row from public.profiles only. It does not delete the Supabase Auth account.

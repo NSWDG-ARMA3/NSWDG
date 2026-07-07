@@ -36,12 +36,15 @@ const attendanceSessionFilter = document.getElementById("attendance-session-filt
 const attendanceStatusFilter = document.getElementById("attendance-status-filter");
 const refreshAttendanceBtn = document.getElementById("refresh-attendance-btn");
 
+const trainingHistoryPanel = document.getElementById("training-history-panel");
+
 let authUser = null;
 let currentProfile = null;
 let members = [];
 let selectedProfile = null;
 let attendanceSummaryRows = [];
 let attendanceDetailRows = [];
+let trainingHistoryRows = [];
 
 function isAdminEmail(email) {
   return ADMIN_EMAILS.includes(String(email || "").trim().toLowerCase());
@@ -113,6 +116,75 @@ function renderMemberList() {
   });
 }
 
+function renderTrainingHistory() {
+  if (!selectedProfile || !trainingHistoryPanel) return;
+
+  const rows = trainingHistoryRows
+    .filter(row => row.profile_id === selectedProfile.id)
+    .sort((a, b) => new Date(b.start_at) - new Date(a.start_at));
+
+  const total = rows.length;
+
+  const attended = rows.filter(row => {
+    return ["PRESENT", "LATE", "LEFT_EARLY", "PARTIAL"].includes(row.resolved_status);
+  }).length;
+
+  const loa = rows.filter(row => row.resolved_status === "LOA").length;
+
+  const percent = total > 0 ? ((attended / total) * 100).toFixed(1) : "0.0";
+
+  const lastTen = rows.slice(0, 10);
+
+  trainingHistoryPanel.innerHTML = `
+    <h3>Training History</h3>
+
+    <div class="training-history-cards">
+      <div class="training-history-card">
+        <span>Total Trainings</span>
+        <strong>${escapeHtml(total)}</strong>
+      </div>
+
+      <div class="training-history-card">
+        <span>Attendance</span>
+        <strong>${escapeHtml(percent)}%</strong>
+      </div>
+
+      <div class="training-history-card">
+        <span>LOA</span>
+        <strong>${escapeHtml(loa)}</strong>
+      </div>
+    </div>
+
+    <div class="training-history-last10">
+      ${lastTen.length ? lastTen.map(renderHistoryPill).join("") : `<span class="muted">No completed training history.</span>`}
+    </div>
+  `;
+}
+
+function renderHistoryPill(row) {
+  const status = row.resolved_status || "NO_RESPONSE";
+
+  let label = "✕";
+  let cls = "bad";
+
+  if (["PRESENT", "LATE", "LEFT_EARLY", "PARTIAL"].includes(status)) {
+    label = "✓";
+    cls = "good";
+  } else if (status === "LOA") {
+    label = "LOA";
+    cls = "loa";
+  } else if (status === "NO_RESPONSE") {
+    label = "-";
+    cls = "neutral";
+  }
+
+  return `
+    <span class="history-pill ${cls}" title="${escapeHtml(row.title)} | ${escapeHtml(formatDateTime(row.start_at))} | ${escapeHtml(status)}">
+      ${escapeHtml(label)}
+    </span>
+  `;
+}
+
 function selectProfile(profile) {
   selectedProfile = profile;
   profileIdInput.value = profile.id;
@@ -129,6 +201,7 @@ function selectProfile(profile) {
   clearStatus();
   renderMemberList();
   renderAttendancePanel();
+  renderTrainingHistory();
 }
 
 async function loadSessionAndProfile() {
@@ -187,9 +260,10 @@ async function loadMembers() {
 }
 
 async function loadAttendanceData() {
-  const [summaryResult, detailsResult] = await Promise.all([
+  const [summaryResult, detailsResult, historyResult] = await Promise.all([
     supabase.from("member_attendance_summary").select("*").order("compliance_status", { ascending: true }).order("overall_percent", { ascending: true }),
-    supabase.from("member_attendance_event_details").select("*").order("start_at", { ascending: false })
+    supabase.from("member_attendance_event_details").select("*").order("start_at", { ascending: false }),
+    supabase.from("member_training_history").select("*").order("start_at", { ascending: false })
   ]);
 
   if (summaryResult.error) {
@@ -208,6 +282,13 @@ async function loadAttendanceData() {
 
   attendanceSummaryRows = summaryResult.data || [];
   attendanceDetailRows = detailsResult.data || [];
+
+  if (historyResult.error) {
+    console.error(historyResult.error);
+    trainingHistoryRows = [];
+  } else {
+    trainingHistoryRows = historyResult.data || [];
+  }
 }
 
 function renderAttendancePanel() {
