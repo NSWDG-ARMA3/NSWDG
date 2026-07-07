@@ -793,7 +793,9 @@ function attendanceLabel(value) {
 function formatDateTime(value) {
   if (!value) return "-";
 
-  return new Intl.DateTimeFormat("en-US", {
+  const date = new Date(value);
+
+  const formatted = new Intl.DateTimeFormat("en-US", {
     timeZone: "America/New_York",
     weekday: "short",
     month: "short",
@@ -801,9 +803,10 @@ function formatDateTime(value) {
     year: "numeric",
     hour: "2-digit",
     minute: "2-digit",
-    hour12: false,
-    timeZoneName: "short"
-  }).format(new Date(value));
+    hour12: false
+  }).format(date);
+
+  return `${formatted} ET`;
 }
 
 function showStatus(message, ok) {
