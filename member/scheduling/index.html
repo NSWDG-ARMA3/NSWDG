@@ -1008,6 +1008,10 @@
     let profilesById = new Map();
     let allResponses = [];
     let mySlots = new Map();
+    let dirtySlots = new Map();
+    let isDirty = false;
+    let isSaving = false;
+    let pendingRealtimeReload = false;
     let selectedOrbatDay = 0;
     let activeView = "calendar";
     let realtimeChannel = null;
@@ -1394,10 +1398,13 @@ function aggregate(slotStart) {
 
       if (value) {
         mySlots.set(key, value);
+        dirtySlots.set(key, value);
       } else {
         mySlots.delete(key);
+        dirtySlots.set(key, null);
       }
 
+      isDirty = true;
       updateCell(cell, value);
       dragChanged = true;
     }
@@ -1892,7 +1899,12 @@ function aggregate(slotStart) {
       loaRequests = data || [];
     }
 
-    async function loadResponses() {
+    async function loadResponses({ force = false } = {}) {
+      if ((isDirty || isSaving) && !force) {
+        pendingRealtimeReload = true;
+        return;
+      }
+
       const range = bufferedLoadRange();
       const visibleSet = new Set(range.keys);
 
@@ -1905,17 +1917,31 @@ function aggregate(slotStart) {
 
       if (error) {
         allResponses = [];
-        mySlots.clear();
         setStatus(`Failed to load scheduling data: ${error.message}`, false);
       } else {
         allResponses = data || [];
-        mySlots.clear();
 
-        for (const response of allResponses) {
-          const key = new Date(response.slot_start).toISOString();
+        if (!isDirty || force) {
+          mySlots.clear();
 
-          if (response.user_id === authUser.id && visibleSet.has(key)) {
-            mySlots.set(key, response.availability);
+          for (const response of allResponses) {
+            const key = new Date(response.slot_start).toISOString();
+
+            if (response.user_id === authUser.id && visibleSet.has(key)) {
+              mySlots.set(key, response.availability);
+            }
+          }
+        } else {
+          for (const response of allResponses) {
+            const key = new Date(response.slot_start).toISOString();
+
+            if (
+              response.user_id === authUser.id &&
+              visibleSet.has(key) &&
+              !dirtySlots.has(key)
+            ) {
+              mySlots.set(key, response.availability);
+            }
           }
         }
       }
@@ -1937,52 +1963,84 @@ function aggregate(slotStart) {
     }
 
     async function saveAvailability() {
+      if (isSaving) {
+        return;
+      }
+
+      isSaving = true;
       saveBtn.disabled = true;
       saveBtn.textContent = "Saving...";
 
       const keys = visibleSlotKeys();
       const keySet = new Set(keys);
 
-      const { error: deleteError } = await supabase
-        .from("scheduling_responses")
-        .delete()
-        .eq("user_id", authUser.id)
-        .in("slot_start", keys);
+      const changedRows = [];
+      const clearedKeys = [];
 
-      if (deleteError) {
-        setStatus(`Failed to clear old availability: ${deleteError.message}`, false);
-        saveBtn.disabled = false;
-        saveBtn.textContent = "Save";
-        return;
-      }
+      for (const [key, value] of dirtySlots.entries()) {
+        if (!keySet.has(key)) {
+          continue;
+        }
 
-      const rows = [...mySlots.entries()]
-        .filter(([key]) => keySet.has(key))
-        .map(([key, value]) => ({
-          user_id: authUser.id,
-          slot_start: key,
-          availability: value,
-          note: null,
-          updated_at: new Date().toISOString()
-        }));
-
-      if (rows.length) {
-        const { error: insertError } = await supabase
-          .from("scheduling_responses")
-          .insert(rows);
-
-        if (insertError) {
-          setStatus(`Failed to save availability: ${insertError.message}`, false);
-          saveBtn.disabled = false;
-          saveBtn.textContent = "Save";
-          return;
+        if (value) {
+          changedRows.push({
+            user_id: authUser.id,
+            slot_start: key,
+            availability: value,
+            note: null,
+            updated_at: new Date().toISOString()
+          });
+        } else {
+          clearedKeys.push(key);
         }
       }
 
-      setStatus("Availability saved successfully.", true);
-      saveBtn.disabled = false;
-      saveBtn.textContent = "Save";
-      await loadResponses();
+      try {
+        if (clearedKeys.length) {
+          for (const keyChunk of chunkArray(clearedKeys, 100)) {
+            const { error } = await supabase
+              .from("scheduling_responses")
+              .delete()
+              .eq("user_id", authUser.id)
+              .in("slot_start", keyChunk);
+
+            if (error) {
+              throw new Error(`Failed to clear availability: ${error.message}`);
+            }
+          }
+        }
+
+        if (changedRows.length) {
+          for (const rowChunk of chunkArray(changedRows, 500)) {
+            const { error } = await supabase
+              .from("scheduling_responses")
+              .upsert(rowChunk, {
+                onConflict: "user_id,slot_start"
+              });
+
+            if (error) {
+              throw new Error(`Failed to save availability: ${error.message}`);
+            }
+          }
+        }
+
+        dirtySlots.clear();
+        isDirty = false;
+        setStatus("Availability saved successfully.", true);
+
+        await loadResponses({ force: true });
+
+        if (pendingRealtimeReload) {
+          pendingRealtimeReload = false;
+          await loadResponses({ force: true });
+        }
+      } catch (error) {
+        setStatus(error.message, false);
+      } finally {
+        isSaving = false;
+        saveBtn.disabled = false;
+        saveBtn.textContent = "Save";
+      }
     }
 
 
@@ -2110,7 +2168,15 @@ function aggregate(slotStart) {
           },
           () => {
             clearTimeout(timer);
-            timer = setTimeout(loadResponses, 300);
+
+            timer = setTimeout(() => {
+              if (isDirty || isSaving) {
+                pendingRealtimeReload = true;
+                return;
+              }
+
+              loadResponses();
+            }, 300);
           }
         )
         .subscribe();
