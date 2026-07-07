@@ -440,22 +440,27 @@ function renderViewer(session) {
           </div>
         </div>
 
-        <div class="attendance-grid upgraded">
-          <div class="attendance-box">
-            <strong>Attending</strong>
-            ${renderNameList(attending)}
-          </div>
+        ${canManage
+          ? renderAdminAttendanceBoard(session, attending, notAttending, noResponse)
+          : `
+            <div class="attendance-grid upgraded">
+              <div class="attendance-box">
+                <strong>Attending</strong>
+                ${renderNameList(attending)}
+              </div>
 
-          <div class="attendance-box">
-            <strong>Not Attending</strong>
-            ${renderNameList(notAttending)}
-          </div>
+              <div class="attendance-box">
+                <strong>Not Attending</strong>
+                ${renderNameList(notAttending)}
+              </div>
 
-          <div class="attendance-box">
-            <strong>No Response</strong>
-            ${renderProfileList(noResponse)}
-          </div>
-        </div>
+              <div class="attendance-box">
+                <strong>No Response</strong>
+                ${renderProfileList(noResponse)}
+              </div>
+            </div>
+          `
+        }
       </div>
 
       <div class="training-section">
@@ -484,6 +489,9 @@ function renderViewer(session) {
 
   document.getElementById("attending-button").addEventListener("click", () => saveAttendance(session.id, "ATTENDING"));
   document.getElementById("not-attending-button").addEventListener("click", () => saveAttendance(session.id, "NOT_ATTENDING"));
+    if (canManage) {
+    bindAdminAttendanceBoard(session.id);
+  }
 
   if (canAar) {
     document.getElementById("save-aar-button").addEventListener("click", () => saveAar(session.id));
@@ -628,6 +636,112 @@ function renderNameList(rows) {
     const profile = state.profiles.find(p => p.id === row.user_id);
     return `<div>${escapeHtml(profileLabel(profile, row.user_id))}</div>`;
   }).join("");
+}
+
+function renderAdminAttendanceBoard(session, attending, notAttending, noResponse) {
+  return `
+    <div class="admin-attendance-note">
+      Admin mode: drag members between columns to manually set their response.
+    </div>
+
+    <div class="attendance-grid upgraded admin-attendance-board">
+      <div class="attendance-box admin-drop-zone" data-admin-attendance="ATTENDING">
+        <strong>Attending</strong>
+        ${renderDraggableAttendanceRows(attending, "ATTENDING")}
+      </div>
+
+      <div class="attendance-box admin-drop-zone" data-admin-attendance="NOT_ATTENDING">
+        <strong>Not Attending</strong>
+        ${renderDraggableAttendanceRows(notAttending, "NOT_ATTENDING")}
+      </div>
+
+      <div class="attendance-box admin-drop-zone" data-admin-attendance="">
+        <strong>No Response</strong>
+        ${renderDraggableProfiles(noResponse)}
+      </div>
+    </div>
+  `;
+}
+
+function renderDraggableAttendanceRows(rows, attendance) {
+  if (!rows.length) return `<span class="muted">None</span>`;
+
+  return rows.map(row => {
+    const profile = state.profiles.find(p => p.id === row.user_id);
+
+    return `
+      <div
+        class="admin-attendance-user"
+        draggable="true"
+        data-user-id="${escapeHtml(row.user_id)}"
+        data-current-attendance="${escapeHtml(attendance)}"
+      >
+        ${escapeHtml(profileLabel(profile, row.user_id))}
+      </div>
+    `;
+  }).join("");
+}
+
+function renderDraggableProfiles(profiles) {
+  if (!profiles.length) return `<span class="muted">None</span>`;
+
+  return profiles.map(profile => `
+    <div
+      class="admin-attendance-user"
+      draggable="true"
+      data-user-id="${escapeHtml(profile.id)}"
+      data-current-attendance=""
+    >
+      ${escapeHtml(profileLabel(profile, profile.id))}
+    </div>
+  `).join("");
+}
+
+function bindAdminAttendanceBoard(sessionId) {
+  document.querySelectorAll(".admin-attendance-user").forEach(card => {
+    card.addEventListener("dragstart", event => {
+      event.dataTransfer.setData("text/plain", card.dataset.userId);
+      event.dataTransfer.effectAllowed = "move";
+    });
+  });
+
+  document.querySelectorAll(".admin-drop-zone").forEach(zone => {
+    zone.addEventListener("dragover", event => {
+      event.preventDefault();
+      zone.classList.add("drag-over");
+    });
+
+    zone.addEventListener("dragleave", () => {
+      zone.classList.remove("drag-over");
+    });
+
+    zone.addEventListener("drop", async event => {
+      event.preventDefault();
+      zone.classList.remove("drag-over");
+
+      const userId = event.dataTransfer.getData("text/plain");
+      const attendance = zone.dataset.adminAttendance || null;
+
+      if (!userId) return;
+
+      await adminSetAttendance(sessionId, userId, attendance);
+    });
+  });
+}
+
+async function adminSetAttendance(sessionId, userId, attendance) {
+  const result = await supabase.rpc("admin_set_training_response", {
+    p_session_id: Number(sessionId),
+    p_user_id: userId,
+    p_attendance: attendance
+  });
+
+  if (result.error) {
+    alert("Admin attendance update failed: " + result.error.message);
+    return;
+  }
+
+  await loadData();
 }
 
 function renderProfileList(profiles) {
