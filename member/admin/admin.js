@@ -129,10 +129,12 @@ function renderTrainingHistory() {
     return ["PRESENT", "LATE", "LEFT_EARLY", "PARTIAL"].includes(row.resolved_status);
   }).length;
 
+  const lateRows = rows.filter(row => row.resolved_status === "LATE");
+  const lateCount = lateRows.length;
+  const totalLateMinutes = lateRows.reduce((sum, row) => sum + Number(row.minutes_late || 0), 0);
+
   const loa = rows.filter(row => row.resolved_status === "LOA").length;
-
   const percent = total > 0 ? ((attended / total) * 100).toFixed(1) : "0.0";
-
   const lastTen = rows.slice(0, 10);
 
   trainingHistoryPanel.innerHTML = `
@@ -147,6 +149,16 @@ function renderTrainingHistory() {
       <div class="training-history-card">
         <span>Attendance</span>
         <strong>${escapeHtml(percent)}%</strong>
+      </div>
+
+      <div class="training-history-card">
+        <span>Times Late</span>
+        <strong>${escapeHtml(lateCount)}</strong>
+      </div>
+
+      <div class="training-history-card">
+        <span>Late Minutes</span>
+        <strong>${escapeHtml(totalLateMinutes)}</strong>
       </div>
 
       <div class="training-history-card">
@@ -167,9 +179,15 @@ function renderHistoryPill(row) {
   let label = "✕";
   let cls = "bad";
 
-  if (["PRESENT", "LATE", "LEFT_EARLY", "PARTIAL"].includes(status)) {
+  if (status === "PRESENT") {
     label = "✓";
     cls = "good";
+  } else if (status === "LATE") {
+    label = `LATE ${Number(row.minutes_late || 0)}m`;
+    cls = "late";
+  } else if (["LEFT_EARLY", "PARTIAL"].includes(status)) {
+    label = "PARTIAL";
+    cls = "neutral";
   } else if (status === "LOA") {
     label = "LOA";
     cls = "loa";
