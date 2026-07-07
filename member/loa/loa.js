@@ -14,6 +14,14 @@ const endDateInput = document.getElementById("end-date");
 const reasonInput = document.getElementById("reason");
 const refreshBtn = document.getElementById("refresh-btn");
 const tableBody = document.getElementById("loa-table-body");
+const calendarEl = document.getElementById("loa-calendar");
+const calendarSummaryEl = document.getElementById("loa-calendar-summary");
+const calendarMonthInput = document.getElementById("loa-calendar-month");
+const prevMonthBtn = document.getElementById("loa-prev-month");
+const nextMonthBtn = document.getElementById("loa-next-month");
+const currentMonthBtn = document.getElementById("loa-current-month");
+
+let loaRows = [];
 
 function setStatus(message, ok) {
   const el = document.getElementById("status-line");
@@ -109,6 +117,115 @@ async function loadProfiles() {
   profilesById = new Map(data.map(row => [row.id, row]));
 }
 
+function isoDate(date) {
+  return date.toISOString().slice(0, 10);
+}
+
+function monthValue(date) {
+  return date.toISOString().slice(0, 7);
+}
+
+function parseUtcDate(value) {
+  return new Date(value + "T00:00:00Z");
+}
+
+function addDays(date, days) {
+  const next = new Date(date);
+  next.setUTCDate(next.getUTCDate() + days);
+  return next;
+}
+
+function addMonthsToValue(value, amount) {
+  const [year, month] = value.split("-").map(Number);
+  const date = new Date(Date.UTC(year, month - 1 + amount, 1));
+  return monthValue(date);
+}
+
+function requestOverlapsDate(row, dateKey) {
+  return row.start_date <= dateKey && row.end_date >= dateKey;
+}
+
+function visibleCalendarRows() {
+  return loaRows.filter(row => {
+    const status = String(row.status || "").toUpperCase();
+    return status === "APPROVED" || status === "PENDING";
+  });
+}
+
+function renderLeaveCalendar() {
+  if (!calendarEl || !calendarMonthInput) {
+    return;
+  }
+
+  const value = calendarMonthInput.value || monthValue(new Date());
+  const [year, month] = value.split("-").map(Number);
+
+  const firstOfMonth = new Date(Date.UTC(year, month - 1, 1));
+  const lastOfMonth = new Date(Date.UTC(year, month, 0));
+
+  const startOffset = firstOfMonth.getUTCDay();
+  const gridStart = addDays(firstOfMonth, -startOffset);
+
+  const rows = visibleCalendarRows();
+
+  const monthStartKey = isoDate(firstOfMonth);
+  const monthEndKey = isoDate(lastOfMonth);
+
+  const monthRows = rows.filter(row => {
+    return row.start_date <= monthEndKey && row.end_date >= monthStartKey;
+  });
+
+  const uniqueMembers = new Set(monthRows.map(row => row.requester_id));
+
+  calendarSummaryEl.textContent =
+    `${monthRows.length} active LOA request(s), ${uniqueMembers.size} member(s) affected this month.`;
+
+  const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+  let html = dayNames.map(day => `
+    <div class="loa-calendar-head">${day}</div>
+  `).join("");
+
+  for (let i = 0; i < 42; i++) {
+    const current = addDays(gridStart, i);
+    const dateKey = isoDate(current);
+    const outside = current.getUTCMonth() !== firstOfMonth.getUTCMonth();
+
+    const dayRows = rows
+      .filter(row => requestOverlapsDate(row, dateKey))
+      .sort((a, b) => {
+        const nameA = profileName(a.requester_id);
+        const nameB = profileName(b.requester_id);
+        return nameA.localeCompare(nameB);
+      });
+
+    const entries = dayRows.length
+      ? dayRows.map(row => {
+        const status = String(row.status || "").toLowerCase();
+        const meta = profileMeta(row.requester_id);
+        const label = meta
+          ? `${profileName(row.requester_id)} · ${meta}`
+          : profileName(row.requester_id);
+
+        return `
+          <span class="loa-calendar-entry ${escapeHtml(status)}" title="${escapeHtml(row.reason)}">
+            ${escapeHtml(label)}
+          </span>
+        `;
+      }).join("")
+      : `<div class="loa-calendar-empty">No LOA</div>`;
+
+    html += `
+      <div class="loa-calendar-day ${outside ? "outside" : ""}">
+        <div class="loa-calendar-date">${current.getUTCDate()}</div>
+        ${entries}
+      </div>
+    `;
+  }
+
+  calendarEl.innerHTML = html;
+}
+
 function renderRows(rows) {
   if (!rows.length) {
     tableBody.innerHTML = `<tr><td colspan="5">No LOA requests found.</td></tr>`;
@@ -194,7 +311,9 @@ async function loadLoas() {
     return;
   }
 
-  renderRows(data || []);
+  loaRows = data || [];
+  renderRows(loaRows);
+  renderLeaveCalendar();
 }
 
 async function submitLoa(event) {
@@ -284,6 +403,24 @@ async function init() {
 
   loaForm.addEventListener("submit", submitLoa);
   refreshBtn.addEventListener("click", loadLoas);
+  calendarMonthInput.value = monthValue(new Date());
+
+  calendarMonthInput.addEventListener("change", renderLeaveCalendar);
+
+  prevMonthBtn.addEventListener("click", () => {
+    calendarMonthInput.value = addMonthsToValue(calendarMonthInput.value, -1);
+    renderLeaveCalendar();
+  });
+
+  nextMonthBtn.addEventListener("click", () => {
+    calendarMonthInput.value = addMonthsToValue(calendarMonthInput.value, 1);
+    renderLeaveCalendar();
+  });
+
+  currentMonthBtn.addEventListener("click", () => {
+    calendarMonthInput.value = monthValue(new Date());
+    renderLeaveCalendar();
+  });
 
   await loadLoas();
 }
