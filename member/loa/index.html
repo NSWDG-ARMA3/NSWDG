@@ -219,9 +219,21 @@
 
     .grid {
       display: grid;
-      grid-template-columns: 340px 1fr;
+      grid-template-columns: 460px minmax(0, 1fr);
       gap: 14px;
       align-items: start;
+    }
+
+    .left-column,
+    .right-column {
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .table-scroll {
+      overflow-x: auto;
     }
 
     .panel {
@@ -419,30 +431,31 @@
       flex-shrink: 0;
     }
 
-    .loa-calendar-controls {
+   .loa-calendar-controls {
   display: flex;
-  gap: 8px;
+  gap: 6px;
   align-items: center;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
   flex-wrap: wrap;
 }
 
 .loa-calendar-controls input {
-  width: auto;
+  width: 135px;
 }
 
 .loa-calendar-summary {
   font-size: 11px;
   color: #555;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
 .loa-calendar {
   display: grid;
-  grid-template-columns: repeat(7, minmax(90px, 1fr));
+  grid-template-columns: repeat(7, minmax(0, 1fr));
   border: 1px solid #bbb;
   background: #ddd;
   gap: 1px;
+  width: 100%;
 }
 
 .loa-calendar-head {
@@ -451,14 +464,14 @@
   font-size: 10px;
   font-weight: bold;
   text-transform: uppercase;
-  padding: 5px;
+  padding: 4px;
   text-align: center;
 }
 
 .loa-calendar-day {
-  min-height: 92px;
+  min-height: 78px;
   background: #fff;
-  padding: 5px;
+  padding: 4px;
   overflow: hidden;
 }
 
@@ -469,33 +482,23 @@
 
 .loa-calendar-date {
   font-weight: bold;
-  font-size: 11px;
-  margin-bottom: 4px;
+  font-size: 10px;
+  margin-bottom: 3px;
   color: #1d3f5e;
 }
 
 .loa-calendar-entry {
   display: block;
   margin: 2px 0;
-  padding: 2px 4px;
+  padding: 2px 3px;
   font-size: 10px;
-  line-height: 1.25;
+  line-height: 1.2;
   border-left: 3px solid #1d3f5e;
   background: #eaf1f8;
   color: #111;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-
-.loa-calendar-entry.pending {
-  border-left-color: #c8a800;
-  background: #fffbe6;
-}
-
-.loa-calendar-entry.approved {
-  border-left-color: #1a5a1a;
-  background: #eef7ee;
 }
 
 .loa-calendar-empty {
@@ -513,23 +516,31 @@
   }
 }
 
-    @media (max-width: 900px) {
-      .grid {
-        grid-template-columns: 1fr;
-      }
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
 
-      .portal-body {
-        flex-direction: column;
-      }
+  .portal-body {
+    flex-direction: column;
+  }
 
-      .sidebar {
-        width: 100%;
-      }
+  .sidebar {
+    width: 100%;
+  }
 
-      .portal-nav {
-        overflow-x: auto;
-      }
-    }
+  .portal-nav {
+    overflow-x: auto;
+  }
+
+  .loa-calendar {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .loa-calendar-head {
+    display: none;
+  }
+}
   </style>
 </head>
 
@@ -559,69 +570,73 @@
         </div>
 
         <div class="grid">
-          <div class="panel">
-            <div class="panel-title">Submit LOA</div>
-            <div class="panel-body">
-              <form id="loa-form">
-                <div class="form-row">
-                  <label for="start-date">Start Date</label>
-                  <input id="start-date" type="date" required>
-                </div>
+          <div class="left-column">
+            <div class="panel">
+              <div class="panel-title">Submit LOA</div>
+              <div class="panel-body">
+                <form id="loa-form">
+                  <div class="form-row">
+                    <label for="start-date">Start Date</label>
+                    <input id="start-date" type="date" required>
+                  </div>
 
-                <div class="form-row">
-                  <label for="end-date">End Date</label>
-                  <input id="end-date" type="date" required>
-                </div>
+                  <div class="form-row">
+                    <label for="end-date">End Date</label>
+                    <input id="end-date" type="date" required>
+                  </div>
 
-                <div class="form-row">
-                  <label for="reason">Reason</label>
-                  <textarea id="reason" required maxlength="2000" placeholder="Reason for LOA"></textarea>
-                </div>
+                  <div class="form-row">
+                    <label for="reason">Reason</label>
+                    <textarea id="reason" required maxlength="2000" placeholder="Reason for LOA"></textarea>
+                  </div>
 
-                <div class="btn-row">
-                  <button class="btn btn-primary" type="submit">Submit LOA</button>
-                  <button class="btn btn-secondary" type="button" id="refresh-btn">Refresh</button>
-                </div>
+                  <div class="btn-row">
+                    <button class="btn btn-primary" type="submit">Submit LOA</button>
+                    <button class="btn btn-secondary" type="button" id="refresh-btn">Refresh</button>
+                  </div>
 
-                <div id="status-line" class="status-line"></div>
-              </form>
-            </div>
-          </div>
-
-          <div class="panel">
-            <div class="panel-title">Leave Calendar</div>
-            <div class="panel-body">
-              <div class="loa-calendar-controls">
-                <button class="btn btn-secondary" type="button" id="loa-prev-month">Previous</button>
-                <input id="loa-calendar-month" type="month">
-                <button class="btn btn-secondary" type="button" id="loa-next-month">Next</button>
-                <button class="btn btn-secondary" type="button" id="loa-current-month">Current Month</button>
+                  <div id="status-line" class="status-line"></div>
+                </form>
               </div>
+            </div>
 
-              <div id="loa-calendar-summary" class="loa-calendar-summary">Loading calendar...</div>
-              <div id="loa-calendar" class="loa-calendar"></div>
+            <div class="panel">
+              <div class="panel-title">LOA Requests</div>
+              <div class="panel-body table-scroll">
+                <table class="info-table">
+                  <thead>
+                    <tr>
+                      <th>Member</th>
+                      <th>Dates</th>
+                      <th>Reason</th>
+                      <th>Status</th>
+                      <th>Review</th>
+                    </tr>
+                  </thead>
+                  <tbody id="loa-table-body">
+                    <tr>
+                      <td colspan="5">Loading...</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
 
-          <div class="panel">
-            <div class="panel-title">LOA Requests</div>
-            <div class="panel-body">
-              <table class="info-table">
-                <thead>
-                  <tr>
-                    <th>Member</th>
-                    <th>Dates</th>
-                    <th>Reason</th>
-                    <th>Status</th>
-                    <th>Review</th>
-                  </tr>
-                </thead>
-                <tbody id="loa-table-body">
-                  <tr>
-                    <td colspan="5">Loading...</td>
-                  </tr>
-                </tbody>
-              </table>
+          <div class="right-column">
+            <div class="panel">
+              <div class="panel-title">Leave Calendar</div>
+              <div class="panel-body">
+                <div class="loa-calendar-controls">
+                  <button class="btn btn-secondary" type="button" id="loa-prev-month">Previous</button>
+                  <input id="loa-calendar-month" type="month">
+                  <button class="btn btn-secondary" type="button" id="loa-next-month">Next</button>
+                  <button class="btn btn-secondary" type="button" id="loa-current-month">Current Month</button>
+                </div>
+
+                <div id="loa-calendar-summary" class="loa-calendar-summary">Loading calendar...</div>
+                <div id="loa-calendar" class="loa-calendar"></div>
+              </div>
             </div>
           </div>
         </div>
