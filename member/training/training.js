@@ -343,6 +343,142 @@ function renderSessions() {
   });
 }
 
+function renderAdminMarkingTable(session, attendanceRows) {
+  const rows = state.profiles
+    .slice()
+    .sort((a, b) => String(a.display_name || "").localeCompare(String(b.display_name || "")));
+
+  return `
+    <div class="admin-marking-note">
+      Mark final attendance for this training. Late minutes only apply when status is set to LATE.
+    </div>
+
+    <div class="admin-marking-table-wrap">
+      <table class="admin-marking-table">
+        <thead>
+          <tr>
+            <th>Member</th>
+            <th>RSVP</th>
+            <th>Final Status</th>
+            <th>Late Min</th>
+            <th>Left Early Min</th>
+            <th>Note</th>
+            <th>Save</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          ${rows.map(profile => {
+            const row = attendanceRows.find(a => a.user_id === profile.id);
+            return renderAdminMarkingRow(session, profile, row);
+          }).join("")}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+function renderAdminMarkingRow(session, profile, row) {
+  const rsvp = row?.attendance || "NO_RESPONSE";
+  const actual = row?.actual_status || guessActualStatusFromRsvp(rsvp);
+
+  return `
+    <tr data-admin-mark-row="${escapeHtml(profile.id)}">
+      <td>
+        <strong>${escapeHtml(profile.display_name || profile.user_id || profile.id)}</strong><br>
+        <span class="muted">${escapeHtml(profile.naval_rank || "Candidate")}${profile.callsign ? ` | ${escapeHtml(profile.callsign)}` : ""}</span>
+      </td>
+
+      <td>${escapeHtml(rsvp)}</td>
+
+      <td>
+        <select data-field="actual_status">
+          ${adminStatusOption("PRESENT", actual)}
+          ${adminStatusOption("LATE", actual)}
+          ${adminStatusOption("LEFT_EARLY", actual)}
+          ${adminStatusOption("PARTIAL", actual)}
+          ${adminStatusOption("EXCUSED", actual)}
+          ${adminStatusOption("LOA", actual)}
+          ${adminStatusOption("ABSENT", actual)}
+          ${adminStatusOption("NO_SHOW", actual)}
+        </select>
+      </td>
+
+      <td>
+        <input data-field="minutes_late" type="number" min="0" step="1" value="${escapeHtml(row?.minutes_late || 0)}">
+      </td>
+
+      <td>
+        <input data-field="minutes_left_early" type="number" min="0" step="1" value="${escapeHtml(row?.minutes_left_early || 0)}">
+      </td>
+
+      <td>
+        <input data-field="admin_note" type="text" maxlength="1000" value="${escapeHtml(row?.admin_note || "")}">
+      </td>
+
+      <td>
+        <button
+          class="btn btn-primary btn-small"
+          type="button"
+          data-admin-save-mark
+          data-session-id="${escapeHtml(session.id)}"
+          data-user-id="${escapeHtml(profile.id)}">
+          Save
+        </button>
+      </td>
+    </tr>
+  `;
+}
+
+function guessActualStatusFromRsvp(rsvp) {
+  if (rsvp === "ATTENDING") return "PRESENT";
+  if (rsvp === "NOT_ATTENDING") return "ABSENT";
+  return "NO_SHOW";
+}
+
+function adminStatusOption(value, selected) {
+  return `<option value="${escapeHtml(value)}" ${value === selected ? "selected" : ""}>${escapeHtml(value)}</option>`;
+}
+
+function bindAdminMarkingTable() {
+  document.querySelectorAll("[data-admin-save-mark]").forEach(button => {
+    button.addEventListener("click", () => saveAdminMarkingRow(button));
+  });
+}
+
+async function saveAdminMarkingRow(button) {
+  const row = button.closest("[data-admin-mark-row]");
+  if (!row) return;
+
+  const actualStatus = row.querySelector('[data-field="actual_status"]').value;
+  const minutesLate = Number(row.querySelector('[data-field="minutes_late"]').value || 0);
+  const minutesLeftEarly = Number(row.querySelector('[data-field="minutes_left_early"]').value || 0);
+  const adminNote = row.querySelector('[data-field="admin_note"]').value.trim();
+
+  button.disabled = true;
+  button.textContent = "Saving";
+
+  const { error } = await supabase.rpc("admin_mark_training_attendance", {
+    target_session_id: Number(button.dataset.sessionId),
+    target_profile_id: button.dataset.userId,
+    new_actual_status: actualStatus,
+    new_minutes_late: actualStatus === "LATE" ? minutesLate : 0,
+    new_minutes_left_early: actualStatus === "LEFT_EARLY" ? minutesLeftEarly : 0,
+    new_excused: actualStatus === "EXCUSED" || actualStatus === "LOA",
+    new_admin_note: adminNote
+  });
+
+  button.disabled = false;
+  button.textContent = "Save";
+
+  if (error) {
+    alert("Failed to save attendance: " + error.message);
+    return;
+  }
+
+  await loadData();
+}
+
 function renderViewer(session) {
   const attendanceRows = state.attendance.filter(a => Number(a.session_id) === Number(session.id));
 
@@ -492,6 +628,16 @@ function renderViewer(session) {
         </div>
       </details>
 
+      ${canManage ? `
+        <details class="training-v2-details" open>
+          <summary>Admin Attendance Marking</summary>
+
+          <div class="admin-marking-panel">
+            ${renderAdminMarkingTable(session, attendanceRows)}
+          </div>
+        </details>
+      ` : ""}    
+
       <details class="training-v2-details">
         <summary>LOA Coverage</summary>
 
@@ -510,7 +656,7 @@ function renderViewer(session) {
           ${escapeHtml(session.description || "-").replaceAll("\n", "<br>")}
         </div>
       </details>
-      
+
       <details class="training-v2-details">
         <summary>After Action Review</summary>
 
@@ -549,7 +695,12 @@ function renderViewer(session) {
 
   if (canManage) {
     bindAdminAttendanceBoard(session.id);
-    document.getElementById("delete-training-button").addEventListener("click", () => deleteTraining(session.id));
+    bindAdminMarkingTable();
+
+    const deleteButton = document.getElementById("delete-training-button");
+    if (deleteButton) {
+      deleteButton.addEventListener("click", () => deleteTraining(session.id));
+    }
   }
 
   if (canAar) {
