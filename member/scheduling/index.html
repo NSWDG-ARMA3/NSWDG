@@ -1712,9 +1712,6 @@ function aggregate(slotStart) {
           </tr>
         </thead>
         <tbody>`;
-
-  let hasAny = false;
-
   for (let slot = 0; slot < SLOTS_PER_DAY; slot++) {
     const key = slotKey(slotUtc(selectedOrbatDay, slot));
     const groupHtml = [];
@@ -1735,10 +1732,6 @@ function aggregate(slotStart) {
         }
       }
 
-      if (people.length) {
-        hasAny = true;
-      }
-
       groupHtml.push(`
         <td class="orbat-group-cell">
           ${people.length ? people.map(({ member, callsignCode }) => {
@@ -1754,17 +1747,11 @@ function aggregate(slotStart) {
         </td>`);
     }
 
-    const rowHasPeople = groupHtml.join("").includes("orbat-person");
-
-    if (!rowHasPeople) {
-      continue;
-    }
-
-    html += `
-      <tr>
-        <td class="orbat-time-cell">${escapeHtml(slotLabel(selectedOrbatDay, slot))}</td>
-        ${groupHtml.join("")}
-      </tr>`;
+  html += `
+    <tr>
+      <td class="orbat-time-cell">${escapeHtml(slotLabel(selectedOrbatDay, slot))}</td>
+      ${groupHtml.join("")}
+    </tr>`;
   }
 
   html += `
@@ -1772,9 +1759,7 @@ function aggregate(slotStart) {
       </table>
     </div>`;
 
-  $("orbat-day-content").innerHTML = hasAny
-    ? html
-    : "<div class='orbat-empty'>No available members for this selected day.</div>";
+    $("orbat-day-content").innerHTML = html;
 
   $("orbat-day-content").querySelectorAll(".orbat-person").forEach((element) => {
     element.onclick = () => openPerson(element.dataset.id, element.dataset.slot);
