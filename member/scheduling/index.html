@@ -1899,6 +1899,84 @@ function aggregate(slotStart) {
       loaRequests = data || [];
     }
 
+    async function fetchAllSchedulingResponses(startIso, endIso) {
+      const pageSize = 500;
+      const responses = [];
+      let from = 0;
+      let expectedCount = null;
+
+      while (expectedCount === null || responses.length < expectedCount) {
+        const to = from + pageSize - 1;
+
+        const { data, error, count } = await supabase
+          .from("scheduling_responses")
+          .select(
+            "user_id,slot_start,availability,note,updated_at",
+            { count: "exact" }
+          )
+          .gte("slot_start", startIso)
+          .lte("slot_start", endIso)
+          .order("slot_start", { ascending: true })
+          .order("user_id", { ascending: true })
+          .range(from, to);
+
+        if (error) {
+          throw new Error(
+            `Scheduling page ${from}-${to} failed: ${error.message}`
+          );
+        }
+
+        const page = data || [];
+
+        if (expectedCount === null) {
+          expectedCount = count ?? 0;
+        }
+
+        responses.push(...page);
+
+        console.debug("[Scheduling] Loaded page", {
+          from,
+          to,
+          returned: page.length,
+          loaded: responses.length,
+          expectedCount,
+          startIso,
+          endIso
+        });
+
+        if (page.length === 0) {
+          break;
+        }
+
+        from += page.length;
+      }
+
+      if (
+        expectedCount !== null &&
+        responses.length !== expectedCount
+      ) {
+        console.error("[Scheduling] Incomplete response load", {
+          loaded: responses.length,
+          expected: expectedCount,
+          startIso,
+          endIso
+        });
+
+        throw new Error(
+          `Only ${responses.length} of ${expectedCount} scheduling responses were loaded.`
+        );
+      }
+
+      console.info("[Scheduling] All responses loaded", {
+        total: responses.length,
+        expectedCount,
+        startIso,
+        endIso
+      });
+
+      return responses;
+    }
+
     async function loadResponses({ force = false } = {}) {
       if ((isDirty || isSaving) && !force) {
         pendingRealtimeReload = true;
@@ -1908,18 +1986,35 @@ function aggregate(slotStart) {
       const range = bufferedLoadRange();
       const visibleSet = new Set(range.keys);
 
-      const { data, error } = await supabase
-        .from("scheduling_responses")
-        .select("user_id,slot_start,availability,note,updated_at")
-        .gte("slot_start", range.earliest.toISOString())
-        .lte("slot_start", range.latest.toISOString())
-        .order("slot_start", { ascending: true });
+      try {
+        allResponses = await fetchAllSchedulingResponses(
+          range.earliest.toISOString(),
+          range.latest.toISOString()
+        );
 
-      if (error) {
-        allResponses = [];
-        setStatus(`Failed to load scheduling data: ${error.message}`, false);
-      } else {
-        allResponses = data || [];
+        const visibleResponseCounts = {};
+
+    for (let day = 0; day < 7; day++) {
+      const dayKeys = new Set();
+
+      for (let slot = 0; slot < SLOTS_PER_DAY; slot++) {
+        dayKeys.add(slotKey(slotUtc(day, slot)));
+      }
+
+      visibleResponseCounts[shortDayLabel(day).weekday] =
+        allResponses.filter((response) => {
+          return dayKeys.has(
+            new Date(response.slot_start).toISOString()
+          );
+        }).length;
+    }
+
+    console.info("[Scheduling] Responses by visible day", {
+      week: weekInput.value,
+      timezone: scheduleTimezone(),
+      totalLoaded: allResponses.length,
+      responsesByDay: visibleResponseCounts
+    });
 
         if (!isDirty || force) {
           mySlots.clear();
@@ -1927,7 +2022,10 @@ function aggregate(slotStart) {
           for (const response of allResponses) {
             const key = new Date(response.slot_start).toISOString();
 
-            if (response.user_id === authUser.id && visibleSet.has(key)) {
+            if (
+              response.user_id === authUser.id &&
+              visibleSet.has(key)
+            ) {
               mySlots.set(key, response.availability);
             }
           }
@@ -1944,13 +2042,21 @@ function aggregate(slotStart) {
             }
           }
         }
+      } catch (error) {
+        allResponses = [];
+        setStatus(
+          `Failed to load scheduling data: ${error.message}`,
+          false
+        );
       }
 
       await loadLoaRequests();
+
       $("dash-members").textContent = String(filteredMembers().length);
       $("dash-timezone").textContent = scheduleTimezone();
       $("dash-updated").textContent = utcNowLabel();
-      $("calendar-title").textContent = `Week of ${weekInput.value} · ${scheduleTimezone()}`;
+      $("calendar-title").textContent =
+        `Week of ${weekInput.value} · ${scheduleTimezone()}`;
 
       buildMyTable();
       buildHeatmap();
