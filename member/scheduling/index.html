@@ -2009,12 +2009,72 @@ function aggregate(slotStart) {
         }).length;
     }
 
-    console.info("[Scheduling] Responses by visible day", {
-      week: weekInput.value,
-      timezone: scheduleTimezone(),
-      totalLoaded: allResponses.length,
-      responsesByDay: visibleResponseCounts
-    });
+const visibleKeysByDay = {};
+
+for (let day = 0; day < 7; day++) {
+  const dayName = shortDayLabel(day).weekday;
+
+  visibleKeysByDay[dayName] = [];
+
+  for (let slot = 0; slot < SLOTS_PER_DAY; slot++) {
+    visibleKeysByDay[dayName].push(
+      slotKey(slotUtc(day, slot))
+    );
+  }
+}
+
+const responseDetailsByDay = {};
+
+for (const [dayName, keys] of Object.entries(visibleKeysByDay)) {
+  const keySet = new Set(keys);
+
+  const responses = allResponses.filter((response) => {
+    return keySet.has(
+      new Date(response.slot_start).toISOString()
+    );
+  });
+
+  responseDetailsByDay[dayName] = {
+    responseCount: responses.length,
+    uniqueUsers: new Set(
+      responses.map((response) => response.user_id)
+    ).size,
+    firstSlot: responses[0]?.slot_start || null,
+    lastSlot: responses[responses.length - 1]?.slot_start || null
+  };
+}
+
+const unmatchedResponses = allResponses.filter((response) => {
+  const normalized = new Date(response.slot_start).toISOString();
+
+  return !visibleSet.has(normalized);
+});
+
+window.__schedulingDebug = {
+  week: weekInput.value,
+  timezone: scheduleTimezone(),
+  queryStart: range.earliest.toISOString(),
+  queryEnd: range.latest.toISOString(),
+  totalLoaded: allResponses.length,
+  responsesByDay: visibleResponseCounts,
+  responseDetailsByDay,
+  firstLoadedResponse: allResponses[0] || null,
+  lastLoadedResponse:
+    allResponses[allResponses.length - 1] || null,
+  unmatchedCount: unmatchedResponses.length,
+  unmatchedFirst: unmatchedResponses[0] || null,
+  unmatchedLast:
+    unmatchedResponses[unmatchedResponses.length - 1] || null,
+  saturdayKeys: visibleKeysByDay.Sat || [],
+  sundayKeys: visibleKeysByDay.Sun || []
+};
+
+console.info(
+  "[Scheduling] Responses by visible day",
+  window.__schedulingDebug
+);
+
+console.table(responseDetailsByDay);
 
         if (!isDirty || force) {
           mySlots.clear();
