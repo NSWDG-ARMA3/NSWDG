@@ -1,1450 +1,1771 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NSW Operations Portal - Scheduling</title>
-  <link rel="shortcut icon" href="../../nsw.png" type="image/x-icon">
-
-  <style>
-    :root {
-      --blue: #183a56;
-      --blue-dark: #10283c;
-      --gold: #c8a800;
-      --bg: #f4f5f7;
-      --panel: #ffffff;
-      --line: #d8dde3;
-      --text: #1f2933;
-      --muted: #6b7280;
-      --green-bg: #dff4e3;
-      --green: #145214;
-      --yellow-bg: #fff5bd;
-      --yellow: #6a5200;
-      --red-bg: #f7d7d7;
-      --red: #800000;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: Arial, Helvetica, sans-serif;
-      font-size: 12px;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .gov-banner {
-      background: #111;
-      color: #d1d5db;
-      font-size: 11px;
-      padding: 4px 14px;
-    }
-
-    .site-header {
-      background: var(--blue);
-      color: #fff;
-      padding: 11px 16px;
-      border-bottom: 3px solid var(--gold);
-    }
-
-    .site-header h1 {
-      font-size: 16px;
-      letter-spacing: 0.2px;
-    }
-
-    .site-header p {
-      font-size: 11px;
-      color: #c5d8ec;
-      margin-top: 2px;
-    }
-
-    .portal-nav {
-      background: var(--blue);
-      display: flex;
-      align-items: stretch;
-      border-bottom: 1px solid #0d263a;
-      overflow-x: auto;
-    }
-
-    .portal-nav a {
-      color: #d7e6f3;
-      text-decoration: none;
-      font-size: 12px;
-      padding: 8px 12px;
-      border-right: 1px solid #0d263a;
-      white-space: nowrap;
-    }
-
-    .portal-nav a.active,
-    .portal-nav a:hover {
-      background: var(--blue-dark);
-      color: #fff;
-      font-weight: bold;
-    }
-
-    .nav-right {
-      margin-left: auto;
-      display: flex;
-      align-items: center;
-      padding: 0 12px;
-      font-size: 11px;
-      color: #d7e6f3;
-      gap: 10px;
-      white-space: nowrap;
-    }
-
-    .nav-avatar {
-      width: 22px;
-      height: 22px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 1px solid #7a9ab8;
-      background: #e8e8e8;
-    }
-
-    .portal-body {
-      display: flex;
-      flex: 1;
-      min-height: 0;
-    }
-
-    .sidebar {
-      width: 184px;
-      background: #eceff3;
-      border-right: 1px solid #cbd5df;
-      flex-shrink: 0;
-      padding: 12px 0;
-    }
-
-    .sidebar-user-box {
-      padding: 7px 12px 10px;
-      border-bottom: 1px solid #d1d5db;
-      margin-bottom: 6px;
-      font-size: 11px;
-      color: #4b5563;
-      line-height: 1.55;
-    }
-
-    .sidebar-user-box strong {
-      display: block;
-      font-size: 12px;
-      color: #111827;
-    }
-
-    .sidebar-section {
-      font-size: 10px;
-      font-weight: bold;
-      color: #6b7280;
-      text-transform: uppercase;
-      letter-spacing: 0.8px;
-      padding: 8px 12px 4px;
-    }
-
-    .sidebar-link {
-      display: block;
-      padding: 6px 12px;
-      font-size: 12px;
-      color: var(--blue);
-      text-decoration: none;
-      border-left: 3px solid transparent;
-    }
-
-    .sidebar-link:hover,
-    .sidebar-link.active {
-      background: #dbe5ef;
-      border-left-color: var(--blue);
-      font-weight: bold;
-    }
-
-    .portal-main {
-      flex: 1;
-      padding: 14px 16px;
-      overflow: auto;
-    }
-
-    .page-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 12px;
-      margin-bottom: 10px;
-      border-bottom: 1px solid var(--line);
-      padding-bottom: 8px;
-    }
-
-    .page-title {
-      font-size: 16px;
-      font-weight: bold;
-      color: var(--blue);
-    }
-
-    .page-subtitle {
-      color: var(--muted);
-      margin-top: 3px;
-      line-height: 1.4;
-    }
-
-    .view-switch {
-      display: flex;
-      gap: 5px;
-      flex-wrap: wrap;
-    }
-
-    .layout {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) 310px;
-      gap: 12px;
-    }
-
-    .panel {
-      background: var(--panel);
-      border: 1px solid var(--line);
-      border-radius: 5px;
-      padding: 10px;
-      margin-bottom: 12px;
-      box-shadow: 0 1px 1px rgba(0, 0, 0, 0.03);
-    }
-
-    .panel-title {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      margin-bottom: 8px;
-    }
-
-    .panel h3 {
-      font-size: 12px;
-      color: var(--blue);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .notice-box {
-      background: #f9fafb;
-      border: 1px solid var(--line);
-      border-left: 3px solid var(--blue);
-      padding: 8px 10px;
-      font-size: 11px;
-      line-height: 1.5;
-      margin-bottom: 10px;
-    }
-
-    .form-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      align-items: flex-end;
-    }
-
-    .form-group label {
-      display: block;
-      font-size: 10px;
-      font-weight: bold;
-      color: #374151;
-      margin-bottom: 3px;
-      text-transform: uppercase;
-      letter-spacing: 0.4px;
-    }
-
-    .form-group input,
-    .form-group select {
-      border: 1px solid #9ca3af;
-      border-radius: 3px;
-      padding: 4px 6px;
-      font-size: 11px;
-      background: #fff;
-      height: 27px;
-      min-width: 150px;
-    }
-
-    .btn {
-      border: 1px solid #9ca3af;
-      border-radius: 3px;
-      padding: 4px 10px;
-      font-size: 11px;
-      cursor: pointer;
-      height: 27px;
-      background: #f9fafb;
-      color: #111827;
-    }
-
-    .btn:hover {
-      background: #eef2f7;
-    }
-
-    .btn:disabled {
-      cursor: not-allowed;
-      opacity: 0.7;
-    }
-
-    .btn-primary,
-    .btn.active {
-      background: var(--blue);
-      color: #fff;
-      border-color: var(--blue);
-    }
-
-    .btn-primary:hover,
-    .btn.active:hover {
-      background: var(--blue-dark);
-    }
-
-    .btn-danger {
-      background: #a70000;
-      color: #fff;
-      border-color: #800;
-    }
-
-    .btn-danger:hover {
-      background: #850000;
-    }
-
-    .status-line {
-      display: none;
-      border: 1px solid var(--line);
-      border-radius: 3px;
-      padding: 7px 8px;
-      margin-top: 8px;
-      font-size: 11px;
-    }
-
-    .status-line.visible {
-      display: block;
-    }
-
-    .status-line.ok {
-      background: #e8f7e8;
-      border-color: #8ac58a;
-      color: var(--green);
-    }
-
-    .status-line.err {
-      background: #fde8e8;
-      border-color: #d48a8a;
-      color: var(--red);
-    }
-
-    .availability-wrap {
-      overflow: auto;
-      border: 1px solid var(--line);
-      border-radius: 4px;
-      max-height: 72vh;
-      background: #fff;
-    }
-
-    .availability-grid {
-      border-collapse: collapse;
-      min-width: 860px;
-      width: 100%;
-      font-size: 10px;
-    }
-
-    .availability-grid th {
-      position: sticky;
-      top: 0;
-      background: var(--blue);
-      color: #fff;
-      border: 1px solid #12324b;
-      padding: 5px;
-      z-index: 2;
-    }
-
-    .availability-grid td {
-      border: 1px solid #d2d6dc;
-      text-align: center;
-      padding: 4px;
-      min-width: 76px;
-      height: 26px;
-      user-select: none;
-    }
-
-    .time-col {
-      position: sticky;
-      left: 0;
-      background: #eef2f7 !important;
-      color: #111827 !important;
-      font-weight: bold;
-      z-index: 3;
-      min-width: 72px;
-    }
-
-    .availability-grid th small {
-      display: block;
-      color: #d7e6f3;
-      font-weight: normal;
-      font-size: 9px;
-      margin-top: 1px;
-    }
-
-    .mine-empty {
-      background: #fff;
-      cursor: pointer;
-    }
-
-    .mine-available {
-      background: var(--green-bg);
-      color: var(--green);
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    .mine-maybe {
-      background: var(--yellow-bg);
-      color: var(--yellow);
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    .mine-unavailable {
-      background: var(--red-bg);
-      color: var(--red);
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    .grade-gray {
-      background: #e5e7eb;
-      color: #4b5563;
-    }
-
-    .grade-red {
-      background: #c7352d;
-      color: #fff;
-    }
-
-    .grade-orange {
-      background: #e6862d;
-      color: #111827;
-    }
-
-    .grade-yellow {
-      background: #e8d84a;
-      color: #111827;
-    }
-
-    .grade-green {
-      background: #3d9b4f;
-      color: #fff;
-    }
-
-    .heat-cell small {
-      display: block;
-      font-size: 9px;
-      margin-top: 2px;
-    }
-
-    .legend {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      font-size: 10px;
-      color: #4b5563;
-      margin-bottom: 7px;
-    }
-
-    .legend-box {
-      width: 14px;
-      height: 9px;
-      border: 1px solid #6b7280;
-      display: inline-block;
-      vertical-align: middle;
-      margin-right: 3px;
-    }
-
-    .info-table {
-      border-collapse: collapse;
-      width: 100%;
-      font-size: 11px;
-    }
-
-    .info-table td {
-      padding: 5px 6px;
-      border-bottom: 1px solid #e5e7eb;
-      vertical-align: top;
-    }
-
-    .info-table td:first-child {
-      color: var(--muted);
-      width: 38%;
-    }
-
-    .best-list,
-    .changes-list {
-      padding-left: 16px;
-      font-size: 11px;
-      line-height: 1.45;
-    }
-
-    .best-list li,
-    .changes-list li {
-      margin-bottom: 7px;
-    }
-
-    .muted {
-      color: var(--muted);
-    }
-
-    .schedule-view.hidden {
-      display: none;
-    }
-
-    .orbat-toolbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-bottom: 10px;
-    }
-
-    .orbat-day-tabs {
-      display: grid;
-      grid-template-columns: repeat(7, minmax(76px, 1fr));
-      gap: 5px;
-      margin-bottom: 10px;
-    }
-
-    .orbat-day-tab {
-      border: 1px solid var(--line);
-      background: #fff;
-      border-radius: 5px;
-      padding: 6px 7px;
-      cursor: pointer;
-      text-align: left;
-      font-size: 10px;
-    }
-
-    .orbat-day-tab strong {
-      display: block;
-      color: var(--blue);
-      font-size: 11px;
-    }
-
-    .orbat-day-tab span {
-      display: block;
-      color: var(--muted);
-      font-size: 9px;
-      margin-top: 1px;
-    }
-
-    .orbat-day-tab.active {
-      background: var(--blue);
-      border-color: var(--blue);
-    }
-
-    .orbat-day-tab.active strong,
-    .orbat-day-tab.active span {
-      color: #fff;
-    }
-
-    .orbat-compact-wrap {
-      overflow: auto;
-      border: 1px solid var(--line);
-      border-radius: 7px;
-      background: #fff;
-    }
-
-    .orbat-compact-table {
-      width: 100%;
-      min-width: 980px;
-      border-collapse: collapse;
-      font-size: 10px;
-    }
-
-    .checkbox-group {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      justify-content: center;
-      min-height: 27px;
-    }
-
-    .checkbox-group label {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      font-size: 10px;
-      font-weight: normal;
-      text-transform: none;
-      letter-spacing: 0;
-      margin: 0;
-    }
-
-    .checkbox-group input {
-      width: auto;
-      height: auto;
-      min-width: 0;
-    }
-
-    .orbat-compact-table th {
-      position: sticky;
-      top: 0;
-      z-index: 2;
-      background: var(--blue);
-      color: #fff;
-      padding: 7px 6px;
-      border-right: 1px solid rgba(255, 255, 255, 0.18);
-      text-align: left;
-      white-space: nowrap;
-    }
-
-    .orbat-compact-table td {
-      border-top: 1px solid #e1e6ec;
-      border-right: 1px solid #edf0f3;
-      padding: 5px 6px;
-      vertical-align: top;
-      min-height: 32px;
-    }
-
-    .orbat-compact-table tr:nth-child(even) td {
-      background: #fafbfc;
-    }
-
-    .orbat-time-cell {
-      position: sticky;
-      left: 0;
-      z-index: 1;
-      background: #f1f5f9 !important;
-      color: var(--blue);
-      font-weight: bold;
-      width: 64px;
-      white-space: nowrap;
-    }
-
-    .orbat-group-cell {
-      min-width: 130px;
-    }
-
-    .orbat-group-label {
-      display: block;
-      color: var(--muted);
-      font-size: 9px;
-      margin-bottom: 3px;
-    }
-
-    .orbat-person {
-      display: inline-flex;
-      align-items: center;
-      border: 1px solid #b7c2cf;
-      background: #fff;
-      border-radius: 999px;
-      padding: 2px 6px;
-      margin: 1px;
-      cursor: pointer;
-      font-size: 9px;
-      line-height: 1.35;
-      max-width: 140px;
-    }
-
-    .orbat-person:hover {
-      background: #edf4fb;
-      border-color: var(--blue);
-    }
-
-    .orbat-empty {
-      border: 1px dashed var(--line);
-      border-radius: 6px;
-      padding: 12px;
-      color: var(--muted);
-      background: #fafafa;
-      text-align: center;
-    }
-
-    .modal {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.45);
-      align-items: center;
-      justify-content: center;
-      z-index: 20;
-      padding: 16px;
-    }
-
-    .modal.visible {
-      display: flex;
-    }
-
-    .modal-card {
-      width: min(520px, 94vw);
-      background: #fff;
-      border: 1px solid var(--blue);
-      border-radius: 6px;
-      overflow: hidden;
-      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.22);
-    }
-
-    .modal-head {
-      background: var(--blue);
-      color: #fff;
-      padding: 8px 10px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .modal-body {
-      padding: 10px;
-    }
-
-    .modal-close {
-      background: none;
-      border: 0;
-      color: #fff;
-      font-size: 18px;
-      cursor: pointer;
-    }
-
-    @media (max-width: 980px) {
-      .layout {
-        grid-template-columns: 1fr;
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NSW Operations Portal - Scheduling</title>
+    <link rel="shortcut icon" href="../../nsw.png" type="image/x-icon" />
+
+    <style>
+      :root {
+        --blue: #183a56;
+        --blue-dark: #10283c;
+        --gold: #c8a800;
+        --bg: #f4f5f7;
+        --panel: #ffffff;
+        --line: #d8dde3;
+        --text: #1f2933;
+        --muted: #6b7280;
+        --green-bg: #dff4e3;
+        --green: #145214;
+        --yellow-bg: #fff5bd;
+        --yellow: #6a5200;
+        --red-bg: #f7d7d7;
+        --red: #800000;
       }
 
-      .sidebar {
-        display: none;
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 12px;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .gov-banner {
+        background: #111;
+        color: #d1d5db;
+        font-size: 11px;
+        padding: 4px 14px;
+      }
+
+      .site-header {
+        background: var(--blue);
+        color: #fff;
+        padding: 11px 16px;
+        border-bottom: 3px solid var(--gold);
+      }
+
+      .site-header h1 {
+        font-size: 16px;
+        letter-spacing: 0.2px;
+      }
+
+      .site-header p {
+        font-size: 11px;
+        color: #c5d8ec;
+        margin-top: 2px;
+      }
+
+      .portal-nav {
+        background: var(--blue);
+        display: flex;
+        align-items: stretch;
+        border-bottom: 1px solid #0d263a;
+        overflow-x: auto;
+      }
+
+      .portal-nav a {
+        color: #d7e6f3;
+        text-decoration: none;
+        font-size: 12px;
+        padding: 8px 12px;
+        border-right: 1px solid #0d263a;
+        white-space: nowrap;
+      }
+
+      .portal-nav a.active,
+      .portal-nav a:hover {
+        background: var(--blue-dark);
+        color: #fff;
+        font-weight: bold;
       }
 
       .nav-right {
+        margin-left: auto;
+        display: flex;
+        align-items: center;
+        padding: 0 12px;
+        font-size: 11px;
+        color: #d7e6f3;
+        gap: 10px;
+        white-space: nowrap;
+      }
+
+      .nav-avatar {
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 1px solid #7a9ab8;
+        background: #e8e8e8;
+      }
+
+      .portal-body {
+        display: flex;
+        flex: 1;
+        min-height: 0;
+      }
+
+      .sidebar {
+        width: 184px;
+        background: #eceff3;
+        border-right: 1px solid #cbd5df;
+        flex-shrink: 0;
+        padding: 12px 0;
+      }
+
+      .sidebar-user-box {
+        padding: 7px 12px 10px;
+        border-bottom: 1px solid #d1d5db;
+        margin-bottom: 6px;
+        font-size: 11px;
+        color: #4b5563;
+        line-height: 1.55;
+      }
+
+      .sidebar-user-box strong {
+        display: block;
+        font-size: 12px;
+        color: #111827;
+      }
+
+      .sidebar-section {
+        font-size: 10px;
+        font-weight: bold;
+        color: #6b7280;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        padding: 8px 12px 4px;
+      }
+
+      .sidebar-link {
+        display: block;
+        padding: 6px 12px;
+        font-size: 12px;
+        color: var(--blue);
+        text-decoration: none;
+        border-left: 3px solid transparent;
+      }
+
+      .sidebar-link:hover,
+      .sidebar-link.active {
+        background: #dbe5ef;
+        border-left-color: var(--blue);
+        font-weight: bold;
+      }
+
+      .portal-main {
+        flex: 1;
+        padding: 14px 16px;
+        overflow: auto;
+      }
+
+      .page-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 12px;
+        margin-bottom: 10px;
+        border-bottom: 1px solid var(--line);
+        padding-bottom: 8px;
+      }
+
+      .page-title {
+        font-size: 16px;
+        font-weight: bold;
+        color: var(--blue);
+      }
+
+      .page-subtitle {
+        color: var(--muted);
+        margin-top: 3px;
+        line-height: 1.4;
+      }
+
+      .view-switch {
+        display: flex;
+        gap: 5px;
+        flex-wrap: wrap;
+      }
+
+      .layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 310px;
+        gap: 12px;
+      }
+
+      .panel {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 5px;
+        padding: 10px;
+        margin-bottom: 12px;
+        box-shadow: 0 1px 1px rgba(0, 0, 0, 0.03);
+      }
+
+      .panel-title {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 8px;
+      }
+
+      .panel h3 {
+        font-size: 12px;
+        color: var(--blue);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .notice-box {
+        background: #f9fafb;
+        border: 1px solid var(--line);
+        border-left: 3px solid var(--blue);
+        padding: 8px 10px;
+        font-size: 11px;
+        line-height: 1.5;
+        margin-bottom: 10px;
+      }
+
+      .form-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: flex-end;
+      }
+
+      .form-group label {
+        display: block;
+        font-size: 10px;
+        font-weight: bold;
+        color: #374151;
+        margin-bottom: 3px;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+      }
+
+      .form-group input,
+      .form-group select {
+        border: 1px solid #9ca3af;
+        border-radius: 3px;
+        padding: 4px 6px;
+        font-size: 11px;
+        background: #fff;
+        height: 27px;
+        min-width: 150px;
+      }
+
+      .btn {
+        border: 1px solid #9ca3af;
+        border-radius: 3px;
+        padding: 4px 10px;
+        font-size: 11px;
+        cursor: pointer;
+        height: 27px;
+        background: #f9fafb;
+        color: #111827;
+      }
+
+      .btn:hover {
+        background: #eef2f7;
+      }
+
+      .btn:disabled {
+        cursor: not-allowed;
+        opacity: 0.7;
+      }
+
+      .btn-primary,
+      .btn.active {
+        background: var(--blue);
+        color: #fff;
+        border-color: var(--blue);
+      }
+
+      .btn-primary:hover,
+      .btn.active:hover {
+        background: var(--blue-dark);
+      }
+
+      .btn-danger {
+        background: #a70000;
+        color: #fff;
+        border-color: #800;
+      }
+
+      .btn-danger:hover {
+        background: #850000;
+      }
+
+      .status-line {
+        display: none;
+        border: 1px solid var(--line);
+        border-radius: 3px;
+        padding: 7px 8px;
+        margin-top: 8px;
+        font-size: 11px;
+      }
+
+      .status-line.visible {
+        display: block;
+      }
+
+      .status-line.ok {
+        background: #e8f7e8;
+        border-color: #8ac58a;
+        color: var(--green);
+      }
+
+      .status-line.err {
+        background: #fde8e8;
+        border-color: #d48a8a;
+        color: var(--red);
+      }
+
+      .availability-wrap {
+        overflow: auto;
+        border: 1px solid var(--line);
+        border-radius: 4px;
+        max-height: 72vh;
+        background: #fff;
+      }
+
+      .no-availability-panel {
+        border-color: #b8c4ce;
+        background: linear-gradient(180deg, #ffffff 0%, #f7f9fb 100%);
+      }
+
+      .no-availability-summary {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 28px;
+        height: 22px;
+        padding: 0 8px;
+        border: 1px solid #c99a4b;
+        border-radius: 999px;
+        background: #fff4d6;
+        color: #7a4b00;
+        font-size: 10px;
+        font-weight: 700;
+      }
+
+      .no-availability-help {
+        margin: 0 0 10px;
+        color: #5d6873;
+        font-size: 11px;
+        line-height: 1.45;
+      }
+
+      .no-availability-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 8px;
+      }
+
+      .no-availability-person {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        min-width: 0;
+        padding: 9px 10px;
+        border: 1px solid #d5dbe1;
+        border-radius: 4px;
+        background: #fff;
+        box-shadow: 0 1px 2px rgba(18, 50, 75, 0.06);
+      }
+
+      .no-availability-avatar {
+        width: 32px;
+        height: 32px;
+        flex: 0 0 32px;
+        border: 1px solid #aeb8c2;
+        border-radius: 50%;
+        object-fit: cover;
+        background: #e8edf2;
+      }
+
+      .no-availability-person-info {
+        min-width: 0;
+      }
+
+      .no-availability-person strong,
+      .no-availability-person span {
+        display: block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .no-availability-person strong {
+        color: #182633;
+        font-size: 11px;
+      }
+
+      .no-availability-person span {
+        margin-top: 2px;
+        color: #68737d;
+        font-size: 9px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+
+      .no-availability-empty {
+        padding: 14px;
+        border: 1px dashed #9db9a3;
+        border-radius: 4px;
+        background: #eef8f0;
+        color: #286136;
+        font-size: 11px;
+        text-align: center;
+      }
+
+      .availability-grid {
+        border-collapse: collapse;
+        min-width: 860px;
+        width: 100%;
+        font-size: 10px;
+      }
+
+      .availability-grid th {
+        position: sticky;
+        top: 0;
+        background: var(--blue);
+        color: #fff;
+        border: 1px solid #12324b;
+        padding: 5px;
+        z-index: 2;
+      }
+
+      .availability-grid td {
+        border: 1px solid #d2d6dc;
+        text-align: center;
+        padding: 4px;
+        min-width: 76px;
+        height: 26px;
+        user-select: none;
+      }
+
+      .time-col {
+        position: sticky;
+        left: 0;
+        background: #eef2f7 !important;
+        color: #111827 !important;
+        font-weight: bold;
+        z-index: 3;
+        min-width: 72px;
+      }
+
+      .availability-grid th small {
+        display: block;
+        color: #d7e6f3;
+        font-weight: normal;
+        font-size: 9px;
+        margin-top: 1px;
+      }
+
+      .mine-empty {
+        background: #fff;
+        cursor: pointer;
+      }
+
+      .mine-available {
+        background: var(--green-bg);
+        color: var(--green);
+        font-weight: bold;
+        cursor: pointer;
+      }
+
+      .mine-maybe {
+        background: var(--yellow-bg);
+        color: var(--yellow);
+        font-weight: bold;
+        cursor: pointer;
+      }
+
+      .mine-unavailable {
+        background: var(--red-bg);
+        color: var(--red);
+        font-weight: bold;
+        cursor: pointer;
+      }
+
+      .grade-gray {
+        background: #e5e7eb;
+        color: #4b5563;
+      }
+
+      .grade-red {
+        background: #c7352d;
+        color: #fff;
+      }
+
+      .grade-orange {
+        background: #e6862d;
+        color: #111827;
+      }
+
+      .grade-yellow {
+        background: #e8d84a;
+        color: #111827;
+      }
+
+      .grade-green {
+        background: #3d9b4f;
+        color: #fff;
+      }
+
+      .heat-cell small {
+        display: block;
+        font-size: 9px;
+        margin-top: 2px;
+      }
+
+      .legend {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        font-size: 10px;
+        color: #4b5563;
+        margin-bottom: 7px;
+      }
+
+      .legend-box {
+        width: 14px;
+        height: 9px;
+        border: 1px solid #6b7280;
+        display: inline-block;
+        vertical-align: middle;
+        margin-right: 3px;
+      }
+
+      .info-table {
+        border-collapse: collapse;
+        width: 100%;
+        font-size: 11px;
+      }
+
+      .info-table td {
+        padding: 5px 6px;
+        border-bottom: 1px solid #e5e7eb;
+        vertical-align: top;
+      }
+
+      .info-table td:first-child {
+        color: var(--muted);
+        width: 38%;
+      }
+
+      .best-list,
+      .changes-list {
+        padding-left: 16px;
+        font-size: 11px;
+        line-height: 1.45;
+      }
+
+      .best-list li,
+      .changes-list li {
+        margin-bottom: 7px;
+      }
+
+      .muted {
+        color: var(--muted);
+      }
+
+      .schedule-view.hidden {
         display: none;
       }
 
+      .orbat-toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 10px;
+      }
+
       .orbat-day-tabs {
-        grid-template-columns: repeat(2, minmax(120px, 1fr));
+        display: grid;
+        grid-template-columns: repeat(7, minmax(76px, 1fr));
+        gap: 5px;
+        margin-bottom: 10px;
       }
-    }
-  </style>
-</head>
 
-<body>
-  <div class="gov-banner">Authorized personnel only</div>
+      .orbat-day-tab {
+        border: 1px solid var(--line);
+        background: #fff;
+        border-radius: 5px;
+        padding: 6px 7px;
+        cursor: pointer;
+        text-align: left;
+        font-size: 10px;
+      }
 
-  <header class="site-header">
-    <h1>NSW Operations Portal</h1>
-    <p>Scheduling and availability</p>
-  </header>
+      .orbat-day-tab strong {
+        display: block;
+        color: var(--blue);
+        font-size: 11px;
+      }
 
-  <div id="portal-nav" class="portal-nav"></div>
+      .orbat-day-tab span {
+        display: block;
+        color: var(--muted);
+        font-size: 9px;
+        margin-top: 1px;
+      }
 
-  <div class="portal-body">
-    <div id="portal-sidebar" class="sidebar"></div>
+      .orbat-day-tab.active {
+        background: var(--blue);
+        border-color: var(--blue);
+      }
 
-    <main class="portal-main">
-      <div class="page-head">
-        <div>
-          <h2 class="page-title">Scheduling</h2>
-          <p class="page-subtitle">Availability is entered in your selected timezone and stored as UTC so everyone sees
-            the same real-world times converted to their own timezone.</p>
-        </div>
+      .orbat-day-tab.active strong,
+      .orbat-day-tab.active span {
+        color: #fff;
+      }
 
-        <div class="view-switch">
-          <button class="btn active" id="calendar-view-btn" type="button">Calendar</button>
-          <button class="btn" id="orbat-view-btn" type="button">ORBAT</button>
-        </div>
-      </div>
+      .orbat-compact-wrap {
+        overflow: auto;
+        border: 1px solid var(--line);
+        border-radius: 7px;
+        background: #fff;
+      }
 
-      <div class="layout">
-        <section>
-          <div class="panel">
-            <div class="panel-title">
-              <h3>Controls</h3>
-            </div>
+      .orbat-compact-table {
+        width: 100%;
+        min-width: 980px;
+        border-collapse: collapse;
+        font-size: 10px;
+      }
 
-            <div class="form-row">
-              <div class="form-group">
-                <label for="week-start">Week starting</label>
-                <input type="date" id="week-start">
-              </div>
+      .checkbox-group {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        justify-content: center;
+        min-height: 27px;
+      }
 
-              <div class="form-group">
-                <label for="timezone-select">Your timezone</label>
-                <select id="timezone-select">
-                  <option value="UTC">UTC</option>
-                  <option value="Europe/Amsterdam">Europe/Amsterdam</option>
-                  <option value="Europe/London">Europe/London</option>
-                  <option value="America/New_York">America/New_York</option>
-                  <option value="America/Chicago">America/Chicago</option>
-                  <option value="America/Denver">America/Denver</option>
-                  <option value="America/Los_Angeles">America/Los_Angeles</option>
-                </select>
-              </div>
+      .checkbox-group label {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 10px;
+        font-weight: normal;
+        text-transform: none;
+        letter-spacing: 0;
+        margin: 0;
+      }
 
-              <div class="form-group">
-                <label for="team-filter">Team filter</label>
-                <select id="team-filter">
-                  <option value="FULL_WITH_GREEN">Full Troop + Green Team</option>
-                  <option value="FULL_NO_GREEN">Full Troop without Green Team</option>
-                  <option value="GREEN">Green Team</option>
-                  <option value="GOLF">Golf Team</option>
-                  <option value="HOTEL">Hotel Team</option>
-                  <option value="INDIA">India Team</option>
-                  <option value="HQ">Headquarters</option>
-                  <option value="ENABLERS">Enablers</option>
-                </select>
-              </div>
+      .checkbox-group input {
+        width: auto;
+        height: auto;
+        min-width: 0;
+      }
 
-              <div class="form-group checkbox-group">
-                <label>
-                  <input type="checkbox" id="include-loa">
-                  Include approved LOAs as unavailable
-                </label>
-                <label>
-                  <input type="checkbox" id="include-blanks">
-                  Include blank responses in totals
-                </label>
-              </div>
+      .orbat-compact-table th {
+        position: sticky;
+        top: 0;
+        z-index: 2;
+        background: var(--blue);
+        color: #fff;
+        padding: 7px 6px;
+        border-right: 1px solid rgba(255, 255, 255, 0.18);
+        text-align: left;
+        white-space: nowrap;
+      }
 
-              <button class="btn btn-primary" id="save-btn" type="button">Save</button>
-              <button class="btn" id="refresh-btn" type="button">Refresh</button>
+      .orbat-compact-table td {
+        border-top: 1px solid #e1e6ec;
+        border-right: 1px solid #edf0f3;
+        padding: 5px 6px;
+        vertical-align: top;
+        min-height: 32px;
+      }
 
-              <div class="form-group">
-                <label for="copy-weeks-count">Copy forward weeks</label>
-                <input type="number" id="copy-weeks-count" min="1" max="12" value="1">
-              </div>
+      .orbat-compact-table tr:nth-child(even) td {
+        background: #fafbfc;
+      }
 
-              <button class="btn" id="copy-forward-btn" type="button">Copy Forward</button>
-              <button class="btn btn-danger" id="clear-btn" type="button">Clear Mine</button>
-            </div>
+      .orbat-time-cell {
+        position: sticky;
+        left: 0;
+        z-index: 1;
+        background: #f1f5f9 !important;
+        color: var(--blue);
+        font-weight: bold;
+        width: 64px;
+        white-space: nowrap;
+      }
 
-            <div id="status-line" class="status-line"></div>
+      .orbat-group-cell {
+        min-width: 130px;
+      }
+
+      .orbat-group-label {
+        display: block;
+        color: var(--muted);
+        font-size: 9px;
+        margin-bottom: 3px;
+      }
+
+      .orbat-person {
+        display: inline-flex;
+        align-items: center;
+        border: 1px solid #b7c2cf;
+        background: #fff;
+        border-radius: 999px;
+        padding: 2px 6px;
+        margin: 1px;
+        cursor: pointer;
+        font-size: 9px;
+        line-height: 1.35;
+        max-width: 140px;
+      }
+
+      .orbat-person:hover {
+        background: #edf4fb;
+        border-color: var(--blue);
+      }
+
+      .orbat-empty {
+        border: 1px dashed var(--line);
+        border-radius: 6px;
+        padding: 12px;
+        color: var(--muted);
+        background: #fafafa;
+        text-align: center;
+      }
+
+      .modal {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.45);
+        align-items: center;
+        justify-content: center;
+        z-index: 20;
+        padding: 16px;
+      }
+
+      .modal.visible {
+        display: flex;
+      }
+
+      .modal-card {
+        width: min(520px, 94vw);
+        background: #fff;
+        border: 1px solid var(--blue);
+        border-radius: 6px;
+        overflow: hidden;
+        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.22);
+      }
+
+      .modal-head {
+        background: var(--blue);
+        color: #fff;
+        padding: 8px 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .modal-body {
+        padding: 10px;
+      }
+
+      .modal-close {
+        background: none;
+        border: 0;
+        color: #fff;
+        font-size: 18px;
+        cursor: pointer;
+      }
+
+      @media (max-width: 980px) {
+        .layout {
+          grid-template-columns: 1fr;
+        }
+
+        .sidebar {
+          display: none;
+        }
+
+        .nav-right {
+          display: none;
+        }
+
+        .orbat-day-tabs {
+          grid-template-columns: repeat(2, minmax(120px, 1fr));
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="gov-banner">Authorized personnel only</div>
+
+    <header class="site-header">
+      <h1>NSW Operations Portal</h1>
+      <p>Scheduling and availability</p>
+    </header>
+
+    <div id="portal-nav" class="portal-nav"></div>
+
+    <div class="portal-body">
+      <div id="portal-sidebar" class="sidebar"></div>
+
+      <main class="portal-main">
+        <div class="page-head">
+          <div>
+            <h2 class="page-title">Scheduling</h2>
+            <p class="page-subtitle">
+              Availability is entered in your selected timezone and stored as
+              UTC so everyone sees the same real-world times converted to their
+              own timezone.
+            </p>
           </div>
 
-          <div class="notice-box">
-            Click or drag to set availability. Cycle order: Empty, Available, Maybe, Unavailable, Empty.
+          <div class="view-switch">
+            <button class="btn active" id="calendar-view-btn" type="button">
+              Calendar
+            </button>
+            <button class="btn" id="orbat-view-btn" type="button">ORBAT</button>
           </div>
+        </div>
 
-          <div id="calendar-view" class="schedule-view">
+        <div class="layout">
+          <section>
+            <div class="panel">
+              <div class="panel-title">
+                <h3>Controls</h3>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="week-start">Week starting</label>
+                  <input type="date" id="week-start" />
+                </div>
+
+                <div class="form-group">
+                  <label for="timezone-select">Your timezone</label>
+                  <select id="timezone-select">
+                    <option value="UTC">UTC</option>
+                    <option value="Europe/Amsterdam">Europe/Amsterdam</option>
+                    <option value="Europe/London">Europe/London</option>
+                    <option value="America/New_York">America/New_York</option>
+                    <option value="America/Chicago">America/Chicago</option>
+                    <option value="America/Denver">America/Denver</option>
+                    <option value="America/Los_Angeles">
+                      America/Los_Angeles
+                    </option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="team-filter">Team filter</label>
+                  <select id="team-filter">
+                    <option value="FULL_WITH_GREEN">
+                      Full Troop + Green Team
+                    </option>
+                    <option value="FULL_NO_GREEN">
+                      Full Troop without Green Team
+                    </option>
+                    <option value="GREEN">Green Team</option>
+                    <option value="GOLF">Golf Team</option>
+                    <option value="HOTEL">Hotel Team</option>
+                    <option value="INDIA">India Team</option>
+                    <option value="HQ">Headquarters</option>
+                    <option value="ENABLERS">Enablers</option>
+                  </select>
+                </div>
+
+                <div class="form-group checkbox-group">
+                  <label>
+                    <input type="checkbox" id="include-loa" />
+                    Include approved LOAs as unavailable
+                  </label>
+                  <label>
+                    <input type="checkbox" id="include-blanks" />
+                    Include blank responses in totals
+                  </label>
+                </div>
+
+                <button class="btn btn-primary" id="save-btn" type="button">
+                  Save
+                </button>
+                <button class="btn" id="refresh-btn" type="button">
+                  Refresh
+                </button>
+
+                <div class="form-group">
+                  <label for="copy-weeks-count">Copy forward weeks</label>
+                  <input
+                    type="number"
+                    id="copy-weeks-count"
+                    min="1"
+                    max="12"
+                    value="1"
+                  />
+                </div>
+
+                <button class="btn" id="copy-forward-btn" type="button">
+                  Copy Forward
+                </button>
+                <button class="btn btn-danger" id="clear-btn" type="button">
+                  Clear Mine
+                </button>
+              </div>
+
+              <div id="status-line" class="status-line"></div>
+            </div>
+
+            <div class="notice-box">
+              Click or drag to set availability. Cycle order: Empty, Available,
+              Maybe, Unavailable, Empty.
+            </div>
+
+            <div id="calendar-view" class="schedule-view">
+              <div class="panel">
+                <div class="panel-title">
+                  <h3>Availability Heatmap</h3>
+                </div>
+
+                <div class="legend">
+                  <span><i class="legend-box grade-green"></i>Best</span>
+                  <span><i class="legend-box grade-yellow"></i>Good</span>
+                  <span><i class="legend-box grade-orange"></i>Limited</span>
+                  <span><i class="legend-box grade-red"></i>Poor</span>
+                  <span><i class="legend-box grade-gray"></i>No responses</span>
+                </div>
+
+                <div class="availability-wrap">
+                  <table class="availability-grid" id="heatmap-table"></table>
+                </div>
+              </div>
+
+              <div class="panel">
+                <div class="panel-title">
+                  <h3>Your Availability</h3>
+                  <span class="muted" id="calendar-title">Loading...</span>
+                </div>
+
+                <div class="availability-wrap">
+                  <table class="availability-grid" id="my-table"></table>
+                </div>
+              </div>
+
+              <div
+                class="panel no-availability-panel"
+                id="no-availability-panel"
+                hidden
+              >
+                <div class="panel-title">
+                  <h3>No Availability Submitted</h3>
+                  <span
+                    class="no-availability-summary"
+                    id="no-availability-count"
+                    >0</span
+                  >
+                </div>
+
+                <p class="no-availability-help" id="no-availability-help">
+                  Active members who have not marked any availability for this
+                  week.
+                </p>
+
+                <div
+                  class="no-availability-list"
+                  id="no-availability-list"
+                ></div>
+              </div>
+            </div>
+
+            <div id="orbat-view" class="schedule-view hidden">
+              <div class="panel">
+                <div class="orbat-toolbar">
+                  <div>
+                    <h3 id="orbat-week-title">ORBAT Availability</h3>
+                    <div class="muted" id="orbat-summary">Loading...</div>
+                  </div>
+
+                  <div>
+                    <button class="btn" id="orbat-prev-week" type="button">
+                      Previous
+                    </button>
+                    <button class="btn" id="orbat-current-week" type="button">
+                      Reload
+                    </button>
+                    <button class="btn" id="orbat-next-week" type="button">
+                      Next
+                    </button>
+                  </div>
+                </div>
+
+                <div class="orbat-day-tabs" id="orbat-day-tabs"></div>
+                <div id="orbat-day-content"></div>
+              </div>
+            </div>
+          </section>
+
+          <aside>
+            <div class="panel">
+              <div class="panel-title">
+                <h3>Dashboard</h3>
+              </div>
+
+              <table class="info-table">
+                <tr>
+                  <td>User</td>
+                  <td id="dash-user">Loading...</td>
+                </tr>
+                <tr>
+                  <td>User ID</td>
+                  <td id="dash-userid">Loading...</td>
+                </tr>
+                <tr>
+                  <td>Active members</td>
+                  <td id="dash-members">0</td>
+                </tr>
+                <tr>
+                  <td>Timezone</td>
+                  <td id="dash-timezone">UTC</td>
+                </tr>
+                <tr>
+                  <td>Updated</td>
+                  <td id="dash-updated">Never</td>
+                </tr>
+              </table>
+            </div>
 
             <div class="panel">
               <div class="panel-title">
-                <h3>Availability Heatmap</h3>
+                <h3>Best Times</h3>
               </div>
 
-              <div class="legend">
-                <span><i class="legend-box grade-green"></i>Best</span>
-                <span><i class="legend-box grade-yellow"></i>Good</span>
-                <span><i class="legend-box grade-orange"></i>Limited</span>
-                <span><i class="legend-box grade-red"></i>Poor</span>
-                <span><i class="legend-box grade-gray"></i>No responses</span>
-              </div>
-
-              <div class="availability-wrap">
-                <table class="availability-grid" id="heatmap-table"></table>
-              </div>
+              <ol class="best-list" id="best-list">
+                <li>Loading...</li>
+              </ol>
             </div>
 
             <div class="panel">
               <div class="panel-title">
-                <h3>Your Availability</h3>
-                <span class="muted" id="calendar-title">Loading...</span>
+                <h3>Recent Changes</h3>
               </div>
 
-              <div class="availability-wrap">
-                <table class="availability-grid" id="my-table"></table>
-              </div>
+              <ol class="changes-list" id="changes-list">
+                <li>Loading...</li>
+              </ol>
             </div>
-
-          </div>
-
-          <div id="orbat-view" class="schedule-view hidden">
-            <div class="panel">
-              <div class="orbat-toolbar">
-                <div>
-                  <h3 id="orbat-week-title">ORBAT Availability</h3>
-                  <div class="muted" id="orbat-summary">Loading...</div>
-                </div>
-
-                <div>
-                  <button class="btn" id="orbat-prev-week" type="button">Previous</button>
-                  <button class="btn" id="orbat-current-week" type="button">Reload</button>
-                  <button class="btn" id="orbat-next-week" type="button">Next</button>
-                </div>
-              </div>
-
-              <div class="orbat-day-tabs" id="orbat-day-tabs"></div>
-              <div id="orbat-day-content"></div>
-            </div>
-          </div>
-        </section>
-
-        <aside>
-          <div class="panel">
-            <div class="panel-title">
-              <h3>Dashboard</h3>
-            </div>
-
-            <table class="info-table">
-              <tr>
-                <td>User</td>
-                <td id="dash-user">Loading...</td>
-              </tr>
-              <tr>
-                <td>User ID</td>
-                <td id="dash-userid">Loading...</td>
-              </tr>
-              <tr>
-                <td>Active members</td>
-                <td id="dash-members">0</td>
-              </tr>
-              <tr>
-                <td>Timezone</td>
-                <td id="dash-timezone">UTC</td>
-              </tr>
-              <tr>
-                <td>Updated</td>
-                <td id="dash-updated">Never</td>
-              </tr>
-            </table>
-          </div>
-
-          <div class="panel">
-            <div class="panel-title">
-              <h3>Best Times</h3>
-            </div>
-
-            <ol class="best-list" id="best-list">
-              <li>Loading...</li>
-            </ol>
-          </div>
-
-          <div class="panel">
-            <div class="panel-title">
-              <h3>Recent Changes</h3>
-            </div>
-
-            <ol class="changes-list" id="changes-list">
-              <li>Loading...</li>
-            </ol>
-          </div>
-        </aside>
-      </div>
-    </main>
-  </div>
-
-  <div class="modal" id="person-modal">
-    <div class="modal-card">
-      <div class="modal-head">
-        <strong id="person-modal-title">Member</strong>
-        <button class="modal-close" id="close-person-modal" type="button">×</button>
-      </div>
-      <div class="modal-body" id="person-modal-body"></div>
+          </aside>
+        </div>
+      </main>
     </div>
-  </div>
 
-  <script type="module">
-    import { supabase } from "/js/auth.js";
-  import { bootPortalChrome, escapeHtml, avatarUrl } from "/js/portal-common.js";
-  import { renderPortalLayout } from "/js/portal-layout.js";
+    <div class="modal" id="person-modal">
+      <div class="modal-card">
+        <div class="modal-head">
+          <strong id="person-modal-title">Member</strong>
+          <button class="modal-close" id="close-person-modal" type="button">
+            ×
+          </button>
+        </div>
+        <div class="modal-body" id="person-modal-body"></div>
+      </div>
+    </div>
 
-  renderPortalLayout("scheduling");
+    <script type="module">
+      import { supabase } from "/js/auth.js";
+      import {
+        bootPortalChrome,
+        escapeHtml,
+        avatarUrl,
+      } from "/js/portal-common.js";
+      import { renderPortalLayout } from "/js/portal-layout.js";
 
-    const SLOT_MINUTES = 60;
-    const SLOTS_PER_DAY = 24;
+      renderPortalLayout("scheduling");
 
-    const TEAM_FILTERS = {
-      GREEN: ["Candidate"],
-      GOLF: ["EG1", "EG2", "EG3", "EG4", "EG5", "EG6"],
-      HOTEL: ["EH1", "EH2", "EH3", "EH4", "EH5", "EH6"],
-      INDIA: ["EI1", "EI2", "EI3", "EI4", "EI5", "EI6"],
-      HQ: ["E31", "E32"],
-      ENABLERS: ["EX1", "EN1", "ER1", "EY1", "EU1", "EU2", "EP1", "EP2"],
-      FULL_NO_GREEN: [
-        "EG1", "EG2", "EG3", "EG4", "EG5", "EG6",
-        "EH1", "EH2", "EH3", "EH4", "EH5", "EH6",
-        "EI1", "EI2", "EI3", "EI4", "EI5", "EI6",
-        "E31", "E32",
-        "EX1", "EN1", "ER1", "EY1", "EU1", "EU2", "EP1", "EP2"
-      ],
-      FULL_WITH_GREEN: [
-        "Candidate",
-        "EG1", "EG2", "EG3", "EG4", "EG5", "EG6",
-        "EH1", "EH2", "EH3", "EH4", "EH5", "EH6",
-        "EI1", "EI2", "EI3", "EI4", "EI5", "EI6",
-        "E31", "E32",
-        "EX1", "EN1", "ER1", "EY1", "EU1", "EU2", "EP1", "EP2"
-      ]
-    };
+      const SLOT_MINUTES = 60;
+      const SLOTS_PER_DAY = 24;
 
-    const ORBAT_COMPACT_GROUPS = [
-    {
-      title: "Green",
-      slots: ["Candidate"]
-    },
-    {
-      title: "Golf",
-      slots: ["EG1", "EG2", "EG3", "EG4", "EG5", "EG6"]
-    },
-    {
-      title: "Hotel",
-      slots: ["EH1", "EH2", "EH3", "EH4", "EH5", "EH6"]
-    },
-    {
-      title: "India",
-      slots: ["EI1", "EI2", "EI3", "EI4", "EI5", "EI6"]
-    },
-    {
-      title: "HQ",
-      slots: ["E31", "E32"]
-    },
-    {
-      title: "Enablers",
-      slots: ["EX1", "EN1", "ER1", "EY1", "EU1", "EU2", "EP1", "EP2"]
-    }
-  ];
-
-  
-
-    let authUser = null;
-    let profile = null;
-    let members = [];
-    let profilesById = new Map();
-    let allResponses = [];
-    let mySlots = new Map();
-    let dirtySlots = new Map();
-    let isDirty = false;
-    let isSaving = false;
-    let pendingRealtimeReload = false;
-    let selectedOrbatDay = 0;
-    let activeView = "calendar";
-    let realtimeChannel = null;
-    let isDragging = false;
-    let dragValue = null;
-    let loaRequests = [];
-    let dragChanged = false;
-
-    const $ = (id) => document.getElementById(id);
-
-    const weekInput = $("week-start");
-    const timezoneSelect = $("timezone-select");
-    const saveBtn = $("save-btn");
-    const refreshBtn = $("refresh-btn");
-    const clearBtn = $("clear-btn");
-    const copyForwardBtn = $("copy-forward-btn");
-    const copyWeeksCountInput = $("copy-weeks-count");
-    const teamFilter = $("team-filter");
-    const includeLoaCheckbox = $("include-loa");
-    const includeBlanksCheckbox = $("include-blanks");
-
-    function scheduleTimezone() {
-      return timezoneSelect.value || "UTC";
-    }
-
-    function slotKey(date) {
-      return new Date(date).toISOString();
-    }
-
-    function isoDate(date) {
-      return date.toISOString().slice(0, 10);
-    }
-
-    function getNextMonday() {
-      const today = new Date();
-      const day = today.getDay();
-      const diff = day === 0 ? 1 : 8 - day;
-      today.setDate(today.getDate() + diff);
-      return isoDate(today);
-    }
-
-    function addDays(iso, days) {
-      const date = new Date(`${iso}T00:00:00Z`);
-      date.setUTCDate(date.getUTCDate() + days);
-      return isoDate(date);
-    }
-
-    function shiftWeek(days) {
-      weekInput.value = addDays(weekInput.value, days);
-      loadResponses();
-    }
-
-    function fmt(timezone, options) {
-      return new Intl.DateTimeFormat("en-GB", {
-        timeZone: timezone,
-        ...options
-      });
-    }
-
-    function getZonedParts(date, timezone) {
-      const parts = new Intl.DateTimeFormat("en-GB", {
-        timeZone: timezone,
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-        hourCycle: "h23"
-      }).formatToParts(date);
-
-      const output = {};
-
-      for (const part of parts) {
-        if (part.type !== "literal") {
-          output[part.type] = part.value;
-        }
-      }
-
-      return {
-        year: Number(output.year),
-        month: Number(output.month),
-        day: Number(output.day),
-        hour: Number(output.hour),
-        minute: Number(output.minute)
+      const TEAM_FILTERS = {
+        GREEN: ["Candidate"],
+        GOLF: ["EG1", "EG2", "EG3", "EG4", "EG5", "EG6"],
+        HOTEL: ["EH1", "EH2", "EH3", "EH4", "EH5", "EH6"],
+        INDIA: ["EI1", "EI2", "EI3", "EI4", "EI5", "EI6"],
+        HQ: ["E31", "E32"],
+        ENABLERS: ["EX1", "EN1", "ER1", "EY1", "EU1", "EU2", "EP1", "EP2"],
+        FULL_NO_GREEN: [
+          "EG1",
+          "EG2",
+          "EG3",
+          "EG4",
+          "EG5",
+          "EG6",
+          "EH1",
+          "EH2",
+          "EH3",
+          "EH4",
+          "EH5",
+          "EH6",
+          "EI1",
+          "EI2",
+          "EI3",
+          "EI4",
+          "EI5",
+          "EI6",
+          "E31",
+          "E32",
+          "EX1",
+          "EN1",
+          "ER1",
+          "EY1",
+          "EU1",
+          "EU2",
+          "EP1",
+          "EP2",
+        ],
+        FULL_WITH_GREEN: [
+          "Candidate",
+          "EG1",
+          "EG2",
+          "EG3",
+          "EG4",
+          "EG5",
+          "EG6",
+          "EH1",
+          "EH2",
+          "EH3",
+          "EH4",
+          "EH5",
+          "EH6",
+          "EI1",
+          "EI2",
+          "EI3",
+          "EI4",
+          "EI5",
+          "EI6",
+          "E31",
+          "E32",
+          "EX1",
+          "EN1",
+          "ER1",
+          "EY1",
+          "EU1",
+          "EU2",
+          "EP1",
+          "EP2",
+        ],
       };
-    }
 
-    function zonedToUtc(year, month, day, hour, minute, timezone) {
-      const guess = new Date(Date.UTC(year, month - 1, day, hour, minute));
-      const parts = getZonedParts(guess, timezone);
-      const target = Date.UTC(year, month - 1, day, hour, minute);
-      const actual = Date.UTC(parts.year, parts.month - 1, parts.day, parts.hour, parts.minute);
+      const ORBAT_COMPACT_GROUPS = [
+        {
+          title: "Green",
+          slots: ["Candidate"],
+        },
+        {
+          title: "Golf",
+          slots: ["EG1", "EG2", "EG3", "EG4", "EG5", "EG6"],
+        },
+        {
+          title: "Hotel",
+          slots: ["EH1", "EH2", "EH3", "EH4", "EH5", "EH6"],
+        },
+        {
+          title: "India",
+          slots: ["EI1", "EI2", "EI3", "EI4", "EI5", "EI6"],
+        },
+        {
+          title: "HQ",
+          slots: ["E31", "E32"],
+        },
+        {
+          title: "Enablers",
+          slots: ["EX1", "EN1", "ER1", "EY1", "EU1", "EU2", "EP1", "EP2"],
+        },
+      ];
 
-      return new Date(guess.getTime() + (target - actual));
-    }
+      let authUser = null;
+      let profile = null;
+      let members = [];
+      let profilesById = new Map();
+      let allResponses = [];
+      let mySlots = new Map();
+      let dirtySlots = new Map();
+      let isDirty = false;
+      let isSaving = false;
+      let pendingRealtimeReload = false;
+      let selectedOrbatDay = 0;
+      let activeView = "calendar";
+      let realtimeChannel = null;
+      let isDragging = false;
+      let dragValue = null;
+      let loaRequests = [];
+      let dragChanged = false;
 
-    function slotUtcForWeek(weekIso, dayIndex, slotIndex) {
-      const baseIso = addDays(weekIso, dayIndex);
-      const minutes = slotIndex * SLOT_MINUTES;
-      const timezone = scheduleTimezone();
+      const $ = (id) => document.getElementById(id);
 
-      return zonedToUtc(
-        Number(baseIso.slice(0, 4)),
-        Number(baseIso.slice(5, 7)),
-        Number(baseIso.slice(8, 10)),
-        Math.floor(minutes / 60),
-        minutes % 60,
-        timezone
-      );
-    }
+      const weekInput = $("week-start");
+      const timezoneSelect = $("timezone-select");
+      const saveBtn = $("save-btn");
+      const refreshBtn = $("refresh-btn");
+      const clearBtn = $("clear-btn");
+      const copyForwardBtn = $("copy-forward-btn");
+      const copyWeeksCountInput = $("copy-weeks-count");
+      const teamFilter = $("team-filter");
+      const includeLoaCheckbox = $("include-loa");
+      const includeBlanksCheckbox = $("include-blanks");
 
-    function slotUtc(dayIndex, slotIndex) {
-      return slotUtcForWeek(weekInput.value, dayIndex, slotIndex);
-    }
+      function scheduleTimezone() {
+        return timezoneSelect.value || "UTC";
+      }
 
-    function visibleSlotKeysForWeek(weekIso) {
-      const keys = [];
+      function slotKey(date) {
+        return new Date(date).toISOString();
+      }
 
-      for (let day = 0; day < 7; day++) {
-        for (let slot = 0; slot < SLOTS_PER_DAY; slot++) {
-          keys.push(slotKey(slotUtcForWeek(weekIso, day, slot)));
+      function isoDate(date) {
+        return date.toISOString().slice(0, 10);
+      }
+
+      function getNextMonday() {
+        const today = new Date();
+        const day = today.getDay();
+        const diff = day === 0 ? 1 : 8 - day;
+        today.setDate(today.getDate() + diff);
+        return isoDate(today);
+      }
+
+      function addDays(iso, days) {
+        const date = new Date(`${iso}T00:00:00Z`);
+        date.setUTCDate(date.getUTCDate() + days);
+        return isoDate(date);
+      }
+
+      function shiftWeek(days) {
+        weekInput.value = addDays(weekInput.value, days);
+        loadResponses();
+      }
+
+      function fmt(timezone, options) {
+        return new Intl.DateTimeFormat("en-GB", {
+          timeZone: timezone,
+          ...options,
+        });
+      }
+
+      function getZonedParts(date, timezone) {
+        const parts = new Intl.DateTimeFormat("en-GB", {
+          timeZone: timezone,
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+          hourCycle: "h23",
+        }).formatToParts(date);
+
+        const output = {};
+
+        for (const part of parts) {
+          if (part.type !== "literal") {
+            output[part.type] = part.value;
+          }
         }
+
+        return {
+          year: Number(output.year),
+          month: Number(output.month),
+          day: Number(output.day),
+          hour: Number(output.hour),
+          minute: Number(output.minute),
+        };
       }
 
-      return keys;
-    }
+      function zonedToUtc(year, month, day, hour, minute, timezone) {
+        const guess = new Date(Date.UTC(year, month - 1, day, hour, minute));
+        const parts = getZonedParts(guess, timezone);
+        const target = Date.UTC(year, month - 1, day, hour, minute);
+        const actual = Date.UTC(
+          parts.year,
+          parts.month - 1,
+          parts.day,
+          parts.hour,
+          parts.minute,
+        );
 
-    function visibleSlotKeys() {
-      return visibleSlotKeysForWeek(weekInput.value);
-    }
-
-    function chunkArray(items, size) {
-      const chunks = [];
-
-      for (let index = 0; index < items.length; index += size) {
-        chunks.push(items.slice(index, index + size));
+        return new Date(guess.getTime() + (target - actual));
       }
 
-      return chunks;
-    }
+      function slotUtcForWeek(weekIso, dayIndex, slotIndex) {
+        const baseIso = addDays(weekIso, dayIndex);
+        const minutes = slotIndex * SLOT_MINUTES;
+        const timezone = scheduleTimezone();
 
-    function bufferedLoadRange() {
-      const keys = visibleSlotKeys();
-      const earliest = new Date(keys[0]);
-      const latest = new Date(keys[keys.length - 1]);
-
-      earliest.setUTCDate(earliest.getUTCDate() - 1);
-      latest.setUTCDate(latest.getUTCDate() + 1);
-
-      return {
-        keys,
-        earliest,
-        latest
-      };
-    }
-
-    function slotLabel(dayIndex, slotIndex) {
-      return fmt(scheduleTimezone(), {
-        hour: "2-digit",
-        minute: "2-digit",
-        hourCycle: "h23"
-      }).format(slotUtc(dayIndex, slotIndex));
-    }
-
-    function dtLabel(iso) {
-      return fmt(scheduleTimezone(), {
-        weekday: "short",
-        day: "2-digit",
-        month: "short",
-        hour: "2-digit",
-        minute: "2-digit",
-        hourCycle: "h23"
-      }).format(new Date(iso));
-    }
-
-    function shortDayLabel(dayIndex) {
-      const date = slotUtc(dayIndex, 12);
-      const weekday = fmt(scheduleTimezone(), { weekday: "short" }).format(date);
-      const dayMonth = fmt(scheduleTimezone(), { day: "2-digit", month: "short" }).format(date);
-
-      return { weekday, dayMonth };
-    }
-
-    function updLabel(iso) {
-      return fmt(scheduleTimezone(), {
-        day: "2-digit",
-        month: "short",
-        hour: "2-digit",
-        minute: "2-digit",
-        hourCycle: "h23"
-      }).format(new Date(iso));
-    }
-
-    function dayHeader(dayIndex) {
-      const parts = shortDayLabel(dayIndex);
-      return `${escapeHtml(parts.weekday)}<small>${escapeHtml(parts.dayMonth)}</small>`;
-    }
-
-    function setStatus(message, ok) {
-      const el = $("status-line");
-      el.textContent = message;
-      el.className = `status-line visible ${ok ? "ok" : "err"}`;
-    }
-
-    function utcNowLabel() {
-      return new Date().toISOString().slice(0, 19).replace("T", " ") + " UTC";
-    }
-
-    function label(value) {
-      if (value === "available") return "Available";
-      if (value === "maybe") return "Maybe";
-      if (value === "unavailable") return "Unavailable";
-      return "";
-    }
-
-    function compact(value) {
-      if (value === "available") return "A";
-      if (value === "maybe") return "M";
-      if (value === "unavailable") return "U";
-      return "";
-    }
-
-    function cycle(value) {
-      if (!value) return "available";
-      if (value === "available") return "maybe";
-      if (value === "maybe") return "unavailable";
-      return null;
-    }
-
-    function myClass(value) {
-      if (value === "available") return "mine-available";
-      if (value === "maybe") return "mine-maybe";
-      if (value === "unavailable") return "mine-unavailable";
-      return "mine-empty";
-    }
-
-    function getName(userId) {
-      return profilesById.get(userId)?.display_name || userId;
-    }
-
-    function selectedCallsigns() {
-  return TEAM_FILTERS[teamFilter.value] || TEAM_FILTERS.FULL_WITH_GREEN;
-}
-
-function filteredMembers() {
-  const allowed = new Set(selectedCallsigns());
-
-  return members.filter((member) => {
-    const code = callsign(member);
-    return allowed.has(code);
-  });
-}
-
-function slotLocalDateIso(slotStart) {
-  const parts = fmt(scheduleTimezone(), {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit"
-  }).formatToParts(new Date(slotStart));
-
-  const output = {};
-
-  for (const part of parts) {
-    if (part.type !== "literal") {
-      output[part.type] = part.value;
-    }
-  }
-
-  return `${output.year}-${output.month}-${output.day}`;
-}
-
-function memberIsOnLoa(memberId, slotStart) {
-  if (!includeLoaCheckbox.checked) {
-    return false;
-  }
-
-  const localDate = slotLocalDateIso(slotStart);
-
-  return loaRequests.some((request) => {
-    return request.requester_id === memberId
-      && request.status === "APPROVED"
-      && request.start_date <= localDate
-      && request.end_date >= localDate;
-  });
-}
-
-function responseForMemberSlot(memberId, slotStart) {
-  return allResponses.find((response) => {
-    return response.user_id === memberId
-      && new Date(response.slot_start).toISOString() === slotStart;
-  }) || null;
-}
-
-function aggregate(slotStart) {
-  const scopedMembers = filteredMembers();
-
-  let available = 0;
-  let maybe = 0;
-  let unavailable = 0;
-  let blank = 0;
-
-  const peopleAvailable = [];
-  const peopleMaybe = [];
-  const peopleUnavailable = [];
-  const peopleBlank = [];
-
-  for (const member of scopedMembers) {
-    const response = responseForMemberSlot(member.id, slotStart);
-    const onLoa = memberIsOnLoa(member.id, slotStart);
-
-    if (onLoa) {
-      unavailable++;
-      peopleUnavailable.push(`${member.display_name} (LOA)`);
-      continue;
-    }
-
-    if (!response) {
-      blank++;
-      peopleBlank.push(member.display_name);
-      continue;
-    }
-
-    if (response.availability === "available") {
-      available++;
-      peopleAvailable.push(member.display_name);
-    } else if (response.availability === "maybe") {
-      maybe++;
-      peopleMaybe.push(member.display_name);
-    } else if (response.availability === "unavailable") {
-      unavailable++;
-      peopleUnavailable.push(member.display_name);
-    } else {
-      blank++;
-      peopleBlank.push(member.display_name);
-    }
-  }
-  
-  const responseCount = available + maybe + unavailable;
-
-  const denominator = Math.max(responseCount, 1);
-
-  const count = includeBlanksCheckbox.checked
-    ? responseCount + blank
-    : responseCount;
-
-  const score = responseCount ? (available + maybe * 0.5) / denominator : 0;
-
-  let grade = "gray";
-
-  if (responseCount > 0) {
-    if (score >= 0.75) grade = "green";
-    else if (score >= 0.5) grade = "yellow";
-    else if (score >= 0.25) grade = "orange";
-    else grade = "red";
-  }
-
-  return {
-    count,
-    available,
-    maybe,
-    unavailable,
-    blank,
-    score,
-    grade,
-    peopleAvailable,
-    peopleMaybe,
-    peopleUnavailable,
-    peopleBlank
-  };
-}
-
-    function updateCell(cell, value) {
-      cell.className = myClass(value);
-      cell.textContent = compact(value);
-      cell.title = `Click or drag to change. Current: ${label(value) || "Empty"}`;
-    }
-
-    function setCell(cell, value) {
-      const key = slotKey(slotUtc(Number(cell.dataset.day), Number(cell.dataset.slot)));
-
-      if ((mySlots.get(key) || null) === value) {
-        return;
+        return zonedToUtc(
+          Number(baseIso.slice(0, 4)),
+          Number(baseIso.slice(5, 7)),
+          Number(baseIso.slice(8, 10)),
+          Math.floor(minutes / 60),
+          minutes % 60,
+          timezone,
+        );
       }
 
-      if (value) {
-        mySlots.set(key, value);
-        dirtySlots.set(key, value);
-      } else {
-        mySlots.delete(key);
-        dirtySlots.set(key, null);
+      function slotUtc(dayIndex, slotIndex) {
+        return slotUtcForWeek(weekInput.value, dayIndex, slotIndex);
       }
 
-      isDirty = true;
-      updateCell(cell, value);
-      dragChanged = true;
-    }
-
-    function finishDrag() {
-      if (!isDragging) {
-        return;
-      }
-
-      isDragging = false;
-      dragValue = null;
-
-      if (dragChanged) {
-        dragChanged = false;
-        buildHeatmap();
-        buildBestList();
-
-        if (activeView === "orbat") {
-          buildOrbat();
-        }
-      }
-    }
-
-    function buildMyTable() {
-      let html = "<tr><th class='time-col'>Time</th>";
-
-      for (let day = 0; day < 7; day++) {
-        html += `<th>${dayHeader(day)}</th>`;
-      }
-
-      html += "</tr>";
-
-      for (let slot = 0; slot < SLOTS_PER_DAY; slot++) {
-        html += `<tr><td class="time-col">${escapeHtml(slotLabel(0, slot))}</td>`;
+      function visibleSlotKeysForWeek(weekIso) {
+        const keys = [];
 
         for (let day = 0; day < 7; day++) {
-          const key = slotKey(slotUtc(day, slot));
-          const value = mySlots.get(key) || null;
+          for (let slot = 0; slot < SLOTS_PER_DAY; slot++) {
+            keys.push(slotKey(slotUtcForWeek(weekIso, day, slot)));
+          }
+        }
 
-          html += `
+        return keys;
+      }
+
+      function visibleSlotKeys() {
+        return visibleSlotKeysForWeek(weekInput.value);
+      }
+
+      function chunkArray(items, size) {
+        const chunks = [];
+
+        for (let index = 0; index < items.length; index += size) {
+          chunks.push(items.slice(index, index + size));
+        }
+
+        return chunks;
+      }
+
+      function bufferedLoadRange() {
+        const keys = visibleSlotKeys();
+        const earliest = new Date(keys[0]);
+        const latest = new Date(keys[keys.length - 1]);
+
+        earliest.setUTCDate(earliest.getUTCDate() - 1);
+        latest.setUTCDate(latest.getUTCDate() + 1);
+
+        return {
+          keys,
+          earliest,
+          latest,
+        };
+      }
+
+      function slotLabel(dayIndex, slotIndex) {
+        return fmt(scheduleTimezone(), {
+          hour: "2-digit",
+          minute: "2-digit",
+          hourCycle: "h23",
+        }).format(slotUtc(dayIndex, slotIndex));
+      }
+
+      function dtLabel(iso) {
+        return fmt(scheduleTimezone(), {
+          weekday: "short",
+          day: "2-digit",
+          month: "short",
+          hour: "2-digit",
+          minute: "2-digit",
+          hourCycle: "h23",
+        }).format(new Date(iso));
+      }
+
+      function shortDayLabel(dayIndex) {
+        const date = slotUtc(dayIndex, 12);
+        const weekday = fmt(scheduleTimezone(), { weekday: "short" }).format(
+          date,
+        );
+        const dayMonth = fmt(scheduleTimezone(), {
+          day: "2-digit",
+          month: "short",
+        }).format(date);
+
+        return { weekday, dayMonth };
+      }
+
+      function updLabel(iso) {
+        return fmt(scheduleTimezone(), {
+          day: "2-digit",
+          month: "short",
+          hour: "2-digit",
+          minute: "2-digit",
+          hourCycle: "h23",
+        }).format(new Date(iso));
+      }
+
+      function dayHeader(dayIndex) {
+        const parts = shortDayLabel(dayIndex);
+        return `${escapeHtml(parts.weekday)}<small>${escapeHtml(parts.dayMonth)}</small>`;
+      }
+
+      function setStatus(message, ok) {
+        const el = $("status-line");
+        el.textContent = message;
+        el.className = `status-line visible ${ok ? "ok" : "err"}`;
+      }
+
+      function utcNowLabel() {
+        return new Date().toISOString().slice(0, 19).replace("T", " ") + " UTC";
+      }
+
+      function label(value) {
+        if (value === "available") return "Available";
+        if (value === "maybe") return "Maybe";
+        if (value === "unavailable") return "Unavailable";
+        return "";
+      }
+
+      function compact(value) {
+        if (value === "available") return "A";
+        if (value === "maybe") return "M";
+        if (value === "unavailable") return "U";
+        return "";
+      }
+
+      function cycle(value) {
+        if (!value) return "available";
+        if (value === "available") return "maybe";
+        if (value === "maybe") return "unavailable";
+        return null;
+      }
+
+      function myClass(value) {
+        if (value === "available") return "mine-available";
+        if (value === "maybe") return "mine-maybe";
+        if (value === "unavailable") return "mine-unavailable";
+        return "mine-empty";
+      }
+
+      function getName(userId) {
+        return profilesById.get(userId)?.display_name || userId;
+      }
+
+      function selectedCallsigns() {
+        return TEAM_FILTERS[teamFilter.value] || TEAM_FILTERS.FULL_WITH_GREEN;
+      }
+
+      function filteredMembers() {
+        const allowed = new Set(selectedCallsigns());
+
+        return members.filter((member) => {
+          const code = callsign(member);
+          return allowed.has(code);
+        });
+      }
+
+      function slotLocalDateIso(slotStart) {
+        const parts = fmt(scheduleTimezone(), {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+        }).formatToParts(new Date(slotStart));
+
+        const output = {};
+
+        for (const part of parts) {
+          if (part.type !== "literal") {
+            output[part.type] = part.value;
+          }
+        }
+
+        return `${output.year}-${output.month}-${output.day}`;
+      }
+
+      function memberIsOnLoa(memberId, slotStart) {
+        if (!includeLoaCheckbox.checked) {
+          return false;
+        }
+
+        const localDate = slotLocalDateIso(slotStart);
+
+        return loaRequests.some((request) => {
+          return (
+            request.requester_id === memberId &&
+            request.status === "APPROVED" &&
+            request.start_date <= localDate &&
+            request.end_date >= localDate
+          );
+        });
+      }
+
+      function responseForMemberSlot(memberId, slotStart) {
+        return (
+          allResponses.find((response) => {
+            return (
+              response.user_id === memberId &&
+              new Date(response.slot_start).toISOString() === slotStart
+            );
+          }) || null
+        );
+      }
+
+      function aggregate(slotStart) {
+        const scopedMembers = filteredMembers();
+
+        let available = 0;
+        let maybe = 0;
+        let unavailable = 0;
+        let blank = 0;
+
+        const peopleAvailable = [];
+        const peopleMaybe = [];
+        const peopleUnavailable = [];
+        const peopleBlank = [];
+
+        for (const member of scopedMembers) {
+          const response = responseForMemberSlot(member.id, slotStart);
+          const onLoa = memberIsOnLoa(member.id, slotStart);
+
+          if (onLoa) {
+            unavailable++;
+            peopleUnavailable.push(`${member.display_name} (LOA)`);
+            continue;
+          }
+
+          if (!response) {
+            blank++;
+            peopleBlank.push(member.display_name);
+            continue;
+          }
+
+          if (response.availability === "available") {
+            available++;
+            peopleAvailable.push(member.display_name);
+          } else if (response.availability === "maybe") {
+            maybe++;
+            peopleMaybe.push(member.display_name);
+          } else if (response.availability === "unavailable") {
+            unavailable++;
+            peopleUnavailable.push(member.display_name);
+          } else {
+            blank++;
+            peopleBlank.push(member.display_name);
+          }
+        }
+
+        const responseCount = available + maybe + unavailable;
+
+        const denominator = Math.max(responseCount, 1);
+
+        const count = includeBlanksCheckbox.checked
+          ? responseCount + blank
+          : responseCount;
+
+        const score = responseCount
+          ? (available + maybe * 0.5) / denominator
+          : 0;
+
+        let grade = "gray";
+
+        if (responseCount > 0) {
+          if (score >= 0.75) grade = "green";
+          else if (score >= 0.5) grade = "yellow";
+          else if (score >= 0.25) grade = "orange";
+          else grade = "red";
+        }
+
+        return {
+          count,
+          available,
+          maybe,
+          unavailable,
+          blank,
+          score,
+          grade,
+          peopleAvailable,
+          peopleMaybe,
+          peopleUnavailable,
+          peopleBlank,
+        };
+      }
+
+      function updateCell(cell, value) {
+        cell.className = myClass(value);
+        cell.textContent = compact(value);
+        cell.title = `Click or drag to change. Current: ${label(value) || "Empty"}`;
+      }
+
+      function setCell(cell, value) {
+        const key = slotKey(
+          slotUtc(Number(cell.dataset.day), Number(cell.dataset.slot)),
+        );
+
+        if ((mySlots.get(key) || null) === value) {
+          return;
+        }
+
+        if (value) {
+          mySlots.set(key, value);
+          dirtySlots.set(key, value);
+        } else {
+          mySlots.delete(key);
+          dirtySlots.set(key, null);
+        }
+
+        isDirty = true;
+        updateCell(cell, value);
+        dragChanged = true;
+      }
+
+      function finishDrag() {
+        if (!isDragging) {
+          return;
+        }
+
+        isDragging = false;
+        dragValue = null;
+
+        if (dragChanged) {
+          dragChanged = false;
+          buildHeatmap();
+          buildBestList();
+
+          if (activeView === "orbat") {
+            buildOrbat();
+          }
+        }
+      }
+
+      function isSchedulingAdmin() {
+        return (
+          String(profile?.role || "")
+            .trim()
+            .toUpperCase() === "ADMIN"
+        );
+      }
+
+      function buildNoAvailabilityList() {
+        const panel = $("no-availability-panel");
+        const list = $("no-availability-list");
+        const count = $("no-availability-count");
+        const help = $("no-availability-help");
+
+        if (!panel || !list || !count || !help) {
+          return;
+        }
+
+        const admin = isSchedulingAdmin();
+
+        panel.hidden = !admin;
+
+        if (!admin) {
+          list.innerHTML = "";
+          return;
+        }
+
+        /*
+         * visibleSlotKeys() should already return every scheduling slot
+         * belonging to the currently selected week.
+         */
+        const visibleKeys = new Set(visibleSlotKeys());
+
+        /*
+         * Store the IDs of everyone who submitted at least one response
+         * during the selected week.
+         */
+        const submittedUserIds = new Set(
+          allResponses
+            .filter((response) => {
+              const responseKey = new Date(response.slot_start).toISOString();
+              return visibleKeys.has(responseKey);
+            })
+            .map((response) => response.user_id),
+        );
+
+        /*
+         * members should already contain the active profiles loaded by
+         * the scheduling page.
+         */
+        const missingMembers = members
+          .filter((member) => !submittedUserIds.has(member.id))
+          .sort((a, b) => {
+            return String(a.display_name || "").localeCompare(
+              String(b.display_name || ""),
+            );
+          });
+
+        count.textContent = String(missingMembers.length);
+
+        help.textContent = `Active members with no availability entries for the week of ${weekInput.value}.`;
+
+        if (missingMembers.length === 0) {
+          list.innerHTML = `
+      <div class="no-availability-empty">
+        Everyone has submitted at least one availability entry for this week.
+      </div>
+    `;
+
+          return;
+        }
+
+        list.innerHTML = missingMembers
+          .map((member) => {
+            const memberName =
+              String(member.display_name || "").trim() || "Unknown member";
+
+            const memberCallsign =
+              String(member.callsign || "").trim() || "No callsign";
+
+            const memberRank =
+              String(member.naval_rank || "").trim() || "Member";
+
+            const image = avatarUrl(member.avatar_url, memberName);
+
+            return `
+        <div class="no-availability-person">
+          <img
+            class="no-availability-avatar"
+            src="${escapeHtml(image)}"
+            alt=""
+            loading="lazy"
+          >
+
+          <div class="no-availability-person-info">
+            <strong>${escapeHtml(memberName)}</strong>
+            <span>
+              ${escapeHtml(memberRank)} · ${escapeHtml(memberCallsign)}
+            </span>
+          </div>
+        </div>
+      `;
+          })
+          .join("");
+      }
+
+      function buildMyTable() {
+        let html = "<tr><th class='time-col'>Time</th>";
+
+        for (let day = 0; day < 7; day++) {
+          html += `<th>${dayHeader(day)}</th>`;
+        }
+
+        html += "</tr>";
+
+        for (let slot = 0; slot < SLOTS_PER_DAY; slot++) {
+          html += `<tr><td class="time-col">${escapeHtml(slotLabel(0, slot))}</td>`;
+
+          for (let day = 0; day < 7; day++) {
+            const key = slotKey(slotUtc(day, slot));
+            const value = mySlots.get(key) || null;
+
+            html += `
             <td
               class="${myClass(value)}"
               data-day="${day}"
@@ -1452,110 +1773,120 @@ function aggregate(slotStart) {
               title="Click or drag to change. Current: ${escapeHtml(label(value) || "Empty")}">
               ${escapeHtml(compact(value))}
             </td>`;
+          }
+
+          html += "</tr>";
+        }
+
+        $("my-table").innerHTML = html;
+
+        $("my-table")
+          .querySelectorAll("td[data-day]")
+          .forEach((cell) => {
+            cell.addEventListener("mousedown", (event) => {
+              if (event.button !== 0) {
+                return;
+              }
+
+              event.preventDefault();
+
+              const key = slotKey(
+                slotUtc(Number(cell.dataset.day), Number(cell.dataset.slot)),
+              );
+
+              isDragging = true;
+              dragValue = cycle(mySlots.get(key));
+              dragChanged = false;
+
+              setCell(cell, dragValue);
+            });
+
+            cell.addEventListener("mouseenter", () => {
+              if (isDragging) {
+                setCell(cell, dragValue);
+              }
+            });
+          });
+      }
+
+      function hoverTitle(aggregateResult, key) {
+        return [
+          dtLabel(key),
+          "",
+          "Available:",
+          aggregateResult.peopleAvailable.join(", ") || "None",
+          "",
+          "Maybe:",
+          aggregateResult.peopleMaybe.join(", ") || "None",
+          "",
+          "Unavailable:",
+          aggregateResult.peopleUnavailable.join(", ") || "None",
+          "",
+          "Blank:",
+          aggregateResult.peopleBlank.join(", ") || "None",
+        ].join("\n");
+      }
+
+      function buildHeatmap() {
+        let html = "<tr><th class='time-col'>Time</th>";
+
+        for (let day = 0; day < 7; day++) {
+          html += `<th>${dayHeader(day)}</th>`;
         }
 
         html += "</tr>";
-      }
 
-      $("my-table").innerHTML = html;
+        for (let slot = 0; slot < SLOTS_PER_DAY; slot++) {
+          html += `<tr><td class="time-col">${escapeHtml(slotLabel(0, slot))}</td>`;
 
-      $("my-table").querySelectorAll("td[data-day]").forEach((cell) => {
-        cell.addEventListener("mousedown", (event) => {
-          if (event.button !== 0) {
-            return;
-          }
+          for (let day = 0; day < 7; day++) {
+            const key = slotKey(slotUtc(day, slot));
+            const result = aggregate(key);
 
-          event.preventDefault();
-
-          const key = slotKey(slotUtc(Number(cell.dataset.day), Number(cell.dataset.slot)));
-
-          isDragging = true;
-          dragValue = cycle(mySlots.get(key));
-          dragChanged = false;
-
-          setCell(cell, dragValue);
-        });
-
-        cell.addEventListener("mouseenter", () => {
-          if (isDragging) {
-            setCell(cell, dragValue);
-          }
-        });
-      });
-    }
-
-    function hoverTitle(aggregateResult, key) {
-      return [
-        dtLabel(key),
-        "",
-        "Available:",
-        aggregateResult.peopleAvailable.join(", ") || "None",
-        "",
-        "Maybe:",
-        aggregateResult.peopleMaybe.join(", ") || "None",
-        "",
-        "Unavailable:",
-        aggregateResult.peopleUnavailable.join(", ") || "None",
-        "",
-        "Blank:",
-        aggregateResult.peopleBlank.join(", ") || "None"
-      ].join("\n");
-    }
-
-    function buildHeatmap() {
-      let html = "<tr><th class='time-col'>Time</th>";
-
-      for (let day = 0; day < 7; day++) {
-        html += `<th>${dayHeader(day)}</th>`;
-      }
-
-      html += "</tr>";
-
-      for (let slot = 0; slot < SLOTS_PER_DAY; slot++) {
-        html += `<tr><td class="time-col">${escapeHtml(slotLabel(0, slot))}</td>`;
-
-        for (let day = 0; day < 7; day++) {
-          const key = slotKey(slotUtc(day, slot));
-          const result = aggregate(key);
-
-          html += `
+            html += `
             <td class="heat-cell grade-${result.grade}" title="${escapeHtml(hoverTitle(result, key))}">
               ${Math.round(result.score * 100)}%
               <small>${result.available}A ${result.maybe}M ${result.unavailable}U ${result.blank}B</small>
             </td>`;
+          }
+
+          html += "</tr>";
         }
 
-        html += "</tr>";
+        $("heatmap-table").innerHTML = html;
       }
 
-      $("heatmap-table").innerHTML = html;
-    }
+      function buildBestList() {
+        const slots = [];
 
-    function buildBestList() {
-      const slots = [];
+        for (let day = 0; day < 7; day++) {
+          for (let slot = 0; slot < SLOTS_PER_DAY; slot++) {
+            const key = slotKey(slotUtc(day, slot));
+            const result = aggregate(key);
 
-      for (let day = 0; day < 7; day++) {
-        for (let slot = 0; slot < SLOTS_PER_DAY; slot++) {
-          const key = slotKey(slotUtc(day, slot));
-          const result = aggregate(key);
-
-          if (result.count) {
-            slots.push({ key, ...result });
+            if (result.count) {
+              slots.push({ key, ...result });
+            }
           }
         }
-      }
 
-      slots.sort((a, b) => {
-        return b.score - a.score || b.available - a.available || a.unavailable - b.unavailable;
-      });
+        slots.sort((a, b) => {
+          return (
+            b.score - a.score ||
+            b.available - a.available ||
+            a.unavailable - b.unavailable
+          );
+        });
 
-      if (!slots.length) {
-        $("best-list").innerHTML = "<li>No availability submitted yet.</li>";
-        return;
-      }
+        if (!slots.length) {
+          $("best-list").innerHTML = "<li>No availability submitted yet.</li>";
+          return;
+        }
 
-      $("best-list").innerHTML = slots.slice(0, 8).map((slot) => {
-        return `
+        $("best-list").innerHTML = slots
+          .slice(0, 8)
+          .map((slot) => {
+            return `
           <li>
             <strong>${escapeHtml(dtLabel(slot.key))}</strong><br>
             ${Math.round(slot.score * 100)}% fit,
@@ -1564,28 +1895,39 @@ function aggregate(slotStart) {
             ${slot.unavailable} unavailable,
             ${slot.blank} blank
           </li>`;
-      }).join("");
-    }
-
-    function buildChanges() {
-      const visibleSet = new Set(visibleSlotKeys());
-      const allowedMemberIds = new Set(filteredMembers().map((member) => member.id));
-
-      const latest = [...allResponses]
-        .filter((response) => {
-          return visibleSet.has(new Date(response.slot_start).toISOString())
-            && allowedMemberIds.has(response.user_id);
-        })
-        .sort((a, b) => new Date(b.updated_at || b.slot_start) - new Date(a.updated_at || a.slot_start))
-        .slice(0, 12);
-
-      if (!latest.length) {
-        $("changes-list").innerHTML = "<li>No changes yet for this filter.</li>";
-        return;
+          })
+          .join("");
       }
 
-      $("changes-list").innerHTML = latest.map((response) => {
-        return `
+      function buildChanges() {
+        const visibleSet = new Set(visibleSlotKeys());
+        const allowedMemberIds = new Set(
+          filteredMembers().map((member) => member.id),
+        );
+
+        const latest = [...allResponses]
+          .filter((response) => {
+            return (
+              visibleSet.has(new Date(response.slot_start).toISOString()) &&
+              allowedMemberIds.has(response.user_id)
+            );
+          })
+          .sort(
+            (a, b) =>
+              new Date(b.updated_at || b.slot_start) -
+              new Date(a.updated_at || a.slot_start),
+          )
+          .slice(0, 12);
+
+        if (!latest.length) {
+          $("changes-list").innerHTML =
+            "<li>No changes yet for this filter.</li>";
+          return;
+        }
+
+        $("changes-list").innerHTML = latest
+          .map((response) => {
+            return `
           <li>
             <strong>${escapeHtml(getName(response.user_id))}</strong>
             set <strong>${escapeHtml(response.availability)}</strong><br>
@@ -1594,148 +1936,174 @@ function aggregate(slotStart) {
               updated ${escapeHtml(updLabel(response.updated_at || response.slot_start))}
             </span>
           </li>`;
-      }).join("");
-    }
+          })
+          .join("");
+      }
 
-    function callsign(member) {
-      return String(member.callsign || "").trim().toUpperCase() || "Candidate";
-    }
+      function callsign(member) {
+        return (
+          String(member.callsign || "")
+            .trim()
+            .toUpperCase() || "Candidate"
+        );
+      }
 
-    function membersFor(callsignCode) {
-      return members.filter((member) => {
-        if (callsignCode === "Candidate") {
-          return !String(member.callsign || "").trim();
+      function membersFor(callsignCode) {
+        return members.filter((member) => {
+          if (callsignCode === "Candidate") {
+            return !String(member.callsign || "").trim();
+          }
+
+          return callsign(member) === callsignCode;
+        });
+      }
+
+      function availabilityFor(userId, key) {
+        return (
+          allResponses.find((response) => {
+            return (
+              response.user_id === userId &&
+              new Date(response.slot_start).toISOString() === key
+            );
+          })?.availability || null
+        );
+      }
+
+      function availableMembersForCode(callsignCode, key) {
+        if (!selectedCallsigns().includes(callsignCode)) {
+          return [];
         }
 
-        return callsign(member) === callsignCode;
-      });
-    }
+        return membersFor(callsignCode).filter((member) => {
+          if (memberIsOnLoa(member.id, key)) {
+            return false;
+          }
 
-    function availabilityFor(userId, key) {
-      return allResponses.find((response) => {
-        return response.user_id === userId && new Date(response.slot_start).toISOString() === key;
-      })?.availability || null;
-    }
-
-    function availableMembersForCode(callsignCode, key) {
-      if (!selectedCallsigns().includes(callsignCode)) {
-        return [];
+          return availabilityFor(member.id, key) === "available";
+        });
       }
 
-      return membersFor(callsignCode).filter((member) => {
-        if (memberIsOnLoa(member.id, key)) {
-          return false;
+      function dayAvailableCount(dayIndex) {
+        let total = 0;
+
+        for (let slot = 0; slot < SLOTS_PER_DAY; slot++) {
+          const key = slotKey(slotUtc(dayIndex, slot));
+          total += aggregate(key).available;
         }
 
-        return availabilityFor(member.id, key) === "available";
-      });
-    }
-
-    function dayAvailableCount(dayIndex) {
-      let total = 0;
-
-      for (let slot = 0; slot < SLOTS_PER_DAY; slot++) {
-        const key = slotKey(slotUtc(dayIndex, slot));
-        total += aggregate(key).available;
+        return total;
       }
 
-      return total;
-    }
+      function rebuildFilteredViews() {
+        $("dash-members").textContent = String(filteredMembers().length);
 
-    function rebuildFilteredViews() {
-      $("dash-members").textContent = String(filteredMembers().length);
+        buildHeatmap();
+        buildBestList();
+        buildChanges();
+        buildNoAvailabilityList();
 
-      buildHeatmap();
-      buildBestList();
-      buildChanges();
-
-      if (activeView === "orbat") {
-        buildOrbat();
+        if (activeView === "orbat") {
+          buildOrbat();
+        }
       }
-    }
 
-    teamFilter.onchange = () => {
-      localStorage.setItem("schedulingTeamFilter", teamFilter.value);
-      rebuildFilteredViews();
-    };
+      teamFilter.onchange = () => {
+        localStorage.setItem("schedulingTeamFilter", teamFilter.value);
+        rebuildFilteredViews();
+      };
 
-    includeLoaCheckbox.onchange = () => {
-      localStorage.setItem("schedulingIncludeLoa", includeLoaCheckbox.checked ? "1" : "0");
-      rebuildFilteredViews();
-    };
+      includeLoaCheckbox.onchange = () => {
+        localStorage.setItem(
+          "schedulingIncludeLoa",
+          includeLoaCheckbox.checked ? "1" : "0",
+        );
+        rebuildFilteredViews();
+      };
 
-    includeBlanksCheckbox.onchange = () => {
-      localStorage.setItem("schedulingIncludeBlanks", includeBlanksCheckbox.checked ? "1" : "0");
-      rebuildFilteredViews();
-    };
+      includeBlanksCheckbox.onchange = () => {
+        localStorage.setItem(
+          "schedulingIncludeBlanks",
+          includeBlanksCheckbox.checked ? "1" : "0",
+        );
+        rebuildFilteredViews();
+      };
 
-    function buildTabs() {
-      const root = $("orbat-day-tabs");
-      root.innerHTML = "";
+      function buildTabs() {
+        const root = $("orbat-day-tabs");
+        root.innerHTML = "";
 
-      for (let day = 0; day < 7; day++) {
-        const labels = shortDayLabel(day);
-        const button = document.createElement("button");
+        for (let day = 0; day < 7; day++) {
+          const labels = shortDayLabel(day);
+          const button = document.createElement("button");
 
-        button.className = `orbat-day-tab${day === selectedOrbatDay ? " active" : ""}`;
-        button.type = "button";
-        button.innerHTML = `
+          button.className = `orbat-day-tab${day === selectedOrbatDay ? " active" : ""}`;
+          button.type = "button";
+          button.innerHTML = `
           <strong>${escapeHtml(labels.weekday)}</strong>
           <span>${escapeHtml(labels.dayMonth)} · ${dayAvailableCount(day)} available entries</span>`;
 
-        button.onclick = () => {
-          selectedOrbatDay = day;
-          buildOrbat();
-        };
+          button.onclick = () => {
+            selectedOrbatDay = day;
+            buildOrbat();
+          };
 
-        root.appendChild(button);
+          root.appendChild(button);
+        }
       }
-    }
 
-  function buildOrbat() {
-  $("orbat-week-title").textContent = `ORBAT Availability, Week of ${weekInput.value}`;
-  $("orbat-summary").textContent = `${scheduleTimezone()} · selected day only · available members`;
+      function buildOrbat() {
+        $("orbat-week-title").textContent =
+          `ORBAT Availability, Week of ${weekInput.value}`;
+        $("orbat-summary").textContent =
+          `${scheduleTimezone()} · selected day only · available members`;
 
-  buildTabs();
+        buildTabs();
 
-  let html = `
+        let html = `
     <div class="orbat-compact-wrap">
       <table class="orbat-compact-table">
         <thead>
           <tr>
             <th style="width: 64px;">Time</th>
-              ${ORBAT_COMPACT_GROUPS
-                .filter((group) => group.slots.some((slot) => selectedCallsigns().includes(slot)))
+              ${ORBAT_COMPACT_GROUPS.filter((group) =>
+                group.slots.some((slot) => selectedCallsigns().includes(slot)),
+              )
                 .map((group) => {
                   return `<th>${escapeHtml(group.title)}</th>`;
-                }).join("")}
+                })
+                .join("")}
           </tr>
         </thead>
         <tbody>`;
-  for (let slot = 0; slot < SLOTS_PER_DAY; slot++) {
-    const key = slotKey(slotUtc(selectedOrbatDay, slot));
-    const groupHtml = [];
+        for (let slot = 0; slot < SLOTS_PER_DAY; slot++) {
+          const key = slotKey(slotUtc(selectedOrbatDay, slot));
+          const groupHtml = [];
 
-    for (const group of ORBAT_COMPACT_GROUPS.filter((item) => {
-    return item.slots.some((slotCode) => selectedCallsigns().includes(slotCode));
-      })) {
-      const people = [];
+          for (const group of ORBAT_COMPACT_GROUPS.filter((item) => {
+            return item.slots.some((slotCode) =>
+              selectedCallsigns().includes(slotCode),
+            );
+          })) {
+            const people = [];
 
-      for (const callsignCode of group.slots) {
-        const list = availableMembersForCode(callsignCode, key);
+            for (const callsignCode of group.slots) {
+              const list = availableMembersForCode(callsignCode, key);
 
-        for (const member of list) {
-          people.push({
-            member,
-            callsignCode
-          });
-        }
-      }
+              for (const member of list) {
+                people.push({
+                  member,
+                  callsignCode,
+                });
+              }
+            }
 
-      groupHtml.push(`
+            groupHtml.push(`
         <td class="orbat-group-cell">
-          ${people.length ? people.map(({ member, callsignCode }) => {
-            return `
+          ${
+            people.length
+              ? people
+                  .map(({ member, callsignCode }) => {
+                    return `
               <span
                 class="orbat-person"
                 data-id="${escapeHtml(member.id)}"
@@ -1743,39 +2111,46 @@ function aggregate(slotStart) {
                 title="${escapeHtml(callsignCode)} · ${escapeHtml(member.display_name)}">
                 ${escapeHtml(callsignCode)} ${escapeHtml(member.display_name)}
               </span>`;
-          }).join("") : "<span class='muted'>-</span>"}
+                  })
+                  .join("")
+              : "<span class='muted'>-</span>"
+          }
         </td>`);
-    }
+          }
 
-  html += `
+          html += `
     <tr>
       <td class="orbat-time-cell">${escapeHtml(slotLabel(selectedOrbatDay, slot))}</td>
       ${groupHtml.join("")}
     </tr>`;
-  }
+        }
 
-  html += `
+        html += `
         </tbody>
       </table>
     </div>`;
 
-    $("orbat-day-content").innerHTML = html;
+        $("orbat-day-content").innerHTML = html;
 
-  $("orbat-day-content").querySelectorAll(".orbat-person").forEach((element) => {
-    element.onclick = () => openPerson(element.dataset.id, element.dataset.slot);
-  });
-}
-
-    function openPerson(userId, key) {
-      const member = profilesById.get(userId);
-
-      if (!member) {
-        return;
+        $("orbat-day-content")
+          .querySelectorAll(".orbat-person")
+          .forEach((element) => {
+            element.onclick = () =>
+              openPerson(element.dataset.id, element.dataset.slot);
+          });
       }
 
-      $("person-modal-title").textContent = member.display_name || member.user_id;
+      function openPerson(userId, key) {
+        const member = profilesById.get(userId);
 
-      $("person-modal-body").innerHTML = `
+        if (!member) {
+          return;
+        }
+
+        $("person-modal-title").textContent =
+          member.display_name || member.user_id;
+
+        $("person-modal-body").innerHTML = `
         <div style="display: flex; gap: 10px; align-items: flex-start; margin-bottom: 8px;">
           <img
             src="${escapeHtml(avatarUrl(member.avatar_url) || "/nsw.png")}"
@@ -1810,600 +2185,613 @@ function aggregate(slotStart) {
           </tr>
         </table>`;
 
-      $("person-modal").classList.add("visible");
-    }
-
-    function setView(view) {
-      activeView = view;
-
-      $("calendar-view").classList.toggle("hidden", view !== "calendar");
-      $("orbat-view").classList.toggle("hidden", view !== "orbat");
-      $("calendar-view-btn").classList.toggle("active", view === "calendar");
-      $("orbat-view-btn").classList.toggle("active", view === "orbat");
-
-      if (view === "orbat") {
-        buildOrbat();
-      }
-    }
-
-    async function loadSession() {
-      const loaded = await bootPortalChrome();
-
-      if (!loaded) {
-        return false;
+        $("person-modal").classList.add("visible");
       }
 
-      authUser = loaded.user;
-      profile = loaded.profile;
+      function setView(view) {
+        activeView = view;
 
-      $("dash-user").textContent = profile.display_name;
-      $("dash-userid").textContent = profile.user_id;
+        $("calendar-view").classList.toggle("hidden", view !== "calendar");
+        $("orbat-view").classList.toggle("hidden", view !== "orbat");
+        $("calendar-view-btn").classList.toggle("active", view === "calendar");
+        $("orbat-view-btn").classList.toggle("active", view === "orbat");
 
-      return true;
-    }
-
-    
-    async function loadProfiles() {
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("id,user_id,display_name,role,status,avatar_url,naval_rank,callsign,discord_name,steam_name")
-        .eq("status", "ACTIVE")
-        .order("display_name", { ascending: true });
-
-      if (error || !data) {
-        members = [profile];
-        profilesById = new Map([[profile.id, profile]]);
-        setStatus(`Profiles could not be loaded. Showing only your account. ${error?.message || ""}`, false);
-      } else {
-        members = data;
-        profilesById = new Map(data.map((item) => [item.id, item]));
+        if (view === "orbat") {
+          buildOrbat();
+        }
       }
 
-      $("dash-members").textContent = String(filteredMembers().length);
-    }
+      async function loadSession() {
+        const loaded = await bootPortalChrome();
 
-    async function loadLoaRequests() {
-      const range = bufferedLoadRange();
+        if (!loaded) {
+          return false;
+        }
 
-      const startDate = isoDate(range.earliest);
-      const endDate = isoDate(range.latest);
+        authUser = loaded.user;
+        profile = loaded.profile;
 
-      const { data, error } = await supabase
-        .from("loa_requests")
-        .select("requester_id,start_date,end_date,status")
-        .eq("status", "APPROVED")
-        .lte("start_date", endDate)
-        .gte("end_date", startDate);
+        $("dash-user").textContent = profile.display_name;
+        $("dash-userid").textContent = profile.user_id;
 
-      if (error) {
-        loaRequests = [];
-        setStatus(`LOA data could not be loaded. ${error.message}`, false);
-        return;
+        return true;
       }
 
-      loaRequests = data || [];
-    }
-
-    async function fetchAllSchedulingResponses(startIso, endIso) {
-      const pageSize = 500;
-      const responses = [];
-      let from = 0;
-      let expectedCount = null;
-
-      while (expectedCount === null || responses.length < expectedCount) {
-        const to = from + pageSize - 1;
-
-        const { data, error, count } = await supabase
-          .from("scheduling_responses")
+      async function loadProfiles() {
+        const { data, error } = await supabase
+          .from("profiles")
           .select(
-            "user_id,slot_start,availability,note,updated_at",
-            { count: "exact" }
+            "id,user_id,display_name,role,status,avatar_url,naval_rank,callsign,discord_name,steam_name",
           )
-          .gte("slot_start", startIso)
-          .lte("slot_start", endIso)
-          .order("slot_start", { ascending: true })
-          .order("user_id", { ascending: true })
-          .range(from, to);
+          .eq("status", "ACTIVE")
+          .order("display_name", { ascending: true });
+
+        if (error || !data) {
+          members = [profile];
+          profilesById = new Map([[profile.id, profile]]);
+          setStatus(
+            `Profiles could not be loaded. Showing only your account. ${error?.message || ""}`,
+            false,
+          );
+        } else {
+          members = data;
+          profilesById = new Map(data.map((item) => [item.id, item]));
+        }
+
+        $("dash-members").textContent = String(filteredMembers().length);
+      }
+
+      async function loadLoaRequests() {
+        const range = bufferedLoadRange();
+
+        const startDate = isoDate(range.earliest);
+        const endDate = isoDate(range.latest);
+
+        const { data, error } = await supabase
+          .from("loa_requests")
+          .select("requester_id,start_date,end_date,status")
+          .eq("status", "APPROVED")
+          .lte("start_date", endDate)
+          .gte("end_date", startDate);
 
         if (error) {
+          loaRequests = [];
+          setStatus(`LOA data could not be loaded. ${error.message}`, false);
+          return;
+        }
+
+        loaRequests = data || [];
+      }
+
+      async function fetchAllSchedulingResponses(startIso, endIso) {
+        const pageSize = 500;
+        const responses = [];
+        let from = 0;
+        let expectedCount = null;
+
+        while (expectedCount === null || responses.length < expectedCount) {
+          const to = from + pageSize - 1;
+
+          const { data, error, count } = await supabase
+            .from("scheduling_responses")
+            .select("user_id,slot_start,availability,note,updated_at", {
+              count: "exact",
+            })
+            .gte("slot_start", startIso)
+            .lte("slot_start", endIso)
+            .order("slot_start", { ascending: true })
+            .order("user_id", { ascending: true })
+            .range(from, to);
+
+          if (error) {
+            throw new Error(
+              `Scheduling page ${from}-${to} failed: ${error.message}`,
+            );
+          }
+
+          const page = data || [];
+
+          if (expectedCount === null) {
+            expectedCount = count ?? 0;
+          }
+
+          responses.push(...page);
+
+          console.debug("[Scheduling] Loaded page", {
+            from,
+            to,
+            returned: page.length,
+            loaded: responses.length,
+            expectedCount,
+            startIso,
+            endIso,
+          });
+
+          if (page.length === 0) {
+            break;
+          }
+
+          from += page.length;
+        }
+
+        if (expectedCount !== null && responses.length !== expectedCount) {
+          console.error("[Scheduling] Incomplete response load", {
+            loaded: responses.length,
+            expected: expectedCount,
+            startIso,
+            endIso,
+          });
+
           throw new Error(
-            `Scheduling page ${from}-${to} failed: ${error.message}`
+            `Only ${responses.length} of ${expectedCount} scheduling responses were loaded.`,
           );
         }
 
-        const page = data || [];
-
-        if (expectedCount === null) {
-          expectedCount = count ?? 0;
-        }
-
-        responses.push(...page);
-
-        console.debug("[Scheduling] Loaded page", {
-          from,
-          to,
-          returned: page.length,
-          loaded: responses.length,
+        console.info("[Scheduling] All responses loaded", {
+          total: responses.length,
           expectedCount,
           startIso,
-          endIso
+          endIso,
         });
 
-        if (page.length === 0) {
-          break;
+        return responses;
+      }
+
+      async function loadResponses({ force = false } = {}) {
+        if ((isDirty || isSaving) && !force) {
+          pendingRealtimeReload = true;
+          return;
         }
 
-        from += page.length;
-      }
+        const range = bufferedLoadRange();
+        const visibleSet = new Set(range.keys);
 
-      if (
-        expectedCount !== null &&
-        responses.length !== expectedCount
-      ) {
-        console.error("[Scheduling] Incomplete response load", {
-          loaded: responses.length,
-          expected: expectedCount,
-          startIso,
-          endIso
-        });
-
-        throw new Error(
-          `Only ${responses.length} of ${expectedCount} scheduling responses were loaded.`
-        );
-      }
-
-      console.info("[Scheduling] All responses loaded", {
-        total: responses.length,
-        expectedCount,
-        startIso,
-        endIso
-      });
-
-      return responses;
-    }
-
-    async function loadResponses({ force = false } = {}) {
-      if ((isDirty || isSaving) && !force) {
-        pendingRealtimeReload = true;
-        return;
-      }
-
-      const range = bufferedLoadRange();
-      const visibleSet = new Set(range.keys);
-
-      try {
-        allResponses = await fetchAllSchedulingResponses(
-          range.earliest.toISOString(),
-          range.latest.toISOString()
-        );
-
-        const visibleResponseCounts = {};
-
-    for (let day = 0; day < 7; day++) {
-      const dayKeys = new Set();
-
-      for (let slot = 0; slot < SLOTS_PER_DAY; slot++) {
-        dayKeys.add(slotKey(slotUtc(day, slot)));
-      }
-
-      visibleResponseCounts[shortDayLabel(day).weekday] =
-        allResponses.filter((response) => {
-          return dayKeys.has(
-            new Date(response.slot_start).toISOString()
+        try {
+          allResponses = await fetchAllSchedulingResponses(
+            range.earliest.toISOString(),
+            range.latest.toISOString(),
           );
-        }).length;
-    }
 
-const visibleKeysByDay = {};
+          const visibleResponseCounts = {};
 
-for (let day = 0; day < 7; day++) {
-  const dayName = shortDayLabel(day).weekday;
+          for (let day = 0; day < 7; day++) {
+            const dayKeys = new Set();
 
-  visibleKeysByDay[dayName] = [];
+            for (let slot = 0; slot < SLOTS_PER_DAY; slot++) {
+              dayKeys.add(slotKey(slotUtc(day, slot)));
+            }
 
-  for (let slot = 0; slot < SLOTS_PER_DAY; slot++) {
-    visibleKeysByDay[dayName].push(
-      slotKey(slotUtc(day, slot))
-    );
-  }
-}
+            visibleResponseCounts[shortDayLabel(day).weekday] =
+              allResponses.filter((response) => {
+                return dayKeys.has(new Date(response.slot_start).toISOString());
+              }).length;
+          }
 
-const responseDetailsByDay = {};
+          const visibleKeysByDay = {};
 
-for (const [dayName, keys] of Object.entries(visibleKeysByDay)) {
-  const keySet = new Set(keys);
+          for (let day = 0; day < 7; day++) {
+            const dayName = shortDayLabel(day).weekday;
 
-  const responses = allResponses.filter((response) => {
-    return keySet.has(
-      new Date(response.slot_start).toISOString()
-    );
-  });
+            visibleKeysByDay[dayName] = [];
 
-  responseDetailsByDay[dayName] = {
-    responseCount: responses.length,
-    uniqueUsers: new Set(
-      responses.map((response) => response.user_id)
-    ).size,
-    firstSlot: responses[0]?.slot_start || null,
-    lastSlot: responses[responses.length - 1]?.slot_start || null
-  };
-}
-
-const unmatchedResponses = allResponses.filter((response) => {
-  const normalized = new Date(response.slot_start).toISOString();
-
-  return !visibleSet.has(normalized);
-});
-
-window.__schedulingDebug = {
-  week: weekInput.value,
-  timezone: scheduleTimezone(),
-  queryStart: range.earliest.toISOString(),
-  queryEnd: range.latest.toISOString(),
-  totalLoaded: allResponses.length,
-  responsesByDay: visibleResponseCounts,
-  responseDetailsByDay,
-  firstLoadedResponse: allResponses[0] || null,
-  lastLoadedResponse:
-    allResponses[allResponses.length - 1] || null,
-  unmatchedCount: unmatchedResponses.length,
-  unmatchedFirst: unmatchedResponses[0] || null,
-  unmatchedLast:
-    unmatchedResponses[unmatchedResponses.length - 1] || null,
-  saturdayKeys: visibleKeysByDay.Sat || [],
-  sundayKeys: visibleKeysByDay.Sun || []
-};
-
-console.info(
-  "[Scheduling] Responses by visible day",
-  window.__schedulingDebug
-);
-
-console.table(responseDetailsByDay);
-
-        if (!isDirty || force) {
-          mySlots.clear();
-
-          for (const response of allResponses) {
-            const key = new Date(response.slot_start).toISOString();
-
-            if (
-              response.user_id === authUser.id &&
-              visibleSet.has(key)
-            ) {
-              mySlots.set(key, response.availability);
+            for (let slot = 0; slot < SLOTS_PER_DAY; slot++) {
+              visibleKeysByDay[dayName].push(slotKey(slotUtc(day, slot)));
             }
           }
-        } else {
-          for (const response of allResponses) {
-            const key = new Date(response.slot_start).toISOString();
 
-            if (
-              response.user_id === authUser.id &&
-              visibleSet.has(key) &&
-              !dirtySlots.has(key)
-            ) {
-              mySlots.set(key, response.availability);
-            }
+          const responseDetailsByDay = {};
+
+          for (const [dayName, keys] of Object.entries(visibleKeysByDay)) {
+            const keySet = new Set(keys);
+
+            const responses = allResponses.filter((response) => {
+              return keySet.has(new Date(response.slot_start).toISOString());
+            });
+
+            responseDetailsByDay[dayName] = {
+              responseCount: responses.length,
+              uniqueUsers: new Set(
+                responses.map((response) => response.user_id),
+              ).size,
+              firstSlot: responses[0]?.slot_start || null,
+              lastSlot: responses[responses.length - 1]?.slot_start || null,
+            };
           }
-        }
-      } catch (error) {
-        allResponses = [];
-        setStatus(
-          `Failed to load scheduling data: ${error.message}`,
-          false
-        );
-      }
 
-      await loadLoaRequests();
+          const unmatchedResponses = allResponses.filter((response) => {
+            const normalized = new Date(response.slot_start).toISOString();
 
-      $("dash-members").textContent = String(filteredMembers().length);
-      $("dash-timezone").textContent = scheduleTimezone();
-      $("dash-updated").textContent = utcNowLabel();
-      $("calendar-title").textContent =
-        `Week of ${weekInput.value} · ${scheduleTimezone()}`;
-
-      buildMyTable();
-      buildHeatmap();
-      buildBestList();
-      buildChanges();
-
-      if (activeView === "orbat") {
-        buildOrbat();
-      }
-    }
-
-    async function saveAvailability() {
-      if (isSaving) {
-        return;
-      }
-
-      isSaving = true;
-      saveBtn.disabled = true;
-      saveBtn.textContent = "Saving...";
-
-      const keys = visibleSlotKeys();
-      const keySet = new Set(keys);
-
-      const changedRows = [];
-      const clearedKeys = [];
-
-      for (const [key, value] of dirtySlots.entries()) {
-        if (!keySet.has(key)) {
-          continue;
-        }
-
-        if (value) {
-          changedRows.push({
-            user_id: authUser.id,
-            slot_start: key,
-            availability: value,
-            note: null,
-            updated_at: new Date().toISOString()
+            return !visibleSet.has(normalized);
           });
-        } else {
-          clearedKeys.push(key);
+
+          window.__schedulingDebug = {
+            week: weekInput.value,
+            timezone: scheduleTimezone(),
+            queryStart: range.earliest.toISOString(),
+            queryEnd: range.latest.toISOString(),
+            totalLoaded: allResponses.length,
+            responsesByDay: visibleResponseCounts,
+            responseDetailsByDay,
+            firstLoadedResponse: allResponses[0] || null,
+            lastLoadedResponse: allResponses[allResponses.length - 1] || null,
+            unmatchedCount: unmatchedResponses.length,
+            unmatchedFirst: unmatchedResponses[0] || null,
+            unmatchedLast:
+              unmatchedResponses[unmatchedResponses.length - 1] || null,
+            saturdayKeys: visibleKeysByDay.Sat || [],
+            sundayKeys: visibleKeysByDay.Sun || [],
+          };
+
+          console.info(
+            "[Scheduling] Responses by visible day",
+            window.__schedulingDebug,
+          );
+
+          console.table(responseDetailsByDay);
+
+          if (!isDirty || force) {
+            mySlots.clear();
+
+            for (const response of allResponses) {
+              const key = new Date(response.slot_start).toISOString();
+
+              if (response.user_id === authUser.id && visibleSet.has(key)) {
+                mySlots.set(key, response.availability);
+              }
+            }
+          } else {
+            for (const response of allResponses) {
+              const key = new Date(response.slot_start).toISOString();
+
+              if (
+                response.user_id === authUser.id &&
+                visibleSet.has(key) &&
+                !dirtySlots.has(key)
+              ) {
+                mySlots.set(key, response.availability);
+              }
+            }
+          }
+        } catch (error) {
+          allResponses = [];
+          setStatus(`Failed to load scheduling data: ${error.message}`, false);
+        }
+
+        await loadLoaRequests();
+
+        $("dash-members").textContent = String(filteredMembers().length);
+        $("dash-timezone").textContent = scheduleTimezone();
+        $("dash-updated").textContent = utcNowLabel();
+        $("calendar-title").textContent =
+          `Week of ${weekInput.value} · ${scheduleTimezone()}`;
+
+        buildMyTable();
+        buildHeatmap();
+        buildBestList();
+        buildChanges();
+        buildNoAvailabilityList();
+
+        if (activeView === "orbat") {
+          buildOrbat();
         }
       }
 
-      try {
-        if (clearedKeys.length) {
-          for (const keyChunk of chunkArray(clearedKeys, 100)) {
-            const { error } = await supabase
+      async function saveAvailability() {
+        if (isSaving) {
+          return;
+        }
+
+        isSaving = true;
+        saveBtn.disabled = true;
+        saveBtn.textContent = "Saving...";
+
+        const keys = visibleSlotKeys();
+        const keySet = new Set(keys);
+
+        const changedRows = [];
+        const clearedKeys = [];
+
+        for (const [key, value] of dirtySlots.entries()) {
+          if (!keySet.has(key)) {
+            continue;
+          }
+
+          if (value) {
+            changedRows.push({
+              user_id: authUser.id,
+              slot_start: key,
+              availability: value,
+              note: null,
+              updated_at: new Date().toISOString(),
+            });
+          } else {
+            clearedKeys.push(key);
+          }
+        }
+
+        try {
+          if (clearedKeys.length) {
+            for (const keyChunk of chunkArray(clearedKeys, 100)) {
+              const { error } = await supabase
+                .from("scheduling_responses")
+                .delete()
+                .eq("user_id", authUser.id)
+                .in("slot_start", keyChunk);
+
+              if (error) {
+                throw new Error(
+                  `Failed to clear availability: ${error.message}`,
+                );
+              }
+            }
+          }
+
+          if (changedRows.length) {
+            for (const rowChunk of chunkArray(changedRows, 500)) {
+              const { error } = await supabase
+                .from("scheduling_responses")
+                .upsert(rowChunk, {
+                  onConflict: "user_id,slot_start",
+                });
+
+              if (error) {
+                throw new Error(
+                  `Failed to save availability: ${error.message}`,
+                );
+              }
+            }
+          }
+
+          dirtySlots.clear();
+          isDirty = false;
+          setStatus("Availability saved successfully.", true);
+
+          await loadResponses({ force: true });
+
+          if (pendingRealtimeReload) {
+            pendingRealtimeReload = false;
+            await loadResponses({ force: true });
+          }
+        } catch (error) {
+          setStatus(error.message, false);
+        } finally {
+          isSaving = false;
+          saveBtn.disabled = false;
+          saveBtn.textContent = "Save";
+        }
+      }
+
+      async function copyWeekForward() {
+        const weekCount = Number.parseInt(copyWeeksCountInput.value, 10);
+
+        if (!Number.isInteger(weekCount) || weekCount < 1 || weekCount > 12) {
+          setStatus("Copy forward weeks must be between 1 and 12.", false);
+          return;
+        }
+
+        const sourceWeek = weekInput.value;
+        const sourceKeys = visibleSlotKeysForWeek(sourceWeek);
+        const sourceValues = sourceKeys.map((key) => mySlots.get(key) || null);
+
+        if (!sourceValues.some(Boolean)) {
+          setStatus(
+            "There is no availability in the selected week to copy.",
+            false,
+          );
+          return;
+        }
+
+        const confirmed = confirm(
+          `Copy your selected week to the next ${weekCount} week(s)? This overwrites only your availability in those target weeks.`,
+        );
+
+        if (!confirmed) {
+          return;
+        }
+
+        copyForwardBtn.disabled = true;
+        copyForwardBtn.textContent = "Copying...";
+
+        const rows = [];
+
+        for (let weekOffset = 1; weekOffset <= weekCount; weekOffset++) {
+          const targetWeek = addDays(sourceWeek, weekOffset * 7);
+          const targetKeys = visibleSlotKeysForWeek(targetWeek);
+
+          for (const keyChunk of chunkArray(targetKeys, 100)) {
+            const { error: deleteError } = await supabase
               .from("scheduling_responses")
               .delete()
               .eq("user_id", authUser.id)
               .in("slot_start", keyChunk);
 
-            if (error) {
-              throw new Error(`Failed to clear availability: ${error.message}`);
+            if (deleteError) {
+              setStatus(
+                `Failed to clear target week ${targetWeek}: ${deleteError.message}`,
+                false,
+              );
+              copyForwardBtn.disabled = false;
+              copyForwardBtn.textContent = "Copy Forward";
+              return;
             }
           }
-        }
 
-        if (changedRows.length) {
-          for (const rowChunk of chunkArray(changedRows, 500)) {
-            const { error } = await supabase
-              .from("scheduling_responses")
-              .upsert(rowChunk, {
-                onConflict: "user_id,slot_start"
-              });
-
-            if (error) {
-              throw new Error(`Failed to save availability: ${error.message}`);
+          sourceValues.forEach((value, index) => {
+            if (!value) {
+              return;
             }
-          }
+
+            rows.push({
+              user_id: authUser.id,
+              slot_start: targetKeys[index],
+              availability: value,
+              note: null,
+              updated_at: new Date().toISOString(),
+            });
+          });
         }
 
-        dirtySlots.clear();
-        isDirty = false;
-        setStatus("Availability saved successfully.", true);
-
-        await loadResponses({ force: true });
-
-        if (pendingRealtimeReload) {
-          pendingRealtimeReload = false;
-          await loadResponses({ force: true });
-        }
-      } catch (error) {
-        setStatus(error.message, false);
-      } finally {
-        isSaving = false;
-        saveBtn.disabled = false;
-        saveBtn.textContent = "Save";
-      }
-    }
-
-
-    async function copyWeekForward() {
-      const weekCount = Number.parseInt(copyWeeksCountInput.value, 10);
-
-      if (!Number.isInteger(weekCount) || weekCount < 1 || weekCount > 12) {
-        setStatus("Copy forward weeks must be between 1 and 12.", false);
-        return;
-      }
-
-      const sourceWeek = weekInput.value;
-      const sourceKeys = visibleSlotKeysForWeek(sourceWeek);
-      const sourceValues = sourceKeys.map(key => mySlots.get(key) || null);
-
-      if (!sourceValues.some(Boolean)) {
-        setStatus("There is no availability in the selected week to copy.", false);
-        return;
-      }
-
-      const confirmed = confirm(`Copy your selected week to the next ${weekCount} week(s)? This overwrites only your availability in those target weeks.`);
-
-      if (!confirmed) {
-        return;
-      }
-
-      copyForwardBtn.disabled = true;
-      copyForwardBtn.textContent = "Copying...";
-
-      const rows = [];
-
-      for (let weekOffset = 1; weekOffset <= weekCount; weekOffset++) {
-        const targetWeek = addDays(sourceWeek, weekOffset * 7);
-        const targetKeys = visibleSlotKeysForWeek(targetWeek);
-
-        for (const keyChunk of chunkArray(targetKeys, 100)) {
-          const { error: deleteError } = await supabase
+        for (const rowChunk of chunkArray(rows, 500)) {
+          const { error: insertError } = await supabase
             .from("scheduling_responses")
-            .delete()
-            .eq("user_id", authUser.id)
-            .in("slot_start", keyChunk);
+            .insert(rowChunk);
 
-          if (deleteError) {
-            setStatus(`Failed to clear target week ${targetWeek}: ${deleteError.message}`, false);
+          if (insertError) {
+            setStatus(
+              `Failed to copy availability: ${insertError.message}`,
+              false,
+            );
             copyForwardBtn.disabled = false;
             copyForwardBtn.textContent = "Copy Forward";
             return;
           }
         }
 
-        sourceValues.forEach((value, index) => {
-          if (!value) {
-            return;
-          }
-
-          rows.push({
-            user_id: authUser.id,
-            slot_start: targetKeys[index],
-            availability: value,
-            note: null,
-            updated_at: new Date().toISOString()
-          });
-        });
+        setStatus(
+          `Copied your selected week to the next ${weekCount} week(s).`,
+          true,
+        );
+        copyForwardBtn.disabled = false;
+        copyForwardBtn.textContent = "Copy Forward";
+        await loadResponses();
       }
 
-      for (const rowChunk of chunkArray(rows, 500)) {
-        const { error: insertError } = await supabase
-          .from("scheduling_responses")
-          .insert(rowChunk);
+      async function clearWeek() {
+        const confirmed = confirm(
+          "Clear all of your availability for this selected week in the selected timezone?",
+        );
 
-        if (insertError) {
-          setStatus(`Failed to copy availability: ${insertError.message}`, false);
-          copyForwardBtn.disabled = false;
-          copyForwardBtn.textContent = "Copy Forward";
+        if (!confirmed) {
           return;
         }
-      }
 
-      setStatus(`Copied your selected week to the next ${weekCount} week(s).`, true);
-      copyForwardBtn.disabled = false;
-      copyForwardBtn.textContent = "Copy Forward";
-      await loadResponses();
-    }
+        const keys = visibleSlotKeys();
 
-    async function clearWeek() {
-      const confirmed = confirm("Clear all of your availability for this selected week in the selected timezone?");
+        const { error } = await supabase
+          .from("scheduling_responses")
+          .delete()
+          .eq("user_id", authUser.id)
+          .in("slot_start", keys);
 
-      if (!confirmed) {
-        return;
-      }
-
-      const keys = visibleSlotKeys();
-
-      const { error } = await supabase
-        .from("scheduling_responses")
-        .delete()
-        .eq("user_id", authUser.id)
-        .in("slot_start", keys);
-
-      if (error) {
-        setStatus(`Failed to clear week: ${error.message}`, false);
-        return;
-      }
-
-      mySlots.clear();
-      setStatus("Your visible week was cleared.", true);
-      await loadResponses();
-    }
-
-    function setupRealtime() {
-      if (realtimeChannel) {
-        supabase.removeChannel(realtimeChannel);
-      }
-
-      let timer = null;
-
-      realtimeChannel = supabase
-        .channel("scheduling-live")
-        .on(
-          "postgres_changes",
-          {
-            event: "*",
-            schema: "public",
-            table: "scheduling_responses"
-          },
-          () => {
-            clearTimeout(timer);
-
-            timer = setTimeout(() => {
-              if (isDirty || isSaving) {
-                pendingRealtimeReload = true;
-                return;
-              }
-
-              loadResponses();
-            }, 300);
-          }
-        )
-        .subscribe();
-    }
-
-    window.doLogout = async () => {
-      await supabase.auth.signOut();
-      location.href = "/login/";
-    };
-
-    saveBtn.onclick = saveAvailability;
-    refreshBtn.onclick = loadResponses;
-    copyForwardBtn.onclick = copyWeekForward;
-    clearBtn.onclick = clearWeek;
-
-    $("calendar-view-btn").onclick = () => setView("calendar");
-    $("orbat-view-btn").onclick = () => setView("orbat");
-
-    $("orbat-prev-week").onclick = () => shiftWeek(-7);
-    $("orbat-current-week").onclick = () => loadResponses();
-    $("orbat-next-week").onclick = () => shiftWeek(7);
-
-    $("close-person-modal").onclick = () => {
-      $("person-modal").classList.remove("visible");
-    };
-
-    $("person-modal").onclick = (event) => {
-      if (event.target.id === "person-modal") {
-        event.currentTarget.classList.remove("visible");
-      }
-    };
-
-    document.addEventListener("mouseup", finishDrag);
-    window.addEventListener("blur", finishDrag);
-
-    timezoneSelect.onchange = () => {
-      localStorage.setItem("schedulingTimezone", scheduleTimezone());
-      loadResponses();
-    };
-
-    weekInput.onchange = loadResponses;
-
-    (async function init() {
-      weekInput.value = getNextMonday();
-
-      const savedTimezone = localStorage.getItem("schedulingTimezone");
-
-      if (savedTimezone) {
-        timezoneSelect.value = savedTimezone;
-      } else {
-        const browserTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-
-        if ([...timezoneSelect.options].some((option) => option.value === browserTimezone)) {
-          timezoneSelect.value = browserTimezone;
+        if (error) {
+          setStatus(`Failed to clear week: ${error.message}`, false);
+          return;
         }
+
+        mySlots.clear();
+        setStatus("Your visible week was cleared.", true);
+        await loadResponses();
       }
 
-      const sessionLoaded = await loadSession();
+      function setupRealtime() {
+        if (realtimeChannel) {
+          supabase.removeChannel(realtimeChannel);
+        }
 
-      if (!sessionLoaded) {
-        return;
+        let timer = null;
+
+        realtimeChannel = supabase
+          .channel("scheduling-live")
+          .on(
+            "postgres_changes",
+            {
+              event: "*",
+              schema: "public",
+              table: "scheduling_responses",
+            },
+            () => {
+              clearTimeout(timer);
+
+              timer = setTimeout(() => {
+                if (isDirty || isSaving) {
+                  pendingRealtimeReload = true;
+                  return;
+                }
+
+                loadResponses();
+              }, 300);
+            },
+          )
+          .subscribe();
       }
 
-      const savedTeamFilter = localStorage.getItem("schedulingTeamFilter");
+      window.doLogout = async () => {
+        await supabase.auth.signOut();
+        location.href = "/login/";
+      };
+
+      saveBtn.onclick = saveAvailability;
+      refreshBtn.onclick = loadResponses;
+      copyForwardBtn.onclick = copyWeekForward;
+      clearBtn.onclick = clearWeek;
+
+      $("calendar-view-btn").onclick = () => setView("calendar");
+      $("orbat-view-btn").onclick = () => setView("orbat");
+
+      $("orbat-prev-week").onclick = () => shiftWeek(-7);
+      $("orbat-current-week").onclick = () => loadResponses();
+      $("orbat-next-week").onclick = () => shiftWeek(7);
+
+      $("close-person-modal").onclick = () => {
+        $("person-modal").classList.remove("visible");
+      };
+
+      $("person-modal").onclick = (event) => {
+        if (event.target.id === "person-modal") {
+          event.currentTarget.classList.remove("visible");
+        }
+      };
+
+      document.addEventListener("mouseup", finishDrag);
+      window.addEventListener("blur", finishDrag);
+
+      timezoneSelect.onchange = () => {
+        localStorage.setItem("schedulingTimezone", scheduleTimezone());
+        loadResponses();
+      };
+
+      weekInput.onchange = loadResponses;
+
+      (async function init() {
+        weekInput.value = getNextMonday();
+
+        const savedTimezone = localStorage.getItem("schedulingTimezone");
+
+        if (savedTimezone) {
+          timezoneSelect.value = savedTimezone;
+        } else {
+          const browserTimezone =
+            Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+          if (
+            [...timezoneSelect.options].some(
+              (option) => option.value === browserTimezone,
+            )
+          ) {
+            timezoneSelect.value = browserTimezone;
+          }
+        }
+
+        const sessionLoaded = await loadSession();
+
+        if (!sessionLoaded) {
+          return;
+        }
+
+        const savedTeamFilter = localStorage.getItem("schedulingTeamFilter");
         if (savedTeamFilter && TEAM_FILTERS[savedTeamFilter]) {
           teamFilter.value = savedTeamFilter;
         }
 
-        includeLoaCheckbox.checked = localStorage.getItem("schedulingIncludeLoa") === "1";
-        includeBlanksCheckbox.checked = localStorage.getItem("schedulingIncludeBlanks") !== "0";
-        
-      await loadProfiles();
-      await loadResponses();
-      setupRealtime();
-    })();
-  </script>
-</body>
+        includeLoaCheckbox.checked =
+          localStorage.getItem("schedulingIncludeLoa") === "1";
+        includeBlanksCheckbox.checked =
+          localStorage.getItem("schedulingIncludeBlanks") !== "0";
 
+        await loadProfiles();
+        await loadResponses();
+        setupRealtime();
+      })();
+    </script>
+  </body>
 </html>
