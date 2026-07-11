@@ -327,7 +327,13 @@ function renderSessions() {
                 </td>
               <td>${escapeHtml(getProfileName(session.host_id))}</td>
               <td>
-                <button class="btn btn-secondary" type="button" data-open-session="${session.id}">Open</button>
+                <button
+  class="btn btn-secondary"
+  type="button"
+  data-open-session="${session.id}"
+>
+  ${Number(state.activeSessionId) === Number(session.id) ? "Close" : "Open"}
+</button>
               </td>
             </tr>
           `;
@@ -337,17 +343,31 @@ function renderSessions() {
   `;
 
   el.output.querySelectorAll("[data-open-session]").forEach(button => {
-    button.addEventListener("click", () => {
-      const session = state.sessions.find(
-        s => Number(s.id) === Number(button.dataset.openSession)
-      );
+  button.addEventListener("click", () => {
+    const sessionId = Number(button.dataset.openSession);
 
-      if (session) {
-        state.activeSessionId = session.id;
-        renderViewer(session);
-      }
-    });
+    if (Number(state.activeSessionId) === sessionId) {
+      state.activeSessionId = null;
+
+      el.viewer.className = "empty-state";
+      el.viewer.textContent =
+        "Select a training session to view attendance and AAR.";
+
+      renderSessions();
+      return;
+    }
+
+    const session = state.sessions.find(
+      item => Number(item.id) === sessionId
+    );
+
+    if (!session) return;
+
+    state.activeSessionId = session.id;
+    renderViewer(session);
+    renderSessions();
   });
+});
 
   el.output.querySelectorAll("[data-session-status]").forEach(select => {
     select.addEventListener("change", async () => {
@@ -535,11 +555,19 @@ function renderViewer(session) {
           </div>
         </div>
 
-        <div class="training-v2-time">
-          <span>Start Time</span>
-          <strong>${escapeHtml(formatDateTime(session.start_at))}</strong>
-          <small>Eastern Time</small>
-        </div>
+<div class="training-v2-time">
+  <span>Start Time</span>
+
+  <strong>
+    ${escapeHtml(formatDateTime(session.start_at))}
+  </strong>
+
+  <small>
+    Eastern Time
+    <br>
+    (Your time: ${escapeHtml(formatViewerLocalTime(session.start_at))})
+  </small>
+</div>
       </div>
 
       <div class="training-v2-meta">
@@ -1470,9 +1498,11 @@ function renderSessionStatusControl(session) {
     return statusBadge(session.status);
   }
 
+  const badgeClass = getStatusBadgeClass(session.status);
+
   return `
     <select
-      class="session-status-select"
+      class="session-status-select badge ${badgeClass}"
       data-session-status="${escapeHtml(session.id)}"
       aria-label="Change status for ${escapeHtml(session.title || "training session")}"
     >
@@ -1505,6 +1535,15 @@ function renderSessionStatusControl(session) {
       </option>
     </select>
   `;
+}
+
+function getStatusBadgeClass(status) {
+  if (status === "COMPLETED") return "badge-green";
+  if (status === "CANCELLED") return "badge-red";
+  if (status === "POSTPONED") return "badge-yellow";
+  if (status === "DRAFT") return "badge-yellow";
+
+  return "badge-blue";
 }
 
 async function updateSessionStatusFromList(
@@ -1614,6 +1653,26 @@ function formatDateTime(value) {
   }).format(date);
 
   return `${formatted} ET`;
+}
+
+function formatViewerLocalTime(value) {
+  if (!value) return "-";
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return "-";
+  }
+
+  return new Intl.DateTimeFormat(undefined, {
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZoneName: "short"
+  }).format(date);
 }
 
 function showStatus(message, ok) {
