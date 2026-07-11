@@ -555,6 +555,95 @@
   padding: 10px;
 }
 
+.admin-training-controls {
+  padding: 16px;
+  background: #fff;
+}
+
+.admin-training-controls .admin-control-section {
+  border: 1px solid #cfd7e1;
+  background: #f8fafc;
+  padding: 12px;
+  margin-bottom: 12px;
+}
+
+.admin-training-controls .admin-control-section:last-child {
+  margin-bottom: 0;
+}
+
+.admin-training-controls .admin-control-section h4 {
+  color: #1d3f5e;
+  font-size: 12px;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.admin-training-controls .postpone-grid {
+  display: grid;
+  grid-template-columns: 1fr 160px auto;
+  gap: 8px;
+  align-items: end;
+}
+
+.admin-training-controls .admin-warning {
+  border: 1px solid #c8a800;
+  background: #fffbe6;
+  color: #5f5200;
+  padding: 8px 10px;
+  margin-bottom: 12px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.admin-training-controls .admin-cancel-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.admin-training-controls .admin-cancel-row span {
+  color: #666;
+  font-size: 11px;
+}
+
+.admin-action-status {
+  display: none;
+  margin-top: 10px;
+  padding: 8px 10px;
+  border: 1px solid #bbb;
+  background: #fff;
+  font-size: 11px;
+}
+
+.admin-action-status.visible {
+  display: block;
+}
+
+.admin-action-status.ok {
+  border-color: #2a7a2a;
+  background: #f0f7f0;
+  color: #1a4a1a;
+}
+
+.admin-action-status.err {
+  border-color: #c00;
+  background: #fdf0f0;
+  color: #800;
+}
+
+@media (max-width: 700px) {
+  .admin-training-controls .postpone-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-training-controls .admin-cancel-row {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}
+
 .roster-column-head {
   display: flex;
   justify-content: space-between;
@@ -809,7 +898,6 @@
                 <option value="SCHEDULED">Scheduled</option>
                 <option value="DRAFT">Draft</option>
                 <option value="COMPLETED">Completed</option>
-                <option value="CANCELLED">Cancelled</option>
               </select>
             </div>
 
@@ -858,13 +946,14 @@
                 <option value="PRO_DEVELOPMENT">Pro Development</option>
                 <option value="UNIT_WIDE">Unit Wide Training</option>
               </select>
-              <select id="training-status-filter">
-                <option value="">All Status</option>
-                <option value="DRAFT">Draft</option>
-                <option value="SCHEDULED">Scheduled</option>
-                <option value="COMPLETED">Completed</option>
-                <option value="CANCELLED">Cancelled</option>
-              </select>
+                <select id="training-status-filter">
+                  <option value="">All Status</option>
+                  <option value="DRAFT">Draft</option>
+                  <option value="SCHEDULED">Scheduled</option>
+                  <option value="POSTPONED">Postponed</option>
+                  <option value="COMPLETED">Completed</option>
+                  <option value="CANCELLED">Cancelled</option>
+                </select>
               <button id="refresh-training-button" class="btn btn-secondary" type="button">Refresh</button>
             </div>
 

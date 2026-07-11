@@ -161,6 +161,10 @@ async function loadData() {
   }
 }
 
+function isAdmin() {
+  return String(state.profile?.role || "").trim().toUpperCase() === "ADMIN";
+}
+
 function isTroopHq() {
   const role = String(state.profile?.role || "").trim().toUpperCase();
   const callsign = String(state.profile?.callsign || "").trim().toUpperCase();
@@ -498,6 +502,7 @@ function renderViewer(session) {
   const myAttendance = attendanceRows.find(a => a.user_id === state.authUser.id);
   const canManage = canManageSession(session);
   const canAar = canAarSession(session);
+  const admin = isAdmin();
 
   el.viewer.className = "viewer";
 
@@ -542,6 +547,8 @@ function renderViewer(session) {
           <strong>${escapeHtml(myAttendance ? attendanceLabel(myAttendance.attendance) : "No Response")}</strong>
         </div>
       </div>
+
+      ${admin ? renderAdminTrainingControls(session) : ""}
 
       <div class="training-v2-section">
         <div class="training-v2-section-head">
@@ -693,6 +700,10 @@ function renderViewer(session) {
   document.getElementById("attending-button").addEventListener("click", () => saveAttendance(session.id, "ATTENDING"));
   document.getElementById("not-attending-button").addEventListener("click", () => saveAttendance(session.id, "NOT_ATTENDING"));
 
+  if (admin) {
+    bindAdminTrainingControls(session);
+  }
+
   if (canManage) {
     bindAdminAttendanceBoard(session.id);
     bindAdminMarkingTable();
@@ -706,6 +717,439 @@ function renderViewer(session) {
   if (canAar) {
     document.getElementById("save-aar-button").addEventListener("click", () => saveAar(session.id));
   }
+}
+
+function renderAdminTrainingControls(session) {
+  return `
+    <details class="training-v2-details" open>
+      <summary>Administrator Training Controls</summary>
+
+      <div class="admin-training-controls">
+        <div class="admin-warning">
+          These controls are restricted to active profiles with the ADMIN role.
+          Postponing a training shifts both the start time and end time by the selected amount.
+        </div>
+
+        <div class="admin-control-section">
+          <h4>Edit Training</h4>
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="admin-edit-category">Category</label>
+              <select id="admin-edit-category">
+                <option value="PRO_DEVELOPMENT" ${session.category === "PRO_DEVELOPMENT" ? "selected" : ""}>
+                  Pro Development
+                </option>
+
+                <option value="UNIT_WIDE" ${session.category === "UNIT_WIDE" ? "selected" : ""}>
+                  Unit Wide Training
+                </option>
+
+                <option value="INNER_TEAM" ${session.category === "INNER_TEAM" ? "selected" : ""}>
+                  Inner Team
+                </option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Current Status</label>
+              <input
+                type="text"
+                value="${escapeHtml(formatStatusLabel(session.status))}"
+                disabled
+              >
+            </div>
+
+            <div class="form-group full">
+              <label for="admin-edit-title">Title</label>
+              <input
+                id="admin-edit-title"
+                type="text"
+                maxlength="250"
+                value="${escapeHtml(session.title || "")}"
+              >
+            </div>
+
+            <div class="form-group">
+              <label for="admin-edit-start">Start</label>
+              <input
+                id="admin-edit-start"
+                type="datetime-local"
+                value="${escapeHtml(toDateTimeLocalValue(session.start_at))}"
+              >
+            </div>
+
+            <div class="form-group">
+              <label for="admin-edit-end">End</label>
+              <input
+                id="admin-edit-end"
+                type="datetime-local"
+                value="${escapeHtml(toDateTimeLocalValue(session.end_at))}"
+              >
+            </div>
+
+            <div class="form-group full">
+              <label for="admin-edit-location">Location</label>
+              <input
+                id="admin-edit-location"
+                type="text"
+                maxlength="500"
+                value="${escapeHtml(session.location || "")}"
+              >
+            </div>
+
+            <div class="form-group full">
+              <label for="admin-edit-description">Description</label>
+              <textarea id="admin-edit-description">${escapeHtml(session.description || "")}</textarea>
+            </div>
+          </div>
+
+          <div class="button-row">
+            <button
+              id="admin-save-training-edit"
+              class="btn btn-primary"
+              type="button"
+            >
+              Save Training Changes
+            </button>
+          </div>
+        </div>
+
+        <div class="admin-control-section">
+          <h4>Postpone Training</h4>
+
+          <div class="postpone-grid">
+            <div class="form-group">
+              <label for="admin-postpone-amount">Amount</label>
+              <input
+                id="admin-postpone-amount"
+                type="number"
+                min="1"
+                step="1"
+                inputmode="numeric"
+                placeholder="Example: 2"
+              >
+            </div>
+
+            <div class="form-group">
+              <label for="admin-postpone-unit">Unit</label>
+              <select id="admin-postpone-unit">
+                <option value="minutes">Minutes</option>
+                <option value="hours">Hours</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <button
+                id="admin-postpone-training"
+                class="btn btn-secondary"
+                type="button"
+              >
+                Postpone
+              </button>
+            </div>
+          </div>
+
+          <div class="muted">
+            Current start: ${escapeHtml(formatDateTime(session.start_at))}
+          </div>
+        </div>
+
+        <div class="admin-control-section">
+          <h4>Cancel Training</h4>
+
+          <div class="admin-cancel-row">
+            <span>
+              This marks the training as cancelled. It does not delete the session or its attendance records.
+            </span>
+
+            <button
+              id="admin-cancel-training"
+              class="btn btn-danger"
+              type="button"
+              ${session.status === "CANCELLED" ? "disabled" : ""}
+            >
+              ${session.status === "CANCELLED" ? "Training Cancelled" : "Cancel Training"}
+            </button>
+          </div>
+        </div>
+
+        <div id="admin-training-action-status" class="admin-action-status"></div>
+      </div>
+    </details>
+  `;
+}
+
+function bindAdminTrainingControls(session) {
+  if (!isAdmin()) return;
+
+  const saveEditButton = document.getElementById("admin-save-training-edit");
+  const postponeButton = document.getElementById("admin-postpone-training");
+  const cancelButton = document.getElementById("admin-cancel-training");
+
+  saveEditButton?.addEventListener("click", () => {
+    saveAdminTrainingEdit(session.id);
+  });
+
+  postponeButton?.addEventListener("click", () => {
+    postponeAdminTraining(session.id);
+  });
+
+  cancelButton?.addEventListener("click", () => {
+    cancelAdminTraining(session.id);
+  });
+}
+
+async function saveAdminTrainingEdit(sessionId) {
+  if (!isAdmin()) {
+    showAdminActionStatus("Only administrators may edit training sessions.", false);
+    return;
+  }
+
+  const categoryInput = document.getElementById("admin-edit-category");
+  const titleInput = document.getElementById("admin-edit-title");
+  const startInput = document.getElementById("admin-edit-start");
+  const endInput = document.getElementById("admin-edit-end");
+  const locationInput = document.getElementById("admin-edit-location");
+  const descriptionInput = document.getElementById("admin-edit-description");
+  const saveButton = document.getElementById("admin-save-training-edit");
+
+  const title = titleInput.value.trim();
+  const startValue = startInput.value;
+  const endValue = endInput.value;
+
+  if (!title) {
+    showAdminActionStatus("Training title is required.", false);
+    titleInput.focus();
+    return;
+  }
+
+  if (!startValue) {
+    showAdminActionStatus("Training start time is required.", false);
+    startInput.focus();
+    return;
+  }
+
+  const startDate = new Date(startValue);
+  const endDate = endValue ? new Date(endValue) : null;
+
+  if (Number.isNaN(startDate.getTime())) {
+    showAdminActionStatus("The selected start time is invalid.", false);
+    return;
+  }
+
+  if (endDate && Number.isNaN(endDate.getTime())) {
+    showAdminActionStatus("The selected end time is invalid.", false);
+    return;
+  }
+
+  if (endDate && endDate < startDate) {
+    showAdminActionStatus("The end time cannot be before the start time.", false);
+    return;
+  }
+
+  setButtonLoading(saveButton, true, "Saving...");
+
+  const { error } = await supabase.rpc("admin_update_training_session", {
+    p_session_id: Number(sessionId),
+    p_category: categoryInput.value,
+    p_title: title,
+    p_description: descriptionInput.value.trim(),
+    p_start_at: startDate.toISOString(),
+    p_end_at: endDate ? endDate.toISOString() : null,
+    p_location: locationInput.value.trim()
+  });
+
+  setButtonLoading(saveButton, false, "Save Training Changes");
+
+  if (error) {
+    showAdminActionStatus(
+      "Training update failed: " + error.message,
+      false
+    );
+    return;
+  }
+
+  showAdminActionStatus("Training session updated.", true);
+  await loadData();
+}
+
+async function postponeAdminTraining(sessionId) {
+  if (!isAdmin()) {
+    showAdminActionStatus("Only administrators may postpone training sessions.", false);
+    return;
+  }
+
+  const amountInput = document.getElementById("admin-postpone-amount");
+  const unitInput = document.getElementById("admin-postpone-unit");
+  const postponeButton = document.getElementById("admin-postpone-training");
+
+  const amount = Number(amountInput.value);
+  const unit = unitInput.value;
+
+  if (!Number.isInteger(amount) || amount <= 0) {
+    showAdminActionStatus(
+      "Enter a whole number greater than zero.",
+      false
+    );
+    amountInput.focus();
+    return;
+  }
+
+  if (unit !== "minutes" && unit !== "hours") {
+    showAdminActionStatus(
+      "Postponement unit must be minutes or hours.",
+      false
+    );
+    return;
+  }
+
+  const session = state.sessions.find(
+    item => Number(item.id) === Number(sessionId)
+  );
+
+  if (!session) {
+    showAdminActionStatus("Training session could not be found.", false);
+    return;
+  }
+
+  const amountLabel = `${amount} ${unit}`;
+  const currentStart = formatDateTime(session.start_at);
+
+  const confirmed = confirm(
+    `Postpone "${session.title}" by ${amountLabel}?\n\n`
+    + `Current start: ${currentStart}\n\n`
+    + "The start and end times will both be moved."
+  );
+
+  if (!confirmed) return;
+
+  setButtonLoading(postponeButton, true, "Postponing...");
+
+  const { error } = await supabase.rpc(
+    "admin_postpone_training_session",
+    {
+      p_session_id: Number(sessionId),
+      p_amount: amount,
+      p_unit: unit
+    }
+  );
+
+  setButtonLoading(postponeButton, false, "Postpone");
+
+  if (error) {
+    showAdminActionStatus(
+      "Postponement failed: " + error.message,
+      false
+    );
+    return;
+  }
+
+  showAdminActionStatus(
+    `Training postponed by ${amountLabel}.`,
+    true
+  );
+
+  await loadData();
+}
+
+async function cancelAdminTraining(sessionId) {
+  if (!isAdmin()) {
+    showAdminActionStatus("Only administrators may cancel training sessions.", false);
+    return;
+  }
+
+  const session = state.sessions.find(
+    item => Number(item.id) === Number(sessionId)
+  );
+
+  if (!session) {
+    showAdminActionStatus("Training session could not be found.", false);
+    return;
+  }
+
+  if (session.status === "CANCELLED") {
+    showAdminActionStatus("This training is already cancelled.", false);
+    return;
+  }
+
+  const confirmed = confirm(
+    `Cancel "${session.title}"?\n\n`
+    + "The session will remain in the database and its attendance records will not be deleted."
+  );
+
+  if (!confirmed) return;
+
+  const cancelButton = document.getElementById("admin-cancel-training");
+
+  setButtonLoading(cancelButton, true, "Cancelling...");
+
+  const { error } = await supabase.rpc(
+    "admin_cancel_training_session",
+    {
+      p_session_id: Number(sessionId)
+    }
+  );
+
+  setButtonLoading(cancelButton, false, "Cancel Training");
+
+  if (error) {
+    showAdminActionStatus(
+      "Cancellation failed: " + error.message,
+      false
+    );
+    return;
+  }
+
+  showAdminActionStatus("Training session cancelled.", true);
+  await loadData();
+}
+
+function showAdminActionStatus(message, ok) {
+  const statusElement = document.getElementById(
+    "admin-training-action-status"
+  );
+
+  if (!statusElement) {
+    if (!ok) alert(message);
+    return;
+  }
+
+  statusElement.textContent = message;
+  statusElement.className = `admin-action-status visible ${ok ? "ok" : "err"}`;
+}
+
+function toDateTimeLocalValue(value) {
+  if (!value) return "";
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) return "";
+
+  const pad = number => String(number).padStart(2, "0");
+
+  return [
+    date.getFullYear(),
+    "-",
+    pad(date.getMonth() + 1),
+    "-",
+    pad(date.getDate()),
+    "T",
+    pad(date.getHours()),
+    ":",
+    pad(date.getMinutes())
+  ].join("");
+}
+
+function formatStatusLabel(status) {
+  if (status === "PRO_DEVELOPMENT") return "Pro Development";
+  if (status === "UNIT_WIDE") return "Unit Wide Training";
+  if (status === "INNER_TEAM") return "Inner Team";
+
+  return String(status || "")
+    .toLowerCase()
+    .replaceAll("_", " ")
+    .replace(/\b\w/g, character => character.toUpperCase());
 }
 
 function getLoaForSession(session) {
@@ -978,9 +1422,21 @@ function categoryBadge(category) {
 }
 
 function statusBadge(status) {
-  if (status === "COMPLETED") return `<span class="badge badge-green">Completed</span>`;
-  if (status === "CANCELLED") return `<span class="badge badge-red">Cancelled</span>`;
-  if (status === "DRAFT") return `<span class="badge badge-yellow">Draft</span>`;
+  if (status === "COMPLETED") {
+    return `<span class="badge badge-green">Completed</span>`;
+  }
+
+  if (status === "CANCELLED") {
+    return `<span class="badge badge-red">Cancelled</span>`;
+  }
+
+  if (status === "POSTPONED") {
+    return `<span class="badge badge-yellow">Postponed</span>`;
+  }
+
+  if (status === "DRAFT") {
+    return `<span class="badge badge-yellow">Draft</span>`;
+  }
 
   return `<span class="badge badge-blue">Scheduled</span>`;
 }
