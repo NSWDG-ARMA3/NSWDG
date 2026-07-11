@@ -319,7 +319,7 @@ function renderSessions() {
                 <strong>${escapeHtml(session.title)}</strong><br>
                 <span class="muted">${escapeHtml(session.location || "-")}</span>
               </td>
-              <td>${statusBadge(session.status)}</td>
+              <td>${renderSessionStatusControl(session)}</td>
                 <td>
                   <span class="badge badge-green">${counts.attending} Attending</span>
                   <span class="badge badge-red">${counts.notAttending} Not Attending</span>
@@ -338,12 +338,27 @@ function renderSessions() {
 
   el.output.querySelectorAll("[data-open-session]").forEach(button => {
     button.addEventListener("click", () => {
-      const session = state.sessions.find(s => Number(s.id) === Number(button.dataset.openSession));
+      const session = state.sessions.find(
+        s => Number(s.id) === Number(button.dataset.openSession)
+      );
 
       if (session) {
         state.activeSessionId = session.id;
         renderViewer(session);
       }
+    });
+  });
+
+  el.output.querySelectorAll("[data-session-status]").forEach(select => {
+    select.addEventListener("change", async () => {
+      const sessionId = Number(select.dataset.sessionStatus);
+      const newStatus = select.value;
+
+      await updateSessionStatusFromList(
+        sessionId,
+        newStatus,
+        select
+      );
     });
   });
 }
@@ -516,7 +531,7 @@ function renderViewer(session) {
 
           <div class="training-badges">
             ${categoryBadge(session.category)}
-            ${statusBadge(session.status)}
+            ${renderSessionStatusControl(session)}
           </div>
         </div>
 
@@ -697,13 +712,25 @@ function renderViewer(session) {
       ` : ""}
     </div>
   `;
+document.getElementById("attending-button").addEventListener("click", () => saveAttendance(session.id, "ATTENDING"));
+document.getElementById("not-attending-button").addEventListener("click", () => saveAttendance(session.id, "NOT_ATTENDING"));
 
-  document.getElementById("attending-button").addEventListener("click", () => saveAttendance(session.id, "ATTENDING"));
-  document.getElementById("not-attending-button").addEventListener("click", () => saveAttendance(session.id, "NOT_ATTENDING"));
+el.viewer.querySelectorAll("[data-session-status]").forEach(select => {
+  select.addEventListener("change", async () => {
+    const sessionId = Number(select.dataset.sessionStatus);
+    const newStatus = select.value;
 
-  if (admin) {
-    bindAdminTrainingControls(session);
-  }
+    await updateSessionStatusFromList(
+      sessionId,
+      newStatus,
+      select
+    );
+  });
+});
+
+if (admin) {
+  bindAdminTrainingControls(session);
+}
 
   if (canManage) {
     bindAdminAttendanceBoard(session.id);
@@ -1436,6 +1463,111 @@ function categoryBadge(category) {
   }
 
   return `<span class="badge badge-green">Pro Development</span>`;
+}
+
+function renderSessionStatusControl(session) {
+  if (!isAdmin()) {
+    return statusBadge(session.status);
+  }
+
+  return `
+    <select
+      class="session-status-select"
+      data-session-status="${escapeHtml(session.id)}"
+      aria-label="Change status for ${escapeHtml(session.title || "training session")}"
+    >
+      <option
+        value="SCHEDULED"
+        ${session.status === "SCHEDULED" ? "selected" : ""}
+      >
+        Scheduled
+      </option>
+
+      <option
+        value="DRAFT"
+        ${session.status === "DRAFT" ? "selected" : ""}
+      >
+        Draft
+      </option>
+
+      <option
+        value="COMPLETED"
+        ${session.status === "COMPLETED" ? "selected" : ""}
+      >
+        Completed
+      </option>
+
+      <option
+        value="CANCELLED"
+        ${session.status === "CANCELLED" ? "selected" : ""}
+      >
+        Cancelled
+      </option>
+    </select>
+  `;
+}
+
+async function updateSessionStatusFromList(
+  sessionId,
+  newStatus,
+  selectElement
+) {
+  if (!isAdmin()) {
+    alert("Only administrators may change training status.");
+    await loadData();
+    return;
+  }
+
+  const allowedStatuses = [
+    "SCHEDULED",
+    "DRAFT",
+    "COMPLETED",
+    "CANCELLED"
+  ];
+
+  if (!allowedStatuses.includes(newStatus)) {
+    alert("Invalid training status.");
+    await loadData();
+    return;
+  }
+
+  const session = state.sessions.find(
+    item => Number(item.id) === Number(sessionId)
+  );
+
+  if (!session) {
+    alert("Training session could not be found.");
+    await loadData();
+    return;
+  }
+
+  const previousStatus = session.status;
+
+  selectElement.disabled = true;
+
+  const { error } = await supabase
+    .from("training_sessions")
+    .update({
+      status: newStatus,
+      updated_at: new Date().toISOString()
+    })
+    .eq("id", sessionId);
+
+  if (error) {
+    selectElement.value = previousStatus;
+    selectElement.disabled = false;
+
+    alert(
+      "Training status update failed: " + error.message
+    );
+
+    return;
+  }
+
+  session.status = newStatus;
+  selectElement.disabled = false;
+
+  await loadData();
 }
 
 function statusBadge(status) {
