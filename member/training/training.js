@@ -309,7 +309,7 @@ function renderSessions() {
       </thead>
       <tbody>
         ${rows.map(session => {
-          const counts = getAttendanceCounts(session.id);
+          const counts = getAttendanceCounts(session);
 
           return `
             <tr>
@@ -320,10 +320,11 @@ function renderSessions() {
                 <span class="muted">${escapeHtml(session.location || "-")}</span>
               </td>
               <td>${statusBadge(session.status)}</td>
-              <td>
-                <span class="badge badge-green">${counts.attending} Attending</span>
-                <span class="badge badge-red">${counts.notAttending} Not Attending</span>
-              </td>
+                <td>
+                  <span class="badge badge-green">${counts.attending} Attending</span>
+                  <span class="badge badge-red">${counts.notAttending} Not Attending</span>
+                  <span class="badge badge-yellow">${counts.loaAbsent} LOA Absent</span>
+                </td>
               <td>${escapeHtml(getProfileName(session.host_id))}</td>
               <td>
                 <button class="btn btn-secondary" type="button" data-open-session="${session.id}">Open</button>
@@ -1372,12 +1373,28 @@ async function deleteTraining(sessionId) {
   await loadData();
 }
 
-function getAttendanceCounts(sessionId) {
-  const rows = state.attendance.filter(a => Number(a.session_id) === Number(sessionId));
+function getAttendanceCounts(session) {
+  const rows = state.attendance.filter(
+    attendanceRow =>
+      Number(attendanceRow.session_id) === Number(session.id)
+  );
+
+  const loaUserIds = new Set(
+    getLoaForSession(session)
+      .map(loa => loa.requester_id)
+      .filter(Boolean)
+  );
 
   return {
-    attending: rows.filter(a => a.attendance === "ATTENDING").length,
-    notAttending: rows.filter(a => a.attendance === "NOT_ATTENDING").length
+    attending: rows.filter(
+      attendanceRow => attendanceRow.attendance === "ATTENDING"
+    ).length,
+
+    notAttending: rows.filter(
+      attendanceRow => attendanceRow.attendance === "NOT_ATTENDING"
+    ).length,
+
+    loaAbsent: loaUserIds.size
   };
 }
 
