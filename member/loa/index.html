@@ -219,21 +219,30 @@
 
     .grid {
       display: grid;
-      grid-template-columns: 460px minmax(0, 1fr);
+      grid-template-columns: 380px minmax(0, 1fr);
       gap: 14px;
       align-items: start;
     }
 
     .left-column,
-    .right-column {
+    .right-column,
+    .requests-column {
       min-width: 0;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
+    }
+
+    .requests-column {
+      grid-column: 1 / -1;
     }
 
     .table-scroll {
+      width: 100%;
+      max-height: 600px;
       overflow-x: auto;
+      overflow-y: auto;
+    }
+
+    .requests-column .info-table {
+      min-width: 900px;
     }
 
     .panel {
@@ -431,116 +440,116 @@
       flex-shrink: 0;
     }
 
-   .loa-calendar-controls {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-  margin-bottom: 8px;
-  flex-wrap: wrap;
-}
+    .loa-calendar-controls {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+    }
 
-.loa-calendar-controls input {
-  width: 135px;
-}
+    .loa-calendar-controls input {
+      width: 135px;
+    }
 
-.loa-calendar-summary {
-  font-size: 11px;
-  color: #555;
-  margin-bottom: 6px;
-}
+    .loa-calendar-summary {
+      font-size: 11px;
+      color: #555;
+      margin-bottom: 6px;
+    }
 
-.loa-calendar {
-  display: grid;
-  grid-template-columns: repeat(7, minmax(0, 1fr));
-  border: 1px solid #bbb;
-  background: #ddd;
-  gap: 1px;
-  width: 100%;
-}
+    .loa-calendar {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      border: 1px solid #bbb;
+      background: #ddd;
+      gap: 1px;
+      width: 100%;
+    }
 
-.loa-calendar-head {
-  background: #1d3f5e;
-  color: #fff;
-  font-size: 10px;
-  font-weight: bold;
-  text-transform: uppercase;
-  padding: 4px;
-  text-align: center;
-}
+    .loa-calendar-head {
+      background: #1d3f5e;
+      color: #fff;
+      font-size: 10px;
+      font-weight: bold;
+      text-transform: uppercase;
+      padding: 4px;
+      text-align: center;
+    }
 
-.loa-calendar-day {
-  min-height: 78px;
-  background: #fff;
-  padding: 4px;
-  overflow: hidden;
-}
+    .loa-calendar-day {
+      min-height: 78px;
+      background: #fff;
+      padding: 4px;
+      overflow: hidden;
+    }
 
-.loa-calendar-day.outside {
-  background: #f1f1f1;
-  color: #999;
-}
+    .loa-calendar-day.outside {
+      background: #f1f1f1;
+      color: #999;
+    }
 
-.loa-calendar-date {
-  font-weight: bold;
-  font-size: 10px;
-  margin-bottom: 3px;
-  color: #1d3f5e;
-}
+    .loa-calendar-date {
+      font-weight: bold;
+      font-size: 10px;
+      margin-bottom: 3px;
+      color: #1d3f5e;
+    }
 
-.loa-calendar-entry {
-  display: block;
-  margin: 2px 0;
-  padding: 2px 3px;
-  font-size: 10px;
-  line-height: 1.2;
-  border-left: 3px solid #1d3f5e;
-  background: #eaf1f8;
-  color: #111;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
+    .loa-calendar-entry {
+      display: block;
+      margin: 2px 0;
+      padding: 2px 3px;
+      font-size: 10px;
+      line-height: 1.2;
+      border-left: 3px solid #1d3f5e;
+      background: #eaf1f8;
+      color: #111;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
 
-.loa-calendar-empty {
-  font-size: 10px;
-  color: #888;
-}
+    .loa-calendar-empty {
+      font-size: 10px;
+      color: #888;
+    }
 
-@media (max-width: 900px) {
-  .loa-calendar {
-    grid-template-columns: repeat(2, minmax(130px, 1fr));
-  }
+    @media (max-width: 900px) {
+      .loa-calendar {
+        grid-template-columns: repeat(2, minmax(130px, 1fr));
+      }
 
-  .loa-calendar-head {
-    display: none;
-  }
-}
+      .loa-calendar-head {
+        display: none;
+      }
+    }
 
-@media (max-width: 900px) {
-  .grid {
-    grid-template-columns: 1fr;
-  }
+    @media (max-width: 900px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
 
-  .portal-body {
-    flex-direction: column;
-  }
+      .portal-body {
+        flex-direction: column;
+      }
 
-  .sidebar {
-    width: 100%;
-  }
+      .sidebar {
+        width: 100%;
+      }
 
-  .portal-nav {
-    overflow-x: auto;
-  }
+      .portal-nav {
+        overflow-x: auto;
+      }
 
-  .loa-calendar {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
+      .loa-calendar {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
 
-  .loa-calendar-head {
-    display: none;
-  }
-}
+      .loa-calendar-head {
+        display: none;
+      }
+    }
   </style>
 </head>
 
@@ -570,11 +579,14 @@
         </div>
 
         <div class="grid">
+
           <div class="left-column">
             <div class="panel">
               <div class="panel-title">Submit LOA</div>
+
               <div class="panel-body">
                 <form id="loa-form">
+
                   <div class="form-row">
                     <label for="start-date">Start Date</label>
                     <input id="start-date" type="date" required>
@@ -591,17 +603,58 @@
                   </div>
 
                   <div class="btn-row">
-                    <button class="btn btn-primary" type="submit">Submit LOA</button>
-                    <button class="btn btn-secondary" type="button" id="refresh-btn">Refresh</button>
+                    <button class="btn btn-primary" type="submit">
+                      Submit LOA
+                    </button>
+
+                    <button class="btn btn-secondary" type="button" id="refresh-btn">
+                      Refresh
+                    </button>
                   </div>
 
                   <div id="status-line" class="status-line"></div>
+
                 </form>
               </div>
             </div>
+          </div>
 
+          <div class="right-column">
+            <div class="panel">
+              <div class="panel-title">Leave Calendar</div>
+
+              <div class="panel-body">
+
+                <div class="loa-calendar-controls">
+                  <button class="btn btn-secondary" type="button" id="loa-prev-month">
+                    Previous
+                  </button>
+
+                  <input id="loa-calendar-month" type="month">
+
+                  <button class="btn btn-secondary" type="button" id="loa-next-month">
+                    Next
+                  </button>
+
+                  <button class="btn btn-secondary" type="button" id="loa-current-month">
+                    Current Month
+                  </button>
+                </div>
+
+                <div id="loa-calendar-summary" class="loa-calendar-summary">
+                  Loading calendar...
+                </div>
+
+                <div id="loa-calendar" class="loa-calendar"></div>
+
+              </div>
+            </div>
+          </div>
+
+          <div class="requests-column">
             <div class="panel">
               <div class="panel-title">LOA Requests</div>
+
               <div class="panel-body table-scroll">
                 <table class="info-table">
                   <thead>
@@ -613,6 +666,7 @@
                       <th>Review</th>
                     </tr>
                   </thead>
+
                   <tbody id="loa-table-body">
                     <tr>
                       <td colspan="5">Loading...</td>
@@ -623,22 +677,6 @@
             </div>
           </div>
 
-          <div class="right-column">
-            <div class="panel">
-              <div class="panel-title">Leave Calendar</div>
-              <div class="panel-body">
-                <div class="loa-calendar-controls">
-                  <button class="btn btn-secondary" type="button" id="loa-prev-month">Previous</button>
-                  <input id="loa-calendar-month" type="month">
-                  <button class="btn btn-secondary" type="button" id="loa-next-month">Next</button>
-                  <button class="btn btn-secondary" type="button" id="loa-current-month">Current Month</button>
-                </div>
-
-                <div id="loa-calendar-summary" class="loa-calendar-summary">Loading calendar...</div>
-                <div id="loa-calendar" class="loa-calendar"></div>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </div>
