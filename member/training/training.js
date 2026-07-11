@@ -313,7 +313,13 @@ function renderSessions() {
 
           return `
             <tr>
-              <td>${escapeHtml(formatDateTime(session.start_at))}</td>
+              <td>
+  ${escapeHtml(formatDateTime(session.start_at))}
+  <br>
+  <span class="muted">
+    (Your time: ${escapeHtml(formatViewerLocalTime(session.start_at))})
+  </span>
+</td>
               <td>${categoryBadge(session.category)}</td>
               <td>
                 <strong>${escapeHtml(session.title)}</strong><br>
