@@ -69,6 +69,11 @@ return [
 return "";
 }
 
+function getGreenTeamBillet(index) {
+  if (index === 0) return "Green Team Candidate";
+  return "Green Team Candidate";
+}
+
 let authUser = null;
 let currentProfile = null;
 let members = [];
@@ -94,16 +99,30 @@ return callsign.length > 0;
 }
 
 function isOrbatMember(profile) {
-const callsign = String(profile?.callsign || "").trim();
-const rank = String(profile?.naval_rank || "").trim().toLowerCase();
-const status = String(profile?.status || "ACTIVE").trim().toUpperCase();
-return status === "ACTIVE" && rank !== "candidate" && callsign.length > 0;
-}
+  const callsign = String(profile?.callsign || "").trim();
+  const rank = String(profile?.naval_rank || "").trim().toLowerCase();
+  const status = String(profile?.status || "ACTIVE").trim().toUpperCase();
 
-function callsignGroup(callsign) {
-const value = String(callsign || "").trim().toUpperCase();
-if (value.startsWith("E3")) return "E3";
-return value.slice(0, 2) || "OTHER";
+  if (status !== "ACTIVE") return false;
+
+  // Green Team members
+  if (rank === "candidate") return true;
+
+  // Regular ORBAT personnel
+  return callsign.length > 0;
+}
+function callsignGroup(callsign, rank = "") {
+  const normalizedRank = String(rank || "").trim().toLowerCase();
+
+  if (normalizedRank === "candidate") {
+    return "GREEN";
+  }
+
+  const value = String(callsign || "").trim().toUpperCase();
+
+  if (value.startsWith("E3")) return "E3";
+
+  return value.slice(0, 2) || "OTHER";
 }
 
 function callsignSortValue(callsign) {
@@ -123,21 +142,36 @@ statusLine.textContent = message;
 }
 
 async function loadMembers() {
-  setStatus("Loading ORBAT...");
+setStatus("Loading ORBAT...");
 
-  const { data, error } = await supabase
-    .from("profiles")
-    .select("id,user_id,display_name,role,status,avatar_url,naval_rank,callsign,steam_name,discord_name")
-    .order("callsign", { ascending: true });
+const { data, error } = await supabase
+.from("profiles")
+.select("id,user_id,display_name,role,status,avatar_url,naval_rank,callsign,steam_name,discord_name")
+.order("callsign", { ascending: true });
 
-  if (error) throw new Error(error.message);
+if (error) throw new Error(error.message);
 
-  members = (data || [])
-    .filter(isOrbatMember)
-    .sort((a, b) =>
-      callsignSortValue(a.callsign).localeCompare(callsignSortValue(b.callsign)) ||
-      String(a.display_name || "").localeCompare(String(b.display_name || ""))
+members = (data || [])
+  .filter(isOrbatMember)
+  .sort((a, b) => {
+    const aCandidate =
+      String(a.naval_rank || "").trim().toLowerCase() === "candidate";
+    const bCandidate =
+      String(b.naval_rank || "").trim().toLowerCase() === "candidate";
+
+    if (aCandidate !== bCandidate) {
+      return aCandidate ? 1 : -1;
+    }
+
+    return (
+      callsignSortValue(a.callsign).localeCompare(
+        callsignSortValue(b.callsign)
+      ) ||
+      String(a.display_name || "").localeCompare(
+        String(b.display_name || "")
+      )
     );
+  });
 }
 
 function filteredMembers() {
@@ -150,7 +184,9 @@ return true;
 }
 
 function renderStats(rows) {
-const groups = new Set(rows.map(row => callsignGroup(row.callsign)));
+const groups = new Set(
+  rows.map(row => callsignGroup(row.callsign, row.naval_rank))
+);
 const officers = rows.filter(row => OFFICER_RANKS.has(row.naval_rank)).length;
 statTotal.textContent = rows.length;
 statGroups.textContent = groups.size;
@@ -159,102 +195,206 @@ statEnlisted.textContent = rows.length - officers;
 }
 
 function renderBoard() {
-const personnel = filteredMembers();
+  const personnel = filteredMembers();
 
-renderStats(personnel);
+  renderStats(personnel);
 
-const slotMap = new Map();
+  const greenTeam = personnel
+    .filter(member =>
+      String(member.naval_rank || "").trim().toLowerCase() === "candidate"
+    )
+    .sort((a, b) =>
+      String(a.display_name || "").localeCompare(
+        String(b.display_name || "")
+      )
+    );
 
-personnel.forEach(member => {
-slotMap.set(member.callsign, member);
-});
+  const assignedPersonnel = personnel.filter(member => {
+    const rank = String(member.naval_rank || "").trim().toLowerCase();
+    const callsign = String(member.callsign || "").trim();
 
-const sections = [
-{
-title: "Troop Headquarters",
-subtitle: "Red Squadron • 3 Troop",
-slots: ["E31", "E32"]
-},
-{
-title: "3 Troop, Golf Team",
-subtitle: "Assault",
-slots: ["EG1", "EG2", "EG3", "EG4", "EG5", "EG6"]
-},
-{
-title: "3 Troop, Hotel Team",
-subtitle: "Assault",
-slots: ["EH1", "EH2", "EH3", "EH4", "EH5", "EH6"]
-},
-{
-title: "3 Troop, India Team",
-subtitle: "Reconnaissance",
-slots: ["EI1", "EI2", "EI3", "EI4", "EI5", "EI6"]
-},
-{
-title: "Attached Specialists",
-subtitle: "Troop Support Assets",
-slots: [
-"EX1",
-"EN1",
-"ER1",
-"EY1",
-"EU1",
-"EU2",
-"EP1",
-"EP2"
-]
-}
-];
+    return rank !== "candidate" && callsign.length > 0;
+  });
 
-board.innerHTML = sections.map(section => `
-<section class="unit-panel">
-  <div class="unit-title">
-    <span>${escapeHtml(section.title)}</span>
-  </div>
+  const slotMap = new Map();
 
-  <div class="unit-body">
-    <div class="muted" style="margin-bottom:8px;">
-      ${escapeHtml(section.subtitle)}
-    </div>
+  assignedPersonnel.forEach(member => {
+    slotMap.set(
+      String(member.callsign || "").trim().toUpperCase(),
+      member
+    );
+  });
 
-    ${section.slots.map(callsign => {
-    const member = slotMap.get(callsign);
-
-    if (!member) {
-    return `
-      <article class="member-card vacant-card">
-        <div class="vacant-avatar">?</div>
-
-        <div>
-          <div class="member-name">Vacant</div>
-          <div class="member-meta">Unassigned</div>
-          <div class="member-billet">${escapeHtml(getBillet(callsign) || "Position Unfilled")}</div>
-        </div>
-
-        <span class="badge">${callsign}</span>
-      </article>
-    `;
+  const sections = [
+    {
+      title: "Troop Headquarters",
+      subtitle: "Red Squadron • 3 Troop",
+      slots: ["E31", "E32"]
+    },
+    {
+      title: "3 Troop, Golf Team",
+      subtitle: "Assault",
+      slots: ["EG1", "EG2", "EG3", "EG4", "EG5", "EG6"]
+    },
+    {
+      title: "3 Troop, Hotel Team",
+      subtitle: "Assault",
+      slots: ["EH1", "EH2", "EH3", "EH4", "EH5", "EH6"]
+    },
+    {
+      title: "3 Troop, India Team",
+      subtitle: "Reconnaissance",
+      slots: ["EI1", "EI2", "EI3", "EI4", "EI5", "EI6"]
+    },
+    {
+      title: "Attached Specialists",
+      subtitle: "Troop Support Assets",
+      slots: [
+        "EX1",
+        "EN1",
+        "ER1",
+        "EY1",
+        "EU1",
+        "EU2",
+        "EP1",
+        "EP2"
+      ]
     }
+  ];
 
-    return `
-    <article class="member-card">
-      <img class="avatar" src="${escapeHtml(avatarUrl(member.avatar_url) || '../../nsw.png')}">
-
-      <div>
-        <div class="member-name">${escapeHtml(member.display_name)}</div>
-        <div class="member-meta">${escapeHtml(member.naval_rank || '')}</div>
-        <div class="member-billet">${escapeHtml(getBillet(member.callsign))}</div>
+  const greenTeamHtml = `
+    <section class="unit-panel">
+      <div class="unit-title">
+        <span>Green Team</span>
       </div>
 
-      <span class="badge">${escapeHtml(member.callsign)}</span>
-    </article>
-    `;
-    }).join("")}
-  </div>
-</section>
-`).join("");
+      <div class="unit-body">
+        <div class="muted" style="margin-bottom:8px;">
+          Assessment and Selection Pipeline
+        </div>
 
-setStatus(`${personnel.length} personnel displayed.`);
+        ${
+          greenTeam.length
+            ? greenTeam.map((member, index) => `
+                <article class="member-card">
+                  <img
+                    class="avatar"
+                    src="${escapeHtml(
+                      avatarUrl(member.avatar_url) || "../../nsw.png"
+                    )}"
+                    alt=""
+                  >
+
+                  <div>
+                    <div class="member-name">
+                      ${escapeHtml(member.display_name)}
+                    </div>
+
+                    <div class="member-meta">
+                      ${escapeHtml(member.naval_rank || "Candidate")}
+                    </div>
+
+                    <div class="member-billet">
+                      ${escapeHtml(getGreenTeamBillet(index))}
+                    </div>
+                  </div>
+
+                  <span class="badge">GT${index + 1}</span>
+                </article>
+              `).join("")
+            : `
+              <article class="member-card vacant-card">
+                <div class="vacant-avatar">?</div>
+
+                <div>
+                  <div class="member-name">No Candidates</div>
+                  <div class="member-meta">Green Team Empty</div>
+                  <div class="member-billet">
+                    No active candidates currently assigned
+                  </div>
+                </div>
+
+                <span class="badge">GREEN</span>
+              </article>
+            `
+        }
+      </div>
+    </section>
+  `;
+
+  const assignedSectionsHtml = sections.map(section => `
+    <section class="unit-panel">
+      <div class="unit-title">
+        <span>${escapeHtml(section.title)}</span>
+      </div>
+
+      <div class="unit-body">
+        <div class="muted" style="margin-bottom:8px;">
+          ${escapeHtml(section.subtitle)}
+        </div>
+
+        ${section.slots.map(callsign => {
+          const member = slotMap.get(callsign);
+
+          if (!member) {
+            return `
+              <article class="member-card vacant-card">
+                <div class="vacant-avatar">?</div>
+
+                <div>
+                  <div class="member-name">Vacant</div>
+                  <div class="member-meta">Unassigned</div>
+                  <div class="member-billet">
+                    ${escapeHtml(
+                      getBillet(callsign) || "Position Unfilled"
+                    )}
+                  </div>
+                </div>
+
+                <span class="badge">${escapeHtml(callsign)}</span>
+              </article>
+            `;
+          }
+
+          return `
+            <article class="member-card">
+              <img
+                class="avatar"
+                src="${escapeHtml(
+                  avatarUrl(member.avatar_url) || "../../nsw.png"
+                )}"
+                alt=""
+              >
+
+              <div>
+                <div class="member-name">
+                  ${escapeHtml(member.display_name)}
+                </div>
+
+                <div class="member-meta">
+                  ${escapeHtml(member.naval_rank || "")}
+                </div>
+
+                <div class="member-billet">
+                  ${escapeHtml(getBillet(member.callsign))}
+                </div>
+              </div>
+
+              <span class="badge">
+                ${escapeHtml(member.callsign)}
+              </span>
+            </article>
+          `;
+        }).join("")}
+      </div>
+    </section>
+  `).join("");
+
+  board.innerHTML = greenTeamHtml + assignedSectionsHtml;
+
+  setStatus(
+    `${personnel.length} personnel displayed, including ${greenTeam.length} Green Team candidate${greenTeam.length === 1 ? "" : "s"}.`
+  );
 }
 
 async function boot() {
