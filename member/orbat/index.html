@@ -333,6 +333,51 @@
     min-height: 46px;
   }
 
+  .green-team-description {
+  margin-bottom: 8px;
+  line-height: 1.4;
+}
+
+.green-team-card {
+  grid-template-columns: 14px 34px minmax(0, 1fr) auto;
+}
+
+.green-team-card[draggable="true"] {
+  cursor: grab;
+  user-select: none;
+}
+
+.green-team-card[draggable="true"]:active {
+  cursor: grabbing;
+}
+
+.green-team-card.dragging {
+  opacity: 0.45;
+  border: 1px dashed #1d3f5e;
+}
+
+.drag-handle {
+  color: #777;
+  font-size: 13px;
+  font-weight: bold;
+  line-height: 1;
+  text-align: center;
+  cursor: grab;
+}
+
+.green-team-position-badge {
+  min-width: 72px;
+}
+
+.unit-title-hint {
+  font-size: 9px;
+  font-weight: normal;
+  text-transform: none;
+  letter-spacing: 0;
+  opacity: 0.8;
+  white-space: nowrap;
+}
+
   .avatar {
     width: 34px;
     height: 34px;
