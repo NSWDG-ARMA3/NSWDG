@@ -287,12 +287,13 @@
       margin-top: 4px
     }
 
-    .orbat-board {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 12px;
-      align-items: start;
-    }
+.orbat-board {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(190px, 1fr));
+  gap: 12px;
+  align-items: start;
+  overflow-x: auto;
+}
 
     .unit-panel {
       height: 100%;

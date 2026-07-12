@@ -100,16 +100,12 @@ return callsign.length > 0;
 
 function isOrbatMember(profile) {
   const callsign = String(profile?.callsign || "").trim();
-  const rank = String(profile?.naval_rank || "").trim().toLowerCase();
   const status = String(profile?.status || "ACTIVE").trim().toUpperCase();
 
   if (status !== "ACTIVE") return false;
 
-  // Green Team members
-  if (rank === "candidate") return true;
-
-  // Regular ORBAT personnel
-  return callsign.length > 0;
+  // Regular ORBAT member or Green Team member without a callsign
+  return callsign.length > 0 || callsign.length === 0;
 }
 function callsignGroup(callsign, rank = "") {
   const normalizedRank = String(rank || "").trim().toLowerCase();
@@ -184,14 +180,28 @@ return true;
 }
 
 function renderStats(rows) {
-const groups = new Set(
-  rows.map(row => callsignGroup(row.callsign, row.naval_rank))
-);
-const officers = rows.filter(row => OFFICER_RANKS.has(row.naval_rank)).length;
-statTotal.textContent = rows.length;
-statGroups.textContent = groups.size;
-statOfficers.textContent = officers;
-statEnlisted.textContent = rows.length - officers;
+  const groups = new Set(
+    rows
+      .map(row => {
+        const callsign = String(row.callsign || "").trim();
+
+        if (!callsign) {
+          return "GREEN";
+        }
+
+        return callsignGroup(callsign);
+      })
+      .filter(Boolean)
+  );
+
+  const officers = rows.filter(row =>
+    OFFICER_RANKS.has(row.naval_rank)
+  ).length;
+
+  statTotal.textContent = rows.length;
+  statGroups.textContent = groups.size;
+  statOfficers.textContent = officers;
+  statEnlisted.textContent = rows.length - officers;
 }
 
 function renderBoard() {
@@ -199,9 +209,13 @@ function renderBoard() {
 
   renderStats(personnel);
 
+  const assignedPersonnel = personnel.filter(member =>
+    String(member.callsign || "").trim().length > 0
+  );
+
   const greenTeam = personnel
     .filter(member =>
-      String(member.naval_rank || "").trim().toLowerCase() === "candidate"
+      String(member.callsign || "").trim().length === 0
     )
     .sort((a, b) =>
       String(a.display_name || "").localeCompare(
@@ -209,20 +223,14 @@ function renderBoard() {
       )
     );
 
-  const assignedPersonnel = personnel.filter(member => {
-    const rank = String(member.naval_rank || "").trim().toLowerCase();
-    const callsign = String(member.callsign || "").trim();
-
-    return rank !== "candidate" && callsign.length > 0;
-  });
-
   const slotMap = new Map();
 
   assignedPersonnel.forEach(member => {
-    slotMap.set(
-      String(member.callsign || "").trim().toUpperCase(),
-      member
-    );
+    const callsign = String(member.callsign || "")
+      .trim()
+      .toUpperCase();
+
+    slotMap.set(callsign, member);
   });
 
   const sections = [
@@ -262,67 +270,7 @@ function renderBoard() {
     }
   ];
 
-  const greenTeamHtml = `
-    <section class="unit-panel">
-      <div class="unit-title">
-        <span>Green Team</span>
-      </div>
-
-      <div class="unit-body">
-        <div class="muted" style="margin-bottom:8px;">
-          Assessment and Selection Pipeline
-        </div>
-
-        ${
-          greenTeam.length
-            ? greenTeam.map((member, index) => `
-                <article class="member-card">
-                  <img
-                    class="avatar"
-                    src="${escapeHtml(
-                      avatarUrl(member.avatar_url) || "../../nsw.png"
-                    )}"
-                    alt=""
-                  >
-
-                  <div>
-                    <div class="member-name">
-                      ${escapeHtml(member.display_name)}
-                    </div>
-
-                    <div class="member-meta">
-                      ${escapeHtml(member.naval_rank || "Candidate")}
-                    </div>
-
-                    <div class="member-billet">
-                      ${escapeHtml(getGreenTeamBillet(index))}
-                    </div>
-                  </div>
-
-                  <span class="badge">GT${index + 1}</span>
-                </article>
-              `).join("")
-            : `
-              <article class="member-card vacant-card">
-                <div class="vacant-avatar">?</div>
-
-                <div>
-                  <div class="member-name">No Candidates</div>
-                  <div class="member-meta">Green Team Empty</div>
-                  <div class="member-billet">
-                    No active candidates currently assigned
-                  </div>
-                </div>
-
-                <span class="badge">GREEN</span>
-              </article>
-            `
-        }
-      </div>
-    </section>
-  `;
-
-  const assignedSectionsHtml = sections.map(section => `
+  const regularSectionsHtml = sections.map(section => `
     <section class="unit-panel">
       <div class="unit-title">
         <span>${escapeHtml(section.title)}</span>
@@ -344,6 +292,7 @@ function renderBoard() {
                 <div>
                   <div class="member-name">Vacant</div>
                   <div class="member-meta">Unassigned</div>
+
                   <div class="member-billet">
                     ${escapeHtml(
                       getBillet(callsign) || "Position Unfilled"
@@ -351,7 +300,9 @@ function renderBoard() {
                   </div>
                 </div>
 
-                <span class="badge">${escapeHtml(callsign)}</span>
+                <span class="badge">
+                  ${escapeHtml(callsign)}
+                </span>
               </article>
             `;
           }
@@ -390,13 +341,77 @@ function renderBoard() {
     </section>
   `).join("");
 
-  board.innerHTML = greenTeamHtml + assignedSectionsHtml;
+  const greenTeamHtml = `
+    <section class="unit-panel">
+      <div class="unit-title">
+        <span>Green Team</span>
+      </div>
+
+      <div class="unit-body">
+        <div class="muted" style="margin-bottom:8px;">
+          Candidates
+        </div>
+
+        ${
+          greenTeam.length > 0
+            ? greenTeam.map((member, index) => `
+                <article class="member-card">
+                  <img
+                    class="avatar"
+                    src="${escapeHtml(
+                      avatarUrl(member.avatar_url) || "../../nsw.png"
+                    )}"
+                    alt=""
+                  >
+
+                  <div>
+                    <div class="member-name">
+                      ${escapeHtml(member.display_name)}
+                    </div>
+
+                    <div class="member-meta">
+                      ${escapeHtml(
+                        member.naval_rank || "Candidate"
+                      )}
+                    </div>
+
+                    <div class="member-billet">
+                      Green Team Candidate
+                    </div>
+                  </div>
+
+                  <span class="badge">
+                    GT${index + 1}
+                  </span>
+                </article>
+              `).join("")
+            : `
+              <article class="member-card vacant-card">
+                <div class="vacant-avatar">?</div>
+
+                <div>
+                  <div class="member-name">Vacant</div>
+                  <div class="member-meta">No candidate assigned</div>
+                  <div class="member-billet">
+                    Green Team Candidate
+                  </div>
+                </div>
+
+                <span class="badge">GT</span>
+              </article>
+            `
+        }
+      </div>
+    </section>
+  `;
+
+  board.innerHTML = regularSectionsHtml + greenTeamHtml;
 
   setStatus(
-    `${personnel.length} personnel displayed, including ${greenTeam.length} Green Team candidate${greenTeam.length === 1 ? "" : "s"}.`
+    `${personnel.length} personnel displayed. ` +
+    `${greenTeam.length} Green Team candidate${greenTeam.length === 1 ? "" : "s"}.`
   );
 }
-
 async function boot() {
 try {
 const boot = await bootPortalChrome();
