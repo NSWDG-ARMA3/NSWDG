@@ -89,7 +89,19 @@ function canReviewLocally(row) {
   const requester = profilesById.get(row.requester_id);
   const requesterCallsign = String(requester?.callsign || "").trim().toUpperCase();
 
-  const enablerCallsigns = ["EX1", "EN1", "ER1", "EY1", "EU1", "EU2", "EP1", "EP2"];
+  const enablerCallsigns = [
+    "EX1",
+    "EN1",
+    "ER1",
+    "EY1",
+    "EY2",
+    "EY3",
+    "EY4",
+    "EU1",
+    "EU2",
+    "EP1",
+    "EP2"
+  ];
   if (enablerCallsigns.includes(requesterCallsign)) return false;
 
   const teamLeaders = ["EG1", "EH1", "EI1"];

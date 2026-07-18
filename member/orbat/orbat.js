@@ -13,15 +13,19 @@ const GREEN_TEAM_EDITOR_ROLES = new Set([
   "TROOP_HQ",
   "HQ"
 ]);
+
 const SPECIALIST_ROLES = {
-EX1: "Master-at-Arms (Military Working Dog Handler/MWDH)",
-EN1: "Explosive Ordnance Disposal Technician (EOD)",
-ER1: "Information Systems Technician (IST)",
-EY1: "Cryptologic Technician (CT)",
-EU1: "Combat Controller (CCT)",
-EU2: "Combat Controller (CCT)",
-EP1: "Pararescueman (PJ)",
-EP2: "Pararescueman (PJ)"
+  EX1: "Master-at-Arms (Military Working Dog Handler/MWDH)",
+  EN1: "Explosive Ordnance Disposal Technician (EOD)",
+  ER1: "Information Systems Technician (IST)",
+  EY1: "Cryptologic Technician (CT)",
+  EY2: "Cryptologic Technician (CT)",
+  EY3: "Cryptologic Technician (CT)",
+  EY4: "Cryptologic Technician (CT)",
+  EU1: "Combat Controller (CCT)",
+  EU2: "Combat Controller (CCT)",
+  EP1: "Pararescueman (PJ)",
+  EP2: "Pararescueman (PJ)"
 };
 
 function getBillet(callsign) {
@@ -503,6 +507,9 @@ function renderBoard() {
         "EN1",
         "ER1",
         "EY1",
+        "EY2",
+        "EY3",
+        "EY4",
         "EU1",
         "EU2",
         "EP1",

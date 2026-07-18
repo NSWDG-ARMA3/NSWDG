@@ -14,7 +14,22 @@ const ORBAT = [
   { title: "Red Squadron, 3 Troop, Hotel, Assault", slots: ["EH1", "EH2", "EH3", "EH4", "EH5", "EH6"] },
   { title: "Red Squadron, 3 Troop, India, Recce", slots: ["EI1", "EI2", "EI3", "EI4", "EI5", "EI6"] },
   { title: "Red Squadron, 3 Troop, Troop Headquarters", slots: ["E31", "E32"] },
-  { title: "Red Squadron, 3 Troop, Enablers", slots: ["EX1", "EN1", "ER1", "EY1", "EU1", "EU2", "EP1", "EP2"] }
+  {
+    title: "Red Squadron, 3 Troop, Enablers",
+    slots: [
+      "EX1",
+      "EN1",
+      "ER1",
+      "EY1",
+      "EY2",
+      "EY3",
+      "EY4",
+      "EU1",
+      "EU2",
+      "EP1",
+      "EP2"
+    ]
+  }
 ];
 
 let authUser = null;
