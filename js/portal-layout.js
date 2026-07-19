@@ -116,6 +116,8 @@ function _0x83fa() {
   }, 1000);
 }
 
+
+
 async function updateLayoutUserInfo() {
   const email = await getCurrentUserEmail();
 
@@ -126,34 +128,127 @@ async function updateLayoutUserInfo() {
   }
 
   try {
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+      error: userError
+    } = await supabase.auth.getUser();
 
-    if (!user) return;
+    if (userError) {
+      throw userError;
+    }
 
-    const { data: profile } = await supabase
+    if (!user) {
+      return;
+    }
+
+    const {
+      data: profile,
+      error: profileError
+    } = await supabase
       .from("profiles")
-      .select("callsign, naval_rank")
+      .select(`
+        display_name,
+        role,
+        callsign,
+        naval_rank,
+        avatar_url
+      `)
       .eq("id", user.id)
       .single();
 
+    if (profileError) {
+      throw profileError;
+    }
+
+    const sidebarName = document.getElementById("sidebar-name");
+    const sidebarRole = document.getElementById("sidebar-role");
+    const navAvatar = document.getElementById("nav-avatar");
+
+    if (sidebarName) {
+      sidebarName.textContent =
+        profile?.display_name ||
+        profile?.callsign ||
+        email;
+    }
+
+    if (sidebarRole) {
+      sidebarRole.textContent =
+        profile?.naval_rank ||
+        profile?.role ||
+        "MEMBER";
+    }
+
+    if (navAvatar && profile?.avatar_url) {
+      navAvatar.src = profile.avatar_url;
+    }
+
+    const normalizedCallsign = String(
+      profile?.callsign || ""
+    )
+      .trim()
+      .toUpperCase();
+
+    const normalizedRole = String(
+      profile?.role || ""
+    )
+      .trim()
+      .toUpperCase();
+
+    const normalizedRank = String(
+      profile?.naval_rank || ""
+    )
+      .trim()
+      .toUpperCase();
+
+    const normalizedEmail = email
+      .trim()
+      .toLowerCase();
+
     const canViewOrbat =
       (
-        profile?.callsign &&
-        profile.callsign.trim() !== "" &&
-        profile.naval_rank !== "Candidate"
+        normalizedCallsign !== "" &&
+        normalizedRank !== "CANDIDATE"
       ) ||
       [
         "carver@navy.mil",
         "evans@navy.mil"
-      ].includes(email.toLowerCase());
+      ].includes(normalizedEmail);
 
-    if (canViewOrbat) {
-      document.querySelectorAll(".orbat-only-link").forEach(el => {
-        el.style.display = "";
+    const canViewIntelligence =
+      intelligenceRoles.includes(normalizedRole) ||
+      intelligenceCallsigns.includes(normalizedCallsign);
+
+    const isAdmin =
+      normalizedRole === "ADMIN";
+
+    document
+      .querySelectorAll(".orbat-only-link")
+      .forEach(element => {
+        element.style.display = canViewOrbat
+          ? ""
+          : "none";
       });
-    }
-  } catch (err) {
-    console.error(err);
+
+    document
+      .querySelectorAll(".intelligence-only-link")
+      .forEach(element => {
+        element.style.display = canViewIntelligence
+          ? ""
+          : "none";
+      });
+
+    document
+      .querySelectorAll(".admin-only-link")
+      .forEach(element => {
+        element.style.display = isAdmin
+          ? ""
+          : "none";
+      });
+  } catch (error) {
+    console.error(
+      "Could not update portal user information:",
+      error
+    );
   }
 }
 
@@ -214,39 +309,6 @@ export function renderPortalLayout(activePage = "") {
   }
 
   updateLayoutUserInfo();
-}
-
-const intelligenceCallsigns = [
-  "E31",
-  "E32",
-  "EG1",
-  "EH1",
-  "EI1",
-  "ER1",
-  "EY1",
-  "EY2",
-  "EY3",
-  "EY4"
-];
-
-const intelligenceRoles = [
-  "ADMIN",
-  "TROOP_HQ",
-  "HQ"
-];
-
-const canViewIntelligence =
-  intelligenceRoles.includes(
-    String(profile?.role || "").trim().toUpperCase()
-  ) ||
-  intelligenceCallsigns.includes(
-    String(profile?.callsign || "").trim().toUpperCase()
-  );
-
-if (canViewIntelligence) {
-  document.querySelectorAll(".intelligence-only-link").forEach(element => {
-    element.style.display = "";
-  });
 }
 
 export function showOrbatLinks() {
