@@ -1244,6 +1244,10 @@
       let loaRequests = [];
       let dragChanged = false;
 
+      // Identifies the newest scheduling load.
+      // Older asynchronous loads are ignored when they finish.
+      let responseLoadSequence = 0;
+
       const $ = (id) => document.getElementById(id);
 
       const weekInput = $("week-start");
@@ -2271,9 +2275,7 @@
         $("dash-members").textContent = String(filteredMembers().length);
       }
 
-      async function loadLoaRequests() {
-        const range = bufferedLoadRange();
-
+      async function fetchLoaRequests(range) {
         const startDate = isoDate(range.earliest);
         const endDate = isoDate(range.latest);
 
@@ -2285,12 +2287,10 @@
           .gte("end_date", startDate);
 
         if (error) {
-          loaRequests = [];
-          setStatus(`LOA data could not be loaded. ${error.message}`, false);
-          return;
+          throw new Error(`LOA data could not be loaded: ${error.message}`);
         }
 
-        loaRequests = data || [];
+        return data || [];
       }
 
       async function fetchAllSchedulingResponses(startIso, endIso) {
@@ -2373,14 +2373,50 @@
           return;
         }
 
+        // Every call receives a unique number.
+        // Only the newest call is allowed to update the page.
+        const loadSequence = ++responseLoadSequence;
+
+        // Capture the selected values now instead of reading changing controls
+        // again after asynchronous Supabase requests finish.
+        const requestedTimezone = scheduleTimezone();
+        const requestedWeek = weekInput.value;
+
         const range = bufferedLoadRange();
         const visibleSet = new Set(range.keys);
 
         try {
-          allResponses = await fetchAllSchedulingResponses(
-            range.earliest.toISOString(),
-            range.latest.toISOString(),
-          );
+          const [loadedResponses, loadedLoaRequests] = await Promise.all([
+            fetchAllSchedulingResponses(
+              range.earliest.toISOString(),
+              range.latest.toISOString(),
+            ),
+            fetchLoaRequests(range),
+          ]);
+
+          // A newer timezone, week or refresh request started while this request
+          // was loading. Do not let this older result overwrite the newer page.
+          if (
+            loadSequence !== responseLoadSequence ||
+            requestedTimezone !== scheduleTimezone() ||
+            requestedWeek !== weekInput.value
+          ) {
+            console.debug("[Scheduling] Ignored stale load", {
+              loadSequence,
+              newestLoadSequence: responseLoadSequence,
+              requestedTimezone,
+              currentTimezone: scheduleTimezone(),
+              requestedWeek,
+              currentWeek: weekInput.value,
+            });
+
+            return;
+          }
+
+          // Commit both datasets together only after confirming this is still
+          // the newest request.
+          allResponses = loadedResponses;
+          loaRequests = loadedLoaRequests;
 
           const visibleResponseCounts = {};
 
@@ -2487,8 +2523,7 @@
           setStatus(`Failed to load scheduling data: ${error.message}`, false);
         }
 
-        await loadLoaRequests();
-
+        // LOA requests were loaded and committed together with scheduling responses.
         $("dash-members").textContent = String(filteredMembers().length);
         $("dash-timezone").textContent = scheduleTimezone();
         $("dash-updated").textContent = utcNowLabel();
@@ -2775,12 +2810,16 @@
       document.addEventListener("mouseup", finishDrag);
       window.addEventListener("blur", finishDrag);
 
-      timezoneSelect.onchange = () => {
+      timezoneSelect.onchange = async () => {
         localStorage.setItem("schedulingTimezone", scheduleTimezone());
-        loadResponses();
+
+        // The new load sequence makes every older in-progress request stale.
+        await loadResponses();
       };
 
-      weekInput.onchange = loadResponses;
+      weekInput.onchange = async () => {
+        await loadResponses();
+      };
 
       (async function init() {
         weekInput.value = getNextMonday();
