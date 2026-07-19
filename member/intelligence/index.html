@@ -1,0 +1,3112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>NSW Operations Portal - Intelligence</title>
+
+  <link rel="shortcut icon" href="../../nsw.png" type="image/x-icon">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: #f0f0f0;
+      color: #1a1a1a;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 12px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .gov-banner {
+      background: #1a1a1a;
+      color: #ccc;
+      font-size: 11px;
+      padding: 3px 12px;
+    }
+
+    .site-header {
+      background: #1d3f5e;
+      color: #fff;
+      padding: 10px 16px;
+      border-bottom: 3px solid #c8a800;
+    }
+
+    .site-header h1 {
+      font-size: 16px;
+    }
+
+    .site-header p {
+      color: #c5d8ec;
+      font-size: 11px;
+      margin-top: 2px;
+    }
+
+    .portal-nav {
+      background: #1d3f5e;
+      display: flex;
+      align-items: stretch;
+      border-bottom: 2px solid #c8a800;
+    }
+
+    .portal-nav a {
+      color: #cde;
+      text-decoration: none;
+      padding: 8px 12px;
+      border-right: 1px solid #00284e;
+      white-space: nowrap;
+    }
+
+    .portal-nav a.active {
+      color: #fff;
+      font-weight: bold;
+      border-bottom: 2px solid #c8a800;
+    }
+
+    .nav-right {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      gap: 10px;
+      color: #7a9ab8;
+      font-size: 11px;
+    }
+
+    .nav-avatar {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1px solid #7a9ab8;
+    }
+
+    .portal-body {
+      display: flex;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .sidebar {
+      width: 180px;
+      background: #e8e8e8;
+      border-right: 1px solid #bbb;
+      padding: 12px 0;
+      flex-shrink: 0;
+    }
+
+    .sidebar-user-box {
+      padding: 7px 12px 10px;
+      border-bottom: 1px solid #ccc;
+      margin-bottom: 6px;
+      line-height: 1.6;
+    }
+
+    .sidebar-user-box strong {
+      display: block;
+    }
+
+    .sidebar-section {
+      color: #777;
+      font-size: 10px;
+      font-weight: bold;
+      letter-spacing: 1px;
+      padding: 8px 12px 4px;
+      text-transform: uppercase;
+    }
+
+    .sidebar-link {
+      display: block;
+      padding: 5px 12px;
+      color: #1d3f5e;
+      text-decoration: none;
+      border-left: 3px solid transparent;
+    }
+
+    .sidebar-link.active {
+      background: #d0dae8;
+      border-left-color: #1d3f5e;
+      font-weight: bold;
+    }
+
+    .portal-main {
+      flex: 1;
+      padding: 16px 18px;
+      background: #fff;
+      overflow-y: auto;
+    }
+
+    .page-title {
+      color: #1d3f5e;
+      font-size: 15px;
+      font-weight: bold;
+      border-bottom: 1px solid #ccc;
+      padding-bottom: 6px;
+      margin-bottom: 10px;
+    }
+
+    .classification-banner {
+      background: #d8b400;
+      color: #111;
+      text-align: center;
+      font-weight: bold;
+      padding: 5px;
+      margin-bottom: 10px;
+      letter-spacing: 1px;
+    }
+
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid #aaa;
+      margin-bottom: 12px;
+    }
+
+    .tab-button {
+      border: 1px solid #aaa;
+      border-bottom: none;
+      background: #e5e5e5;
+      padding: 7px 14px;
+      cursor: pointer;
+      margin-right: 3px;
+    }
+
+    .tab-button.active {
+      background: #fff;
+      color: #1d3f5e;
+      font-weight: bold;
+      position: relative;
+      top: 1px;
+    }
+
+    .screen {
+      display: none;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    .dashboard {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(120px, 1fr));
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .stat-card {
+      border: 1px solid #bbb;
+      background: #f7f7f7;
+      padding: 10px;
+    }
+
+    .stat-card .label {
+      color: #666;
+      font-size: 10px;
+      text-transform: uppercase;
+    }
+
+    .stat-card .value {
+      color: #1d3f5e;
+      font-size: 21px;
+      font-weight: bold;
+      margin-top: 3px;
+    }
+
+    .panel {
+      border: 1px solid #aaa;
+      margin-bottom: 12px;
+      background: #fff;
+    }
+
+    .panel-header {
+      background: #e6ebf0;
+      color: #1d3f5e;
+      font-weight: bold;
+      padding: 7px 9px;
+      border-bottom: 1px solid #aaa;
+    }
+
+    .panel-body {
+      padding: 10px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(150px, 1fr));
+      gap: 8px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .field.span-2 {
+      grid-column: span 2;
+    }
+
+    .field.span-4 {
+      grid-column: span 4;
+    }
+
+    label {
+      color: #444;
+      font-size: 10px;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+
+    input,
+    select,
+    textarea,
+    button {
+      font: inherit;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      border: 1px solid #aaa;
+      background: #fff;
+      padding: 6px;
+    }
+
+    textarea {
+      min-height: 75px;
+      resize: vertical;
+    }
+
+    button {
+      border: 1px solid #777;
+      background: #e5e5e5;
+      padding: 6px 10px;
+      cursor: pointer;
+    }
+
+    button.primary {
+      background: #1d3f5e;
+      color: #fff;
+      border-color: #102b43;
+    }
+
+    button.danger {
+      background: #8a2424;
+      color: #fff;
+      border-color: #621717;
+    }
+
+    button.small {
+      padding: 3px 6px;
+      font-size: 10px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 6px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+
+    .toolbar {
+      display: grid;
+      grid-template-columns: 2fr repeat(3, 1fr) auto;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid #bbb;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      min-width: 900px;
+    }
+
+    th {
+      background: #e6ebf0;
+      color: #1d3f5e;
+      text-align: left;
+      padding: 6px;
+      border-bottom: 1px solid #aaa;
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 6px;
+      border-bottom: 1px solid #ddd;
+      vertical-align: top;
+    }
+
+    tr:hover td {
+      background: #f3f7fa;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 5px;
+      border: 1px solid #999;
+      background: #eee;
+      font-size: 10px;
+      font-weight: bold;
+    }
+
+    .priority-FLASH,
+    .priority-CRITICAL {
+      background: #8a2424;
+      color: #fff;
+    }
+
+    .priority-IMMEDIATE,
+    .priority-HIGH {
+      background: #d48220;
+      color: #111;
+    }
+
+    .priority-PRIORITY,
+    .priority-MEDIUM {
+      background: #d8b400;
+      color: #111;
+    }
+
+    .viewer {
+      border: 1px solid #aaa;
+      background: #fafafa;
+      padding: 10px;
+      margin-top: 10px;
+      display: none;
+    }
+
+    .viewer.active {
+      display: block;
+    }
+
+    .viewer h3 {
+      color: #1d3f5e;
+      margin-bottom: 8px;
+    }
+
+    .viewer-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .viewer-section {
+      border-top: 1px solid #ccc;
+      padding-top: 7px;
+      margin-top: 7px;
+      white-space: pre-wrap;
+    }
+
+    .checkbox-list {
+      border: 1px solid #aaa;
+      max-height: 160px;
+      overflow-y: auto;
+      padding: 5px;
+      background: #fff;
+    }
+
+    .checkbox-row {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      padding: 3px;
+    }
+
+    .checkbox-row input {
+      width: auto;
+    }
+
+    .status-line {
+      margin-top: 7px;
+      min-height: 16px;
+      color: #555;
+    }
+
+    .status-line.error {
+      color: #a00000;
+    }
+
+    .status-line.success {
+      color: #147000;
+    }
+
+    .relationship-card {
+      border: 1px solid #bbb;
+      padding: 8px;
+      margin-bottom: 6px;
+      background: #fafafa;
+    }
+
+    .relationship-arrow {
+      color: #1d3f5e;
+      font-weight: bold;
+      padding: 0 7px;
+    }
+
+    .denied {
+      max-width: 700px;
+      margin: 40px auto;
+      border: 1px solid #8a2424;
+      background: #fff0f0;
+      padding: 18px;
+    }
+
+    @media (max-width: 1000px) {
+      .form-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .field.span-4 {
+        grid-column: span 2;
+      }
+
+      .dashboard {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .toolbar {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="gov-banner">
+    NSW-TRNG // CONTROLLED ACCESS // INTELLIGENCE WORKSPACE
+  </div>
+
+  <header class="site-header">
+    <h1>Naval Special Warfare Command - Intelligence Workspace</h1>
+    <p>Collection, analysis, entity correlation and evidence management</p>
+  </header>
+
+  <div id="portal-nav" class="portal-nav"></div>
+
+  <div class="portal-body">
+    <aside id="portal-sidebar" class="sidebar"></aside>
+
+    <main class="portal-main">
+      <div class="classification-banner">
+        CONTROLLED INTELLIGENCE INFORMATION
+      </div>
+
+      <div class="page-title">
+        Intelligence Database
+      </div>
+
+      <div id="access-denied" class="denied" hidden>
+        <strong>Access denied.</strong>
+        Your current role or billet is not authorized to access this workspace.
+      </div>
+
+      <div id="intelligence-app" hidden>
+        <div class="dashboard">
+          <div class="stat-card">
+            <div class="label">Reports</div>
+            <div id="report-count" class="value">0</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="label">Actionable</div>
+            <div id="actionable-count" class="value">0</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="label">Entities</div>
+            <div id="entity-count" class="value">0</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="label">Relationships</div>
+            <div id="relationship-count" class="value">0</div>
+          </div>
+        </div>
+
+        <div class="tabs">
+          <button class="tab-button active" data-tab="reports">Reports</button>
+          <button class="tab-button" data-tab="entities">Entities</button>
+          <button class="tab-button" data-tab="relationships">Connections</button>
+        </div>
+
+        <section id="reports-screen" class="screen active">
+          <div class="panel">
+            <div class="panel-header">Create or edit intelligence report</div>
+
+            <div class="panel-body">
+              <div class="form-grid">
+                <div class="field span-2">
+                  <label for="report-title">Title</label>
+                  <input id="report-title" maxlength="200">
+                </div>
+
+                <div class="field">
+                  <label for="report-type">Intelligence type</label>
+                  <select id="report-type">
+                    <option>GENERAL</option>
+                    <option>SIGINT</option>
+                    <option>HUMINT</option>
+                    <option>IMINT</option>
+                    <option>OSINT</option>
+                    <option>DOMEX</option>
+                    <option>GEOINT</option>
+                    <option>CYBINT</option>
+                    <option>TECHINT</option>
+                  </select>
+                </div>
+
+                <div class="field">
+                  <label for="report-status">Status</label>
+                  <select id="report-status">
+                    <option>DRAFT</option>
+                    <option>SUBMITTED</option>
+                    <option>ASSESSED</option>
+                    <option>ACTIONABLE</option>
+                    <option>CLOSED</option>
+                    <option>ARCHIVED</option>
+                  </select>
+                </div>
+
+                <div class="field">
+                  <label for="report-classification">Classification</label>
+                  <select id="report-classification">
+                    <option>UNCLASSIFIED</option>
+                    <option>CUI</option>
+                    <option>CONFIDENTIAL</option>
+                    <option>SECRET</option>
+                    <option>TOP SECRET</option>
+                  </select>
+                </div>
+
+                <div class="field">
+                  <label for="report-priority">Priority</label>
+                  <select id="report-priority">
+                    <option>ROUTINE</option>
+                    <option>PRIORITY</option>
+                    <option>IMMEDIATE</option>
+                    <option>FLASH</option>
+                  </select>
+                </div>
+
+                <div class="field">
+                  <label for="report-reliability">Source reliability</label>
+                  <select id="report-reliability">
+                    <option value="">Unassessed</option>
+                    <option value="A">A - Completely reliable</option>
+                    <option value="B">B - Usually reliable</option>
+                    <option value="C">C - Fairly reliable</option>
+                    <option value="D">D - Not usually reliable</option>
+                    <option value="E">E - Unreliable</option>
+                    <option value="F">F - Cannot be judged</option>
+                  </select>
+                </div>
+
+                <div class="field">
+                  <label for="report-credibility">Information credibility</label>
+                  <select id="report-credibility">
+                    <option value="">Unassessed</option>
+                    <option value="1">1 - Confirmed</option>
+                    <option value="2">2 - Probably true</option>
+                    <option value="3">3 - Possibly true</option>
+                    <option value="4">4 - Doubtful</option>
+                    <option value="5">5 - Improbable</option>
+                    <option value="6">6 - Cannot be judged</option>
+                  </select>
+                </div>
+
+                <div class="field">
+                  <label for="report-confidence">Assessment confidence</label>
+                  <select id="report-confidence">
+                    <option>UNASSESSED</option>
+                    <option>LOW</option>
+                    <option>MODERATE</option>
+                    <option>HIGH</option>
+                  </select>
+                </div>
+
+                <div class="field span-4">
+                  <label for="report-summary">Executive summary</label>
+                  <textarea id="report-summary"></textarea>
+                </div>
+
+                <div class="field span-4">
+                  <label for="report-details">Full intelligence details</label>
+                  <textarea id="report-details"></textarea>
+                </div>
+
+                <div class="field">
+                  <label for="report-collection-method">Collection method</label>
+                  <input id="report-collection-method">
+                </div>
+
+                <div class="field">
+                  <label for="report-source-description">Source description</label>
+                  <input id="report-source-description">
+                </div>
+
+                <div class="field">
+                  <label for="report-occurred-at">Time observed</label>
+                  <input id="report-occurred-at" type="datetime-local">
+                </div>
+
+                <div class="field">
+                  <label for="report-collected-at">Time collected</label>
+                  <input id="report-collected-at" type="datetime-local">
+                </div>
+
+                <div class="field span-2">
+                  <label for="report-location">Location</label>
+                  <input id="report-location">
+                </div>
+
+                <div class="field">
+                  <label for="report-grid">Grid reference</label>
+                  <input id="report-grid">
+                </div>
+
+                <div class="field">
+                  <label for="report-tags">Tags, comma-separated</label>
+                  <input id="report-tags">
+                </div>
+
+                <div class="field">
+                  <label for="report-latitude">Latitude</label>
+                  <input id="report-latitude" type="number" step="any">
+                </div>
+
+                <div class="field">
+                  <label for="report-longitude">Longitude</label>
+                  <input id="report-longitude" type="number" step="any">
+                </div>
+
+                <div class="field">
+                  <label for="report-frequency">Frequency MHz</label>
+                  <input id="report-frequency" type="number" step="0.0001">
+                </div>
+
+                <div class="field">
+                  <label for="report-bearing">Bearing degrees</label>
+                  <input id="report-bearing" type="number" min="0" max="359">
+                </div>
+
+                <div class="field">
+                  <label for="report-rssi">Signal strength dBm</label>
+                  <input id="report-rssi" type="number">
+                </div>
+
+                <div class="field">
+                  <label for="report-callsign">Callsign heard</label>
+                  <input id="report-callsign">
+                </div>
+
+                <div class="field span-2">
+                  <label for="report-transmission">Transmission content</label>
+                  <textarea id="report-transmission"></textarea>
+                </div>
+
+                <div class="field span-4">
+                  <label for="report-assessment">Analyst assessment</label>
+                  <textarea id="report-assessment"></textarea>
+                </div>
+
+                <div class="field span-2">
+                  <label for="report-gaps">Intelligence gaps</label>
+                  <textarea id="report-gaps"></textarea>
+                </div>
+
+                <div class="field span-2">
+                  <label for="report-actions">Recommended actions</label>
+                  <textarea id="report-actions"></textarea>
+                </div>
+
+                <div class="field span-4">
+                  <label>Linked entities</label>
+                  <div id="report-entity-list" class="checkbox-list"></div>
+                </div>
+
+                <div class="field span-4">
+                  <label for="report-evidence">Evidence files</label>
+                  <input id="report-evidence" type="file" multiple>
+                </div>
+              </div>
+
+              <div class="actions">
+                <button id="save-report" class="primary">Save report</button>
+                <button id="reset-report">Clear form</button>
+                <button id="delete-report" class="danger" hidden>Delete report</button>
+              </div>
+
+              <div id="report-status-line" class="status-line"></div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-header">Intelligence reports</div>
+
+            <div class="panel-body">
+              <div class="toolbar">
+                <input id="report-search" placeholder="Search reports">
+                <select id="report-type-filter">
+                  <option value="">All types</option>
+                  <option>GENERAL</option>
+                  <option>SIGINT</option>
+                  <option>HUMINT</option>
+                  <option>IMINT</option>
+                  <option>OSINT</option>
+                  <option>DOMEX</option>
+                  <option>GEOINT</option>
+                  <option>CYBINT</option>
+                  <option>TECHINT</option>
+                </select>
+
+                <select id="report-status-filter">
+                  <option value="">All statuses</option>
+                  <option>DRAFT</option>
+                  <option>SUBMITTED</option>
+                  <option>ASSESSED</option>
+                  <option>ACTIONABLE</option>
+                  <option>CLOSED</option>
+                  <option>ARCHIVED</option>
+                </select>
+
+                <select id="report-priority-filter">
+                  <option value="">All priorities</option>
+                  <option>ROUTINE</option>
+                  <option>PRIORITY</option>
+                  <option>IMMEDIATE</option>
+                  <option>FLASH</option>
+                </select>
+
+                <button id="refresh-reports">Refresh</button>
+              </div>
+
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Report</th>
+                      <th>Title</th>
+                      <th>Type</th>
+                      <th>Status</th>
+                      <th>Priority</th>
+                      <th>Location</th>
+                      <th>Collected</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody id="reports-output"></tbody>
+                </table>
+              </div>
+
+              <div id="report-viewer" class="viewer"></div>
+            </div>
+          </div>
+        </section>
+
+        <section id="entities-screen" class="screen">
+          <div class="panel">
+            <div class="panel-header">Create or edit entity</div>
+
+            <div class="panel-body">
+              <div class="form-grid">
+                <div class="field">
+                  <label for="entity-type">Entity type</label>
+                  <select id="entity-type">
+                    <option>PERSON</option>
+                    <option>ORGANIZATION</option>
+                    <option>LOCATION</option>
+                    <option>VEHICLE</option>
+                    <option>VESSEL</option>
+                    <option>AIRCRAFT</option>
+                    <option>EQUIPMENT</option>
+                    <option>WEAPON</option>
+                    <option>FREQUENCY</option>
+                    <option>CALLSIGN</option>
+                    <option>PHONE</option>
+                    <option>EMAIL</option>
+                    <option>ACCOUNT</option>
+                    <option>DOCUMENT</option>
+                    <option>OTHER</option>
+                  </select>
+                </div>
+
+                <div class="field span-2">
+                  <label for="entity-name">Name or identifier</label>
+                  <input id="entity-name">
+                </div>
+
+                <div class="field">
+                  <label for="entity-status">Status</label>
+                  <select id="entity-status">
+                    <option>ACTIVE</option>
+                    <option>INACTIVE</option>
+                    <option>UNKNOWN</option>
+                    <option>ASSESSED</option>
+                    <option>ARCHIVED</option>
+                  </select>
+                </div>
+
+                <div class="field">
+                  <label for="entity-priority">Priority</label>
+                  <select id="entity-priority">
+                    <option>LOW</option>
+                    <option selected>MEDIUM</option>
+                    <option>HIGH</option>
+                    <option>CRITICAL</option>
+                  </select>
+                </div>
+
+                <div class="field span-2">
+                  <label for="entity-aliases">Aliases, comma-separated</label>
+                  <input id="entity-aliases">
+                </div>
+
+                <div class="field">
+                  <label for="entity-tags">Tags, comma-separated</label>
+                  <input id="entity-tags">
+                </div>
+
+                <div class="field span-4">
+                  <label for="entity-description">Description</label>
+                  <textarea id="entity-description"></textarea>
+                </div>
+
+                <div class="field span-2">
+                  <label for="entity-location">Location</label>
+                  <input id="entity-location">
+                </div>
+
+                <div class="field">
+                  <label for="entity-grid">Grid reference</label>
+                  <input id="entity-grid">
+                </div>
+
+                <div class="field">
+                  <label for="entity-identifiers">Identifiers as JSON</label>
+                  <textarea id="entity-identifiers">{}</textarea>
+                </div>
+
+                <div class="field span-4">
+                  <label for="entity-attributes">Additional attributes as JSON</label>
+                  <textarea id="entity-attributes">{}</textarea>
+                </div>
+              </div>
+
+              <div class="actions">
+                <button id="save-entity" class="primary">Save entity</button>
+                <button id="reset-entity">Clear form</button>
+                <button id="delete-entity" class="danger" hidden>Delete entity</button>
+              </div>
+
+              <div id="entity-status-line" class="status-line"></div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-header">Entity database</div>
+
+            <div class="panel-body">
+              <div class="toolbar">
+                <input id="entity-search" placeholder="Search names, aliases or descriptions">
+
+                <select id="entity-type-filter">
+                  <option value="">All entity types</option>
+                  <option>PERSON</option>
+                  <option>ORGANIZATION</option>
+                  <option>LOCATION</option>
+                  <option>VEHICLE</option>
+                  <option>VESSEL</option>
+                  <option>AIRCRAFT</option>
+                  <option>EQUIPMENT</option>
+                  <option>WEAPON</option>
+                  <option>FREQUENCY</option>
+                  <option>CALLSIGN</option>
+                  <option>PHONE</option>
+                  <option>EMAIL</option>
+                  <option>ACCOUNT</option>
+                  <option>DOCUMENT</option>
+                  <option>OTHER</option>
+                </select>
+
+                <select id="entity-priority-filter">
+                  <option value="">All priorities</option>
+                  <option>LOW</option>
+                  <option>MEDIUM</option>
+                  <option>HIGH</option>
+                  <option>CRITICAL</option>
+                </select>
+
+                <span></span>
+                <button id="refresh-entities">Refresh</button>
+              </div>
+
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Priority</th>
+                      <th>Status</th>
+                      <th>Aliases</th>
+                      <th>Location</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody id="entities-output"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="relationships-screen" class="screen">
+          <div class="panel">
+            <div class="panel-header">Connect entities</div>
+
+            <div class="panel-body">
+              <div class="form-grid">
+                <div class="field">
+                  <label for="relationship-source">Source entity</label>
+                  <select id="relationship-source"></select>
+                </div>
+
+                <div class="field">
+                  <label for="relationship-type">Relationship</label>
+                  <input
+                    id="relationship-type"
+                    placeholder="Communicates with, owns, located at..."
+                  >
+                </div>
+
+                <div class="field">
+                  <label for="relationship-target">Target entity</label>
+                  <select id="relationship-target"></select>
+                </div>
+
+                <div class="field">
+                  <label for="relationship-confidence">Confidence</label>
+                  <select id="relationship-confidence">
+                    <option>LOW</option>
+                    <option selected>MODERATE</option>
+                    <option>HIGH</option>
+                    <option>CONFIRMED</option>
+                  </select>
+                </div>
+
+                <div class="field span-2">
+                  <label for="relationship-report">Supporting report</label>
+                  <select id="relationship-report"></select>
+                </div>
+
+                <div class="field span-2">
+                  <label for="relationship-description">Explanation</label>
+                  <textarea id="relationship-description"></textarea>
+                </div>
+              </div>
+
+              <div class="actions">
+                <button id="save-relationship" class="primary">
+                  Create connection
+                </button>
+              </div>
+
+              <div id="relationship-status-line" class="status-line"></div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-header">
+                Connections database</div>
+
+            <div class="panel-body">
+              <div id="relationships-output"></div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <script type="module">
+    import { supabase } from "/js/auth.js";
+    import {
+      bootPortalChrome,
+      escapeHtml
+    } from "/js/portal-common.js";
+    import { renderPortalLayout } from "/js/portal-layout.js";
+
+    const EVIDENCE_BUCKET = "intelligence-evidence";
+
+    const AUTHORIZED_CALLSIGNS = new Set([
+      "E31",
+      "E32",
+
+      "EG1",
+      "EH1",
+      "EI1",
+
+      "ER1",
+
+      "EY1",
+      "EY2",
+      "EY3",
+      "EY4"
+    ]);
+
+    const AUTHORIZED_ROLES = new Set([
+      "ADMIN",
+      "TROOP_HQ",
+      "HQ"
+    ]);
+
+    let currentUser = null;
+    let currentProfile = null;
+
+    let reports = [];
+    let entities = [];
+    let relationships = [];
+
+    let editingReportId = null;
+    let editingEntityId = null;
+
+    const $ = id => document.getElementById(id);
+
+    function normalizeUpper(value) {
+      return String(value || "")
+        .trim()
+        .toUpperCase();
+    }
+
+    function nullableText(value) {
+      const result = String(value || "").trim();
+      return result || null;
+    }
+
+    function nullableNumber(value) {
+      if (value === "" || value === null || value === undefined) {
+        return null;
+      }
+
+      const number = Number(value);
+
+      return Number.isFinite(number)
+        ? number
+        : null;
+    }
+
+    function parseCommaList(value) {
+      return String(value || "")
+        .split(",")
+        .map(item => item.trim())
+        .filter(Boolean);
+    }
+
+    function formatCommaList(value) {
+      if (!Array.isArray(value)) {
+        return "";
+      }
+
+      return value.join(", ");
+    }
+
+    function parseJsonObject(value, fieldName) {
+      const raw = String(value || "").trim();
+
+      if (!raw) {
+        return {};
+      }
+
+      let parsed;
+
+      try {
+        parsed = JSON.parse(raw);
+      } catch {
+        throw new Error(`${fieldName} must contain valid JSON.`);
+      }
+
+      if (
+        !parsed ||
+        Array.isArray(parsed) ||
+        typeof parsed !== "object"
+      ) {
+        throw new Error(`${fieldName} must contain a JSON object.`);
+      }
+
+      return parsed;
+    }
+
+    function formatDateTime(value) {
+      if (!value) {
+        return "Not recorded";
+      }
+
+      const date = new Date(value);
+
+      if (Number.isNaN(date.getTime())) {
+        return String(value);
+      }
+
+      return new Intl.DateTimeFormat(undefined, {
+        year: "numeric",
+        month: "short",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit"
+      }).format(date);
+    }
+
+    function toDateTimeLocal(value) {
+      if (!value) {
+        return "";
+      }
+
+      const date = new Date(value);
+
+      if (Number.isNaN(date.getTime())) {
+        return "";
+      }
+
+      const localDate = new Date(
+        date.getTime() - date.getTimezoneOffset() * 60000
+      );
+
+      return localDate.toISOString().slice(0, 16);
+    }
+
+    function fromDateTimeLocal(value) {
+      if (!value) {
+        return null;
+      }
+
+      const date = new Date(value);
+
+      if (Number.isNaN(date.getTime())) {
+        return null;
+      }
+
+      return date.toISOString();
+    }
+
+    function setStatus(elementId, message, type = "") {
+      const element = $(elementId);
+
+      if (!element) {
+        return;
+      }
+
+      element.textContent = message || "";
+      element.classList.remove("error", "success");
+
+      if (type) {
+        element.classList.add(type);
+      }
+    }
+
+    function getErrorMessage(error) {
+      if (!error) {
+        return "An unknown error occurred.";
+      }
+
+      return (
+        error.message ||
+        error.details ||
+        error.hint ||
+        String(error)
+      );
+    }
+
+    function isAuthorized(profile) {
+      const role = normalizeUpper(profile?.role);
+      const callsign = normalizeUpper(profile?.callsign);
+
+      return (
+        AUTHORIZED_ROLES.has(role) ||
+        AUTHORIZED_CALLSIGNS.has(callsign)
+      );
+    }
+
+    function entityLabel(entity) {
+      if (!entity) {
+        return "Unknown entity";
+      }
+
+      return `${entity.name} [${entity.entity_type}]`;
+    }
+
+    function reportLabel(report) {
+      if (!report) {
+        return "Unknown report";
+      }
+
+      return `${report.report_number || `INT-${report.id}`} - ${report.title}`;
+    }
+
+    function findEntity(id) {
+      return entities.find(
+        entity => String(entity.id) === String(id)
+      ) || null;
+    }
+
+    function findReport(id) {
+      return reports.find(
+        report => String(report.id) === String(id)
+      ) || null;
+    }
+
+    function updateStatistics() {
+      $("report-count").textContent = String(reports.length);
+
+      $("actionable-count").textContent = String(
+        reports.filter(report => report.status === "ACTIONABLE").length
+      );
+
+      $("entity-count").textContent = String(entities.length);
+      $("relationship-count").textContent = String(relationships.length);
+    }
+
+    function switchTab(tabName) {
+      document.querySelectorAll(".tab-button").forEach(button => {
+        button.classList.toggle(
+          "active",
+          button.dataset.tab === tabName
+        );
+      });
+
+      document.querySelectorAll(".screen").forEach(screen => {
+        screen.classList.toggle(
+          "active",
+          screen.id === `${tabName}-screen`
+        );
+      });
+    }
+
+    function renderEntityCheckboxes(selectedIds = []) {
+      const selected = new Set(
+        selectedIds.map(id => String(id))
+      );
+
+      const output = $("report-entity-list");
+
+      if (!entities.length) {
+        output.innerHTML =
+          '<div style="padding:5px;color:#666;">No entities have been created.</div>';
+        return;
+      }
+
+      output.innerHTML = entities
+        .map(entity => {
+          const checked = selected.has(String(entity.id))
+            ? "checked"
+            : "";
+
+          return `
+            <label class="checkbox-row">
+              <input
+                type="checkbox"
+                class="report-entity-checkbox"
+                value="${escapeHtml(entity.id)}"
+                ${checked}
+              >
+              <span>
+                <strong>${escapeHtml(entity.name)}</strong>
+                [${escapeHtml(entity.entity_type)}]
+              </span>
+            </label>
+          `;
+        })
+        .join("");
+    }
+
+    function populateRelationshipSelectors() {
+      const entityOptions = entities.length
+        ? entities
+            .map(entity => `
+              <option value="${escapeHtml(entity.id)}">
+                ${escapeHtml(entityLabel(entity))}
+              </option>
+            `)
+            .join("")
+        : '<option value="">No entities available</option>';
+
+      $("relationship-source").innerHTML = entityOptions;
+      $("relationship-target").innerHTML = entityOptions;
+
+      const reportOptions = [
+        '<option value="">No supporting report</option>',
+        ...reports.map(report => `
+          <option value="${escapeHtml(report.id)}">
+            ${escapeHtml(reportLabel(report))}
+          </option>
+        `)
+      ].join("");
+
+      $("relationship-report").innerHTML = reportOptions;
+
+      if (entities.length > 1) {
+        $("relationship-source").selectedIndex = 0;
+        $("relationship-target").selectedIndex = 1;
+      }
+    }
+
+    async function loadReports() {
+      const { data, error } = await supabase
+        .from("intelligence_reports")
+        .select("*")
+        .order("collected_at", {
+          ascending: false,
+          nullsFirst: false
+        })
+        .order("created_at", {
+          ascending: false
+        });
+
+      if (error) {
+        throw error;
+      }
+
+      reports = data || [];
+      renderReports();
+      populateRelationshipSelectors();
+      updateStatistics();
+    }
+
+    async function loadEntities() {
+      const { data, error } = await supabase
+        .from("intelligence_entities")
+        .select("*")
+        .order("priority", {
+          ascending: false
+        })
+        .order("name", {
+          ascending: true
+        });
+
+      if (error) {
+        throw error;
+      }
+
+      entities = data || [];
+      renderEntities();
+      renderEntityCheckboxes();
+      populateRelationshipSelectors();
+      updateStatistics();
+    }
+
+    async function loadRelationships() {
+      const { data, error } = await supabase
+        .from("intelligence_relationships")
+        .select("*")
+        .order("created_at", {
+          ascending: false
+        });
+
+      if (error) {
+        throw error;
+      }
+
+      relationships = data || [];
+      renderRelationships();
+      updateStatistics();
+    }
+
+    async function loadAllData() {
+      setStatus(
+        "report-status-line",
+        "Loading intelligence database..."
+      );
+
+      try {
+        await Promise.all([
+          loadReports(),
+          loadEntities()
+        ]);
+
+        await loadRelationships();
+
+        setStatus("report-status-line", "");
+      } catch (error) {
+        console.error(error);
+
+        setStatus(
+          "report-status-line",
+          getErrorMessage(error),
+          "error"
+        );
+      }
+    }
+
+    function filteredReports() {
+      const search = normalizeUpper($("report-search").value);
+      const type = $("report-type-filter").value;
+      const status = $("report-status-filter").value;
+      const priority = $("report-priority-filter").value;
+
+      return reports.filter(report => {
+        if (type && report.intelligence_type !== type) {
+          return false;
+        }
+
+        if (status && report.status !== status) {
+          return false;
+        }
+
+        if (priority && report.priority !== priority) {
+          return false;
+        }
+
+        if (!search) {
+          return true;
+        }
+
+        const searchable = [
+          report.report_number,
+          report.title,
+          report.executive_summary,
+          report.details,
+          report.location_text,
+          report.grid_reference,
+          report.callsign_heard,
+          report.transmission_content,
+          ...(Array.isArray(report.tags) ? report.tags : [])
+        ]
+          .filter(Boolean)
+          .join(" ")
+          .toUpperCase();
+
+        return searchable.includes(search);
+      });
+    }
+
+    function renderReports() {
+      const output = $("reports-output");
+      const filtered = filteredReports();
+
+      if (!filtered.length) {
+        output.innerHTML = `
+          <tr>
+            <td colspan="8">No intelligence reports match the current filters.</td>
+          </tr>
+        `;
+
+        return;
+      }
+
+      output.innerHTML = filtered
+        .map(report => `
+          <tr>
+            <td>
+              <strong>
+                ${escapeHtml(report.report_number || `INT-${report.id}`)}
+              </strong>
+            </td>
+
+            <td>${escapeHtml(report.title)}</td>
+
+            <td>
+              <span class="badge">
+                ${escapeHtml(report.intelligence_type)}
+              </span>
+            </td>
+
+            <td>
+              <span class="badge">
+                ${escapeHtml(report.status)}
+              </span>
+            </td>
+
+            <td>
+              <span class="badge priority-${escapeHtml(report.priority)}">
+                ${escapeHtml(report.priority)}
+              </span>
+            </td>
+
+            <td>${escapeHtml(report.location_text || "Not recorded")}</td>
+
+            <td>${escapeHtml(formatDateTime(report.collected_at))}</td>
+
+            <td>
+              <button
+                class="small view-report-button"
+                data-id="${escapeHtml(report.id)}"
+              >
+                View
+              </button>
+
+              <button
+                class="small edit-report-button"
+                data-id="${escapeHtml(report.id)}"
+              >
+                Edit
+              </button>
+            </td>
+          </tr>
+        `)
+        .join("");
+    }
+
+    function filteredEntities() {
+      const search = normalizeUpper($("entity-search").value);
+      const type = $("entity-type-filter").value;
+      const priority = $("entity-priority-filter").value;
+
+      return entities.filter(entity => {
+        if (type && entity.entity_type !== type) {
+          return false;
+        }
+
+        if (priority && entity.priority !== priority) {
+          return false;
+        }
+
+        if (!search) {
+          return true;
+        }
+
+        const searchable = [
+          entity.name,
+          entity.description,
+          entity.location_text,
+          entity.grid_reference,
+          ...(Array.isArray(entity.aliases) ? entity.aliases : []),
+          ...(Array.isArray(entity.tags) ? entity.tags : []),
+          JSON.stringify(entity.identifiers || {}),
+          JSON.stringify(entity.attributes || {})
+        ]
+          .filter(Boolean)
+          .join(" ")
+          .toUpperCase();
+
+        return searchable.includes(search);
+      });
+    }
+
+    function renderEntities() {
+      const output = $("entities-output");
+      const filtered = filteredEntities();
+
+      if (!filtered.length) {
+        output.innerHTML = `
+          <tr>
+            <td colspan="8">No entities match the current filters.</td>
+          </tr>
+        `;
+
+        return;
+      }
+
+      output.innerHTML = filtered
+        .map(entity => `
+          <tr>
+            <td>${escapeHtml(entity.id)}</td>
+
+            <td>
+              <strong>${escapeHtml(entity.name)}</strong>
+            </td>
+
+            <td>
+              <span class="badge">
+                ${escapeHtml(entity.entity_type)}
+              </span>
+            </td>
+
+            <td>
+              <span class="badge priority-${escapeHtml(entity.priority)}">
+                ${escapeHtml(entity.priority)}
+              </span>
+            </td>
+
+            <td>${escapeHtml(entity.status)}</td>
+
+            <td>
+              ${escapeHtml(formatCommaList(entity.aliases) || "None")}
+            </td>
+
+            <td>${escapeHtml(entity.location_text || "Not recorded")}</td>
+
+            <td>
+              <button
+                class="small edit-entity-button"
+                data-id="${escapeHtml(entity.id)}"
+              >
+                Edit
+              </button>
+            </td>
+          </tr>
+        `)
+        .join("");
+    }
+
+    function renderRelationships() {
+      const output = $("relationships-output");
+
+      if (!relationships.length) {
+        output.innerHTML = `
+          <div class="relationship-card">
+            No entity connections have been documented.
+          </div>
+        `;
+
+        return;
+      }
+
+      output.innerHTML = relationships
+        .map(relationship => {
+          const source = findEntity(relationship.source_entity_id);
+          const target = findEntity(relationship.target_entity_id);
+          const report = findReport(relationship.supporting_report_id);
+
+          return `
+            <div class="relationship-card">
+              <div>
+                <strong>${escapeHtml(entityLabel(source))}</strong>
+
+                <span class="relationship-arrow">
+                  ${escapeHtml(relationship.relationship_type)}
+                  &rarr;
+                </span>
+
+                <strong>${escapeHtml(entityLabel(target))}</strong>
+              </div>
+
+              <div style="margin-top:5px;">
+                Confidence:
+                <span class="badge">
+                  ${escapeHtml(relationship.confidence)}
+                </span>
+              </div>
+
+              ${
+                relationship.description
+                  ? `
+                    <div style="margin-top:5px;">
+                      ${escapeHtml(relationship.description)}
+                    </div>
+                  `
+                  : ""
+              }
+
+              ${
+                report
+                  ? `
+                    <div style="margin-top:5px;color:#555;">
+                      Supporting report:
+                      <strong>${escapeHtml(reportLabel(report))}</strong>
+                    </div>
+                  `
+                  : ""
+              }
+
+              <div class="actions">
+                <button
+                  class="small danger delete-relationship-button"
+                  data-id="${escapeHtml(relationship.id)}"
+                >
+                  Delete connection
+                </button>
+              </div>
+            </div>
+          `;
+        })
+        .join("");
+    }
+
+    async function getLinkedEntityIds(reportId) {
+      const { data, error } = await supabase
+        .from("intelligence_report_entities")
+        .select("entity_id")
+        .eq("report_id", reportId);
+
+      if (error) {
+        throw error;
+      }
+
+      return (data || []).map(row => row.entity_id);
+    }
+
+    async function getEvidence(reportId) {
+      const { data, error } = await supabase
+        .from("intelligence_evidence")
+        .select("*")
+        .eq("report_id", reportId)
+        .order("created_at", {
+          ascending: false
+        });
+
+      if (error) {
+        throw error;
+      }
+
+      return data || [];
+    }
+
+    async function createEvidenceUrl(storagePath) {
+      const { data, error } = await supabase.storage
+        .from(EVIDENCE_BUCKET)
+        .createSignedUrl(storagePath, 600);
+
+      if (error) {
+        throw error;
+      }
+
+      return data?.signedUrl || null;
+    }
+
+    async function showReport(reportId) {
+      const report = findReport(reportId);
+
+      if (!report) {
+        return;
+      }
+
+      const viewer = $("report-viewer");
+      viewer.classList.add("active");
+      viewer.innerHTML = "Loading report...";
+
+      try {
+        const [linkedEntityIds, evidence] = await Promise.all([
+          getLinkedEntityIds(report.id),
+          getEvidence(report.id)
+        ]);
+
+        const linkedEntities = linkedEntityIds
+          .map(findEntity)
+          .filter(Boolean);
+
+        let evidenceHtml =
+          '<div style="color:#666;">No evidence files attached.</div>';
+
+        if (evidence.length) {
+          const evidenceRows = [];
+
+          for (const file of evidence) {
+            let linkHtml = escapeHtml(file.file_name);
+
+            try {
+              const signedUrl = await createEvidenceUrl(
+                file.storage_path
+              );
+
+              if (signedUrl) {
+                linkHtml = `
+                  <a
+                    href="${escapeHtml(signedUrl)}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    ${escapeHtml(file.file_name)}
+                  </a>
+                `;
+              }
+            } catch (error) {
+              console.error(
+                "Could not create evidence URL:",
+                error
+              );
+            }
+
+            evidenceRows.push(`
+              <div style="margin-bottom:5px;">
+                ${linkHtml}
+
+                ${
+                  file.size_bytes
+                    ? `(${escapeHtml(
+                        Math.ceil(file.size_bytes / 1024)
+                      )} KB)`
+                    : ""
+                }
+
+                <button
+                  class="small danger delete-evidence-button"
+                  data-id="${escapeHtml(file.id)}"
+                  data-path="${escapeHtml(file.storage_path)}"
+                  data-report-id="${escapeHtml(report.id)}"
+                >
+                  Delete
+                </button>
+              </div>
+            `);
+          }
+
+          evidenceHtml = evidenceRows.join("");
+        }
+
+        viewer.innerHTML = `
+          <h3>
+            ${escapeHtml(report.report_number || `INT-${report.id}`)}
+            -
+            ${escapeHtml(report.title)}
+          </h3>
+
+          <div class="viewer-grid">
+            <div>
+              <strong>Type:</strong><br>
+              ${escapeHtml(report.intelligence_type)}
+            </div>
+
+            <div>
+              <strong>Status:</strong><br>
+              ${escapeHtml(report.status)}
+            </div>
+
+            <div>
+              <strong>Priority:</strong><br>
+              ${escapeHtml(report.priority)}
+            </div>
+
+            <div>
+              <strong>Classification:</strong><br>
+              ${escapeHtml(report.classification)}
+            </div>
+
+            <div>
+              <strong>Reliability:</strong><br>
+              ${escapeHtml(report.source_reliability || "Unassessed")}
+            </div>
+
+            <div>
+              <strong>Credibility:</strong><br>
+              ${escapeHtml(
+                report.information_credibility || "Unassessed"
+              )}
+            </div>
+
+            <div>
+              <strong>Confidence:</strong><br>
+              ${escapeHtml(report.confidence || "UNASSESSED")}
+            </div>
+
+            <div>
+              <strong>Observed:</strong><br>
+              ${escapeHtml(formatDateTime(report.occurred_at))}
+            </div>
+
+            <div>
+              <strong>Collected:</strong><br>
+              ${escapeHtml(formatDateTime(report.collected_at))}
+            </div>
+
+            <div>
+              <strong>Location:</strong><br>
+              ${escapeHtml(report.location_text || "Not recorded")}
+            </div>
+
+            <div>
+              <strong>Grid:</strong><br>
+              ${escapeHtml(report.grid_reference || "Not recorded")}
+            </div>
+
+            <div>
+              <strong>Coordinates:</strong><br>
+              ${
+                report.latitude !== null &&
+                report.latitude !== undefined &&
+                report.longitude !== null &&
+                report.longitude !== undefined
+                  ? `${escapeHtml(report.latitude)}, ${escapeHtml(
+                      report.longitude
+                    )}`
+                  : "Not recorded"
+              }
+            </div>
+          </div>
+
+          <div class="viewer-section">
+            <strong>Executive summary</strong><br>
+            ${escapeHtml(report.executive_summary || "None")}
+          </div>
+
+          <div class="viewer-section">
+            <strong>Full intelligence details</strong><br>
+            ${escapeHtml(report.details || "None")}
+          </div>
+
+          <div class="viewer-section">
+            <strong>Collection information</strong><br>
+            Method:
+            ${escapeHtml(report.collection_method || "Not recorded")}
+            <br>
+            Source:
+            ${escapeHtml(report.source_description || "Not recorded")}
+          </div>
+
+          ${
+            report.frequency_mhz !== null ||
+            report.bearing_degrees !== null ||
+            report.rssi_dbm !== null ||
+            report.callsign_heard ||
+            report.transmission_content
+              ? `
+                <div class="viewer-section">
+                  <strong>SIGINT / PTT details</strong><br>
+                  Frequency:
+                  ${escapeHtml(
+                    report.frequency_mhz ?? "Not recorded"
+                  )}
+                  MHz
+                  <br>
+
+                  Bearing:
+                  ${escapeHtml(
+                    report.bearing_degrees ?? "Not recorded"
+                  )}
+                  degrees
+                  <br>
+
+                  Signal strength:
+                  ${escapeHtml(report.rssi_dbm ?? "Not recorded")}
+                  dBm
+                  <br>
+
+                  Callsign:
+                  ${escapeHtml(
+                    report.callsign_heard || "Not recorded"
+                  )}
+                  <br>
+
+                  Transmission:
+                  ${escapeHtml(
+                    report.transmission_content || "Not recorded"
+                  )}
+                </div>
+              `
+              : ""
+          }
+
+          <div class="viewer-section">
+            <strong>Analyst assessment</strong><br>
+            ${escapeHtml(report.analyst_assessment || "None")}
+          </div>
+
+          <div class="viewer-section">
+            <strong>Intelligence gaps</strong><br>
+            ${escapeHtml(report.intelligence_gaps || "None")}
+          </div>
+
+          <div class="viewer-section">
+            <strong>Recommended actions</strong><br>
+            ${escapeHtml(report.recommended_actions || "None")}
+          </div>
+
+          <div class="viewer-section">
+            <strong>Tags</strong><br>
+            ${escapeHtml(formatCommaList(report.tags) || "None")}
+          </div>
+
+          <div class="viewer-section">
+            <strong>Linked entities</strong><br>
+            ${
+              linkedEntities.length
+                ? linkedEntities
+                    .map(entity => `
+                      <span class="badge" style="margin:2px;">
+                        ${escapeHtml(entityLabel(entity))}
+                      </span>
+                    `)
+                    .join("")
+                : "None"
+            }
+          </div>
+
+          <div class="viewer-section">
+            <strong>Evidence files</strong><br>
+            ${evidenceHtml}
+          </div>
+
+          <div class="actions">
+            <button
+              class="small edit-report-button"
+              data-id="${escapeHtml(report.id)}"
+            >
+              Edit report
+            </button>
+
+            <button
+              id="close-report-viewer"
+              class="small"
+            >
+              Close
+            </button>
+          </div>
+        `;
+
+        viewer.scrollIntoView({
+          behavior: "smooth",
+          block: "start"
+        });
+      } catch (error) {
+        console.error(error);
+
+        viewer.innerHTML = `
+          <div style="color:#a00000;">
+            ${escapeHtml(getErrorMessage(error))}
+          </div>
+        `;
+      }
+    }
+
+    function resetReportForm() {
+      editingReportId = null;
+
+      $("report-title").value = "";
+      $("report-type").value = "GENERAL";
+      $("report-status").value = "DRAFT";
+      $("report-classification").value = "UNCLASSIFIED";
+      $("report-priority").value = "ROUTINE";
+      $("report-reliability").value = "";
+      $("report-credibility").value = "";
+      $("report-confidence").value = "UNASSESSED";
+      $("report-summary").value = "";
+      $("report-details").value = "";
+      $("report-collection-method").value = "";
+      $("report-source-description").value = "";
+      $("report-occurred-at").value = "";
+      $("report-collected-at").value = toDateTimeLocal(
+        new Date().toISOString()
+      );
+      $("report-location").value = "";
+      $("report-grid").value = "";
+      $("report-tags").value = "";
+      $("report-latitude").value = "";
+      $("report-longitude").value = "";
+      $("report-frequency").value = "";
+      $("report-bearing").value = "";
+      $("report-rssi").value = "";
+      $("report-callsign").value = "";
+      $("report-transmission").value = "";
+      $("report-assessment").value = "";
+      $("report-gaps").value = "";
+      $("report-actions").value = "";
+      $("report-evidence").value = "";
+
+      renderEntityCheckboxes();
+
+      $("save-report").textContent = "Save report";
+      $("delete-report").hidden = true;
+
+      setStatus("report-status-line", "");
+    }
+
+    async function editReport(reportId) {
+      const report = findReport(reportId);
+
+      if (!report) {
+        return;
+      }
+
+      editingReportId = report.id;
+
+      $("report-title").value = report.title || "";
+      $("report-type").value = report.intelligence_type || "GENERAL";
+      $("report-status").value = report.status || "DRAFT";
+      $("report-classification").value =
+        report.classification || "UNCLASSIFIED";
+      $("report-priority").value = report.priority || "ROUTINE";
+      $("report-reliability").value =
+        report.source_reliability || "";
+      $("report-credibility").value =
+        report.information_credibility || "";
+      $("report-confidence").value =
+        report.confidence || "UNASSESSED";
+      $("report-summary").value =
+        report.executive_summary || "";
+      $("report-details").value = report.details || "";
+      $("report-collection-method").value =
+        report.collection_method || "";
+      $("report-source-description").value =
+        report.source_description || "";
+      $("report-occurred-at").value =
+        toDateTimeLocal(report.occurred_at);
+      $("report-collected-at").value =
+        toDateTimeLocal(report.collected_at);
+      $("report-location").value =
+        report.location_text || "";
+      $("report-grid").value =
+        report.grid_reference || "";
+      $("report-tags").value =
+        formatCommaList(report.tags);
+      $("report-latitude").value =
+        report.latitude ?? "";
+      $("report-longitude").value =
+        report.longitude ?? "";
+      $("report-frequency").value =
+        report.frequency_mhz ?? "";
+      $("report-bearing").value =
+        report.bearing_degrees ?? "";
+      $("report-rssi").value =
+        report.rssi_dbm ?? "";
+      $("report-callsign").value =
+        report.callsign_heard || "";
+      $("report-transmission").value =
+        report.transmission_content || "";
+      $("report-assessment").value =
+        report.analyst_assessment || "";
+      $("report-gaps").value =
+        report.intelligence_gaps || "";
+      $("report-actions").value =
+        report.recommended_actions || "";
+      $("report-evidence").value = "";
+
+      try {
+        const linkedEntityIds = await getLinkedEntityIds(report.id);
+        renderEntityCheckboxes(linkedEntityIds);
+      } catch (error) {
+        console.error(error);
+        renderEntityCheckboxes();
+      }
+
+      $("save-report").textContent = "Update report";
+      $("delete-report").hidden = false;
+
+      switchTab("reports");
+
+      document
+        .querySelector("#reports-screen .panel")
+        .scrollIntoView({
+          behavior: "smooth",
+          block: "start"
+        });
+    }
+
+    function getReportPayload() {
+      const title = $("report-title").value.trim();
+
+      if (!title) {
+        throw new Error("A report title is required.");
+      }
+
+      const bearing = nullableNumber($("report-bearing").value);
+
+      if (
+        bearing !== null &&
+        (bearing < 0 || bearing > 359)
+      ) {
+        throw new Error(
+          "Bearing must be between 0 and 359 degrees."
+        );
+      }
+
+      const latitude = nullableNumber($("report-latitude").value);
+      const longitude = nullableNumber($("report-longitude").value);
+
+      if (
+        latitude !== null &&
+        (latitude < -90 || latitude > 90)
+      ) {
+        throw new Error(
+          "Latitude must be between -90 and 90."
+        );
+      }
+
+      if (
+        longitude !== null &&
+        (longitude < -180 || longitude > 180)
+      ) {
+        throw new Error(
+          "Longitude must be between -180 and 180."
+        );
+      }
+
+      return {
+        title,
+        intelligence_type: $("report-type").value,
+        status: $("report-status").value,
+        classification: $("report-classification").value,
+        priority: $("report-priority").value,
+        source_reliability: nullableText(
+          $("report-reliability").value
+        ),
+        information_credibility: nullableText(
+          $("report-credibility").value
+        ),
+        confidence: $("report-confidence").value,
+        executive_summary: nullableText(
+          $("report-summary").value
+        ),
+        details: nullableText($("report-details").value),
+        collection_method: nullableText(
+          $("report-collection-method").value
+        ),
+        source_description: nullableText(
+          $("report-source-description").value
+        ),
+        occurred_at: fromDateTimeLocal(
+          $("report-occurred-at").value
+        ),
+        collected_at: fromDateTimeLocal(
+          $("report-collected-at").value
+        ),
+        location_text: nullableText(
+          $("report-location").value
+        ),
+        grid_reference: nullableText(
+          $("report-grid").value
+        ),
+        tags: parseCommaList($("report-tags").value),
+        latitude,
+        longitude,
+        frequency_mhz: nullableNumber(
+          $("report-frequency").value
+        ),
+        bearing_degrees: bearing,
+        rssi_dbm: nullableNumber(
+          $("report-rssi").value
+        ),
+        callsign_heard: nullableText(
+          $("report-callsign").value
+        ),
+        transmission_content: nullableText(
+          $("report-transmission").value
+        ),
+        analyst_assessment: nullableText(
+          $("report-assessment").value
+        ),
+        intelligence_gaps: nullableText(
+          $("report-gaps").value
+        ),
+        recommended_actions: nullableText(
+          $("report-actions").value
+        ),
+        updated_at: new Date().toISOString()
+      };
+    }
+
+    function selectedReportEntityIds() {
+      return Array.from(
+        document.querySelectorAll(
+          ".report-entity-checkbox:checked"
+        )
+      ).map(checkbox => checkbox.value);
+    }
+
+    async function replaceReportEntityLinks(
+      reportId,
+      entityIds
+    ) {
+      const { error: deleteError } = await supabase
+        .from("intelligence_report_entities")
+        .delete()
+        .eq("report_id", reportId);
+
+      if (deleteError) {
+        throw deleteError;
+      }
+
+      if (!entityIds.length) {
+        return;
+      }
+
+      const rows = entityIds.map(entityId => ({
+        report_id: reportId,
+        entity_id: entityId
+      }));
+
+      const { error: insertError } = await supabase
+        .from("intelligence_report_entities")
+        .insert(rows);
+
+      if (insertError) {
+        throw insertError;
+      }
+    }
+
+    function safeFileName(fileName) {
+      const cleaned = String(fileName || "evidence")
+        .replace(/[^a-zA-Z0-9._-]/g, "_")
+        .replace(/_+/g, "_");
+
+      return cleaned || "evidence";
+    }
+
+    async function uploadEvidenceFiles(reportId) {
+      const input = $("report-evidence");
+      const files = Array.from(input.files || []);
+
+      for (const file of files) {
+        const storagePath = [
+          String(reportId),
+          crypto.randomUUID(),
+          safeFileName(file.name)
+        ].join("/");
+
+        const { error: uploadError } = await supabase.storage
+          .from(EVIDENCE_BUCKET)
+          .upload(storagePath, file, {
+            cacheControl: "3600",
+            contentType:
+              file.type || "application/octet-stream",
+            upsert: false
+          });
+
+        if (uploadError) {
+          throw new Error(
+            `Could not upload ${file.name}: ${uploadError.message}`
+          );
+        }
+
+        const { error: metadataError } = await supabase
+          .from("intelligence_evidence")
+          .insert({
+            report_id: reportId,
+            storage_path: storagePath,
+            file_name: file.name,
+            mime_type:
+              file.type || "application/octet-stream",
+            size_bytes: file.size,
+            uploaded_by: currentUser.id
+          });
+
+        if (metadataError) {
+          await supabase.storage
+            .from(EVIDENCE_BUCKET)
+            .remove([storagePath]);
+
+          throw new Error(
+            `The file uploaded, but its database record could not be created: ${metadataError.message}`
+          );
+        }
+      }
+    }
+
+    async function saveReport() {
+      setStatus(
+        "report-status-line",
+        editingReportId
+          ? "Updating intelligence report..."
+          : "Creating intelligence report..."
+      );
+
+      $("save-report").disabled = true;
+
+      try {
+        const payload = getReportPayload();
+        const linkedEntityIds = selectedReportEntityIds();
+
+        let savedReport;
+
+        if (editingReportId) {
+          const { data, error } = await supabase
+            .from("intelligence_reports")
+            .update(payload)
+            .eq("id", editingReportId)
+            .select("*")
+            .single();
+
+          if (error) {
+            throw error;
+          }
+
+          savedReport = data;
+        } else {
+          const { data, error } = await supabase
+            .from("intelligence_reports")
+            .insert({
+              ...payload,
+              created_by: currentUser.id
+            })
+            .select("*")
+            .single();
+
+          if (error) {
+            throw error;
+          }
+
+          savedReport = data;
+        }
+
+        await replaceReportEntityLinks(
+          savedReport.id,
+          linkedEntityIds
+        );
+
+        await uploadEvidenceFiles(savedReport.id);
+
+        setStatus(
+          "report-status-line",
+          editingReportId
+            ? "Intelligence report updated."
+            : "Intelligence report created.",
+          "success"
+        );
+
+        await loadReports();
+        await loadRelationships();
+
+        const savedId = savedReport.id;
+
+        resetReportForm();
+        await showReport(savedId);
+      } catch (error) {
+        console.error(error);
+
+        setStatus(
+          "report-status-line",
+          getErrorMessage(error),
+          "error"
+        );
+      } finally {
+        $("save-report").disabled = false;
+      }
+    }
+
+    async function deleteReport() {
+      if (!editingReportId) {
+        return;
+      }
+
+      const report = findReport(editingReportId);
+
+      const confirmed = window.confirm(
+        `Delete ${reportLabel(report)}?\n\nThis will also remove its entity links, connections and evidence records. This cannot be undone.`
+      );
+
+      if (!confirmed) {
+        return;
+      }
+
+      $("delete-report").disabled = true;
+
+      try {
+        const evidence = await getEvidence(editingReportId);
+        const storagePaths = evidence
+          .map(item => item.storage_path)
+          .filter(Boolean);
+
+        if (storagePaths.length) {
+          const { error: storageError } = await supabase.storage
+            .from(EVIDENCE_BUCKET)
+            .remove(storagePaths);
+
+          if (storageError) {
+            throw storageError;
+          }
+        }
+
+        const { error } = await supabase
+          .from("intelligence_reports")
+          .delete()
+          .eq("id", editingReportId);
+
+        if (error) {
+          throw error;
+        }
+
+        $("report-viewer").classList.remove("active");
+        $("report-viewer").innerHTML = "";
+
+        resetReportForm();
+
+        await Promise.all([
+          loadReports(),
+          loadRelationships()
+        ]);
+
+        setStatus(
+          "report-status-line",
+          "Intelligence report deleted.",
+          "success"
+        );
+      } catch (error) {
+        console.error(error);
+
+        setStatus(
+          "report-status-line",
+          getErrorMessage(error),
+          "error"
+        );
+      } finally {
+        $("delete-report").disabled = false;
+      }
+    }
+
+    async function deleteEvidence(
+      evidenceId,
+      storagePath,
+      reportId
+    ) {
+      const confirmed = window.confirm(
+        "Delete this evidence file permanently?"
+      );
+
+      if (!confirmed) {
+        return;
+      }
+
+      try {
+        const { error: storageError } = await supabase.storage
+          .from(EVIDENCE_BUCKET)
+          .remove([storagePath]);
+
+        if (storageError) {
+          throw storageError;
+        }
+
+        const { error: databaseError } = await supabase
+          .from("intelligence_evidence")
+          .delete()
+          .eq("id", evidenceId);
+
+        if (databaseError) {
+          throw databaseError;
+        }
+
+        await showReport(reportId);
+      } catch (error) {
+        console.error(error);
+
+        window.alert(getErrorMessage(error));
+      }
+    }
+
+    function resetEntityForm() {
+      editingEntityId = null;
+
+      $("entity-type").value = "PERSON";
+      $("entity-name").value = "";
+      $("entity-status").value = "ACTIVE";
+      $("entity-priority").value = "MEDIUM";
+      $("entity-aliases").value = "";
+      $("entity-tags").value = "";
+      $("entity-description").value = "";
+      $("entity-location").value = "";
+      $("entity-grid").value = "";
+      $("entity-identifiers").value = "{}";
+      $("entity-attributes").value = "{}";
+
+      $("save-entity").textContent = "Save entity";
+      $("delete-entity").hidden = true;
+
+      setStatus("entity-status-line", "");
+    }
+
+    function editEntity(entityId) {
+      const entity = findEntity(entityId);
+
+      if (!entity) {
+        return;
+      }
+
+      editingEntityId = entity.id;
+
+      $("entity-type").value =
+        entity.entity_type || "PERSON";
+      $("entity-name").value = entity.name || "";
+      $("entity-status").value =
+        entity.status || "ACTIVE";
+      $("entity-priority").value =
+        entity.priority || "MEDIUM";
+      $("entity-aliases").value =
+        formatCommaList(entity.aliases);
+      $("entity-tags").value =
+        formatCommaList(entity.tags);
+      $("entity-description").value =
+        entity.description || "";
+      $("entity-location").value =
+        entity.location_text || "";
+      $("entity-grid").value =
+        entity.grid_reference || "";
+      $("entity-identifiers").value =
+        JSON.stringify(entity.identifiers || {}, null, 2);
+      $("entity-attributes").value =
+        JSON.stringify(entity.attributes || {}, null, 2);
+
+      $("save-entity").textContent = "Update entity";
+      $("delete-entity").hidden = false;
+
+      switchTab("entities");
+
+      document
+        .querySelector("#entities-screen .panel")
+        .scrollIntoView({
+          behavior: "smooth",
+          block: "start"
+        });
+    }
+
+    function getEntityPayload() {
+      const name = $("entity-name").value.trim();
+
+      if (!name) {
+        throw new Error(
+          "An entity name or identifier is required."
+        );
+      }
+
+      return {
+        entity_type: $("entity-type").value,
+        name,
+        status: $("entity-status").value,
+        priority: $("entity-priority").value,
+        aliases: parseCommaList(
+          $("entity-aliases").value
+        ),
+        tags: parseCommaList($("entity-tags").value),
+        description: nullableText(
+          $("entity-description").value
+        ),
+        location_text: nullableText(
+          $("entity-location").value
+        ),
+        grid_reference: nullableText(
+          $("entity-grid").value
+        ),
+        identifiers: parseJsonObject(
+          $("entity-identifiers").value,
+          "Identifiers"
+        ),
+        attributes: parseJsonObject(
+          $("entity-attributes").value,
+          "Additional attributes"
+        ),
+        updated_at: new Date().toISOString()
+      };
+    }
+
+    async function saveEntity() {
+      setStatus(
+        "entity-status-line",
+        editingEntityId
+          ? "Updating entity..."
+          : "Creating entity..."
+      );
+
+      $("save-entity").disabled = true;
+
+      try {
+        const payload = getEntityPayload();
+
+        if (editingEntityId) {
+          const { error } = await supabase
+            .from("intelligence_entities")
+            .update(payload)
+            .eq("id", editingEntityId);
+
+          if (error) {
+            throw error;
+          }
+        } else {
+          const { error } = await supabase
+            .from("intelligence_entities")
+            .insert({
+              ...payload,
+              created_by: currentUser.id
+            });
+
+          if (error) {
+            throw error;
+          }
+        }
+
+        setStatus(
+          "entity-status-line",
+          editingEntityId
+            ? "Entity updated."
+            : "Entity created.",
+          "success"
+        );
+
+        resetEntityForm();
+
+        await Promise.all([
+          loadEntities(),
+          loadRelationships()
+        ]);
+      } catch (error) {
+        console.error(error);
+
+        setStatus(
+          "entity-status-line",
+          getErrorMessage(error),
+          "error"
+        );
+      } finally {
+        $("save-entity").disabled = false;
+      }
+    }
+
+    async function deleteEntity() {
+      if (!editingEntityId) {
+        return;
+      }
+
+      const entity = findEntity(editingEntityId);
+
+      const confirmed = window.confirm(
+        `Delete ${entityLabel(entity)}?\n\nAny relationships and report links involving this entity will also be removed.`
+      );
+
+      if (!confirmed) {
+        return;
+      }
+
+      $("delete-entity").disabled = true;
+
+      try {
+        const { error } = await supabase
+          .from("intelligence_entities")
+          .delete()
+          .eq("id", editingEntityId);
+
+        if (error) {
+          throw error;
+        }
+
+        resetEntityForm();
+
+        await Promise.all([
+          loadEntities(),
+          loadRelationships()
+        ]);
+
+        setStatus(
+          "entity-status-line",
+          "Entity deleted.",
+          "success"
+        );
+      } catch (error) {
+        console.error(error);
+
+        setStatus(
+          "entity-status-line",
+          getErrorMessage(error),
+          "error"
+        );
+      } finally {
+        $("delete-entity").disabled = false;
+      }
+    }
+
+    async function saveRelationship() {
+      setStatus(
+        "relationship-status-line",
+        "Creating entity connection..."
+      );
+
+      $("save-relationship").disabled = true;
+
+      try {
+        const sourceEntityId =
+          $("relationship-source").value;
+        const targetEntityId =
+          $("relationship-target").value;
+        const relationshipType =
+          $("relationship-type").value.trim();
+
+        if (!sourceEntityId || !targetEntityId) {
+          throw new Error(
+            "A source and target entity are required."
+          );
+        }
+
+        if (sourceEntityId === targetEntityId) {
+          throw new Error(
+            "The source and target entity cannot be the same."
+          );
+        }
+
+        if (!relationshipType) {
+          throw new Error(
+            "A relationship description is required."
+          );
+        }
+
+        const { error } = await supabase
+          .from("intelligence_relationships")
+          .insert({
+            source_entity_id: sourceEntityId,
+            target_entity_id: targetEntityId,
+            relationship_type: relationshipType,
+            confidence:
+              $("relationship-confidence").value,
+            supporting_report_id:
+              nullableNumber(
+                $("relationship-report").value
+              ),
+            description: nullableText(
+              $("relationship-description").value
+            ),
+            created_by: currentUser.id
+          });
+
+        if (error) {
+          throw error;
+        }
+
+        $("relationship-type").value = "";
+        $("relationship-confidence").value = "MODERATE";
+        $("relationship-report").value = "";
+        $("relationship-description").value = "";
+
+        await loadRelationships();
+
+        setStatus(
+          "relationship-status-line",
+          "Entity connection created.",
+          "success"
+        );
+      } catch (error) {
+        console.error(error);
+
+        setStatus(
+          "relationship-status-line",
+          getErrorMessage(error),
+          "error"
+        );
+      } finally {
+        $("save-relationship").disabled = false;
+      }
+    }
+
+    async function deleteRelationship(relationshipId) {
+      const confirmed = window.confirm(
+        "Delete this documented connection?"
+      );
+
+      if (!confirmed) {
+        return;
+      }
+
+      try {
+        const { error } = await supabase
+          .from("intelligence_relationships")
+          .delete()
+          .eq("id", relationshipId);
+
+        if (error) {
+          throw error;
+        }
+
+        await loadRelationships();
+
+        setStatus(
+          "relationship-status-line",
+          "Connection deleted.",
+          "success"
+        );
+      } catch (error) {
+        console.error(error);
+
+        setStatus(
+          "relationship-status-line",
+          getErrorMessage(error),
+          "error"
+        );
+      }
+    }
+
+    function attachEventListeners() {
+      document
+        .querySelectorAll(".tab-button")
+        .forEach(button => {
+          button.addEventListener("click", () => {
+            switchTab(button.dataset.tab);
+          });
+        });
+
+      $("save-report").addEventListener(
+        "click",
+        saveReport
+      );
+
+      $("reset-report").addEventListener(
+        "click",
+        resetReportForm
+      );
+
+      $("delete-report").addEventListener(
+        "click",
+        deleteReport
+      );
+
+      $("save-entity").addEventListener(
+        "click",
+        saveEntity
+      );
+
+      $("reset-entity").addEventListener(
+        "click",
+        resetEntityForm
+      );
+
+      $("delete-entity").addEventListener(
+        "click",
+        deleteEntity
+      );
+
+      $("save-relationship").addEventListener(
+        "click",
+        saveRelationship
+      );
+
+      $("refresh-reports").addEventListener(
+        "click",
+        loadReports
+      );
+
+      $("refresh-entities").addEventListener(
+        "click",
+        loadEntities
+      );
+
+      [
+        "report-search",
+        "report-type-filter",
+        "report-status-filter",
+        "report-priority-filter"
+      ].forEach(id => {
+        $(id).addEventListener("input", renderReports);
+        $(id).addEventListener("change", renderReports);
+      });
+
+      [
+        "entity-search",
+        "entity-type-filter",
+        "entity-priority-filter"
+      ].forEach(id => {
+        $(id).addEventListener("input", renderEntities);
+        $(id).addEventListener("change", renderEntities);
+      });
+
+      $("reports-output").addEventListener(
+        "click",
+        event => {
+          const viewButton = event.target.closest(
+            ".view-report-button"
+          );
+
+          if (viewButton) {
+            showReport(viewButton.dataset.id);
+            return;
+          }
+
+          const editButton = event.target.closest(
+            ".edit-report-button"
+          );
+
+          if (editButton) {
+            editReport(editButton.dataset.id);
+          }
+        }
+      );
+
+      $("report-viewer").addEventListener(
+        "click",
+        event => {
+          const editButton = event.target.closest(
+            ".edit-report-button"
+          );
+
+          if (editButton) {
+            editReport(editButton.dataset.id);
+            return;
+          }
+
+          const evidenceButton = event.target.closest(
+            ".delete-evidence-button"
+          );
+
+          if (evidenceButton) {
+            deleteEvidence(
+              evidenceButton.dataset.id,
+              evidenceButton.dataset.path,
+              evidenceButton.dataset.reportId
+            );
+
+            return;
+          }
+
+          if (event.target.closest("#close-report-viewer")) {
+            $("report-viewer").classList.remove("active");
+            $("report-viewer").innerHTML = "";
+          }
+        }
+      );
+
+      $("entities-output").addEventListener(
+        "click",
+        event => {
+          const editButton = event.target.closest(
+            ".edit-entity-button"
+          );
+
+          if (editButton) {
+            editEntity(editButton.dataset.id);
+          }
+        }
+      );
+
+      $("relationships-output").addEventListener(
+        "click",
+        event => {
+          const deleteButton = event.target.closest(
+            ".delete-relationship-button"
+          );
+
+          if (deleteButton) {
+            deleteRelationship(deleteButton.dataset.id);
+          }
+        }
+      );
+    }
+
+    async function initializePage() {
+      renderPortalLayout("intelligence");
+
+      const portal = await bootPortalChrome();
+
+      if (!portal) {
+        return;
+      }
+
+      currentUser = portal.user;
+      currentProfile = portal.profile;
+
+      if (!isAuthorized(currentProfile)) {
+        $("access-denied").hidden = false;
+        $("intelligence-app").hidden = true;
+        return;
+      }
+
+      $("access-denied").hidden = true;
+      $("intelligence-app").hidden = false;
+
+      attachEventListeners();
+      resetReportForm();
+      resetEntityForm();
+
+      await loadAllData();
+    }
+
+    initializePage().catch(error => {
+      console.error(error);
+
+      $("access-denied").hidden = false;
+      $("access-denied").innerHTML = `
+        <strong>Intelligence workspace could not be initialized.</strong>
+        <div style="margin-top:7px;">
+          ${escapeHtml(getErrorMessage(error))}
+        </div>
+      `;
+
+      $("intelligence-app").hidden = true;
+    });
+  </script>
+</body>
+
+</html>

@@ -170,6 +170,7 @@ export function renderPortalLayout(activePage = "") {
       <a class="${activePage === "loa" ? "active" : ""}" href="/member/loa/">LOA</a>
       <a class="${activePage === "documentation" ? "active" : ""}" href="/member/documentation/">Documentation</a>
       <a class="${activePage === "operational" ? "active" : ""}" href="/member/operational/">Operational</a>
+      <a class="intelligence-only-link ${activePage === "intelligence" ? "active" : ""}" href="/member/intelligence/" style="display:none;">Intelligence</a>
       <a class="${activePage === "training" ? "active" : ""}" href="/member/training/">Training</a>
       <a class="orbat-only-link ${activePage === "orbat" ? "active" : ""}" href="/member/orbat/" style="display:none;">ORBAT</a>
       <a class="${activePage === "profile" ? "active" : ""}" href="/member/profile/">Profile</a>
@@ -201,6 +202,7 @@ export function renderPortalLayout(activePage = "") {
 
       <div class="sidebar-section">Operations & Training</div>
       <a class="sidebar-link ${activePage === "operational" ? "active" : ""}" href="/member/operational/">Operational</a>
+      <a class="sidebar-link intelligence-only-link ${activePage === "intelligence" ? "active" : ""}" href="/member/intelligence/" style="display:none;">Intelligence</a>
       <a class="sidebar-link ${activePage === "training" ? "active" : ""}" href="/member/training/">Training</a>
       <div class="sidebar-section">Resources</div>
       <a class="sidebar-link ${activePage === "documentation" ? "active" : ""}" href="/member/documentation/">Documentation</a>
@@ -212,6 +214,39 @@ export function renderPortalLayout(activePage = "") {
   }
 
   updateLayoutUserInfo();
+}
+
+const intelligenceCallsigns = [
+  "E31",
+  "E32",
+  "EG1",
+  "EH1",
+  "EI1",
+  "ER1",
+  "EY1",
+  "EY2",
+  "EY3",
+  "EY4"
+];
+
+const intelligenceRoles = [
+  "ADMIN",
+  "TROOP_HQ",
+  "HQ"
+];
+
+const canViewIntelligence =
+  intelligenceRoles.includes(
+    String(profile?.role || "").trim().toUpperCase()
+  ) ||
+  intelligenceCallsigns.includes(
+    String(profile?.callsign || "").trim().toUpperCase()
+  );
+
+if (canViewIntelligence) {
+  document.querySelectorAll(".intelligence-only-link").forEach(element => {
+    element.style.display = "";
+  });
 }
 
 export function showOrbatLinks() {
