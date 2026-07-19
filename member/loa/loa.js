@@ -198,8 +198,16 @@ function canReviewLocally(row) {
     && reviewerCallsign !== requesterCallsign;
 }
 
-function canCancelLocally(row) {
-  return authUser && row.requester_id === authUser.id && row.status === "PENDING";
+function canRetractLocally(row) {
+  if (!authUser || row.requester_id !== authUser.id) {
+    return false;
+  }
+
+  const status = String(row.status || "")
+    .trim()
+    .toUpperCase();
+
+  return status === "PENDING" || status === "APPROVED";
 }
 
 async function loadProfiles() {
@@ -403,9 +411,23 @@ function renderRows(rows) {
           </div>
         </div>
       `;
-    } else if (canCancelLocally(row)) {
+    } else if (canRetractLocally(row)) {
+      const currentStatus = String(row.status || "")
+        .trim()
+        .toUpperCase();
+
+      const buttonText = currentStatus === "APPROVED"
+        ? "Retract Approved LOA"
+        : "Retract LOA Request";
+
       reviewHtml = `
-        <button class="btn btn-secondary" type="button" data-cancel-id="${row.id}">Cancel Request</button>
+        <button
+          class="btn btn-danger"
+          type="button"
+          data-retract-id="${row.id}"
+        >
+          ${buttonText}
+        </button>
       `;
     } else if (row.reviewer_id) {
       reviewHtml = `
@@ -443,9 +465,9 @@ function renderRows(rows) {
     });
   });
 
-  document.querySelectorAll("[data-cancel-id]").forEach(button => {
+  document.querySelectorAll("[data-retract-id]").forEach(button => {
     button.addEventListener("click", () => {
-      cancelLoa(Number(button.dataset.cancelId));
+      retractLoa(Number(button.dataset.retractId));
     });
   });
 }
@@ -614,21 +636,50 @@ async function reviewLoa(id, newStatus) {
   await loadLoas();
 }
 
-async function cancelLoa(id) {
-  const { error } = await supabase
-    .from("loa_requests")
-    .update({
-      status: "CANCELLED",
-      updated_at: new Date().toISOString()
-    })
-    .eq("id", id);
+async function retractLoa(id) {
+  const row = loaRows.find(item => Number(item.id) === Number(id));
+
+  if (!row || !canRetractLocally(row)) {
+    setStatus("You cannot retract this LOA.", false);
+    return;
+  }
+
+  const startDate = formatDate(row.start_date);
+  const endDate = formatDate(row.end_date);
+
+  const confirmed = window.confirm(
+    `Retract your LOA from ${startDate} to ${endDate}?\n\n` +
+    "The LOA will be marked as cancelled."
+  );
+
+  if (!confirmed) {
+    return;
+  }
+
+  const button = document.querySelector(
+    `[data-retract-id="${id}"]`
+  );
+
+  if (button) {
+    button.disabled = true;
+    button.textContent = "Retracting...";
+  }
+
+  const { error } = await supabase.rpc("retract_loa_request", {
+    target_loa_id: id
+  });
 
   if (error) {
+    if (button) {
+      button.disabled = false;
+      button.textContent = "Retract LOA";
+    }
+
     setStatus(error.message, false);
     return;
   }
 
-  setStatus("LOA request cancelled.", true);
+  setStatus("LOA retracted successfully.", true);
   await loadLoas();
 }
 
