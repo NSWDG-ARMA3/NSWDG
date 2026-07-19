@@ -198,14 +198,22 @@ function canReviewLocally(row) {
     && reviewerCallsign !== requesterCallsign;
 }
 
-function canRetractLocally(row) {
-  if (!authUser || row.requester_id !== authUser.id) {
+function isAdmin() {
+  if (!profile) {
     return false;
   }
 
-  const status = String(row.status || "")
-    .trim()
-    .toUpperCase();
+  const role = String(profile.role || "").trim().toUpperCase();
+
+  return role === "ADMIN" || role === "SUPERADMIN";
+}
+
+function canAdminRetractLoa(row) {
+  if (!isAdmin()) {
+    return false;
+  }
+
+  const status = String(row.status || "").trim().toUpperCase();
 
   return status === "PENDING" || status === "APPROVED";
 }
@@ -411,32 +419,30 @@ function renderRows(rows) {
           </div>
         </div>
       `;
-    } else if (canRetractLocally(row)) {
-      const currentStatus = String(row.status || "")
-        .trim()
-        .toUpperCase();
-
-      const buttonText = currentStatus === "APPROVED"
-        ? "Retract Approved LOA"
-        : "Retract LOA Request";
-
-      reviewHtml = `
-        <button
-          class="btn btn-danger"
-          type="button"
-          data-retract-id="${row.id}"
-        >
-          ${buttonText}
-        </button>
-      `;
-    } else if (row.reviewer_id) {
-      reviewHtml = `
-        <div class="small-muted">
-          Reviewed by ${escapeHtml(reviewer)}<br>
-          ${reviewerNote}
-        </div>
-      `;
     }
+
+if (row.reviewer_id && !canReviewLocally(row)) {
+  reviewHtml = `
+    <div class="small-muted">
+      Reviewed by ${escapeHtml(reviewer)}<br>
+      ${reviewerNote}
+    </div>
+  `;
+}
+
+if (canAdminRetractLoa(row)) {
+  reviewHtml += `
+    <div class="btn-row" style="margin-top: 6px;">
+      <button
+        class="btn btn-danger"
+        type="button"
+        data-admin-retract-id="${row.id}"
+      >
+        Retract LOA
+      </button>
+    </div>
+  `;
+}
 
     return `
       <tr>
