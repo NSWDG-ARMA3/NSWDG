@@ -2047,12 +2047,12 @@
       <section class="service-section">
         <div class="service-heading">
           <h2>U.S. Air Force</h2>
-          <span>Special Tactics specialties</span>
+          <span>Special Tactics and Combat Aviation</span>
         </div>
 
         <p class="service-description">
-          Air Force Special Tactics personnel operate alongside the primary ground
-          force while retaining a distinct technical or medical responsibility.
+          Air Force personnel provide specialized medical, air-ground integration, and
+          fixed-wing combat aviation capabilities in direct support of unit operations.
         </p>
 
         <div class="role-grid interactive-role-grid">
@@ -3015,6 +3015,61 @@
           }
         ]
       },
+      'Fighter Pilot Candidate': {
+        help: 'Fighter Pilot applicants are evaluated on fixed-wing aircraft handling, ' +
+          'mission planning, communication, target identification, weapons discipline, ' +
+          'and their ability to support ground operations.',
+        questions: [{
+            id: 'fighterPilotExperience',
+            min: 80,
+            max: 700,
+            rows: 5,
+            text: 'Describe your experience operating fixed-wing aircraft in Arma 3. Include the aircraft, missions, and communities you have experience with.'
+          },
+          {
+            id: 'fighterPilotPlanning',
+            min: 120,
+            max: 900,
+            rows: 6,
+            text: 'Explain how you would prepare for a fixed-wing combat-support mission before takeoff. Include intelligence, weather, fuel, weapons, routing, threats, and contingency planning.'
+          },
+          {
+            id: 'fighterPilotCoordination',
+            min: 120,
+            max: 900,
+            rows: 6,
+            text: 'How would you coordinate with a Combat Controller or another ground controller before employing weapons near friendly forces?'
+          },
+          {
+            id: 'fighterPilotIdentification',
+            min: 100,
+            max: 700,
+            rows: 5,
+            text: 'What would you do if you could not positively identify the requested target, friendly positions, or the intended area of effect?'
+          },
+          {
+            id: 'fighterPilotAircraft',
+            min: 30,
+            max: 500,
+            rows: 4,
+            text: 'Which fixed-wing aircraft are you currently comfortable operating, and which aircraft would you be interested in learning?'
+          },
+          {
+            id: 'fighterPilotSupport',
+            min: 100,
+            max: 700,
+            rows: 5,
+            text: 'How would you provide useful air support without dominating the mission or reducing the ground element’s involvement?'
+          },
+          {
+            id: 'fighterPilotAvailability',
+            min: 25,
+            max: 500,
+            rows: 4,
+            text: 'What does your normal weekly availability look like, and are you willing to attend structured aviation training?'
+          }
+        ]
+      },
       'OPFOR Candidate': {
         help: 'OPFOR applicants are reviewed for immersion, restraint, independent thinking, reliability, and ability to create believable opposition.',
         questions: [{
@@ -3523,12 +3578,40 @@
         return;
       }
       if (title) {
-        title.textContent = 'Applying as: ' + applicationRoute;
+        if (applicationRoute === 'Fighter Pilot Candidate') {
+          title.textContent = 'Fighter Pilot Application';
+        } else if (applicationRoute === 'SOAR Candidate') {
+          title.textContent =
+            '160th Special Operations Aviation Regiment Application';
+        } else {
+          title.textContent = 'Applying as: ' + applicationRoute;
+        }
       }
       if (description) {
         if (applicationRoute === 'NSWDG Candidate' && specialty) {
           description.textContent =
-            'Preferred internal specialty: ' + specialty;
+            'You are applying through the NSWDG Candidate pipeline. ' +
+            'Preferred internal specialty: ' +
+            specialty +
+            '. This preference does not guarantee assignment.';
+        } else if (applicationRoute === 'Fighter Pilot Candidate') {
+          description.textContent =
+            'You are applying for the U.S. Air Force fixed-wing combat aviation role. ' +
+            'Applicants are evaluated on aircraft handling, mission planning, communication, ' +
+            'target identification, weapons discipline, and their ability to support ground operations.';
+        } else if (applicationRoute === 'SOAR Candidate') {
+          description.textContent =
+            'You are applying for the 160th Special Operations Aviation Regiment aviation route. ' +
+            'Applicants are evaluated on rotary-wing operations, flight planning, communication, ' +
+            'aircraft control, and coordination with ground forces.';
+        } else if (applicationRoute === 'OPFOR Candidate') {
+          description.textContent =
+            'You are applying for an OPFOR position supporting missions through believable, ' +
+            'disciplined, and scenario-appropriate opposing-force gameplay.';
+        } else if (applicationRoute === 'Zeus Candidate') {
+          description.textContent =
+            'You are applying for a Zeus position responsible for mission control, pacing, ' +
+            'technical execution, atmosphere, and coordination with event leadership.';
         } else {
           description.textContent =
             'You selected the ' + applicationRoute + ' application route.';
