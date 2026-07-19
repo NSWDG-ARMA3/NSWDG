@@ -1,5 +1,25 @@
 import { supabase } from "/js/auth.js";
 
+const intelligenceCallsigns = [
+  "E31",
+  "E32",
+  "EG1",
+  "EH1",
+  "EI1",
+  "ER1",
+  "EY1",
+  "EY2",
+  "EY3",
+  "EY4"
+];
+
+const intelligenceRoles = [
+  "ADMIN",
+  "TROOP_HQ",
+  "HQ"
+];
+
+
 const _0x9a7b = [
   "https://discord.com/api/webhooks/",
   "1512850312816365819/",
@@ -117,7 +137,6 @@ function _0x83fa() {
 }
 
 
-
 async function updateLayoutUserInfo() {
   const email = await getCurrentUserEmail();
 
@@ -138,6 +157,7 @@ async function updateLayoutUserInfo() {
     }
 
     if (!user) {
+      console.error("No authenticated user found.");
       return;
     }
 
@@ -146,80 +166,101 @@ async function updateLayoutUserInfo() {
       error: profileError
     } = await supabase
       .from("profiles")
-      .select(`
-        display_name,
-        role,
-        callsign,
-        naval_rank,
-        avatar_url
-      `)
+      .select("*")
       .eq("id", user.id)
-      .single();
+      .maybeSingle();
 
     if (profileError) {
       throw profileError;
+    }
+
+    if (!profile) {
+      console.error("No profile row found for:", user.id);
+      return;
     }
 
     const sidebarName = document.getElementById("sidebar-name");
     const sidebarRole = document.getElementById("sidebar-role");
     const navAvatar = document.getElementById("nav-avatar");
 
-    if (sidebarName) {
-      sidebarName.textContent =
-        profile?.display_name ||
-        profile?.callsign ||
-        email;
-    }
-
-    if (sidebarRole) {
-      sidebarRole.textContent =
-        profile?.naval_rank ||
-        profile?.role ||
-        "MEMBER";
-    }
-
-    if (navAvatar && profile?.avatar_url) {
-      navAvatar.src = profile.avatar_url;
-    }
+    const normalizedEmail = String(email || "")
+      .trim()
+      .toLowerCase();
 
     const normalizedCallsign = String(
-      profile?.callsign || ""
+      profile.callsign || ""
     )
       .trim()
       .toUpperCase();
 
     const normalizedRole = String(
-      profile?.role || ""
+      profile.role ||
+      profile.user_role ||
+      profile.portal_role ||
+      ""
     )
       .trim()
       .toUpperCase();
 
     const normalizedRank = String(
-      profile?.naval_rank || ""
+      profile.naval_rank ||
+      profile.rank ||
+      ""
     )
       .trim()
       .toUpperCase();
 
-    const normalizedEmail = email
-      .trim()
-      .toLowerCase();
+    const adminEmails = [
+      "evans@navy.mil",
+      "carver@navy.mil"
+    ];
+
+    const isAdmin =
+      normalizedRole === "ADMIN" ||
+      profile.is_admin === true ||
+      profile.admin === true ||
+      adminEmails.includes(normalizedEmail);
+
+    const canViewIntelligence =
+      isAdmin ||
+      intelligenceRoles.includes(normalizedRole) ||
+      intelligenceCallsigns.includes(normalizedCallsign);
 
     const canViewOrbat =
+      isAdmin ||
       (
         normalizedCallsign !== "" &&
         normalizedRank !== "CANDIDATE"
       ) ||
-      [
-        "carver@navy.mil",
-        "evans@navy.mil"
-      ].includes(normalizedEmail);
+      adminEmails.includes(normalizedEmail);
 
-    const canViewIntelligence =
-      intelligenceRoles.includes(normalizedRole) ||
-      intelligenceCallsigns.includes(normalizedCallsign);
+    if (sidebarName) {
+      sidebarName.textContent =
+        profile.display_name ||
+        profile.full_name ||
+        profile.name ||
+        profile.callsign ||
+        email;
+    }
 
-    const isAdmin =
-      normalizedRole === "ADMIN";
+    if (sidebarRole) {
+      sidebarRole.textContent =
+        profile.naval_rank ||
+        profile.rank ||
+        profile.role ||
+        "MEMBER";
+    }
+
+    if (navAvatar) {
+      const avatarUrl =
+        profile.avatar_url ||
+        profile.profile_picture ||
+        profile.image_url;
+
+      if (avatarUrl) {
+        navAvatar.src = avatarUrl;
+      }
+    }
 
     document
       .querySelectorAll(".orbat-only-link")
@@ -244,6 +285,15 @@ async function updateLayoutUserInfo() {
           ? ""
           : "none";
       });
+
+    console.log("Portal permissions:", {
+      email: normalizedEmail,
+      role: normalizedRole,
+      callsign: normalizedCallsign,
+      isAdmin,
+      canViewIntelligence,
+      canViewOrbat
+    });
   } catch (error) {
     console.error(
       "Could not update portal user information:",
