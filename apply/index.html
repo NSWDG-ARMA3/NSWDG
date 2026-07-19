@@ -1,15 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title>Application | NSWDG</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <meta name="description" content="Begin your NSW candidate screening process through our official Naval Special Warfare simulation portal. Submit your identification, readiness, service history, and operational intent to initiate assignment consideration.">
+  <meta name="description"
+    content="Begin your NSW candidate screening process through our official Naval Special Warfare simulation portal. Submit your identification, readiness, service history, and operational intent to initiate assignment consideration.">
 
   <meta property="og:title" content="RSQDN, 3 Trp">
-  <meta property="og:description" content="Begin your NSW candidate screening process through our official Naval Special Warfare portal.">
+  <meta property="og:description"
+    content="Begin your NSW candidate screening process through our official Naval Special Warfare portal.">
   <meta property="og:image" content="../nsw.png">
   <meta property="og:type" content="website">
   <meta property="og:url" content="http://www.rsqdn.com/apply">
@@ -17,7 +20,11 @@
   <link rel="shortcut icon" href="../nsw.png" type="image/x-icon">
 
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
     body {
       background: #ebebeb;
@@ -29,8 +36,14 @@
       flex-direction: column;
     }
 
-    a { color: #2a5f8a; text-decoration: none; }
-    a:hover { text-decoration: underline; }
+    a {
+      color: #2a5f8a;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
 
     .inner {
       max-width: 1060px;
@@ -64,7 +77,9 @@
       display: block;
     }
 
-    .utility-links li:first-child a { padding-left: 0; }
+    .utility-links li:first-child a {
+      padding-left: 0;
+    }
 
     .utility-links li a:hover {
       color: #ccc;
@@ -307,17 +322,108 @@
       letter-spacing: 0.2px;
     }
 
+    /* =========================================================
+       APPLICATION FORM
+       ========================================================= */
+
+    .application-panel {
+      display: none;
+      padding: 0;
+      overflow: hidden;
+      background: #fff;
+      border: 1px solid #b9b9b9;
+    }
+
+    .application-panel.visible {
+      display: block;
+    }
+
+    .application-selection-banner {
+      margin: 0;
+      padding: 15px 18px;
+      background: #e9edf0;
+      border: 0;
+      border-bottom: 1px solid #b7c0c6;
+    }
+
+    .application-selection-banner h2 {
+      margin: 0 0 4px;
+      color: #1d3f5e;
+      font-size: 14px;
+      line-height: 1.35;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .application-selection-banner p {
+      margin: 0;
+      color: #454d53;
+      font-size: 12px;
+      line-height: 1.55;
+    }
+
+    .application-selection-actions {
+      margin-top: 9px;
+    }
+
+    .application-gateway-warning {
+      margin-top: 10px;
+      padding: 8px 10px;
+      background: #f4f1df;
+      border: 1px solid #d2c78f;
+      color: #504a2f;
+      font-size: 11px;
+      line-height: 1.5;
+    }
+
+    .application-panel form {
+      padding: 18px 20px 22px;
+    }
+
+    .form-section {
+      margin: 0 0 24px;
+      padding: 0;
+    }
+
+    .form-section:last-of-type {
+      margin-bottom: 18px;
+    }
+
+    .form-section h2 {
+      margin: 0 0 13px;
+      padding: 7px 10px;
+      background: #f0f0f0;
+      border: 1px solid #d1d1d1;
+      border-left: 4px solid #1d3f5e;
+      color: #1d3f5e;
+      font-size: 12px;
+      line-height: 1.3;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
     .form-group {
-      margin-bottom: 16px;
+      margin-bottom: 15px;
+    }
+
+    .form-group:last-child {
+      margin-bottom: 0;
     }
 
     .form-group label {
       display: block;
+      margin-bottom: 5px;
+      color: #292929;
       font-size: 12px;
       font-weight: bold;
-      margin-bottom: 4px;
-      color: #222;
-      line-height: 1.5;
+      line-height: 1.45;
+    }
+
+    .form-group label .optional {
+      color: #777;
+      font-size: 10px;
+      font-weight: normal;
+      text-transform: uppercase;
     }
 
     .field-wrap {
@@ -328,46 +434,68 @@
     .form-group textarea,
     .form-group select {
       width: 100%;
-      border: 1px solid #bbb;
-      padding: 6px 8px;
-      padding-bottom: 20px;
-      font-size: 13px;
+      min-height: 34px;
+      padding: 7px 9px;
+      background: #fbfbfb;
+      border: 1px solid #b6b6b6;
+      border-radius: 0;
+      color: #222;
       font-family: Arial, Helvetica, sans-serif;
-      background: #fafafa;
+      font-size: 13px;
+      line-height: 1.45;
+      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.035);
     }
 
     .form-group textarea {
+      min-height: 96px;
+      padding-bottom: 24px;
       resize: vertical;
-      min-height: 84px;
+    }
+
+    .form-group select {
+      padding-right: 30px;
+    }
+
+    .form-group input:hover,
+    .form-group textarea:hover,
+    .form-group select:hover {
+      border-color: #8e989f;
     }
 
     .form-group input:focus,
     .form-group textarea:focus,
     .form-group select:focus {
       outline: 1px solid #2a5f8a;
+      outline-offset: 0;
       background: #fff;
+      border-color: #2a5f8a;
+      box-shadow: none;
     }
 
     .char-counter {
       position: absolute;
       right: 7px;
       bottom: 5px;
-      font-size: 10px;
+      padding: 1px 3px;
+      background: rgba(251, 251, 251, 0.94);
       color: #777;
-      background: #fafafa;
-      padding-left: 5px;
+      font-size: 10px;
+      line-height: 1.2;
     }
 
     .char-counter.bad {
-      color: #b00000;
+      color: #a00000;
       font-weight: bold;
     }
 
     .field-error {
       display: none;
-      color: #b00000;
+      margin-top: 5px;
+      padding: 5px 7px;
+      background: #fff3f3;
+      border-left: 3px solid #a50000;
+      color: #900;
       font-size: 11px;
-      margin-top: 4px;
       line-height: 1.4;
     }
 
@@ -378,8 +506,62 @@
     .form-group.invalid input,
     .form-group.invalid textarea,
     .form-group.invalid select {
-      border-color: #b00000;
-      background: #fff7f7;
+      background: #fffafa;
+      border-color: #a50000;
+    }
+
+    .field-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 120px 160px;
+      gap: 12px;
+      align-items: start;
+    }
+
+    .role-help {
+      margin-top: 6px;
+      padding: 7px 9px;
+      background: #f2f2f2;
+      border: 1px solid #d5d5d5;
+      color: #555;
+      font-size: 11px;
+      line-height: 1.5;
+    }
+
+    .dynamic-question-note {
+      margin: -3px 0 12px;
+      color: #666;
+      font-size: 11px;
+      line-height: 1.5;
+    }
+
+    .btn-submit {
+      min-width: 150px;
+      padding: 8px 20px;
+      background: #1d3f5e;
+      border: 1px solid #16304a;
+      color: #fff;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 12px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .btn-submit:hover {
+      background: #16304a;
+    }
+
+    @media (max-width: 760px) {
+      .application-panel form {
+        padding: 15px;
+      }
+
+      .field-row {
+        grid-template-columns: 1fr;
+      }
+
+      .btn-submit {
+        width: 100%;
+      }
     }
 
     .field-row {
@@ -599,7 +781,7 @@
 
     .role-card.wide {
       grid-column: span 3;
-  }
+    }
 
     .role-card h3 {
       font-size: 13px;
@@ -693,7 +875,681 @@
       background: #ddd;
     }
 
+    /* =========================================================
+       ROLE SELECTION
+       ========================================================= */
+
+    .role-introduction {
+      margin: 16px 0 20px;
+      padding: 12px 14px;
+      background: #f3f3f3;
+      border: 1px solid #d0d0d0;
+      border-left: 4px solid #1d3f5e;
+    }
+
+    .role-introduction h2 {
+      margin: 0 0 5px;
+      color: #1d3f5e;
+      font-size: 14px;
+      line-height: 1.3;
+      text-transform: uppercase;
+      letter-spacing: 0.25px;
+    }
+
+    .role-introduction p {
+      margin: 0;
+      color: #444;
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    /* Separate role finder */
+
+    .role-finder-entry {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 18px;
+      align-items: center;
+      margin: 0 0 24px;
+      padding: 13px 14px;
+      background: #edf1f4;
+      border: 1px solid #b8c3cb;
+    }
+
+    .role-finder-entry h2 {
+      margin: 0 0 4px;
+      color: #1d3f5e;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.25px;
+    }
+
+    .role-finder-entry p {
+      margin: 0;
+      color: #4d555b;
+      font-size: 12px;
+      line-height: 1.55;
+    }
+
+    .role-finder-entry button {
+      min-width: 148px;
+      background: #e6e8ea;
+      border: 1px solid #9ba5ac;
+      color: #263847;
+      padding: 7px 13px;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 12px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .role-finder-entry button:hover {
+      background: #d8dde1;
+      border-color: #758692;
+    }
+
+    /* Branch headings */
+
+    .service-section {
+      margin-top: 24px;
+    }
+
+    .service-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 5px;
+      padding: 7px 10px;
+      background: #1d3f5e;
+      border: 1px solid #16304a;
+      color: #fff;
+    }
+
+    .service-heading h2 {
+      margin: 0;
+      color: #fff;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .service-heading span {
+      color: #b8c8d5;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .service-description {
+      margin: 0 0 11px;
+      padding: 0 2px;
+      color: #666;
+      font-size: 11px;
+      line-height: 1.55;
+    }
+
+    /* Symmetrical grid */
+
+    .role-grid.interactive-role-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      align-items: start;
+      margin-top: 0;
+    }
+
+    .role-card.interactive {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      min-height: 178px;
+      padding: 0;
+      overflow: hidden;
+      background: #fafafa;
+      border: 1px solid #c8c8c8;
+      cursor: pointer;
+      transition:
+        border-color 120ms ease,
+        box-shadow 120ms ease,
+        transform 120ms ease;
+    }
+
+    .role-card.interactive:hover,
+    .role-card.interactive:focus-within {
+      border-color: #85939e;
+      box-shadow: 0 2px 7px rgba(0, 0, 0, 0.1);
+      transform: translateY(-1px);
+    }
+
+    .role-card.interactive.selected {
+      border-color: #1d3f5e;
+      box-shadow: 0 0 0 2px rgba(29, 63, 94, 0.14);
+    }
+
+    .role-card-summary {
+      position: relative;
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      min-height: 176px;
+      padding: 14px 46px 13px 14px;
+      background: #fafafa;
+    }
+
+    .role-card-summary h3 {
+      min-height: 35px;
+      margin: 0 0 8px;
+      padding: 0 0 7px;
+      border-bottom: 1px solid #d5d5d5;
+      color: #1d3f5e;
+      font-size: 13px;
+      line-height: 1.35;
+      text-transform: uppercase;
+      letter-spacing: 0.2px;
+    }
+
+    .role-card-summary p {
+      margin: 0;
+      color: #414141;
+      font-size: 12px;
+      line-height: 1.55;
+    }
+
+    .role-card-prompt {
+      display: block;
+      margin-top: auto;
+      padding-top: 12px;
+      color: #68727a;
+      font-size: 10px;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .role-card-toggle {
+      position: absolute;
+      z-index: 2;
+      top: 11px;
+      right: 11px;
+      width: 25px;
+      height: 25px;
+      padding: 0;
+      background: #e8e8e8;
+      border: 1px solid #aaa;
+      color: #1d3f5e;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 17px;
+      line-height: 21px;
+      text-align: center;
+      cursor: pointer;
+    }
+
+    .role-card-toggle:hover {
+      background: #dcdcdc;
+    }
+
+    /* Open section */
+
+    .role-card-details {
+      display: none;
+      padding: 14px;
+      background: #fff;
+      border-top: 1px solid #c9c9c9;
+      cursor: default;
+    }
+
+    .role-card.open {
+      border-color: #7e8d98;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .role-card.open .role-card-details {
+      display: block;
+    }
+
+    .role-card.open .role-card-toggle {
+      background: #1d3f5e;
+      border-color: #16304a;
+      color: #fff;
+    }
+
+    .role-card-details h4 {
+      margin: 13px 0 5px;
+      color: #1d3f5e;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.25px;
+    }
+
+    .role-card-details h4:first-child {
+      margin-top: 0;
+    }
+
+    .role-card-details p {
+      margin: 0 0 8px;
+      color: #444;
+      font-size: 12px;
+      line-height: 1.55;
+    }
+
+    .role-card-details ul {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      border-top: 1px solid #e1e1e1;
+    }
+
+    .role-card-details li {
+      position: relative;
+      padding: 6px 0 6px 13px;
+      border-bottom: 1px solid #e1e1e1;
+      color: #333;
+      font-size: 11px;
+      line-height: 1.45;
+    }
+
+    .role-card-details li::before {
+      content: "";
+      position: absolute;
+      top: 11px;
+      left: 1px;
+      width: 4px;
+      height: 4px;
+      background: #1d3f5e;
+    }
+
+    .role-card-requirement {
+      margin-top: 11px;
+      padding: 8px 9px;
+      background: #f3f3f3;
+      border: 1px solid #d3d3d3;
+      color: #555;
+      font-size: 11px;
+      line-height: 1.5;
+    }
+
+    .role-card-actions {
+      display: flex;
+      gap: 7px;
+      margin-top: 12px;
+      padding-top: 11px;
+      border-top: 1px solid #d7d7d7;
+    }
+
+    .role-apply-button,
+    .role-secondary-button,
+    .finder-start-button,
+    .finder-answer-button,
+    .finder-result-button {
+      font-family: Arial, Helvetica, sans-serif;
+      cursor: pointer;
+    }
+
+    .role-apply-button {
+      width: 100%;
+      padding: 7px 12px;
+      background: #1d3f5e;
+      border: 1px solid #16304a;
+      color: #fff;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .role-apply-button:hover {
+      background: #16304a;
+    }
+
+    .role-secondary-button {
+      padding: 7px 12px;
+      background: #e5e5e5;
+      border: 1px solid #aaa;
+      color: #333;
+      font-size: 12px;
+    }
+
+    .role-secondary-button:hover {
+      background: #d8d8d8;
+    }
+
+    .role-badge {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 2px 6px;
+      background: #eee;
+      border: 1px solid #aaa;
+      color: #555;
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .role-badge.paid {
+      background: #e7f0e8;
+      border-color: #9ab29d;
+      color: #355f3b;
+    }
+
+    @media (max-width: 840px) {
+      .role-grid.interactive-role-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 620px) {
+      .role-finder-entry {
+        grid-template-columns: 1fr;
+      }
+
+      .role-finder-entry button {
+        width: 100%;
+      }
+
+      .service-heading {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 3px;
+      }
+
+      .role-grid.interactive-role-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .role-card.interactive,
+      .role-card-summary {
+        min-height: 0;
+      }
+
+      .role-card-summary h3 {
+        min-height: 0;
+      }
+    }
+
+    .application-panel {
+      display: none;
+    }
+
+    .application-panel.visible {
+      display: block;
+    }
+
+    .application-selection-banner {
+      background: #eaf0f5;
+      border: 1px solid #9eafbd;
+      padding: 11px 12px;
+      margin-bottom: 16px;
+    }
+
+    .application-selection-banner h2 {
+      color: #1d3f5e;
+      font-size: 13px;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+    }
+
+    .application-selection-banner p {
+      margin: 0;
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .application-selection-actions {
+      margin-top: 8px;
+    }
+
+    .application-gateway-warning {
+      background: #fff8d7;
+      border: 1px solid #d8c878;
+      padding: 9px 10px;
+      margin-top: 8px;
+      color: #4d4626;
+      font-size: 11px;
+      line-height: 1.55;
+    }
+
+    .internal-interest-wrap {
+      display: none;
+    }
+
+    .internal-interest-wrap.visible {
+      display: block;
+    }
+
+    .role-finder-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 250;
+      background: rgba(0, 0, 0, 0.58);
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      overflow-y: auto;
+    }
+
+    .role-finder-overlay.visible {
+      display: flex;
+    }
+
+    .role-finder-box {
+      width: 760px;
+      max-width: 100%;
+      max-height: calc(100vh - 36px);
+      overflow-y: auto;
+      background: #fff;
+      border: 1px solid #888;
+    }
+
+    .role-finder-header {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      background: #1d3f5e;
+      color: #fff;
+      padding: 11px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .role-finder-header h2 {
+      font-size: 14px;
+    }
+
+    .role-finder-progress {
+      font-size: 11px;
+      color: #b8c8d5;
+    }
+
+    .role-finder-body {
+      padding: 18px;
+    }
+
+    .role-finder-intro {
+      color: #444;
+      font-size: 12px;
+      line-height: 1.7;
+      margin-bottom: 14px;
+    }
+
+    .role-finder-question {
+      display: none;
+    }
+
+    .role-finder-question.active {
+      display: block;
+    }
+
+    .role-finder-question h3 {
+      color: #1d3f5e;
+      font-size: 15px;
+      line-height: 1.5;
+      margin-bottom: 12px;
+    }
+
+    .role-finder-options {
+      display: grid;
+      gap: 8px;
+    }
+
+    .finder-answer-button {
+      width: 100%;
+      text-align: left;
+      background: #f5f5f5;
+      border: 1px solid #bbb;
+      color: #222;
+      padding: 10px 11px;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .finder-answer-button:hover {
+      background: #e9eef2;
+      border-color: #7f96a8;
+    }
+
+    .role-badge {
+      display: inline-block;
+      margin-left: 6px;
+      padding: 1px 5px;
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      vertical-align: middle;
+    }
+
+    .role-badge.paid {
+      background: #309f4a;
+      border: 1px solid #267d3a;
+      color: #fff;
+    }
+
+    .finder-results {
+      display: none;
+    }
+
+    .finder-results.visible {
+      display: block;
+    }
+
+    .finder-result-intro {
+      background: #f3f3f3;
+      border: 1px solid #d4d4d4;
+      padding: 10px;
+      margin-bottom: 12px;
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .finder-result-card {
+      border: 1px solid #ccc;
+      background: #fafafa;
+      padding: 12px;
+      margin-bottom: 9px;
+    }
+
+    .finder-result-card.primary {
+      border-color: #1d3f5e;
+      background: #eef3f7;
+    }
+
+    .finder-result-rank {
+      color: #777;
+      font-size: 10px;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+
+    .finder-result-card h3 {
+      color: #1d3f5e;
+      font-size: 14px;
+      margin: 3px 0 5px;
+    }
+
+    .finder-result-card p {
+      font-size: 12px;
+      line-height: 1.55;
+      margin-bottom: 8px;
+    }
+
+    .finder-score-bar {
+      height: 6px;
+      border: 1px solid #aaa;
+      background: #e4e4e4;
+      margin: 7px 0 10px;
+    }
+
+    .finder-score-fill {
+      display: block;
+      height: 100%;
+      background: #1d3f5e;
+    }
+
+    .finder-result-button {
+      background: #1d3f5e;
+      border: 1px solid #16304a;
+      color: #fff;
+      padding: 6px 11px;
+      font-size: 12px;
+    }
+
+    .finder-result-button:hover {
+      background: #16304a;
+    }
+
+    .finder-footer {
+      border-top: 1px solid #ddd;
+      padding: 10px 18px;
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      background: #f3f3f3;
+    }
+
+    .finder-start-button {
+      background: #1d3f5e;
+      border: 1px solid #16304a;
+      color: #fff;
+      padding: 7px 14px;
+      font-size: 12px;
+    }
+
+    .finder-start-button:hover {
+      background: #16304a;
+    }
+
+    .finder-disclaimer {
+      color: #666;
+      font-size: 10px;
+      line-height: 1.5;
+      margin-top: 13px;
+    }
+
     @media (max-width: 760px) {
+      .role-grid.interactive-role-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .role-card.wide {
+        grid-column: span 1;
+      }
+
+      .role-finder-box {
+        max-height: calc(100vh - 20px);
+      }
+
+      .role-finder-overlay {
+        padding: 10px;
+      }
+
+      .finder-footer {
+        flex-direction: column;
+      }
+    }
+
+    @media (max-width: 760px) {
+
       .top-strip .inner,
       .main-header .inner {
         align-items: flex-start;
@@ -713,6 +1569,7 @@
       .search-form input {
         width: 100%;
       }
+
 
       .main-nav .inner {
         padding: 0;
@@ -749,7 +1606,7 @@
     }
 
     .opfor-details {
-    margin-top: 12px;
+      margin-top: 12px;
     }
 
     .opfor-details summary {
@@ -859,155 +1716,729 @@
       <div class="page-subtitle">Candidate screening and unit fit assessment</div>
 
       <div class="notice-line">
-        Applicants should answer clearly and honestly. Accepted applicants will be contacted through <b><u>Discord</u></b>.
+        Applicants should answer clearly and honestly. Accepted applicants will be contacted through
+        <b><u>Discord</u></b>.
       </div>
 
-      <p>This is not a test nor selection, our application, interview, and evaluations phase is purely to find people that fit into our niche and would be at home in our group. We are simply a group with a high standard for historical recreation for those who are not aligned there is no shame we have our hobbies just as others have there's. Should your application be accepted you will receive a DM with a discord link and the following interview will be simple, you will present your application and we will discuss and use it to bring up additional relevant topics. We will have a copy of your application but feel free to screenshot your application if you want to continue review post submission.</p>
+      <p>This is not a test nor selection, our application, interview, and evaluations phase is purely to find people
+        that fit into our niche and would be at home in our group. We are simply a group with a high standard for
+        historical recreation for those who are not aligned there is no shame we have our hobbies just as others have
+        there's. Should your application be accepted you will receive a DM with a discord link and the following
+        interview will be simple, you will present your application and we will discuss and use it to bring up
+        additional relevant topics. We will have a copy of your application but feel free to screenshot your application
+        if you want to continue review post submission.</p>
 
       <div class="recruitment-status">
         <div class="status-main">
           <span class="status-label">Recruitment Status</span>
           <h2>Applications are open for all listed roles</h2>
-          <p>Recruitment is currently accepting applicants for NSWDG, SOAR, Special Tactics, OPFOR, and Zeus positions.</p>
+          <p>
+            Recruitment is currently accepting applicants for the NSWDG Candidate pipeline,
+            SOAR, OPFOR, and Zeus. Applicants interested in an internal NSWDG specialty must
+            first enter through the NSWDG Candidate pipeline.
+          </p>
         </div>
         <div class="status-side">
           <span class="status-label">Screening Notice</span>
-          <p>Applications are reviewed for community fit, schedule compatibility, technical readiness, and interest in the unit's historical recreation focus.</p>
+          <p>Applications are reviewed for community fit, schedule compatibility, technical readiness, and interest in
+            the unit's historical recreation focus.</p>
         </div>
       </div>
 
-      <div class="role-grid">
-        <div class="role-card">
-          <h3>NSWDG Candidate</h3>
-          <p>A highly immersive special operations experience focused on historical GWOT-era recreation, teamwork, and tactical proficiency. NSWDG personnel participate in direct action raids, reconnaissance missions, hostage rescue operations, and other special mission sets while developing individual skills and contributing to long-term campaign objectives.</p>
-          <ul>
-            <li>Direct action focused gameplay</li>
-            <li>GWOT-era kit and tactics interest</li>
-            <li>Team-based training and evaluations</li>
-          </ul>
-        </div>
-
-        <div class="role-card">
-          <h3>SOAR Candidate</h3>
-          <p>Aviation support role focused on 160th SOAR-style rotary-wing operations, insertions, extractions, resupply, casualty evacuation, and air-ground coordination.</p>
-          <ul>
-            <li>Rotary-wing aviation support</li>
-            <li>Aircrew and pilot coordination</li>
-            <li>Ground force integration</li>
-          </ul>
-        </div>
-
-        <div class="role-card">
-          <h3>Special Tactics Candidate</h3>
-          <p>Special Tactics support role focused on 24th STS-style CCT, PJ, or EOD tasks integrated with NSWDG operations.</p>
-          <ul>
-            <li>CCT, PJ, or EOD specialty path</li>
-            <li>Air-ground and technical support</li>
-            <li>Integrated support to assault forces</li>
-          </ul>
-        </div>
-
-        <div class="role-card wide">
-          <h3>OPFOR Candidate</h3>
-          <p>A fully playable opposing force experience with its own objectives, planning, logistics, and campaign progression. OPFOR personnel conduct reconnaissance, prepare attacks, manage resources, and pursue independent goals that directly influence the wider operational environment.</p>
-          <ul>
-            <li>Scenario-driven opposition roles</li>
-            <li>Flexible mission support</li>
-            <li>Useful for players who enjoy immersion over winning</li>
-          </ul>
-        </div>
-
-        <div class="role-card wide">
-          <h3>Zeus Candidate <span class="role-badge paid">POSSIBLE PAID POSITION(S)</span></h3>
-          <style>
-            .role-badge {
-              display: inline-block;
-              margin-left: 6px;
-              padding: 1px 5px;
-              font-size: 9px;
-              text-transform: uppercase;
-              letter-spacing: 0.5px;
-          }
-
-          .role-badge.paid {
-              background: #309f4a;
-              border: 1px solid #9d8c3f;
-              color: #fff;
-          }
-          </style>
-          <p>A command and mission development role focused on creating engaging and believable operational environments. Zeus personnel design scenarios, manage battlefield dynamics, oversee campaign progression, and adapt events in real time to ensure a challenging, rewarding, and immersive experience for every participant. Ideally, we aim to have both a BLUFOR Zeus and an OPFOR Zeus. This allows each side to be represented independently, improves scenario depth, and helps maintain balanced decision-making throughout operations. However, we will work with the personnel available, and a single Zeus may fulfill these responsibilities when necessary. The dual-Zeus structure is the preferred setup, not a strict requirement.</p>
-          <ul>
-            <li>Mission flow and scenario management</li>
-            <li>Coordination with leadership</li>
-            <li>Focus on atmosphere, restraint, and consistency</li>
-          </ul>
-        </div>
+      <div class="role-introduction">
+        <h2>Select an application route</h2>
+        <p>
+          Review the available positions by service branch. Open a role to view its
+          responsibilities and expectations. The application option is only available
+          after the role information has been opened.
+        </p>
       </div>
+
+      <div class="role-finder-entry">
+        <div>
+          <h2>Not sure which role fits you?</h2>
+          <p>
+            The role finder compares your interests with the available operational,
+            aviation, medical, intelligence, and technical positions.
+          </p>
+        </div>
+
+        <button type="button" onclick="openRoleFinder()">
+          Open Role Finder
+        </button>
+      </div>
+
+      <!-- =====================================================
+           U.S. NAVY
+           ===================================================== -->
+
+      <section class="service-section">
+        <div class="service-heading">
+          <h2>U.S. Navy</h2>
+          <span>Naval Special Warfare and supporting specialties</span>
+        </div>
+
+        <p class="service-description">
+          Navy applicants enter through the NSWDG candidate process. A preferred
+          specialty may be recorded, but final placement remains dependent on performance,
+          suitability, availability, and unit requirements.
+        </p>
+
+        <div class="role-grid interactive-role-grid">
+
+          <article class="role-card interactive" data-card-role="NSWDG Candidate" tabindex="0">
+
+            <button class="role-card-toggle" type="button" aria-label="Open NSWDG details" aria-expanded="false">
+              +
+            </button>
+
+            <div class="role-card-summary">
+              <h3>Naval Special Warfare Development Group</h3>
+
+              <p>
+                Standard ground-force application route for personnel seeking operational
+                service within NSWDG.
+              </p>
+
+              <span class="role-card-prompt">Open to review role</span>
+            </div>
+
+            <div class="role-card-details">
+              <h4>Role overview</h4>
+
+              <p>
+                NSWDG personnel conduct direct-action, special reconnaissance, maritime,
+                and other special operations as part of a small, disciplined team.
+                Assault and reconnaissance are assignments within NSWDG rather than
+                separate application routes.
+              </p>
+
+              <h4>Core responsibilities</h4>
+
+              <ul>
+                <li>Small-unit movement and tactical communication</li>
+                <li>Close-quarters battle and deliberate clearance</li>
+                <li>Reconnaissance, observation, and reporting</li>
+                <li>Maritime and helicopter-supported operations</li>
+                <li>Maintaining reliable attendance and training standards</li>
+              </ul>
+
+              <div class="role-card-requirement">
+                Applicants enter the candidate pipeline without a guaranteed team,
+                assignment, qualification, or specialty.
+              </div>
+
+              <div class="role-card-actions">
+                <button class="role-apply-button" type="button"
+                  onclick="selectApplicationRoute('NSWDG Candidate', 'Undecided / Open to unit needs')">
+                  Apply for NSWDG
+                </button>
+              </div>
+            </div>
+          </article>
+
+          <article class="role-card interactive" data-card-role="MWDH" tabindex="0">
+
+            <button class="role-card-toggle" type="button" aria-label="Open Military Working Dog Handler details"
+              aria-expanded="false">
+              +
+            </button>
+
+            <div class="role-card-summary">
+              <h3>Military Working Dog Handler</h3>
+
+              <p>
+                Specialist dog-handler position supporting searches, tracking,
+                security, and operational ground forces.
+              </p>
+
+              <span class="role-card-prompt">Open to review role</span>
+            </div>
+
+            <div class="role-card-details">
+              <h4>Role overview</h4>
+
+              <p>
+                The handler controls and employs a military working dog during
+                ground operations while remaining fully integrated with the team.
+              </p>
+
+              <h4>Core responsibilities</h4>
+
+              <ul>
+                <li>Handling and controlling the military working dog</li>
+                <li>Searching structures, vehicles, routes, and terrain</li>
+                <li>Tracking personnel and locating possible threats</li>
+                <li>Managing the dog safely around friendly personnel</li>
+                <li>Supporting assault and reconnaissance operations</li>
+              </ul>
+
+              <div class="role-card-requirement">
+                This is recorded as a preferred NSWDG specialty and does not guarantee
+                immediate handler assignment.
+              </div>
+
+              <div class="role-card-actions">
+                <button class="role-apply-button" type="button"
+                  onclick="selectApplicationRoute('NSWDG Candidate', 'Master-At-Arms / Military Working Dog Handler (MWDH)')">
+                  Apply with MWDH Interest
+                </button>
+              </div>
+            </div>
+          </article>
+
+          <article class="role-card interactive" data-card-role="IST" tabindex="0">
+
+            <button class="role-card-toggle" type="button" aria-label="Open Information Systems Technician details"
+              aria-expanded="false">
+              +
+            </button>
+
+            <div class="role-card-summary">
+              <h3>Information Systems Technician</h3>
+
+              <p>
+                Communications and systems specialist supporting reliable information
+                flow during training and operations.
+              </p>
+
+              <span class="role-card-prompt">Open to review role</span>
+            </div>
+
+            <div class="role-card-details">
+              <h4>Role overview</h4>
+
+              <p>
+                The Information Systems Technician supports communications equipment,
+                radio planning, technical systems, and operational troubleshooting.
+              </p>
+
+              <h4>Core responsibilities</h4>
+
+              <ul>
+                <li>Radio and communications-system setup</li>
+                <li>Frequency and communications planning</li>
+                <li>Technical troubleshooting during operations</li>
+                <li>Maintaining dependable information flow</li>
+                <li>Supporting command and operational personnel</li>
+              </ul>
+
+              <div class="role-card-requirement">
+                Applicants should be comfortable learning technical systems and
+                resolving problems without disrupting the operation.
+              </div>
+
+              <div class="role-card-actions">
+                <button class="role-apply-button" type="button"
+                  onclick="selectApplicationRoute('NSWDG Candidate', 'Information Systems Technician (IST)')">
+                  Apply with IST Interest
+                </button>
+              </div>
+            </div>
+          </article>
+
+          <article class="role-card interactive" data-card-role="CT" tabindex="0">
+
+            <button class="role-card-toggle" type="button" aria-label="Open Cryptologic Technician details"
+              aria-expanded="false">
+              +
+            </button>
+
+            <div class="role-card-summary">
+              <h3>Cryptologic Technician</h3>
+
+              <p>
+                Signals-intelligence position supporting collection, analysis,
+                target development, and operational awareness.
+              </p>
+
+              <span class="role-card-prompt">Open to review role</span>
+            </div>
+
+            <div class="role-card-details">
+              <h4>Role overview</h4>
+
+              <p>
+                The Cryptologic Technician collects and interprets electronic
+                information and converts it into concise, usable intelligence.
+              </p>
+
+              <h4>Core responsibilities</h4>
+
+              <ul>
+                <li>Signals collection and communications analysis</li>
+                <li>Electronic tracking and direction finding</li>
+                <li>Identifying relevant communication patterns</li>
+                <li>Producing concise intelligence reports</li>
+                <li>Supporting target development and mission planning</li>
+              </ul>
+
+              <div class="role-card-requirement">
+                Applicants should be comfortable working with incomplete information
+                and communicating findings clearly.
+              </div>
+
+              <div class="role-card-actions">
+                <button class="role-apply-button" type="button"
+                  onclick="selectApplicationRoute('NSWDG Candidate', 'Cryptologic Technician (CT)')">
+                  Apply with CT Interest
+                </button>
+              </div>
+            </div>
+          </article>
+
+          <article class="role-card interactive" data-card-role="EOD" tabindex="0">
+
+            <button class="role-card-toggle" type="button" aria-label="Open Explosive Ordnance Disposal details"
+              aria-expanded="false">
+              +
+            </button>
+
+            <div class="role-card-summary">
+              <h3>Explosive Ordnance Disposal</h3>
+
+              <p>
+                Technical explosive-threat specialist supporting demolitions,
+                breaching, searches, and hazardous situations.
+              </p>
+
+              <span class="role-card-prompt">Open to review role</span>
+            </div>
+
+            <div class="role-card-details">
+              <h4>Role overview</h4>
+
+              <p>
+                EOD personnel identify, assess, and manage explosive threats while
+                providing technical advice to the ground force.
+              </p>
+
+              <h4>Core responsibilities</h4>
+
+              <ul>
+                <li>Identifying explosive devices and hazards</li>
+                <li>Supporting breaching and demolition planning</li>
+                <li>Investigating devices, caches, and suspicious areas</li>
+                <li>Communicating risk to operational leadership</li>
+                <li>Performing deliberate technical procedures under pressure</li>
+              </ul>
+
+              <div class="role-card-requirement">
+                Applicants should prefer careful technical work over unrestricted
+                speed and be able to communicate risk clearly.
+              </div>
+
+              <div class="role-card-actions">
+                <button class="role-apply-button" type="button"
+                  onclick="selectApplicationRoute('NSWDG Candidate', 'Explosive Ordnance Disposal (EOD)')">
+                  Apply with EOD Interest
+                </button>
+              </div>
+            </div>
+          </article>
+
+        </div>
+      </section>
+
+      <!-- =====================================================
+           U.S. AIR FORCE
+           ===================================================== -->
+
+      <section class="service-section">
+        <div class="service-heading">
+          <h2>U.S. Air Force</h2>
+          <span>Special Tactics specialties</span>
+        </div>
+
+        <p class="service-description">
+          Air Force Special Tactics personnel operate alongside the primary ground
+          force while retaining a distinct technical or medical responsibility.
+        </p>
+
+        <div class="role-grid interactive-role-grid">
+
+          <article class="role-card interactive" data-card-role="CCT" tabindex="0">
+
+            <button class="role-card-toggle" type="button" aria-label="Open Combat Controller details"
+              aria-expanded="false">
+              +
+            </button>
+
+            <div class="role-card-summary">
+              <h3>Combat Controller</h3>
+
+              <p>
+                Air-ground integration specialist coordinating aircraft,
+                landing zones, extractions, and tactical aviation support.
+              </p>
+
+              <span class="role-card-prompt">Open to review role</span>
+            </div>
+
+            <div class="role-card-details">
+              <h4>Role overview</h4>
+
+              <p>
+                Combat Controllers coordinate aviation with the ground force and
+                maintain clear communication during complex operations.
+              </p>
+
+              <h4>Core responsibilities</h4>
+
+              <ul>
+                <li>Air-ground radio communication</li>
+                <li>Landing-zone and extraction-zone control</li>
+                <li>Aircraft routing and terminal guidance</li>
+                <li>Coordination of tactical aviation support</li>
+                <li>Maintaining awareness during changing situations</li>
+              </ul>
+
+              <div class="role-card-requirement">
+                Applicants should communicate briefly and accurately while handling
+                several tasks at the same time.
+              </div>
+
+              <div class="role-card-actions">
+                <button class="role-apply-button" type="button"
+                  onclick="selectApplicationRoute('NSWDG Candidate', 'Combat Controller (CCT)')">
+                  Apply with CCT Interest
+                </button>
+              </div>
+            </div>
+          </article>
+
+          <article class="role-card interactive" data-card-role="PJ" tabindex="0">
+
+            <button class="role-card-toggle" type="button" aria-label="Open Pararescue details" aria-expanded="false">
+              +
+            </button>
+
+            <div class="role-card-summary">
+              <h3>Pararescue</h3>
+
+              <p>
+                Medical and personnel-recovery specialist responsible for casualty
+                treatment, stabilization, and extraction.
+              </p>
+
+              <span class="role-card-prompt">Open to review role</span>
+            </div>
+
+            <div class="role-card-details">
+              <h4>Role overview</h4>
+
+              <p>
+                Pararescue personnel provide medical support and coordinate the
+                recovery and evacuation of injured personnel.
+              </p>
+
+              <h4>Core responsibilities</h4>
+
+              <ul>
+                <li>Advanced casualty treatment and stabilization</li>
+                <li>Personnel recovery and rescue support</li>
+                <li>Casualty collection and movement</li>
+                <li>Medical planning and equipment management</li>
+                <li>Evacuation coordination during operations</li>
+              </ul>
+
+              <div class="role-card-requirement">
+                Applicants should remain calm under pressure and accept responsibility
+                for the treatment and recovery of other players.
+              </div>
+
+              <div class="role-card-actions">
+                <button class="role-apply-button" type="button"
+                  onclick="selectApplicationRoute('NSWDG Candidate', 'Pararescue (PJ)')">
+                  Apply with PJ Interest
+                </button>
+              </div>
+            </div>
+          </article>
+
+        </div>
+      </section>
+
+      <!-- =====================================================
+           U.S. ARMY
+           ===================================================== -->
+
+      <section class="service-section">
+        <div class="service-heading">
+          <h2>U.S. Army</h2>
+          <span>Special Operations Aviation</span>
+        </div>
+
+        <p class="service-description">
+          Army aviation personnel support ground operations through rotary-wing
+          insertion, extraction, resupply, reconnaissance, and casualty evacuation.
+        </p>
+
+        <div class="role-grid interactive-role-grid">
+
+          <article class="role-card interactive" data-card-role="SOAR Candidate" tabindex="0">
+
+            <button class="role-card-toggle" type="button"
+              aria-label="Open 160th Special Operations Aviation Regiment details" aria-expanded="false">
+              +
+            </button>
+
+            <div class="role-card-summary">
+              <h3>160th Special Operations Aviation Regiment</h3>
+
+              <p>
+                Special operations aviation route supporting the unit through
+                rotary-wing air movement and tactical aviation.
+              </p>
+
+              <span class="role-card-prompt">Open to review role</span>
+            </div>
+
+            <div class="role-card-details">
+              <h4>Role overview</h4>
+
+              <p>
+                The 160th Special Operations Aviation Regiment provides specialized
+                aviation support for special operations forces.
+              </p>
+
+              <h4>Core responsibilities</h4>
+
+              <ul>
+                <li>Insertion and extraction of ground forces</li>
+                <li>Resupply and casualty evacuation</li>
+                <li>Flight planning and aircraft preparation</li>
+                <li>Coordination with ground-force leadership</li>
+                <li>Operating safely in restricted landing areas</li>
+              </ul>
+
+              <div class="role-card-requirement">
+                Applicants should be willing to train regularly, follow aviation
+                procedures, and coordinate closely with ground elements.
+              </div>
+
+              <div class="role-card-actions">
+                <button class="role-apply-button" type="button" onclick="selectApplicationRoute('SOAR Candidate', '')">
+                  Apply for the 160th SOAR
+                </button>
+              </div>
+            </div>
+          </article>
+
+        </div>
+      </section>
+
+      <!-- =====================================================
+           SCENARIO STAFF
+           ===================================================== -->
+
+      <section class="service-section">
+        <div class="service-heading">
+          <h2>Scenario Staff</h2>
+          <span>Campaign and mission support</span>
+        </div>
+
+        <p class="service-description">
+          These are community simulation positions rather than representations of a
+          specific United States military service.
+        </p>
+
+        <div class="role-grid interactive-role-grid">
+
+          <article class="role-card interactive" data-card-role="OPFOR Candidate" tabindex="0">
+
+            <button class="role-card-toggle" type="button" aria-label="Open OPFOR details" aria-expanded="false">
+              +
+            </button>
+
+            <div class="role-card-summary">
+              <h3>Opposing Force</h3>
+
+              <p>
+                Persistent opposing-force role focused on independent objectives,
+                character decisions, logistics, and campaign consequences.
+              </p>
+
+              <span class="role-card-prompt">Open to review role</span>
+            </div>
+
+            <div class="role-card-details">
+              <h4>Role overview</h4>
+
+              <p>
+                OPFOR personnel portray opposing groups and individuals with their
+                own objectives rather than acting as disposable targets.
+              </p>
+
+              <h4>Core responsibilities</h4>
+
+              <ul>
+                <li>Character-based improvisation and roleplay</li>
+                <li>Independent tactical and strategic decisions</li>
+                <li>Managing persistent resources and logistics</li>
+                <li>Responding naturally to player actions</li>
+                <li>Coordinating campaign activity with mission staff</li>
+              </ul>
+
+              <div class="role-card-requirement">
+                Applicants must be comfortable losing engagements, preserving
+                continuity, and avoiding artificial or gamey behavior.
+              </div>
+
+              <div class="role-card-actions">
+                <button class="role-apply-button" type="button" onclick="selectApplicationRoute('OPFOR Candidate', '')">
+                  Apply for OPFOR
+                </button>
+              </div>
+            </div>
+          </article>
+
+          <article class="role-card interactive" data-card-role="Zeus Candidate" tabindex="0">
+
+            <button class="role-card-toggle" type="button" aria-label="Open Zeus details" aria-expanded="false">
+              +
+            </button>
+
+            <div class="role-card-summary">
+              <h3>Zeus</h3>
+
+              <p>
+                Mission-development and live-control position responsible for
+                believable scenarios that respond to player decisions.
+              </p>
+
+              <span class="role-badge paid">Possible paid position</span>
+              <span class="role-card-prompt">Open to review role</span>
+            </div>
+
+            <div class="role-card-details">
+              <h4>Role overview</h4>
+
+              <p>
+                Zeus personnel develop missions, control live scenarios, and adapt
+                the environment without forcing a predetermined result.
+              </p>
+
+              <h4>Core responsibilities</h4>
+
+              <ul>
+                <li>Mission and campaign development</li>
+                <li>Live scenario control and adaptation</li>
+                <li>Managing civilians, opposing forces, and events</li>
+                <li>Supporting persistent campaign continuity</li>
+                <li>Coordinating with leadership and OPFOR personnel</li>
+              </ul>
+
+              <div class="role-card-requirement">
+                Applicants should understand Arma 3 Zeus, mission flow, pacing,
+                performance limitations, and unscripted player decision-making.
+              </div>
+
+              <div class="role-card-actions">
+                <button class="role-apply-button" type="button" onclick="selectApplicationRoute('Zeus Candidate', '')">
+                  Apply for Zeus
+                </button>
+              </div>
+            </div>
+          </article>
+
+        </div>
+      </section>
 
       <details class="opfor-details">
-      <summary>Read the full OPFOR / Roleplayer explanation</summary>
+        <summary>Read the full OPFOR / Roleplayer explanation</summary>
 
-      <div class="opfor-brief">
-        <h3>What the OPFOR role actually is</h3>
-        <p>
-          The roleplayer position is primarily OPFOR, but it is much more involved than sitting on an objective and waiting for the main force to arrive. OPFOR exists as its own living side of the deployment, with objectives, resources, personalities, pressure, and consequences that continue regardless of what BLUFOR is doing.
-        </p>
+        <div class="opfor-brief">
+          <h3>What the OPFOR role actually is</h3>
+          <p>
+            The roleplayer position is primarily OPFOR, but it is much more involved than sitting on an objective and
+            waiting for the main force to arrive. OPFOR exists as its own living side of the deployment, with
+            objectives, resources, personalities, pressure, and consequences that continue regardless of what BLUFOR is
+            doing.
+          </p>
 
-        <p>
-          Our goal is to create a believable environment where OPFOR players have their own motivations and objectives. You are not only there to be targets for the main unit. You are part of the campaign ecosystem and your actions can affect the entire area of operations.
-        </p>
+          <p>
+            Our goal is to create a believable environment where OPFOR players have their own motivations and
+            objectives. You are not only there to be targets for the main unit. You are part of the campaign ecosystem
+            and your actions can affect the entire area of operations.
+          </p>
 
-        <h3>How a mission day can look</h3>
-        <p>
-          Long before the start of a mission, OPFOR players are usually given names, background context, faction ties, and a role inside the area. Those names and identities are normally assigned by the mission makers so they fit the scenario. You may be a local commander, smuggler, checkpoint guard, recruiter, financier, informant, militia fighter, government contact, driver, detainee, or another mission-specific character.
-        </p>
+          <h3>How a mission day can look</h3>
+          <p>
+            Long before the start of a mission, OPFOR players are usually given names, background context, faction ties,
+            and a role inside the area. Those names and identities are normally assigned by the mission makers so they
+            fit the scenario. You may be a local commander, smuggler, checkpoint guard, recruiter, financier, informant,
+            militia fighter, government contact, driver, detainee, or another mission-specific character.
+          </p>
 
-        <p>
-          You may begin the mission in a village, safehouse, checkpoint, compound, market area, or rural position. Your first task might not involve combat at all. You may need to move weapons, meet another contact, protect a supply route, collect money, recruit fighters, pass intelligence, prepare an ambush, hide from patrols, or simply maintain local control while the main force is operating elsewhere.
-        </p>
+          <p>
+            You may begin the mission in a village, safehouse, checkpoint, compound, market area, or rural position.
+            Your first task might not involve combat at all. You may need to move weapons, meet another contact, protect
+            a supply route, collect money, recruit fighters, pass intelligence, prepare an ambush, hide from patrols, or
+            simply maintain local control while the main force is operating elsewhere.
+          </p>
 
-        <p>
-          BLUFOR may never even come directly to you during that mission. That does not mean your role is inactive. Your decisions still matter. You might create the conditions for a later attack, move resources into position, expose another OPFOR cell by mistake, become a target because of your role, or force Zeus and the mission makers to react to what your side is doing.
-        </p>
+          <p>
+            BLUFOR may never even come directly to you during that mission. That does not mean your role is inactive.
+            Your decisions still matter. You might create the conditions for a later attack, move resources into
+            position, expose another OPFOR cell by mistake, become a target because of your role, or force Zeus and the
+            mission makers to react to what your side is doing.
+          </p>
 
-        <h3>Persistent resources and ownership</h3>
-        <p>
-          Weapons, ammunition, vehicles, intelligence, safehouses, and money are not treated as unlimited. OPFOR uses an in-game currency system without a visible UI to keep things immersive. If your group wants rifles, ammunition, vehicles, explosives, or information, someone usually has to source it, buy it, move it, protect it, or steal it.
-        </p>
+          <h3>Persistent resources and ownership</h3>
+          <p>
+            Weapons, ammunition, vehicles, intelligence, safehouses, and money are not treated as unlimited. OPFOR uses
+            an in-game currency system without a visible UI to keep things immersive. If your group wants rifles,
+            ammunition, vehicles, explosives, or information, someone usually has to source it, buy it, move it, protect
+            it, or steal it.
+          </p>
 
-        <p>
-          Houses and locations on the map are treated as belonging to actual people, families, factions, or organizations. They are intended to be persistent. A house is not just a random building to occupy for one mission. It may be someone’s home, a weapons cache, a safehouse, a meeting point, or a location with consequences if it is raided, destroyed, exposed, or compromised.
-        </p>
+          <p>
+            Houses and locations on the map are treated as belonging to actual people, families, factions, or
+            organizations. They are intended to be persistent. A house is not just a random building to occupy for one
+            mission. It may be someone’s home, a weapons cache, a safehouse, a meeting point, or a location with
+            consequences if it is raided, destroyed, exposed, or compromised.
+          </p>
 
-        <h3>Roles are assigned, developed, or earned</h3>
-        <p>
-          Some roles are given by the mission makers because the scenario needs them. Other roles may be earned or developed over time based on what you do. If you repeatedly handle logistics well, you may become more important to OPFOR supply. If you build contacts, manage money, or organize attacks, your character may gain influence. If you make mistakes, lose resources, betray people, or attract attention, that can also follow you.
-        </p>
+          <h3>Roles are assigned, developed, or earned</h3>
+          <p>
+            Some roles are given by the mission makers because the scenario needs them. Other roles may be earned or
+            developed over time based on what you do. If you repeatedly handle logistics well, you may become more
+            important to OPFOR supply. If you build contacts, manage money, or organize attacks, your character may gain
+            influence. If you make mistakes, lose resources, betray people, or attract attention, that can also follow
+            you.
+          </p>
 
-        <ul>
-          <li>Weapons trafficking and smuggling arms into the region</li>
-          <li>Buying or distributing weapons, ammunition, vehicles, and intelligence</li>
-          <li>Running checkpoints, local security, or patrols</li>
-          <li>Managing money, recruitment, and faction influence</li>
-          <li>Planning attacks, ambushes, sabotage, or information operations</li>
-          <li>Working with, deceiving, or competing against other factions</li>
-        </ul>
+          <ul>
+            <li>Weapons trafficking and smuggling arms into the region</li>
+            <li>Buying or distributing weapons, ammunition, vehicles, and intelligence</li>
+            <li>Running checkpoints, local security, or patrols</li>
+            <li>Managing money, recruitment, and faction influence</li>
+            <li>Planning attacks, ambushes, sabotage, or information operations</li>
+            <li>Working with, deceiving, or competing against other factions</li>
+          </ul>
 
-        <h3>Working with Zeus and other factions</h3>
-        <p>
-          OPFOR players work alongside Zeus and other OPFOR players. Depending on the deployment, another group may be allied with you, loosely connected to you, or a rival faction competing against your interests while BLUFOR is operating in the area. The battlefield is meant to evolve based on what every group decides to do.
-        </p>
+          <h3>Working with Zeus and other factions</h3>
+          <p>
+            OPFOR players work alongside Zeus and other OPFOR players. Depending on the deployment, another group may be
+            allied with you, loosely connected to you, or a rival faction competing against your interests while BLUFOR
+            is operating in the area. The battlefield is meant to evolve based on what every group decides to do.
+          </p>
 
-        <p>
-          This concept has already been tested in a very small way, but it is not final. We expect to change systems as we learn what people enjoy, what people do not enjoy, and whether certain ideas actually work in practice. Feedback from OPFOR players will matter.
-        </p>
+          <p>
+            This concept has already been tested in a very small way, but it is not final. We expect to change systems
+            as we learn what people enjoy, what people do not enjoy, and whether certain ideas actually work in
+            practice. Feedback from OPFOR players will matter.
+          </p>
 
-        <h3>Availability expectations</h3>
-        <p>
-          For someone with limited availability, OPFOR can be a good way to get involved without committing to the same training and attendance requirements as a full unit member. You still need to take the role seriously, but the structure is generally more flexible than joining the main unit.
-        </p>
-      </div>
-    </details>
+          <h3>Availability expectations</h3>
+          <p>
+            For someone with limited availability, OPFOR can be a good way to get involved without committing to the
+            same training and attendance requirements as a full unit member. You still need to take the role seriously,
+            but the structure is generally more flexible than joining the main unit.
+          </p>
+        </div>
+      </details>
     </section>
 
     <section class="content-box">
@@ -1044,11 +2475,35 @@
       </div>
     </section>
 
-    <section class="content-box">
+    <section class="content-box application-panel" id="applicationPanel">
+
+      <div class="application-selection-banner">
+        <h2 id="selectedApplicationTitle">No application route selected</h2>
+
+        <p id="selectedApplicationDescription">
+          Select and open one of the role cards above before starting an application.
+        </p>
+
+        <div class="application-gateway-warning" id="candidateGatewayWarning" hidden>
+          You are applying as an <strong>NSWDG Candidate</strong>. Your selected internal
+          role is recorded as an interest only. It does not guarantee assignment,
+          callsign, team placement, or qualification.
+        </div>
+
+        <div class="application-selection-actions">
+          <button class="role-secondary-button" type="button" onclick="changeApplicationRoute()">
+            Change selected role
+          </button>
+        </div>
+      </div>
+
       <form id="applicationForm" novalidate>
+        <input id="applicationRoute" name="applicationRoute" type="hidden">
+        <input id="finderResultSummary" name="finderResultSummary" type="hidden">
 
         <div class="draft-tools">
-          <p><strong>Draft save:</strong> This application automatically saves in this browser while you type. Refreshing the page will not clear your answers.</p>
+          <p><strong>Draft save:</strong> This application automatically saves in this browser while you type.
+            Refreshing the page will not clear your answers.</p>
           <button class="btn-secondary" type="button" id="clearDraftBtn">Clear Saved Draft</button>
         </div>
 
@@ -1059,7 +2514,8 @@
             <div class="form-group" data-min="2" data-max="40">
               <label for="preferredName">What is your name, nickname, or what should we call you?</label>
               <div class="field-wrap">
-                <input id="preferredName" name="preferredName" type="text" placeholder="Name, nickname, callsign, or preferred name">
+                <input id="preferredName" name="preferredName" type="text"
+                  placeholder="Name, nickname, callsign, or preferred name">
                 <span class="char-counter"></span>
               </div>
               <div class="field-error"></div>
@@ -1095,29 +2551,102 @@
         </div>
 
         <div class="form-section">
-          <h2>Section II - Role Selection</h2>
+          <h2>Section II - Application Route</h2>
 
           <div class="form-group" data-min="1" data-max="40" data-skip-length="true">
-            <label for="roleApplied">Which role are you applying for?</label>
+            <label for="roleApplied">Application category</label>
+
             <div class="field-wrap">
-              <select id="roleApplied" name="roleApplied">
-                <option value="">Select a role</option>
-                  <option value="NSWDG Candidate">NSWDG Candidate</option>
-                  <option value="SOAR Candidate">SOAR Candidate</option>
-                  <option value="Special Tactics Candidate">Special Tactics Candidate</option>
-                  <option value="OPFOR Candidate">OPFOR Candidate</option>
-                  <option value="Zeus Candidate">Zeus Candidate</option>
+              <select id="roleApplied" name="roleApplied" disabled>
+                <option value="">Select a role card above</option>
+                <option value="NSWDG Candidate">NSWDG Candidate</option>
+                <option value="SOAR Candidate">SOAR Candidate</option>
+                <option value="OPFOR Candidate">OPFOR Candidate</option>
+                <option value="Zeus Candidate">Zeus Candidate</option>
               </select>
+              <input id="roleAppliedSubmission" name="roleAppliedSubmission" type="hidden">
+
               <span class="char-counter"></span>
             </div>
+
             <div class="field-error"></div>
-            <div class="role-help" id="roleHelp">Select a role and the application questions below will update.</div>
+
+            <div class="role-help" id="roleHelp">
+              Select and confirm a role card above to open the application.
+            </div>
+          </div>
+
+          <div class="internal-interest-wrap" id="internalInterestWrap">
+            <div class="form-group" data-min="1" data-max="100" data-skip-length="true">
+              <label for="preferredSpecialty">
+                Which internal NSWDG role currently interests you most?
+              </label>
+
+              <div class="field-wrap">
+                <select id="preferredSpecialty" name="preferredSpecialty">
+                  <option value="">Select an interest</option>
+                  <option value="Undecided / Open to unit needs">
+                    Undecided / Open to unit needs
+                  </option>
+                  <option value="Assaulter">Assaulter</option>
+                  <option value="Reconnaissance">Reconnaissance</option>
+                  <option value="Master-At-Arms / Military Working Dog Handler (MWDH)">
+                    Master-At-Arms / Military Working Dog Handler (MWDH)
+                  </option>
+                  <option value="Information Systems Technician (IST)">
+                    Information Systems Technician (IST)
+                  </option>
+                  <option value="Cryptologic Technician (CT)">
+                    Cryptologic Technician (CT)
+                  </option>
+                  <option value="Explosive Ordnance Disposal (EOD)">
+                    Explosive Ordnance Disposal (EOD)
+                  </option>
+                  <option value="Combat Controller (CCT)">
+                    Combat Controller (CCT)
+                  </option>
+                  <option value="Pararescue (PJ)">
+                    Pararescue (PJ)
+                  </option>
+                </select>
+
+                <span class="char-counter"></span>
+              </div>
+
+              <div class="field-error"></div>
+
+              <div class="role-help">
+                This answer records your strongest current interest. It does not guarantee
+                that position. You may be evaluated for another role based on performance,
+                availability, aptitude, and unit requirements.
+              </div>
+            </div>
+
+            <div class="form-group" data-min="50" data-max="700">
+              <label for="specialtyReason">
+                Why does this role interest you, and what do you imagine yourself doing in it?
+              </label>
+
+              <div class="field-wrap">
+                <textarea id="specialtyReason" name="specialtyReason" rows="5"
+                  placeholder="Explain what attracts you to the role, what responsibilities you expect, and why you believe it fits you."></textarea>
+
+                <span class="char-counter"></span>
+              </div>
+
+              <div class="field-error"></div>
+            </div>
+
+            <button class="role-secondary-button" type="button" onclick="openRoleFinder()">
+              I am still unsure, open the role finder
+            </button>
           </div>
         </div>
 
         <div class="form-section">
           <h2 id="dynamicSectionTitle">Section III - Role Questions</h2>
-          <p class="dynamic-question-note">These questions change based on the selected role. Changing the role will replace the role-specific questions.</p>
+          <p class="dynamic-question-note">These questions change based on the selected role. Changing the role will
+            replace the role-specific questions.</p>
           <div id="dynamicQuestions"></div>
         </div>
 
@@ -1142,15 +2671,100 @@
   <footer class="site-footer">
     <div class="inner">
       <div class="footer-cols">
-        <div class="footer-col"><h4>Overview</h4><ul><li><a href="/">Unit Overview</a></li></ul></div>
-        <div class="footer-col"><h4>Media</h4><ul><li><span>Gallery Coming Soon</span></li></ul></div>
-        <div class="footer-col"><h4>Application</h4><ul><li><a href="./">Apply</a></li></ul></div>
+        <div class="footer-col">
+          <h4>Overview</h4>
+          <ul>
+            <li><a href="/">Unit Overview</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Media</h4>
+          <ul>
+            <li><span>Gallery Coming Soon</span></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Application</h4>
+          <ul>
+            <li><a href="./">Apply</a></li>
+          </ul>
+        </div>
       </div>
       <div class="footer-disclaimer">
-        <strong>Disclaimer:</strong> NSWDG is a fictional Arma 3 community project. It is not affiliated with DEVGRU, the U.S. Navy, JSOC, USSOCOM, or any real-world military organization. Names, procedures, departments, visual identity, and materials on this site are fictional community content.
+        <strong>Disclaimer:</strong> NSWDG is a fictional Arma 3 community project. It is not affiliated with DEVGRU,
+        the U.S. Navy, JSOC, USSOCOM, or any real-world military organization. Names, procedures, departments, visual
+        identity, and materials on this site are fictional community content.
       </div>
     </div>
   </footer>
+
+  <div class="role-finder-overlay" id="roleFinderModal">
+    <div class="role-finder-box">
+
+      <div class="role-finder-header">
+        <div>
+          <h2>Operational Role Finder</h2>
+          <div class="role-finder-progress" id="roleFinderProgress">
+            Introduction
+          </div>
+        </div>
+
+        <button class="close-btn" type="button" aria-label="Close role finder" onclick="closeRoleFinder()">
+          &times;
+        </button>
+      </div>
+
+      <div class="role-finder-body">
+
+        <div id="roleFinderIntroduction">
+          <p class="role-finder-intro">
+            This questionnaire compares what you enjoy doing with the roles currently
+            represented in the unit. There are no correct answers. Choose what you
+            would genuinely prefer, not what sounds most prestigious.
+          </p>
+
+          <p class="role-finder-intro">
+            The result is advisory. It does not guarantee selection or placement.
+            Internal specialties still require an NSWDG Candidate application.
+          </p>
+
+          <button class="finder-start-button" type="button" onclick="startRoleFinder()">
+            Start questionnaire
+          </button>
+        </div>
+
+        <div id="roleFinderQuestions"></div>
+
+        <div class="finder-results" id="roleFinderResults">
+          <div class="finder-result-intro">
+            These are your strongest matches based on your answers. Read the reasons
+            before continuing with an application.
+          </div>
+
+          <div id="roleFinderResultCards"></div>
+
+          <p class="finder-disclaimer">
+            This questionnaire measures stated preferences only. Staff may recommend
+            a different role after reviewing your application, experience, behaviour,
+            availability, and performance.
+          </p>
+        </div>
+
+      </div>
+
+      <div class="finder-footer">
+        <button class="role-secondary-button" type="button" id="roleFinderRestartButton" onclick="restartRoleFinder()"
+          hidden>
+          Restart questionnaire
+        </button>
+
+        <button class="role-secondary-button" type="button" onclick="closeRoleFinder()">
+          Close
+        </button>
+      </div>
+
+    </div>
+  </div>
 
   <div class="modal-overlay" id="formModal">
     <div class="modal-box">
@@ -1198,101 +2812,943 @@
   </div>
 
   <script>
-    var DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1508359225028509707/xfoeXuWWBl8itTpP3KjN-l-SxMuVZo1ydbglw4GHPzcZHZFWoUOFSFTOho1IaNOGDBq4';
-
+    var DISCORD_WEBHOOK_URL =
+      'https://discord.com/api/webhooks/1508359225028509707/xfoeXuWWBl8itTpP3KjN-l-SxMuVZo1ydbglw4GHPzcZHZFWoUOFSFTOho1IaNOGDBq4';
     var ROLE_QUESTIONS = {
       'NSWDG Candidate': {
-        help: 'NSWDG applicants are reviewed for tactical maturity, GWOT/DEVGRU interest, teamwork, schedule fit, and willingness to learn unit procedures.',
-        questions: [
-          { id: 'unitConflict', min: 15, max: 700, rows: 4, text: 'Are you currently in any other Arma 3 units or communities? If yes, explain how they differ from this group and whether there are any schedule or loyalty conflicts.' },
-          { id: 'gwotInterest', min: 100, max: 700, rows: 5, text: 'Describe your interest in GWOT-era NSWDG/DEVGRU kit, tactics, atmosphere, and historical recreation.' },
-          { id: 'armaExperience', min: 100, max: 700, rows: 5, text: 'What is your previous Arma 3 or mil-sim experience, how many hours do you have, and what roles have you usually played?' },
-          { id: 'teamworkDiscipline', min: 75, max: 700, rows: 5, text: 'Give an example of how you handle orders, corrections, or criticism during a mission.' },
-          { id: 'specialInterest', min: 50, max: 700, rows: 5, text: 'What NSWDG role or specialty interests you most, such as assaulter, breacher, medic, JTAC, marksman, MFF, or reconnaissance, and why?' },
-          { id: 'availability', min: 25, max: 700, rows: 5, text: 'What does your normal weekly availability look like? Include days, times, timezone, and recurring limits.' },
-          { id: 'technicalReadiness', min: 10, max: 500, rows: 4, text: 'Do you have a working microphone, TeamSpeak, Arma 3 installed, required mod space, and a stable setup?' },
-          { id: 'voiceInterview', min: 3, max: 300, rows: 3, text: 'Are you willing to complete a voice interview if your application is accepted?' }
+        help: 'All internal DEVGRU specialties use the NSWDG Candidate entry route. ' +
+          'Your preferred specialty is considered, but no assignment is guaranteed.',
+        questions: [{
+            id: 'unitConflict',
+            min: 15,
+            max: 700,
+            rows: 4,
+            text: 'Are you currently in any other Arma 3 units or communities? If yes, explain how they differ from this group and whether there are schedule or commitment conflicts.'
+          },
+          {
+            id: 'gwotInterest',
+            min: 100,
+            max: 700,
+            rows: 5,
+            text: 'Describe your interest in GWOT-era NSWDG/DEVGRU equipment, tactics, atmosphere, and historical recreation.'
+          },
+          {
+            id: 'armaExperience',
+            min: 100,
+            max: 700,
+            rows: 5,
+            text: 'Describe your previous Arma 3 or mil-sim experience, approximate hours, and the roles you have normally performed.'
+          },
+          {
+            id: 'roleUnderstanding',
+            min: 100,
+            max: 700,
+            rows: 5,
+            text: 'What do you believe your preferred specialty is responsible for, and how should that specialty support the rest of the force?'
+          },
+          {
+            id: 'teamworkDiscipline',
+            min: 75,
+            max: 700,
+            rows: 5,
+            text: 'Give an example of how you handle orders, corrections, criticism, or being reassigned to a task you did not originally prefer.'
+          },
+          {
+            id: 'placementFlexibility',
+            min: 75,
+            max: 700,
+            rows: 5,
+            text: 'How would you respond if staff believed you were better suited to another specialty or if your preferred position was unavailable?'
+          },
+          {
+            id: 'pressureDecision',
+            min: 100,
+            max: 700,
+            rows: 5,
+            text: 'Describe how you make decisions when information is incomplete, time is limited, and other people are depending on you.'
+          },
+          {
+            id: 'availability',
+            min: 25,
+            max: 700,
+            rows: 5,
+            text: 'What does your normal weekly availability look like? Include days, times, timezone, and recurring limitations.'
+          },
+          {
+            id: 'technicalReadiness',
+            min: 10,
+            max: 500,
+            rows: 4,
+            text: 'Do you have a working microphone, TeamSpeak, Arma 3 installed, sufficient mod storage, and a stable setup?'
+          },
+          {
+            id: 'voiceInterview',
+            min: 3,
+            max: 300,
+            rows: 3,
+            text: 'Are you willing to complete a voice interview and candidate evaluation if your application is accepted?'
+          }
         ]
       },
-
       'SOAR Candidate': {
         help: 'SOAR applicants are reviewed for aviation interest, crew coordination, radio discipline, reliability, and ability to support ground force operations.',
-        questions: [
-          { id: 'unitConflict', min: 15, max: 700, rows: 4, text: 'Are you currently in any other Arma 3 units or communities? If yes, explain whether this would conflict with a SOAR aviation role.' },
-          { id: 'soarInterest', min: 100, max: 700, rows: 5, text: 'Why are you interested in a 160th SOAR-style aviation role in this community?' },
-          { id: 'aviationExperience', min: 100, max: 700, rows: 5, text: 'Describe your Arma 3 aviation experience. Include rotary-wing, fixed-wing, transport, CAS, insertions, extractions, and night operations if applicable.' },
-          { id: 'airframePreference', min: 50, max: 700, rows: 4, text: 'Which aviation role interests you most, such as pilot, crew chief, door gunner, flight lead, or mission support, and why?' },
-          { id: 'groundCoordination', min: 75, max: 700, rows: 5, text: 'How would you coordinate with a ground force during an infil, exfil, resupply, casualty evacuation, or fire support task?' },
-          { id: 'radioDiscipline', min: 75, max: 700, rows: 5, text: 'Explain your understanding of radio discipline, brevity, and calm communication during aviation support.' },
-          { id: 'availability', min: 25, max: 700, rows: 5, text: 'What does your normal weekly availability look like? Include days, times, timezone, and recurring limits.' },
-          { id: 'technicalReadiness', min: 10, max: 500, rows: 4, text: 'Do you have a working microphone, TeamSpeak, Arma 3 installed, required mod space, and a stable setup?' },
-          { id: 'voiceInterview', min: 3, max: 300, rows: 3, text: 'Are you willing to complete a voice interview and aviation evaluation if your application is accepted?' }
-        ]
-      },
-
-      'Special Tactics Candidate': {
-        help: 'Special Tactics applicants are reviewed for interest in 24th STS-style support roles, communication, medical or technical roleplay maturity, and ability to integrate with ground teams.',
-        questions: [
-          { id: 'unitConflict', min: 15, max: 700, rows: 4, text: 'Are you currently in any other Arma 3 units or communities? If yes, explain whether this would conflict with a Special Tactics role.' },
-          {
-            id: 'specialTacticsSpecialty',
-            type: 'select',
-            min: 1,
-            max: 60,
-            text: 'Which Special Tactics specialty are you applying for?',
-            options: [
-              { value: 'Combat Controller (CCT)', label: 'Combat Controller (CCT)' },
-              { value: 'Pararescue (PJ)', label: 'Pararescue (PJ)' },
-              { value: 'Explosive Ordnance Disposal Technician (EOD)', label: 'Explosive Ordnance Disposal Technician (EOD)' }
-            ]
+        questions: [{
+            id: 'unitConflict',
+            min: 15,
+            max: 700,
+            rows: 4,
+            text: 'Are you currently in any other Arma 3 units or communities? If yes, explain whether this would conflict with a SOAR aviation role.'
           },
-          { id: 'stsInterest', min: 100, max: 700, rows: 5, text: 'Why are you interested in a 24th STS-style role in this community?' },
-          { id: 'specialtyExperience', min: 100, max: 700, rows: 5, text: 'Describe any experience you have with JTAC/CCT tasks, pararescue or medical gameplay, EOD tasks, demolitions, breaching, air-ground integration, or technical support roles.' },
-          { id: 'airGroundIntegration', min: 75, max: 700, rows: 5, text: 'How would you support NSWDG personnel during an operation while staying integrated with the ground force instead of acting independently?' },
-          { id: 'roleScenario', min: 100, max: 700, rows: 5, text: 'Describe how you would act during a mission where the team needs your specialty under pressure.' },
-          { id: 'communicationStyle', min: 75, max: 700, rows: 5, text: 'Explain how you handle radio communication, coordination, and corrections during stressful operations.' },
-          { id: 'availability', min: 25, max: 700, rows: 5, text: 'What does your normal weekly availability look like? Include days, times, timezone, and recurring limits.' },
-          { id: 'technicalReadiness', min: 10, max: 500, rows: 4, text: 'Do you have a working microphone, TeamSpeak, Arma 3 installed, required mod space, and a stable setup?' },
-          { id: 'voiceInterview', min: 3, max: 300, rows: 3, text: 'Are you willing to complete a voice interview and role discussion if your application is accepted?' }
+          {
+            id: 'soarInterest',
+            min: 100,
+            max: 700,
+            rows: 5,
+            text: 'Why are you interested in a 160th SOAR-style aviation role in this community?'
+          },
+          {
+            id: 'aviationExperience',
+            min: 100,
+            max: 700,
+            rows: 5,
+            text: 'Describe your Arma 3 aviation experience. Include rotary-wing, fixed-wing, transport, CAS, insertions, extractions, and night operations if applicable.'
+          },
+          {
+            id: 'airframePreference',
+            min: 50,
+            max: 700,
+            rows: 4,
+            text: 'Which aviation role interests you most, such as pilot, crew chief, door gunner, flight lead, or mission support, and why?'
+          },
+          {
+            id: 'groundCoordination',
+            min: 75,
+            max: 700,
+            rows: 5,
+            text: 'How would you coordinate with a ground force during an infil, exfil, resupply, casualty evacuation, or fire support task?'
+          },
+          {
+            id: 'radioDiscipline',
+            min: 75,
+            max: 700,
+            rows: 5,
+            text: 'Explain your understanding of radio discipline, brevity, and calm communication during aviation support.'
+          },
+          {
+            id: 'availability',
+            min: 25,
+            max: 700,
+            rows: 5,
+            text: 'What does your normal weekly availability look like? Include days, times, timezone, and recurring limits.'
+          },
+          {
+            id: 'technicalReadiness',
+            min: 10,
+            max: 500,
+            rows: 4,
+            text: 'Do you have a working microphone, TeamSpeak, Arma 3 installed, required mod space, and a stable setup?'
+          },
+          {
+            id: 'voiceInterview',
+            min: 3,
+            max: 300,
+            rows: 3,
+            text: 'Are you willing to complete a voice interview and aviation evaluation if your application is accepted?'
+          }
         ]
       },
-
       'OPFOR Candidate': {
         help: 'OPFOR applicants are reviewed for immersion, restraint, independent thinking, reliability, and ability to create believable opposition.',
-        questions: [
-          { id: 'unitConflict', min: 15, max: 700, rows: 4, text: 'Are you currently in any other Arma 3 units or communities? If yes, explain whether this would conflict with an OPFOR campaign role.' },
-          { id: 'opforMotivation', min: 100, max: 700, rows: 5, text: 'Why do you want to play OPFOR instead of a main friendly-force role?' },
-          { id: 'armaExperience', min: 75, max: 700, rows: 5, text: 'Describe your Arma 3 experience, including PvE, PvP, Zeus, insurgency, logistics, reconnaissance, or leadership experience.' },
-          { id: 'immersionRestraint', min: 100, max: 700, rows: 5, text: 'How would you balance immersion, challenge, and restraint during missions?' },
-          { id: 'planningStyle', min: 75, max: 700, rows: 5, text: 'How would you approach planning an ambush, raid, reconnaissance task, or defensive action against a better-equipped force?' },
-          { id: 'availability', min: 25, max: 700, rows: 5, text: 'What does your normal weekly availability look like?' },
-          { id: 'technicalReadiness', min: 10, max: 500, rows: 4, text: 'Do you have a working microphone, TeamSpeak, Arma 3 installed, required mod space, and a stable setup?' },
-          { id: 'voiceInterview', min: 3, max: 300, rows: 3, text: 'Are you willing to complete a voice interview if your application is accepted?' }
+        questions: [{
+            id: 'unitConflict',
+            min: 15,
+            max: 700,
+            rows: 4,
+            text: 'Are you currently in any other Arma 3 units or communities? If yes, explain whether this would conflict with an OPFOR campaign role.'
+          },
+          {
+            id: 'opforMotivation',
+            min: 100,
+            max: 700,
+            rows: 5,
+            text: 'Why do you want to play OPFOR instead of a main friendly-force role?'
+          },
+          {
+            id: 'armaExperience',
+            min: 75,
+            max: 700,
+            rows: 5,
+            text: 'Describe your Arma 3 experience, including PvE, PvP, Zeus, insurgency, logistics, reconnaissance, or leadership experience.'
+          },
+          {
+            id: 'immersionRestraint',
+            min: 100,
+            max: 700,
+            rows: 5,
+            text: 'How would you balance immersion, challenge, and restraint during missions?'
+          },
+          {
+            id: 'planningStyle',
+            min: 75,
+            max: 700,
+            rows: 5,
+            text: 'How would you approach planning an ambush, raid, reconnaissance task, or defensive action against a better-equipped force?'
+          },
+          {
+            id: 'availability',
+            min: 25,
+            max: 700,
+            rows: 5,
+            text: 'What does your normal weekly availability look like?'
+          },
+          {
+            id: 'technicalReadiness',
+            min: 10,
+            max: 500,
+            rows: 4,
+            text: 'Do you have a working microphone, TeamSpeak, Arma 3 installed, required mod space, and a stable setup?'
+          },
+          {
+            id: 'voiceInterview',
+            min: 3,
+            max: 300,
+            rows: 3,
+            text: 'Are you willing to complete a voice interview if your application is accepted?'
+          }
         ]
       },
-
       'Zeus Candidate': {
         help: 'Zeus applicants are reviewed for mission design judgement, technical competence, communication, consistency, and restraint.',
-        questions: [
-          { id: 'unitConflict', min: 15, max: 700, rows: 4, text: 'Are you currently in any other Arma 3 units or communities? If yes, explain whether there are schedule, staff, or mission-development conflicts.' },
-          { id: 'zeusExperience', min: 100, max: 700, rows: 5, text: 'Describe your Zeus, Eden Editor, scripting, modding, mission-making, or staff experience.' },
-          { id: 'missionDesign', min: 100, max: 700, rows: 5, text: 'How do you design a believable operation from briefing to execution?' },
-          { id: 'liveAdaptation', min: 100, max: 700, rows: 5, text: 'During a live mission, the players ignore the expected route and break your plan. What do you do?' },
-          { id: 'feedbackLeadership', min: 75, max: 700, rows: 5, text: 'How do you handle feedback from leadership and players when a mission does not go well?' },
-          { id: 'availability', min: 25, max: 700, rows: 5, text: 'What does your normal weekly availability look like?' },
-          { id: 'technicalReadiness', min: 10, max: 500, rows: 4, text: 'Do you have a working microphone, TeamSpeak, Arma 3 installed, required mod space, and a stable setup?' },
-          { id: 'paidPosition', min: 3, max: 500, rows: 4, text: 'Are you applying as a volunteer, interested in possible paid work, or open to either?' },
-          { id: 'voiceInterview', min: 3, max: 300, rows: 3, text: 'Are you willing to complete a voice interview and practical Zeus discussion if your application is accepted?' }
+        questions: [{
+            id: 'unitConflict',
+            min: 15,
+            max: 700,
+            rows: 4,
+            text: 'Are you currently in any other Arma 3 units or communities? If yes, explain whether there are schedule, staff, or mission-development conflicts.'
+          },
+          {
+            id: 'zeusExperience',
+            min: 100,
+            max: 700,
+            rows: 5,
+            text: 'Describe your Zeus, Eden Editor, scripting, modding, mission-making, or staff experience.'
+          },
+          {
+            id: 'missionDesign',
+            min: 100,
+            max: 700,
+            rows: 5,
+            text: 'How do you design a believable operation from briefing to execution?'
+          },
+          {
+            id: 'liveAdaptation',
+            min: 100,
+            max: 700,
+            rows: 5,
+            text: 'During a live mission, the players ignore the expected route and break your plan. What do you do?'
+          },
+          {
+            id: 'feedbackLeadership',
+            min: 75,
+            max: 700,
+            rows: 5,
+            text: 'How do you handle feedback from leadership and players when a mission does not go well?'
+          },
+          {
+            id: 'availability',
+            min: 25,
+            max: 700,
+            rows: 5,
+            text: 'What does your normal weekly availability look like?'
+          },
+          {
+            id: 'technicalReadiness',
+            min: 10,
+            max: 500,
+            rows: 4,
+            text: 'Do you have a working microphone, TeamSpeak, Arma 3 installed, required mod space, and a stable setup?'
+          },
+          {
+            id: 'paidPosition',
+            min: 3,
+            max: 500,
+            rows: 4,
+            text: 'Are you applying as a volunteer, interested in possible paid work, or open to either?'
+          },
+          {
+            id: 'voiceInterview',
+            min: 3,
+            max: 300,
+            rows: 3,
+            text: 'Are you willing to complete a voice interview and practical Zeus discussion if your application is accepted?'
+          }
         ]
       }
     };
+    /*
+      APPLICATION ROUTE AND ROLE FINDER SYSTEM
+      This code must remain directly above:
+      var DYNAMIC_FIELD_IDS = [];
+    */
+    var ROLE_FINDER_ROLES = {
+      'Assaulter': {
+        applicationRoute: 'NSWDG Candidate',
+        specialty: 'Assaulter',
+        description: 'You prefer direct-action missions, close-quarters combat, aggressive teamwork, weapons handling, and being part of the primary assault force.'
+      },
+      'Reconnaissance': {
+        applicationRoute: 'NSWDG Candidate',
+        specialty: 'Reconnaissance',
+        description: 'You prefer observation, intelligence gathering, stealth, navigation, patience, reporting, and operating ahead of the main force.'
+      },
+      'Master-At-Arms / Military Working Dog Handler (MWDH)': {
+        applicationRoute: 'NSWDG Candidate',
+        specialty: 'Master-At-Arms / Military Working Dog Handler (MWDH)',
+        description: 'You prefer working with military working dogs, tracking, searching, security, detection, and supporting the assault force through a specialized capability.'
+      },
+      'Information Systems Technician (IST)': {
+        applicationRoute: 'NSWDG Candidate',
+        specialty: 'Information Systems Technician (IST)',
+        description: 'You prefer communications, technical systems, information management, equipment setup, troubleshooting, and keeping the force connected.'
+      },
+      'Cryptologic Technician (CT)': {
+        applicationRoute: 'NSWDG Candidate',
+        specialty: 'Cryptologic Technician (CT)',
+        description: 'You prefer signals intelligence, electronic surveillance, technical analysis, locating hostile communications, and supplying intelligence to the force.'
+      },
+      'Explosive Ordnance Disposal (EOD)': {
+        applicationRoute: 'NSWDG Candidate',
+        specialty: 'Explosive Ordnance Disposal (EOD)',
+        description: 'You prefer explosives, technical problem-solving, breaching support, identifying threats, rendering hazards safe, and working carefully under pressure.'
+      },
+      'Combat Controller (CCT)': {
+        applicationRoute: 'NSWDG Candidate',
+        specialty: 'Combat Controller (CCT)',
+        description: 'You prefer air-ground integration, radio communication, coordinating aircraft, controlling fires, landing-zone operations, and supporting teams independently.'
+      },
+      'Pararescue (PJ)': {
+        applicationRoute: 'NSWDG Candidate',
+        specialty: 'Pararescue (PJ)',
+        description: 'You prefer advanced medical support, casualty recovery, rescue operations, remaining calm under pressure, and keeping teammates alive.'
+      },
+      'SOAR Candidate': {
+        applicationRoute: 'SOAR Candidate',
+        specialty: '',
+        description: 'You prefer aviation, precise flying, crew coordination, radio communication, mission planning, and safely transporting or supporting the ground force.'
+      },
+      'OPFOR Candidate': {
+        applicationRoute: 'OPFOR Candidate',
+        specialty: '',
+        description: 'You prefer roleplay, improvisation, asymmetric planning, believable opposition, independent objectives, and helping create an immersive campaign.'
+      },
+      'Zeus Candidate': {
+        applicationRoute: 'Zeus Candidate',
+        specialty: '',
+        description: 'You prefer mission design, storytelling, technical systems, live adaptation, managing AI, and creating enjoyable operations for other players.'
+      }
+    };
+    var ROLE_FINDER_QUESTIONS = [{
+        text: 'Which type of activity sounds most enjoyable?',
+        answers: [{
+            text: 'Entering buildings and fighting as part of an assault team',
+            scores: {
+              'Assaulter': 4,
+              'Explosive Ordnance Disposal (EOD)': 1
+            }
+          },
+          {
+            text: 'Observing an objective and quietly collecting information',
+            scores: {
+              'Reconnaissance': 4,
+              'Cryptologic Technician (CT)': 1
+            }
+          },
+          {
+            text: 'Flying or supporting aircraft during an operation',
+            scores: {
+              'SOAR Candidate': 4,
+              'Combat Controller (CCT)': 1
+            }
+          },
+          {
+            text: 'Building and controlling the mission for everyone else',
+            scores: {
+              'Zeus Candidate': 4,
+              'OPFOR Candidate': 1
+            }
+          }
+        ]
+      },
+      {
+        text: 'What responsibility would you most naturally accept?',
+        answers: [{
+            text: 'Being near the front and directly engaging threats',
+            scores: {
+              'Assaulter': 4,
+              'Pararescue (PJ)': 1
+            }
+          },
+          {
+            text: 'Managing radios, computers, communications, or technical equipment',
+            scores: {
+              'Information Systems Technician (IST)': 4,
+              'Cryptologic Technician (CT)': 2
+            }
+          },
+          {
+            text: 'Finding and handling explosives or dangerous devices',
+            scores: {
+              'Explosive Ordnance Disposal (EOD)': 4
+            }
+          },
+          {
+            text: 'Treating, stabilizing, and recovering casualties',
+            scores: {
+              'Pararescue (PJ)': 4
+            }
+          }
+        ]
+      },
+      {
+        text: 'Which working style fits you best?',
+        answers: [{
+            text: 'Fast, aggressive, coordinated, and close to the action',
+            scores: {
+              'Assaulter': 4
+            }
+          },
+          {
+            text: 'Patient, quiet, independent, and information-focused',
+            scores: {
+              'Reconnaissance': 4,
+              'Cryptologic Technician (CT)': 2
+            }
+          },
+          {
+            text: 'Technical, methodical, careful, and procedure-focused',
+            scores: {
+              'Explosive Ordnance Disposal (EOD)': 3,
+              'Information Systems Technician (IST)': 2
+            }
+          },
+          {
+            text: 'Creative, reactive, and focused on everyone’s experience',
+            scores: {
+              'Zeus Candidate': 4,
+              'OPFOR Candidate': 2
+            }
+          }
+        ]
+      },
+      {
+        text: 'Which support capability interests you most?',
+        answers: [{
+            text: 'Coordinating aircraft, landing zones, and air support',
+            scores: {
+              'Combat Controller (CCT)': 4,
+              'SOAR Candidate': 2
+            }
+          },
+          {
+            text: 'Searching, tracking, detection, and working with a military dog',
+            scores: {
+              'Master-At-Arms / Military Working Dog Handler (MWDH)': 4,
+              'Reconnaissance': 1
+            }
+          },
+          {
+            text: 'Intercepting, locating, and analysing hostile communications',
+            scores: {
+              'Cryptologic Technician (CT)': 4,
+              'Information Systems Technician (IST)': 1
+            }
+          },
+          {
+            text: 'Providing emergency medical care and casualty recovery',
+            scores: {
+              'Pararescue (PJ)': 4
+            }
+          }
+        ]
+      },
+      {
+        text: 'During a mission, where would you rather be?',
+        answers: [{
+            text: 'Inside the assault element clearing the objective',
+            scores: {
+              'Assaulter': 4,
+              'Explosive Ordnance Disposal (EOD)': 1
+            }
+          },
+          {
+            text: 'Ahead of the force watching and reporting',
+            scores: {
+              'Reconnaissance': 4
+            }
+          },
+          {
+            text: 'In an aircraft supporting the force',
+            scores: {
+              'SOAR Candidate': 4
+            }
+          },
+          {
+            text: 'Behind the scenes controlling the scenario',
+            scores: {
+              'Zeus Candidate': 4
+            }
+          }
+        ]
+      },
+      {
+        text: 'Which statement describes you best?',
+        answers: [{
+            text: 'I want a regular combat role and can adapt to what the team needs',
+            scores: {
+              'Assaulter': 4,
+              'Reconnaissance': 1
+            }
+          },
+          {
+            text: 'I want a specialized technical responsibility',
+            scores: {
+              'Information Systems Technician (IST)': 2,
+              'Cryptologic Technician (CT)': 2,
+              'Explosive Ordnance Disposal (EOD)': 2,
+              'Combat Controller (CCT)': 2
+            }
+          },
+          {
+            text: 'I enjoy roleplay and creating believable opposition',
+            scores: {
+              'OPFOR Candidate': 4,
+              'Zeus Candidate': 1
+            }
+          },
+          {
+            text: 'I enjoy medical responsibility and helping others under pressure',
+            scores: {
+              'Pararescue (PJ)': 4
+            }
+          }
+        ]
+      }
+    ];
+    var roleFinderAnswers = [];
+    var roleFinderCurrentQuestion = 0;
+    var roleFinderRankedResults = [];
 
+    function toggleRoleCard(selectedCard) {
+      var isAlreadyOpen = selectedCard.classList.contains('open');
+      document.querySelectorAll('.role-card.interactive').forEach(function(card) {
+        card.classList.remove('open');
+        var cardToggle = card.querySelector('.role-card-toggle');
+        if (cardToggle) {
+          cardToggle.textContent = '+';
+          cardToggle.setAttribute('aria-expanded', 'false');
+        }
+      });
+      if (!isAlreadyOpen) {
+        selectedCard.classList.add('open');
+        var selectedToggle = selectedCard.querySelector('.role-card-toggle');
+        if (selectedToggle) {
+          selectedToggle.textContent = '−';
+          selectedToggle.setAttribute('aria-expanded', 'true');
+        }
+      }
+    }
+
+    function initializeInteractiveRoleCards() {
+      document.querySelectorAll('.role-card.interactive').forEach(function(card) {
+        var toggle = card.querySelector('.role-card-toggle');
+        if (toggle) {
+          toggle.addEventListener('click', function(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            toggleRoleCard(card);
+          });
+        }
+        card.addEventListener('click', function(event) {
+          if (
+            event.target.closest('.role-card-details') ||
+            event.target.closest('button') ||
+            event.target.closest('a')
+          ) {
+            return;
+          }
+          toggleRoleCard(card);
+        });
+        card.addEventListener('keydown', function(event) {
+          if (
+            event.key === 'Enter' ||
+            event.key === ' '
+          ) {
+            if (event.target.closest('button')) {
+              return;
+            }
+            event.preventDefault();
+            toggleRoleCard(card);
+          }
+        });
+      });
+    }
+
+    function selectApplicationRoute(applicationRoute, specialty, finderSummary) {
+      var roleApplied = document.getElementById('roleApplied');
+      var applicationRouteField = document.getElementById('applicationRoute');
+      var preferredSpecialty = document.getElementById('preferredSpecialty');
+      var finderResultSummary = document.getElementById('finderResultSummary');
+      if (roleApplied) {
+        roleApplied.value = applicationRoute || '';
+      }
+      if (applicationRouteField) {
+        applicationRouteField.value = applicationRoute || '';
+      }
+      if (preferredSpecialty) {
+        preferredSpecialty.value = specialty || '';
+      }
+      if (finderResultSummary) {
+        finderResultSummary.value = finderSummary || '';
+      }
+      renderRoleQuestions(applicationRoute || '', null);
+      updateApplicationRouteDisplay(applicationRoute, specialty);
+      updateInternalInterestVisibility(applicationRoute);
+      updateSelectedRoleCard(applicationRoute, specialty);
+      var applicationPanel = document.getElementById('applicationPanel');
+      if (applicationPanel) {
+        applicationPanel.classList.add('visible');
+        window.setTimeout(function() {
+          applicationPanel.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }, 100);
+      }
+      saveDraft();
+    }
+
+    function changeApplicationRoute() {
+      var applicationPanel = document.getElementById('applicationPanel');
+      if (applicationPanel) {
+        applicationPanel.classList.remove('visible');
+      }
+      document.querySelectorAll('.role-card.interactive').forEach(function(card) {
+        card.classList.remove('selected');
+      });
+      var rolesSection =
+        document.querySelector('[data-card-role]') ||
+        document.querySelector('.role-card-grid') ||
+        document.querySelector('.role-card');
+      if (rolesSection) {
+        rolesSection.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
+        });
+      }
+    }
+
+    function updateApplicationRouteDisplay(applicationRoute, specialty) {
+      var title = document.getElementById('selectedApplicationTitle');
+      var description = document.getElementById('selectedApplicationDescription');
+      var gatewayWarning = document.getElementById('candidateGatewayWarning');
+      if (!applicationRoute) {
+        if (title) {
+          title.textContent = 'No application route selected';
+        }
+        if (description) {
+          description.textContent =
+            'Select and open one of the role cards above before starting an application.';
+        }
+        if (gatewayWarning) {
+          gatewayWarning.hidden = true;
+        }
+        return;
+      }
+      if (title) {
+        title.textContent = 'Applying as: ' + applicationRoute;
+      }
+      if (description) {
+        if (applicationRoute === 'NSWDG Candidate' && specialty) {
+          description.textContent =
+            'Preferred internal specialty: ' + specialty;
+        } else {
+          description.textContent =
+            'You selected the ' + applicationRoute + ' application route.';
+        }
+      }
+      if (gatewayWarning) {
+        gatewayWarning.hidden = applicationRoute !== 'NSWDG Candidate';
+      }
+    }
+
+    function updateInternalInterestVisibility(applicationRoute) {
+      var internalInterestWrap = document.getElementById('internalInterestWrap');
+      if (!internalInterestWrap) {
+        return;
+      }
+      if (applicationRoute === 'NSWDG Candidate') {
+        internalInterestWrap.hidden = false;
+        internalInterestWrap.style.display = '';
+      } else {
+        internalInterestWrap.hidden = true;
+        internalInterestWrap.style.display = 'none';
+      }
+    }
+
+    function updateSelectedRoleCard(applicationRoute, specialty) {
+      document.querySelectorAll('.role-card.interactive').forEach(function(card) {
+        card.classList.remove('selected');
+        var cardRole = card.getAttribute('data-card-role') || '';
+        var matchesSpecialty =
+          specialty &&
+          (
+            cardRole === specialty ||
+            specialty.indexOf(cardRole) !== -1 ||
+            cardRole.indexOf(specialty) !== -1
+          );
+        var matchesApplicationRoute = !specialty && cardRole === applicationRoute;
+        if (matchesSpecialty || matchesApplicationRoute) {
+          card.classList.add('selected');
+        }
+      });
+    }
+
+    function openRoleFinder() {
+      restartRoleFinder();
+      var modal = document.getElementById('roleFinderModal');
+      if (modal) {
+        modal.classList.add('visible');
+        document.body.style.overflow = 'hidden';
+      }
+    }
+
+    function closeRoleFinder() {
+      var modal = document.getElementById('roleFinderModal');
+      if (modal) {
+        modal.classList.remove('visible');
+      }
+      document.body.style.overflow = '';
+    }
+
+    function restartRoleFinder() {
+      roleFinderAnswers = [];
+      roleFinderCurrentQuestion = 0;
+      roleFinderRankedResults = [];
+      var introduction = document.getElementById('roleFinderIntroduction');
+      var questions = document.getElementById('roleFinderQuestions');
+      var results = document.getElementById('roleFinderResults');
+      var resultCards = document.getElementById('roleFinderResultCards');
+      var progress = document.getElementById('roleFinderProgress');
+      var restartButton = document.getElementById('roleFinderRestartButton');
+      if (introduction) {
+        introduction.style.display = '';
+      }
+      if (questions) {
+        questions.innerHTML = '';
+        questions.style.display = 'none';
+      }
+      if (results) {
+        results.classList.remove('visible');
+        results.style.display = 'none';
+      }
+      if (resultCards) {
+        resultCards.innerHTML = '';
+      }
+      if (progress) {
+        progress.textContent = 'Introduction';
+      }
+      if (restartButton) {
+        restartButton.hidden = true;
+      }
+    }
+
+    function startRoleFinder() {
+      var introduction = document.getElementById('roleFinderIntroduction');
+      var questions = document.getElementById('roleFinderQuestions');
+      if (introduction) {
+        introduction.style.display = 'none';
+      }
+      if (questions) {
+        questions.style.display = '';
+      }
+      roleFinderCurrentQuestion = 0;
+      roleFinderAnswers = [];
+      renderRoleFinderQuestion();
+    }
+
+    function renderRoleFinderQuestion() {
+      var questionsContainer = document.getElementById('roleFinderQuestions');
+      var progress = document.getElementById('roleFinderProgress');
+      var question = ROLE_FINDER_QUESTIONS[roleFinderCurrentQuestion];
+      if (!questionsContainer || !question) {
+        showRoleFinderResults();
+        return;
+      }
+      if (progress) {
+        progress.textContent =
+          'Question ' +
+          (roleFinderCurrentQuestion + 1) +
+          ' of ' +
+          ROLE_FINDER_QUESTIONS.length;
+      }
+      questionsContainer.innerHTML = '';
+      var questionBlock = document.createElement('div');
+      questionBlock.className = 'finder-question';
+      var questionTitle = document.createElement('h3');
+      questionTitle.textContent = question.text;
+      questionBlock.appendChild(questionTitle);
+      var answerList = document.createElement('div');
+      answerList.className = 'finder-answer-list';
+      question.answers.forEach(function(answer, answerIndex) {
+        var answerButton = document.createElement('button');
+        answerButton.type = 'button';
+        answerButton.className = 'finder-answer-button';
+        answerButton.textContent = answer.text;
+        answerButton.addEventListener('click', function() {
+          chooseRoleFinderAnswer(answerIndex);
+        });
+        answerList.appendChild(answerButton);
+      });
+      questionBlock.appendChild(answerList);
+      questionsContainer.appendChild(questionBlock);
+    }
+
+    function chooseRoleFinderAnswer(answerIndex) {
+      var question = ROLE_FINDER_QUESTIONS[roleFinderCurrentQuestion];
+      var answer = question && question.answers[answerIndex];
+      if (!answer) {
+        return;
+      }
+      roleFinderAnswers.push({
+        question: question.text,
+        answer: answer.text,
+        scores: answer.scores
+      });
+      roleFinderCurrentQuestion += 1;
+      if (roleFinderCurrentQuestion >= ROLE_FINDER_QUESTIONS.length) {
+        showRoleFinderResults();
+      } else {
+        renderRoleFinderQuestion();
+      }
+    }
+
+    function calculateRoleFinderResults() {
+      var scores = {};
+      Object.keys(ROLE_FINDER_ROLES).forEach(function(roleName) {
+        scores[roleName] = 0;
+      });
+      roleFinderAnswers.forEach(function(answer) {
+        Object.keys(answer.scores).forEach(function(roleName) {
+          if (typeof scores[roleName] !== 'number') {
+            scores[roleName] = 0;
+          }
+          scores[roleName] += answer.scores[roleName];
+        });
+      });
+      return Object.keys(scores)
+        .map(function(roleName) {
+          return {
+            name: roleName,
+            score: scores[roleName],
+            config: ROLE_FINDER_ROLES[roleName]
+          };
+        })
+        .sort(function(a, b) {
+          return b.score - a.score;
+        });
+    }
+
+    function showRoleFinderResults() {
+      var questions = document.getElementById('roleFinderQuestions');
+      var results = document.getElementById('roleFinderResults');
+      var resultCards = document.getElementById('roleFinderResultCards');
+      var progress = document.getElementById('roleFinderProgress');
+      var restartButton = document.getElementById('roleFinderRestartButton');
+      roleFinderRankedResults = calculateRoleFinderResults().slice(0, 3);
+      if (questions) {
+        questions.style.display = 'none';
+      }
+      if (results) {
+        results.style.display = '';
+        results.classList.add('visible');
+      }
+      if (progress) {
+        progress.textContent = 'Results';
+      }
+      if (restartButton) {
+        restartButton.hidden = false;
+      }
+      if (!resultCards) {
+        return;
+      }
+      resultCards.innerHTML = '';
+      roleFinderRankedResults.forEach(function(result, index) {
+        var resultCard = document.createElement('div');
+        resultCard.className = 'finder-result-card';
+        var ranking = document.createElement('div');
+        ranking.className = 'finder-result-rank';
+        ranking.textContent =
+          index === 0 ?
+          'Strongest match' :
+          'Alternative match ' + index;
+        var heading = document.createElement('h3');
+        heading.textContent = result.name;
+        var description = document.createElement('p');
+        description.textContent = result.config.description;
+        var applyButton = document.createElement('button');
+        applyButton.type = 'button';
+        applyButton.className = 'role-apply-button';
+        applyButton.textContent = 'Apply for this role';
+        applyButton.addEventListener('click', function() {
+          applyFromRoleFinder(index);
+        });
+        resultCard.appendChild(ranking);
+        resultCard.appendChild(heading);
+        resultCard.appendChild(description);
+        resultCard.appendChild(applyButton);
+        resultCards.appendChild(resultCard);
+      });
+    }
+
+    function buildRoleFinderSummary(selectedResult) {
+      var summary = [
+        'Selected role-finder result: ' + selectedResult.name,
+        'Score: ' + selectedResult.score,
+        '',
+        'Questionnaire answers:'
+      ];
+      roleFinderAnswers.forEach(function(answer, index) {
+        summary.push(
+          (index + 1) +
+          '. ' +
+          answer.question +
+          ' Answer: ' +
+          answer.answer
+        );
+      });
+      return summary.join('\n');
+    }
+
+    function applyFromRoleFinder(resultIndex) {
+      var selectedResult = roleFinderRankedResults[resultIndex];
+      if (!selectedResult || !selectedResult.config) {
+        return;
+      }
+      var summary = buildRoleFinderSummary(selectedResult);
+      selectApplicationRoute(
+        selectedResult.config.applicationRoute,
+        selectedResult.config.specialty,
+        summary
+      );
+      closeRoleFinder();
+    }
     var DYNAMIC_FIELD_IDS = [];
-    var QUESTION_LOOKUP = {}; 
+    var QUESTION_LOOKUP = {};
     var DRAFT_STORAGE_KEY = 'nswdgApplicationDraftV1';
 
     function getDraftFields() {
-      return Array.prototype.slice.call(document.querySelectorAll('#applicationForm input, #applicationForm textarea, #applicationForm select'));
+      return Array.prototype.slice.call(document.querySelectorAll(
+        '#applicationForm input, #applicationForm textarea, #applicationForm select'));
     }
 
     function saveDraft() {
@@ -1302,7 +3758,6 @@
           draft[field.id] = field.value;
         }
       });
-
       try {
         localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(draft));
       } catch (error) {
@@ -1315,22 +3770,61 @@
         var saved = localStorage.getItem(DRAFT_STORAGE_KEY);
         if (!saved) {
           renderRoleQuestions('', null);
+          updateInternalInterestVisibility('');
+          updateApplicationRouteDisplay('', '');
           return;
         }
-
         var draft = JSON.parse(saved);
-        var selectedRole = draft.roleApplied || '';
-        var roleField = document.getElementById('roleApplied');
-        if (roleField) roleField.value = selectedRole;
-        renderRoleQuestions(selectedRole, draft);
-
         getDraftFields().forEach(function(field) {
-          if (field.id && Object.prototype.hasOwnProperty.call(draft, field.id)) {
+          if (
+            field.id &&
+            Object.prototype.hasOwnProperty.call(draft, field.id)
+          ) {
             field.value = draft[field.id];
           }
         });
+        var selectedRole =
+          draft.roleApplied ||
+          draft.applicationRoute ||
+          '';
+        var selectedSpecialty =
+          draft.preferredSpecialty ||
+          '';
+        var roleField = document.getElementById('roleApplied');
+        var applicationRouteField =
+          document.getElementById('applicationRoute');
+        var preferredSpecialtyField =
+          document.getElementById('preferredSpecialty');
+        if (roleField) {
+          roleField.value = selectedRole;
+        }
+        if (applicationRouteField) {
+          applicationRouteField.value = selectedRole;
+        }
+        if (preferredSpecialtyField) {
+          preferredSpecialtyField.value = selectedSpecialty;
+        }
+        renderRoleQuestions(selectedRole, draft);
+        updateInternalInterestVisibility(selectedRole);
+        updateApplicationRouteDisplay(
+          selectedRole,
+          selectedSpecialty
+        );
+        updateSelectedRoleCard(
+          selectedRole,
+          selectedSpecialty
+        );
+        if (selectedRole) {
+          var applicationPanel =
+            document.getElementById('applicationPanel');
+          if (applicationPanel) {
+            applicationPanel.classList.add('visible');
+          }
+        }
       } catch (error) {
         renderRoleQuestions('', null);
+        updateInternalInterestVisibility('');
+        updateApplicationRouteDisplay('', '');
       }
     }
 
@@ -1377,57 +3871,50 @@
 
     function makeQuestionGroup(question, number) {
       QUESTION_LOOKUP[question.id] = question.text;
-
       if (question.type === 'select') {
         var options = '<option value="">Select an option</option>';
-
         question.options.forEach(function(option) {
           options += '<option value="' + escapeHtml(option.value) + '">' + escapeHtml(option.label) + '</option>';
         });
-
         return '' +
-          '<div class="form-group dynamic-question" data-min="' + question.min + '" data-max="' + question.max + '" data-skip-length="true">' +
-            '<label for="' + question.id + '">' + number + '. ' + escapeHtml(question.text) + '</label>' +
-            '<div class="field-wrap">' +
-              '<select id="' + question.id + '" name="' + question.id + '">' +
-                options +
-              '</select>' +
-              '<span class="char-counter"></span>' +
-            '</div>' +
-            '<div class="field-error"></div>' +
-          '</div>';
-      }
-
-      return '' +
-        '<div class="form-group dynamic-question" data-min="' + question.min + '" data-max="' + question.max + '">' +
+          '<div class="form-group dynamic-question" data-min="' + question.min + '" data-max="' + question.max +
+          '" data-skip-length="true">' +
           '<label for="' + question.id + '">' + number + '. ' + escapeHtml(question.text) + '</label>' +
           '<div class="field-wrap">' +
-            '<textarea id="' + question.id + '" name="' + question.id + '" rows="' + question.rows + '"></textarea>' +
-            '<span class="char-counter"></span>' +
+          '<select id="' + question.id + '" name="' + question.id + '">' +
+          options +
+          '</select>' +
+          '<span class="char-counter"></span>' +
           '</div>' +
           '<div class="field-error"></div>' +
+          '</div>';
+      }
+      return '' +
+        '<div class="form-group dynamic-question" data-min="' + question.min + '" data-max="' + question.max + '">' +
+        '<label for="' + question.id + '">' + number + '. ' + escapeHtml(question.text) + '</label>' +
+        '<div class="field-wrap">' +
+        '<textarea id="' + question.id + '" name="' + question.id + '" rows="' + question.rows + '"></textarea>' +
+        '<span class="char-counter"></span>' +
+        '</div>' +
+        '<div class="field-error"></div>' +
         '</div>';
     }
 
     function bindGroup(group) {
       var field = group.querySelector('input, textarea, select');
       if (!field || group.getAttribute('data-bound') === '1') return;
-
       group.setAttribute('data-bound', '1');
       updateCounter(group);
-
       field.addEventListener('input', function() {
         clearError(group);
         updateCounter(group);
         saveDraft();
       });
-
       field.addEventListener('change', function() {
         clearError(group);
         updateCounter(group);
         saveDraft();
       });
-
       field.addEventListener('blur', function() {
         validateGroup(group);
       });
@@ -1444,25 +3931,20 @@
       var help = document.getElementById('roleHelp');
       var sectionTitle = document.getElementById('dynamicSectionTitle');
       var roleConfig = ROLE_QUESTIONS[selectedRole];
-
       QUESTION_LOOKUP = {};
       DYNAMIC_FIELD_IDS = [];
       container.innerHTML = '';
-
       if (!roleConfig) {
         help.textContent = 'Select a role and the application questions below will update.';
         sectionTitle.textContent = 'Section III - Role Questions';
         return;
       }
-
       help.textContent = roleConfig.help;
       sectionTitle.textContent = 'Section III - ' + selectedRole + ' Questions';
-
       container.innerHTML = roleConfig.questions.map(function(question, index) {
         DYNAMIC_FIELD_IDS.push(question.id);
         return makeQuestionGroup(question, index + 1);
       }).join('');
-
       if (savedDraft) {
         DYNAMIC_FIELD_IDS.forEach(function(id) {
           var field = document.getElementById(id);
@@ -1471,7 +3953,6 @@
           }
         });
       }
-
       bindAllGroups();
     }
 
@@ -1493,13 +3974,10 @@
       var min = Number(group.getAttribute('data-min'));
       var max = Number(group.getAttribute('data-max'));
       var count = field.value.trim().length;
-
       counter.textContent = count + ' / ' + max;
-
       if (min > 0) {
         counter.textContent += ' | ' + min + ' minimum';
       }
-
       if (count > max || count < min) {
         counter.classList.add('bad');
       } else {
@@ -1514,25 +3992,20 @@
       var max = Number(group.getAttribute('data-max'));
       var value = field.value.trim();
       var count = value.length;
-
       clearError(group);
       updateCounter(group);
-
       if (field.tagName === 'SELECT' && !value) {
         setError(group, 'Please select an option.');
         return false;
       }
-
       if (field.tagName !== 'SELECT' && count < min) {
         setError(group, 'This answer is too short. Minimum: ' + min + ' characters. Current: ' + count + '.');
         return false;
       }
-
       if (field.tagName !== 'SELECT' && count > max) {
         setError(group, 'This answer is too long. Maximum: ' + max + ' characters. Current: ' + count + '.');
         return false;
       }
-
       if (field.id === 'age') {
         var ageValue = Number(value);
         if (!Number.isFinite(ageValue) || ageValue < 1 || ageValue > 99) {
@@ -1540,7 +4013,6 @@
           return false;
         }
       }
-
       return true;
     }
 
@@ -1548,23 +4020,21 @@
       var groups = document.querySelectorAll('.form-group[data-min][data-max]');
       var valid = true;
       var firstInvalid = null;
-
       groups.forEach(function(group) {
         var groupValid = validateGroup(group);
-
         if (!groupValid && !firstInvalid) {
           firstInvalid = group;
         }
-
         if (!groupValid) {
           valid = false;
         }
       });
-
       if (firstInvalid) {
-        firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        firstInvalid.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center'
+        });
       }
-
       return valid;
     }
 
@@ -1589,25 +4059,41 @@
       var selectedRole = getValue('roleApplied');
       var roleConfig = ROLE_QUESTIONS[selectedRole];
       var roleFields = [];
-
       if (roleConfig) {
         roleFields = roleConfig.questions.map(function(question, index) {
           return answerField(index + 1, question.text, getValue(question.id));
         });
       }
-
       return {
         username: 'NSWDG Recruitment Bot',
-        embeds: [
-          {
+        embeds: [{
             title: 'New Unit Application Received',
             color: 12298578,
-            fields: [
-              { name: 'Role Applied For', value: selectedRole || 'Not provided', inline: true },
-              { name: 'Name / Nickname', value: preferredName || 'Not provided', inline: true },
-              { name: 'Discord', value: discordUsername || 'Not provided', inline: true },
-              { name: 'Age', value: age || 'Not provided', inline: true },
-              { name: 'Timezone', value: timezone || 'Not provided', inline: true }
+            fields: [{
+                name: 'Role Applied For',
+                value: selectedRole || 'Not provided',
+                inline: true
+              },
+              {
+                name: 'Name / Nickname',
+                value: preferredName || 'Not provided',
+                inline: true
+              },
+              {
+                name: 'Discord',
+                value: discordUsername || 'Not provided',
+                inline: true
+              },
+              {
+                name: 'Age',
+                value: age || 'Not provided',
+                inline: true
+              },
+              {
+                name: 'Timezone',
+                value: timezone || 'Not provided',
+                inline: true
+              }
             ],
             timestamp: new Date().toISOString()
           },
@@ -1620,7 +4106,8 @@
             title: 'Final Notes',
             color: 12298578,
             fields: [
-              answerField('Final', 'Is there anything else we should know before reviewing your application?', getValue('finalNotes'))
+              answerField('Final', 'Is there anything else we should know before reviewing your application?',
+                getValue('finalNotes'))
             ],
             footer: {
               text: 'NSWDG Automated Application System'
@@ -1629,15 +4116,13 @@
         ]
       };
     }
-
+    initializeInteractiveRoleCards();
     restoreDraft();
     bindAllGroups();
-
     document.getElementById('roleApplied').addEventListener('change', function() {
       renderRoleQuestions(this.value, null);
       saveDraft();
     });
-
     document.getElementById('clearDraftBtn').addEventListener('click', function() {
       clearDraft();
       document.getElementById('applicationForm').reset();
@@ -1648,64 +4133,54 @@
         updateCounter(group);
       });
     });
-
     document.getElementById('applicationForm').addEventListener('submit', async function(event) {
       event.preventDefault();
-
       if (!validateForm()) {
         return;
       }
-
       if (!DISCORD_WEBHOOK_URL) {
         document.getElementById('errorModalText').textContent =
           'Discord webhook URL is not configured inside apply/index.html.';
         openModal('errorModal');
         return;
       }
-
       var payload = buildPayload();
       var payloadSize = JSON.stringify(payload).length;
-
       if (payloadSize > 5000) {
         document.getElementById('errorModalText').textContent =
           'Your application is too large for Discord to accept. Your answers have been preserved and were NOT cleared. Please shorten one or more responses and try again.';
         openModal('errorModal');
         return;
       }
-
       try {
         var response = await fetch(DISCORD_WEBHOOK_URL, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json'
+          },
           body: JSON.stringify(payload)
         });
-
         if (!response.ok) {
           document.getElementById('errorModalText').textContent =
             'Discord rejected the application because one or more answers exceeded Discord embed limits. Your application has NOT been cleared. Please shorten some responses and try again.';
           openModal('errorModal');
           return;
         }
-
         openModal('formModal');
-
         this.reset();
         clearDraft();
         renderRoleQuestions('', null);
         bindAllGroups();
-
         document.querySelectorAll('.form-group[data-min][data-max]').forEach(function(group) {
           clearError(group);
           updateCounter(group);
         });
-
       } catch (error) {
         document.getElementById('errorModalText').textContent =
           'Application could not be sent. Your answers have been preserved. Check the webhook URL and internet connection.';
         openModal('errorModal');
       }
     });
-
     document.addEventListener('keydown', function(event) {
       if (event.key === 'Escape') {
         closeModal('formModal');
@@ -1713,7 +4188,6 @@
         closeModal('csModal');
       }
     });
-
     document.addEventListener('click', function(event) {
       if (event.target.classList.contains('modal-overlay')) {
         event.target.classList.remove('visible');
@@ -1721,4 +4195,5 @@
     });
   </script>
 </body>
+
 </html>
