@@ -1658,6 +1658,411 @@
     .opfor-brief li {
       margin-bottom: 5px;
     }
+
+    /* =========================================================
+   REFINED APPLICATION FORM
+   Keeps the original government / military website style
+   ========================================================= */
+
+#applicationPanel {
+  background: #e8e8e8;
+  border: 1px solid #9ea6ac;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.09);
+}
+
+/* Selected role header */
+
+#applicationPanel .application-selection-banner {
+  position: relative;
+  margin: 0;
+  padding: 17px 20px 16px;
+  background: #e7edf1;
+  border: 0;
+  border-top: 4px solid #1d3f5e;
+  border-bottom: 1px solid #aab5bd;
+}
+
+#applicationPanel .application-selection-banner::after {
+  content: "APPLICATION ROUTE";
+  position: absolute;
+  top: 17px;
+  right: 20px;
+  color: #6f7c85;
+  font-size: 9px;
+  font-weight: bold;
+  letter-spacing: 0.8px;
+}
+
+#applicationPanel .application-selection-banner h2 {
+  max-width: calc(100% - 150px);
+  margin: 0 0 5px;
+  color: #1d3f5e;
+  font-size: 15px;
+  line-height: 1.35;
+  text-transform: uppercase;
+  letter-spacing: 0.35px;
+}
+
+#applicationPanel .application-selection-banner p {
+  max-width: 760px;
+  margin: 0;
+  color: #46515a;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+#applicationPanel .application-selection-actions {
+  margin-top: 11px;
+}
+
+#applicationPanel .application-gateway-warning {
+  margin-top: 12px;
+  padding: 9px 11px;
+  background: #f5f1dc;
+  border: 1px solid #cfc487;
+  border-left: 4px solid #bba952;
+  color: #4c472f;
+  font-size: 11px;
+  line-height: 1.55;
+}
+
+/* Main form area */
+
+#applicationPanel form {
+  padding: 20px;
+  background: #e8e8e8;
+}
+
+/* Draft notice */
+
+#applicationPanel .draft-tools {
+  margin: 0 0 18px;
+  padding: 10px 12px;
+  background: #f7f7f7;
+  border: 1px solid #c5c5c5;
+  border-left: 4px solid #778794;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+#applicationPanel .draft-tools p {
+  margin: 0;
+  color: #555;
+  font-size: 11px;
+  line-height: 1.55;
+}
+
+#applicationPanel .draft-tools strong {
+  color: #1d3f5e;
+  text-transform: uppercase;
+  letter-spacing: 0.2px;
+}
+
+/* Individual application sections */
+
+#applicationPanel .form-section {
+  margin: 0 0 18px;
+  padding: 0 16px 17px;
+  background: #fff;
+  border: 1px solid #c1c1c1;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.035);
+}
+
+#applicationPanel .form-section:last-of-type {
+  margin-bottom: 18px;
+}
+
+/* Section headers */
+
+#applicationPanel .form-section > h2 {
+  margin: 0 -16px 17px;
+  padding: 9px 12px;
+  background: #1d3f5e;
+  border: 0;
+  border-bottom: 2px solid #bba952;
+  color: #fff;
+  font-size: 11px;
+  line-height: 1.35;
+  text-transform: uppercase;
+  letter-spacing: 0.55px;
+}
+
+/* Form fields */
+
+#applicationPanel .form-group {
+  margin-bottom: 17px;
+}
+
+#applicationPanel .form-group:last-child {
+  margin-bottom: 0;
+}
+
+#applicationPanel .form-group label {
+  display: block;
+  margin-bottom: 6px;
+  color: #27313a;
+  font-size: 12px;
+  font-weight: bold;
+  line-height: 1.45;
+}
+
+#applicationPanel .form-group label .optional {
+  margin-left: 4px;
+  color: #777;
+  font-size: 9px;
+  font-weight: normal;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+#applicationPanel .field-wrap {
+  position: relative;
+}
+
+/* Inputs */
+
+#applicationPanel .form-group input,
+#applicationPanel .form-group textarea,
+#applicationPanel .form-group select {
+  width: 100%;
+  min-height: 36px;
+  padding: 8px 10px;
+  background: #fafafa;
+  border: 1px solid #aeb4b8;
+  border-radius: 0;
+  color: #222;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 13px;
+  line-height: 1.45;
+  box-shadow:
+    inset 0 1px 2px rgba(0, 0, 0, 0.035),
+    0 1px 0 rgba(255, 255, 255, 0.8);
+  transition:
+    border-color 100ms ease,
+    background 100ms ease,
+    box-shadow 100ms ease;
+}
+
+#applicationPanel .form-group textarea {
+  min-height: 112px;
+  padding-bottom: 25px;
+  resize: vertical;
+}
+
+#applicationPanel .form-group select {
+  padding-right: 32px;
+}
+
+#applicationPanel .form-group input:hover,
+#applicationPanel .form-group textarea:hover,
+#applicationPanel .form-group select:hover {
+  background: #fff;
+  border-color: #7f8c95;
+}
+
+#applicationPanel .form-group input:focus,
+#applicationPanel .form-group textarea:focus,
+#applicationPanel .form-group select:focus {
+  outline: none;
+  background: #fff;
+  border-color: #1d3f5e;
+  box-shadow:
+    0 0 0 2px rgba(29, 63, 94, 0.13),
+    inset 0 1px 2px rgba(0, 0, 0, 0.035);
+}
+
+#applicationPanel .form-group input:disabled,
+#applicationPanel .form-group select:disabled,
+#applicationPanel .form-group textarea:disabled {
+  background: #e9e9e9;
+  border-color: #c1c1c1;
+  color: #555;
+  cursor: not-allowed;
+  opacity: 1;
+}
+
+/* Placeholder styling */
+
+#applicationPanel input::placeholder,
+#applicationPanel textarea::placeholder {
+  color: #8a8a8a;
+}
+
+/* Character counter */
+
+#applicationPanel .char-counter {
+  position: absolute;
+  right: 7px;
+  bottom: 5px;
+  min-width: 35px;
+  padding: 2px 4px;
+  background: rgba(250, 250, 250, 0.95);
+  color: #777;
+  font-size: 9px;
+  line-height: 1.2;
+  text-align: right;
+}
+
+#applicationPanel .char-counter.bad {
+  color: #970000;
+  font-weight: bold;
+}
+
+/* Errors */
+
+#applicationPanel .field-error {
+  display: none;
+  margin-top: 6px;
+  padding: 7px 9px;
+  background: #fff1f1;
+  border: 1px solid #e1bcbc;
+  border-left: 4px solid #a50000;
+  color: #870000;
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+#applicationPanel .form-group.invalid .field-error {
+  display: block;
+}
+
+#applicationPanel .form-group.invalid input,
+#applicationPanel .form-group.invalid textarea,
+#applicationPanel .form-group.invalid select {
+  background: #fffafa;
+  border-color: #a50000;
+  box-shadow: 0 0 0 1px rgba(165, 0, 0, 0.08);
+}
+
+/* First information row */
+
+#applicationPanel .field-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 105px 155px;
+  gap: 13px;
+  align-items: start;
+}
+
+/* Role explanation */
+
+#applicationPanel .role-help {
+  margin-top: 7px;
+  padding: 8px 10px;
+  background: #f0f2f3;
+  border: 1px solid #d0d5d8;
+  border-left: 3px solid #7e8e99;
+  color: #515b62;
+  font-size: 11px;
+  line-height: 1.55;
+}
+
+#applicationPanel .dynamic-question-note {
+  margin: -7px 0 15px;
+  padding: 8px 10px;
+  background: #f3f3f3;
+  border: 1px solid #d5d5d5;
+  color: #626262;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+/* Buttons */
+
+#applicationPanel .btn-secondary,
+#applicationPanel .role-secondary-button {
+  padding: 6px 12px;
+  background: #e5e5e5;
+  border: 1px solid #9da3a7;
+  color: #30363a;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 11px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+#applicationPanel .btn-secondary:hover,
+#applicationPanel .role-secondary-button:hover {
+  background: #d7dce0;
+  border-color: #77838b;
+}
+
+#applicationPanel .btn-submit {
+  display: block;
+  width: 100%;
+  min-height: 42px;
+  padding: 10px 20px;
+  background: #1d3f5e;
+  border: 1px solid #102a40;
+  border-bottom: 3px solid #bba952;
+  color: #fff;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 12px;
+  font-weight: bold;
+  letter-spacing: 0.45px;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+#applicationPanel .btn-submit:hover {
+  background: #16304a;
+}
+
+#applicationPanel .btn-submit:focus {
+  outline: 2px solid rgba(29, 63, 94, 0.3);
+  outline-offset: 2px;
+}
+
+#applicationPanel .btn-submit:disabled {
+  background: #6e7b85;
+  border-color: #5e6870;
+  color: #e2e2e2;
+  cursor: wait;
+}
+
+/* Mobile */
+
+@media (max-width: 760px) {
+  #applicationPanel form {
+    padding: 13px;
+  }
+
+  #applicationPanel .application-selection-banner {
+    padding: 15px;
+  }
+
+  #applicationPanel .application-selection-banner::after {
+    display: none;
+  }
+
+  #applicationPanel .application-selection-banner h2 {
+    max-width: none;
+  }
+
+  #applicationPanel .form-section {
+    padding-right: 12px;
+    padding-left: 12px;
+  }
+
+  #applicationPanel .form-section > h2 {
+    margin-right: -12px;
+    margin-left: -12px;
+  }
+
+  #applicationPanel .field-row {
+    grid-template-columns: 1fr;
+  }
+
+  #applicationPanel .draft-tools {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  #applicationPanel .draft-tools button {
+    width: 100%;
+  }
+}
   </style>
 </head>
 
@@ -1714,7 +2119,6 @@
     <section class="content-box">
       <div class="breadcrumb"><a href="/">Home</a> &gt; Application</div>
       <h1 class="page-title">Application</h1>
-      <h1 class="page-title" style="color: red;">THE APPLICATION SYSTEM IS CURRENTLY DOWN.</h1>
       <div class="page-subtitle">Candidate screening and unit fit assessment</div>
 
       <div class="notice-line">
@@ -3511,63 +3915,160 @@
     }
 
     function selectApplicationRoute(applicationRoute, specialty, finderSummary) {
-      var roleApplied = document.getElementById('roleApplied');
-      var roleAppliedSubmission =
-      document.getElementById('roleAppliedSubmission');
-      var applicationRouteField = document.getElementById('applicationRoute');
-      var preferredSpecialty = document.getElementById('preferredSpecialty');
-      var finderResultSummary = document.getElementById('finderResultSummary');
-      if (roleApplied) {
-        roleApplied.value = applicationRoute || '';
-      }
-      if (roleAppliedSubmission) {
-        roleAppliedSubmission.value = applicationRoute || '';
-      }
-      if (applicationRouteField) {
-        applicationRouteField.value = applicationRoute || '';
-      }
-      if (preferredSpecialty) {
-        preferredSpecialty.value = specialty || '';
-      }
-      if (finderResultSummary) {
-        finderResultSummary.value = finderSummary || '';
-      }
-      renderRoleQuestions(applicationRoute || '', null);
-      updateApplicationRouteDisplay(applicationRoute, specialty);
-      updateInternalInterestVisibility(applicationRoute);
-      updateSelectedRoleCard(applicationRoute, specialty);
-      var applicationPanel = document.getElementById('applicationPanel');
-      if (applicationPanel) {
-        applicationPanel.classList.add('visible');
-        window.setTimeout(function() {
-          applicationPanel.scrollIntoView({
-            behavior: 'smooth',
-            block: 'start'
-          });
-        }, 100);
-      }
-      saveDraft();
+  var applicationPanel =
+    document.getElementById('applicationPanel');
+
+  /*
+    Never show the application form unless the selected role
+    exists inside ROLE_QUESTIONS.
+  */
+  if (
+    !applicationRoute ||
+    !Object.prototype.hasOwnProperty.call(
+      ROLE_QUESTIONS,
+      applicationRoute
+    )
+  ) {
+    if (applicationPanel) {
+      applicationPanel.classList.remove('visible');
     }
 
-    function changeApplicationRoute() {
-      var applicationPanel = document.getElementById('applicationPanel');
-      if (applicationPanel) {
-        applicationPanel.classList.remove('visible');
-      }
-      document.querySelectorAll('.role-card.interactive').forEach(function(card) {
-        card.classList.remove('selected');
-      });
-      var rolesSection =
-        document.querySelector('[data-card-role]') ||
-        document.querySelector('.role-card-grid') ||
-        document.querySelector('.role-card');
-      if (rolesSection) {
-        rolesSection.scrollIntoView({
-          behavior: 'smooth',
-          block: 'start'
-        });
-      }
+    return;
+  }
+
+  var roleApplied =
+    document.getElementById('roleApplied');
+
+  var roleAppliedSubmission =
+    document.getElementById('roleAppliedSubmission');
+
+  var applicationRouteField =
+    document.getElementById('applicationRoute');
+
+  var preferredSpecialty =
+    document.getElementById('preferredSpecialty');
+
+  var finderResultSummary =
+    document.getElementById('finderResultSummary');
+
+  if (roleApplied) {
+    roleApplied.value = applicationRoute;
+  }
+
+  /*
+    Make sure the role actually exists as an option in the select.
+    A select silently becomes blank when given an invalid value.
+  */
+  if (!roleApplied || roleApplied.value !== applicationRoute) {
+    if (applicationPanel) {
+      applicationPanel.classList.remove('visible');
     }
+
+    return;
+  }
+
+  if (roleAppliedSubmission) {
+    roleAppliedSubmission.value = applicationRoute;
+  }
+
+  if (applicationRouteField) {
+    applicationRouteField.value = applicationRoute;
+  }
+
+  if (preferredSpecialty) {
+    preferredSpecialty.value = specialty || '';
+  }
+
+  if (finderResultSummary) {
+    finderResultSummary.value = finderSummary || '';
+  }
+
+  renderRoleQuestions(applicationRoute, null);
+  updateApplicationRouteDisplay(applicationRoute, specialty);
+  updateInternalInterestVisibility(applicationRoute);
+  updateSelectedRoleCard(applicationRoute, specialty);
+
+  if (applicationPanel) {
+    applicationPanel.classList.add('visible');
+
+    window.setTimeout(function() {
+      applicationPanel.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }, 100);
+  }
+
+  saveDraft();
+}
+
+function changeApplicationRoute() {
+  var applicationPanel =
+    document.getElementById('applicationPanel');
+
+  if (applicationPanel) {
+    applicationPanel.classList.remove('visible');
+  }
+
+  var roleApplied =
+    document.getElementById('roleApplied');
+
+  var roleAppliedSubmission =
+    document.getElementById('roleAppliedSubmission');
+
+  var applicationRouteField =
+    document.getElementById('applicationRoute');
+
+  var preferredSpecialty =
+    document.getElementById('preferredSpecialty');
+
+  var finderResultSummary =
+    document.getElementById('finderResultSummary');
+
+  if (roleApplied) {
+    roleApplied.value = '';
+  }
+
+  if (roleAppliedSubmission) {
+    roleAppliedSubmission.value = '';
+  }
+
+  if (applicationRouteField) {
+    applicationRouteField.value = '';
+  }
+
+  if (preferredSpecialty) {
+    preferredSpecialty.value = '';
+  }
+
+  if (finderResultSummary) {
+    finderResultSummary.value = '';
+  }
+
+  renderRoleQuestions('', null);
+  updateInternalInterestVisibility('');
+  updateApplicationRouteDisplay('', '');
+
+  document
+    .querySelectorAll('.role-card.interactive')
+    .forEach(function(card) {
+      card.classList.remove('selected');
+    });
+
+  saveDraft();
+
+  var rolesSection =
+    document.querySelector('[data-card-role]') ||
+    document.querySelector('.role-card-grid') ||
+    document.querySelector('.role-card');
+
+  if (rolesSection) {
+    rolesSection.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start'
+    });
+  }
+}
 
     function updateApplicationRouteDisplay(applicationRoute, specialty) {
       var title = document.getElementById('selectedApplicationTitle');
@@ -3919,12 +4420,21 @@
     function restoreDraft() {
       try {
         var saved = localStorage.getItem(DRAFT_STORAGE_KEY);
-        if (!saved) {
-          renderRoleQuestions('', null);
-          updateInternalInterestVisibility('');
-          updateApplicationRouteDisplay('', '');
-          return;
-        }
+if (!saved) {
+  var applicationPanel =
+    document.getElementById('applicationPanel');
+
+  if (applicationPanel) {
+    applicationPanel.classList.remove('visible');
+  }
+
+  renderRoleQuestions('', null);
+  updateInternalInterestVisibility('');
+  updateApplicationRouteDisplay('', '');
+  updateSelectedRoleCard('', '');
+
+  return;
+}
         var draft = JSON.parse(saved);
         getDraftFields().forEach(function(field) {
           if (
@@ -3942,13 +4452,23 @@
           draft.preferredSpecialty ||
           '';
         var roleField = document.getElementById('roleApplied');
+
+        var roleSubmissionField =
+          document.getElementById('roleAppliedSubmission');
+
         var applicationRouteField =
           document.getElementById('applicationRoute');
+
         var preferredSpecialtyField =
           document.getElementById('preferredSpecialty');
         if (roleField) {
           roleField.value = selectedRole;
         }
+
+        if (roleSubmissionField) {
+          roleSubmissionField.value = selectedRole;
+        }
+
         if (applicationRouteField) {
           applicationRouteField.value = selectedRole;
         }
@@ -3965,18 +4485,70 @@
           selectedRole,
           selectedSpecialty
         );
-        if (selectedRole) {
-          var applicationPanel =
-            document.getElementById('applicationPanel');
-          if (applicationPanel) {
-            applicationPanel.classList.add('visible');
-          }
-        }
-      } catch (error) {
-        renderRoleQuestions('', null);
-        updateInternalInterestVisibility('');
-        updateApplicationRouteDisplay('', '');
-      }
+var applicationPanel =
+  document.getElementById('applicationPanel');
+
+var validSavedRole =
+  selectedRole &&
+  Object.prototype.hasOwnProperty.call(
+    ROLE_QUESTIONS,
+    selectedRole
+  ) &&
+  roleField &&
+  roleField.value === selectedRole;
+
+if (validSavedRole) {
+  if (applicationPanel) {
+    applicationPanel.classList.add('visible');
+  }
+} else {
+  selectedRole = '';
+  selectedSpecialty = '';
+
+  if (roleField) {
+    roleField.value = '';
+  }
+
+  if (roleSubmissionField) {
+    roleSubmissionField.value = '';
+  }
+
+  if (applicationRouteField) {
+    applicationRouteField.value = '';
+  }
+
+  if (preferredSpecialtyField) {
+    preferredSpecialtyField.value = '';
+  }
+
+  renderRoleQuestions('', null);
+  updateInternalInterestVisibility('');
+  updateApplicationRouteDisplay('', '');
+  updateSelectedRoleCard('', '');
+
+  if (applicationPanel) {
+    applicationPanel.classList.remove('visible');
+  }
+}
+} catch (error) {
+  var applicationPanel =
+    document.getElementById('applicationPanel');
+
+  if (applicationPanel) {
+    applicationPanel.classList.remove('visible');
+  }
+
+  document.getElementById('roleApplied').value = '';
+  document.getElementById('roleAppliedSubmission').value = '';
+  document.getElementById('applicationRoute').value = '';
+  document.getElementById('preferredSpecialty').value = '';
+  document.getElementById('finderResultSummary').value = '';
+
+  renderRoleQuestions('', null);
+  updateInternalInterestVisibility('');
+  updateApplicationRouteDisplay('', '');
+  updateSelectedRoleCard('', '');
+}
     }
 
     function clearDraft() {
@@ -4388,23 +4960,61 @@
 
   return payloads;
 }
-    initializeInteractiveRoleCards();
-    restoreDraft();
-    bindAllGroups();
+initializeInteractiveRoleCards();
+
+var initialApplicationPanel =
+  document.getElementById('applicationPanel');
+
+if (initialApplicationPanel) {
+  initialApplicationPanel.classList.remove('visible');
+}
+
+restoreDraft();
+bindAllGroups();
     document.getElementById('roleApplied').addEventListener('change', function() {
       renderRoleQuestions(this.value, null);
       saveDraft();
     });
-    document.getElementById('clearDraftBtn').addEventListener('click', function() {
-      clearDraft();
-      document.getElementById('applicationForm').reset();
-      renderRoleQuestions('', null);
-      bindAllGroups();
-      document.querySelectorAll('.form-group[data-min][data-max]').forEach(function(group) {
-        clearError(group);
-        updateCounter(group);
-      });
+document.getElementById('clearDraftBtn').addEventListener('click', function() {
+  clearDraft();
+
+  var form = document.getElementById('applicationForm');
+
+  if (form) {
+    form.reset();
+  }
+
+  document.getElementById('applicationRoute').value = '';
+  document.getElementById('roleApplied').value = '';
+  document.getElementById('roleAppliedSubmission').value = '';
+  document.getElementById('finderResultSummary').value = '';
+
+  renderRoleQuestions('', null);
+  updateInternalInterestVisibility('');
+  updateApplicationRouteDisplay('', '');
+
+  var applicationPanel =
+    document.getElementById('applicationPanel');
+
+  if (applicationPanel) {
+    applicationPanel.classList.remove('visible');
+  }
+
+  document
+    .querySelectorAll('.role-card.interactive')
+    .forEach(function(card) {
+      card.classList.remove('selected');
     });
+
+  bindAllGroups();
+
+  document
+    .querySelectorAll('.form-group[data-min][data-max]')
+    .forEach(function(group) {
+      clearError(group);
+      updateCounter(group);
+    });
+});
     document
   .getElementById('applicationForm')
   .addEventListener('submit', async function(event) {
@@ -4417,6 +5027,16 @@
       return;
     }
 
+    var selectedRole = getValue('roleApplied');
+
+if (!selectedRole || !ROLE_QUESTIONS[selectedRole]) {
+  document.getElementById('errorModalText').textContent =
+    'Please select a valid application role before submitting.';
+
+  openModal('errorModal');
+  return;
+}
+
     if (!DISCORD_WEBHOOK_URL) {
       document.getElementById('errorModalText').textContent =
         'Discord webhook URL is not configured.';
@@ -4425,8 +5045,16 @@
     }
 
     var payloads = buildPayloads();
+    if (!Array.isArray(payloads) || payloads.length === 0) {
+  document.getElementById('errorModalText').textContent =
+    'The application payload could not be created.';
+
+  openModal('errorModal');
+  return;
+}
 
     if (submitButton) {
+      
       submitButton.disabled = true;
       submitButton.textContent = 'Submitting...';
     }
