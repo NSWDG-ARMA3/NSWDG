@@ -432,13 +432,13 @@ if (row.reviewer_id && !canReviewLocally(row)) {
 
 if (canAdminRetractLoa(row)) {
   reviewHtml += `
-    <div class="btn-row" style="margin-top: 6px;">
+    <div style="display:flex;justify-content:flex-end;margin-top:6px;">
       <button
-        class="btn btn-danger"
+        class="btn btn-admin-retract"
         type="button"
         data-admin-retract-id="${row.id}"
       >
-        Retract LOA
+        Retract
       </button>
     </div>
   `;
