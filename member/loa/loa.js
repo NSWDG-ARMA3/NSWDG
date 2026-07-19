@@ -20,6 +20,14 @@ const calendarMonthInput = document.getElementById("loa-calendar-month");
 const prevMonthBtn = document.getElementById("loa-prev-month");
 const nextMonthBtn = document.getElementById("loa-next-month");
 const currentMonthBtn = document.getElementById("loa-current-month");
+const leadershipLoaPanel = document.getElementById("leadership-loa-panel");
+const leadershipLoaForm = document.getElementById("leadership-loa-form");
+const leadershipLoaMemberInput = document.getElementById("leadership-loa-member");
+const leadershipLoaStartDateInput = document.getElementById("leadership-loa-start-date");
+const leadershipLoaEndDateInput = document.getElementById("leadership-loa-end-date");
+const leadershipLoaReasonInput = document.getElementById("leadership-loa-reason");
+const leadershipLoaSubmitBtn = document.getElementById("leadership-loa-submit");
+const leadershipLoaStatus = document.getElementById("leadership-loa-status");
 
 let loaRows = [];
 
@@ -27,6 +35,84 @@ function setStatus(message, ok) {
   const el = document.getElementById("status-line");
   el.textContent = message;
   el.className = "status-line visible " + (ok ? "ok" : "err");
+}
+
+function setLeadershipLoaStatus(message, ok) {
+  if (!leadershipLoaStatus) return;
+
+  leadershipLoaStatus.textContent = message;
+  leadershipLoaStatus.className =
+    "status-line visible " + (ok ? "ok" : "err");
+}
+
+function normalizedRole(value) {
+  return String(value || "").trim().toUpperCase();
+}
+
+function normalizedCallsign(value) {
+  return String(value || "").trim().toUpperCase();
+}
+
+function hasUnitWideLoaCreationAccess() {
+  if (!profile) return false;
+
+  const role = normalizedRole(profile.role);
+  const callsign = normalizedCallsign(profile.callsign);
+
+  const unitWideRoles = [
+    "ADMIN",
+    "SUPERADMIN",
+    "HQ",
+    "TROOP_HQ",
+    "TROOPHQ"
+  ];
+
+  return unitWideRoles.includes(role)
+    || callsign === "E31"
+    || callsign === "E32";
+}
+
+function leadershipTeamPrefix() {
+  if (!profile) return null;
+
+  const callsign = normalizedCallsign(profile.callsign);
+
+  if (callsign === "EG1") return "EG";
+  if (callsign === "EH1") return "EH";
+  if (callsign === "EI1") return "EI";
+
+  return null;
+}
+
+function canCreateLoaForMembers() {
+  return hasUnitWideLoaCreationAccess()
+    || leadershipTeamPrefix() !== null;
+}
+
+function canCreateLoaForProfile(targetProfile) {
+  if (!authUser || !profile || !targetProfile) return false;
+
+  if (targetProfile.id === authUser.id) {
+    return false;
+  }
+
+  if (normalizedRole(targetProfile.status) !== "ACTIVE") {
+    return false;
+  }
+
+  if (hasUnitWideLoaCreationAccess()) {
+    return true;
+  }
+
+  const teamPrefix = leadershipTeamPrefix();
+
+  if (!teamPrefix) {
+    return false;
+  }
+
+  const targetCallsign = normalizedCallsign(targetProfile.callsign);
+
+  return targetCallsign.startsWith(teamPrefix);
 }
 
 function statusBadge(status) {
@@ -119,14 +205,71 @@ function canCancelLocally(row) {
 async function loadProfiles() {
   const { data, error } = await supabase
     .from("profiles")
-    .select("id, display_name, naval_rank, callsign, role");
+    .select("id, display_name, naval_rank, callsign, role, status");
 
   if (error) {
     profilesById = new Map();
     return;
   }
 
-  profilesById = new Map(data.map(row => [row.id, row]));
+  profilesById = new Map((data || []).map(row => [row.id, row]));
+
+  populateLeadershipLoaMembers();
+}
+
+function populateLeadershipLoaMembers() {
+  if (!leadershipLoaPanel || !leadershipLoaMemberInput) {
+    return;
+  }
+
+  if (!canCreateLoaForMembers()) {
+    leadershipLoaPanel.style.display = "none";
+    leadershipLoaMemberInput.innerHTML =
+      `<option value="">Select member...</option>`;
+    return;
+  }
+
+  const eligibleMembers = Array.from(profilesById.values())
+    .filter(canCreateLoaForProfile)
+    .sort((a, b) => {
+      const callsignA = normalizedCallsign(a.callsign);
+      const callsignB = normalizedCallsign(b.callsign);
+
+      if (callsignA !== callsignB) {
+        return callsignA.localeCompare(callsignB);
+      }
+
+      return String(a.display_name || "").localeCompare(
+        String(b.display_name || "")
+      );
+    });
+
+  leadershipLoaPanel.style.display = "";
+
+  const options = eligibleMembers.map(member => {
+    const callsign = normalizedCallsign(member.callsign);
+    const rank = String(member.naval_rank || "").trim();
+    const name = String(member.display_name || "Unknown member").trim();
+
+    const meta = [callsign, rank]
+      .filter(Boolean)
+      .join(" / ");
+
+    const label = meta
+      ? `${meta} - ${name}`
+      : name;
+
+    return `
+      <option value="${escapeHtml(member.id)}">
+        ${escapeHtml(label)}
+      </option>
+    `;
+  }).join("");
+
+  leadershipLoaMemberInput.innerHTML = `
+    <option value="">Select member...</option>
+    ${options}
+  `;
 }
 
 function isoDate(date) {
@@ -364,6 +507,89 @@ async function submitLoa(event) {
   await loadLoas();
 }
 
+async function submitLeadershipLoa(event) {
+  event.preventDefault();
+
+  if (!canCreateLoaForMembers()) {
+    setLeadershipLoaStatus(
+      "You do not have permission to create an LOA for another member.",
+      false
+    );
+    return;
+  }
+
+  const requesterId = leadershipLoaMemberInput.value;
+  const startDate = leadershipLoaStartDateInput.value;
+  const endDate = leadershipLoaEndDateInput.value;
+  const reason = leadershipLoaReasonInput.value.trim();
+
+  if (!requesterId) {
+    setLeadershipLoaStatus("Select a member.", false);
+    return;
+  }
+
+  const targetProfile = profilesById.get(requesterId);
+
+  if (!targetProfile || !canCreateLoaForProfile(targetProfile)) {
+    setLeadershipLoaStatus(
+      "You are not authorized to create an LOA for this member.",
+      false
+    );
+    return;
+  }
+
+  if (!startDate || !endDate) {
+    setLeadershipLoaStatus(
+      "Start date and end date are required.",
+      false
+    );
+    return;
+  }
+
+  if (endDate < startDate) {
+    setLeadershipLoaStatus(
+      "End date cannot be before start date.",
+      false
+    );
+    return;
+  }
+
+  if (reason.length < 3) {
+    setLeadershipLoaStatus(
+      "Reason must contain at least 3 characters.",
+      false
+    );
+    return;
+  }
+
+  leadershipLoaSubmitBtn.disabled = true;
+  leadershipLoaSubmitBtn.textContent = "Creating...";
+
+  const { error } = await supabase.rpc("create_loa_for_member", {
+    target_requester_id: requesterId,
+    target_start_date: startDate,
+    target_end_date: endDate,
+    target_reason: reason
+  });
+
+  leadershipLoaSubmitBtn.disabled = false;
+  leadershipLoaSubmitBtn.textContent = "Create Member LOA";
+
+  if (error) {
+    setLeadershipLoaStatus(error.message, false);
+    return;
+  }
+
+  leadershipLoaForm.reset();
+
+  setLeadershipLoaStatus(
+    `LOA created for ${targetProfile.display_name}.`,
+    true
+  );
+
+  await loadLoas();
+}
+
 async function reviewLoa(id, newStatus) {
   const noteEl = document.getElementById(`review-note-${id}`);
   const reviewerNote = noteEl ? noteEl.value.trim() : "";
@@ -415,6 +641,13 @@ async function init() {
 
   loaForm.addEventListener("submit", submitLoa);
   refreshBtn.addEventListener("click", loadLoas);
+
+  if (leadershipLoaForm) {
+    leadershipLoaForm.addEventListener(
+      "submit",
+      submitLeadershipLoa
+    );
+  }
   calendarMonthInput.value = monthValue(new Date());
 
   calendarMonthInput.addEventListener("change", renderLeaveCalendar);

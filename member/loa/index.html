@@ -617,6 +617,47 @@
                 </form>
               </div>
             </div>
+
+            <div class="panel" id="leadership-loa-panel" style="display: none;">
+              <div class="panel-title">Create LOA for Member</div>
+
+              <div class="panel-body">
+                <form id="leadership-loa-form">
+
+                  <div class="form-row">
+                    <label for="leadership-loa-member">Member</label>
+                    <select id="leadership-loa-member" required>
+                      <option value="">Select member...</option>
+                    </select>
+                  </div>
+
+                  <div class="form-row">
+                    <label for="leadership-loa-start-date">Start Date</label>
+                    <input id="leadership-loa-start-date" type="date" required>
+                  </div>
+
+                  <div class="form-row">
+                    <label for="leadership-loa-end-date">End Date</label>
+                    <input id="leadership-loa-end-date" type="date" required>
+                  </div>
+
+                  <div class="form-row">
+                    <label for="leadership-loa-reason">Reason</label>
+                    <textarea id="leadership-loa-reason" required minlength="3" maxlength="2000"
+                      placeholder="Reason for the member's LOA"></textarea>
+                  </div>
+
+                  <div class="btn-row">
+                    <button class="btn btn-primary" type="submit" id="leadership-loa-submit">
+                      Create Member LOA
+                    </button>
+                  </div>
+
+                  <div id="leadership-loa-status" class="status-line"></div>
+
+                </form>
+              </div>
+            </div>
           </div>
 
           <div class="right-column">
