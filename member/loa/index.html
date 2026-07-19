@@ -212,18 +212,44 @@
       letter-spacing: 0.5px;
     }
 
-    .btn-admin-retract {
-    background: #777;
-    border: 1px solid #555;
-    color: #fff;
-    font-size: 11px;
-    padding: 3px 10px;
-    min-width: auto;
+    .admin-loa-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 5px;
+  margin-top: 6px;
+  white-space: nowrap;
+}
+
+.btn-admin-end-today,
+.btn-admin-retract {
+  width: auto;
+  min-width: 0;
+  padding: 3px 7px;
+  font-size: 10px;
+  line-height: 1.2;
+}
+
+.btn-admin-end-today {
+  background: #77736d;
+  border-color: #5e5a55;
+  color: #fff;
+}
+
+.btn-admin-end-today:hover {
+  background: #68625c;
+  border-color: #504b46;
+}
+
+.btn-admin-retract {
+  background: #765d5d;
+  border-color: #604848;
+  color: #fff;
 }
 
 .btn-admin-retract:hover {
-    background: #8b4b4b;
-    border-color: #6e3838;
+  background: #8a5555;
+  border-color: #703f3f;
 }
     .notice-box.warning {
       background: #fffbe6;

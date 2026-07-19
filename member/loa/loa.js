@@ -208,6 +208,53 @@ function isAdmin() {
   return role === "ADMIN" || role === "SUPERADMIN";
 }
 
+async function adminEndLoaToday(id) {
+  const row = loaRows.find(item => Number(item.id) === Number(id));
+
+  if (!row || !canAdminEndLoaToday(row)) {
+    setStatus("This LOA cannot be ended today.", false);
+    return;
+  }
+
+  const memberProfile = profilesById.get(row.requester_id);
+  const memberName = memberProfile?.display_name || "this member";
+
+  const confirmed = window.confirm(
+    `End ${memberName}'s LOA today?\n\n` +
+    "The LOA will remain in the system, but its end date will be changed to today."
+  );
+
+  if (!confirmed) {
+    return;
+  }
+
+  const button = document.querySelector(
+    `[data-admin-end-today-id="${id}"]`
+  );
+
+  if (button) {
+    button.disabled = true;
+    button.textContent = "Ending...";
+  }
+
+  const { error } = await supabase.rpc("admin_end_loa_today", {
+    target_loa_id: id
+  });
+
+  if (error) {
+    if (button) {
+      button.disabled = false;
+      button.textContent = "End LOA Today";
+    }
+
+    setStatus(error.message, false);
+    return;
+  }
+
+  setStatus(`${memberName}'s LOA now ends today.`, true);
+  await loadLoas();
+}
+
 function canAdminRetractLoa(row) {
   if (!isAdmin()) {
     return false;
@@ -216,6 +263,22 @@ function canAdminRetractLoa(row) {
   const status = String(row.status || "").trim().toUpperCase();
 
   return status === "PENDING" || status === "APPROVED";
+}
+
+function canAdminEndLoaToday(row) {
+  if (!isAdmin()) {
+    return false;
+  }
+
+  const status = String(row.status || "").trim().toUpperCase();
+
+  if (status !== "PENDING" && status !== "APPROVED") {
+    return false;
+  }
+
+  const today = new Date().toISOString().slice(0, 10);
+
+  return row.start_date <= today && row.end_date > today;
 }
 
 async function loadProfiles() {
@@ -430,16 +493,28 @@ if (row.reviewer_id && !canReviewLocally(row)) {
   `;
 }
 
-if (canAdminRetractLoa(row)) {
+if (canAdminRetractLoa(row) || canAdminEndLoaToday(row)) {
   reviewHtml += `
-    <div style="display:flex;justify-content:flex-end;margin-top:6px;">
-      <button
-        class="btn btn-admin-retract"
-        type="button"
-        data-admin-retract-id="${row.id}"
-      >
-        Retract
-      </button>
+    <div class="admin-loa-actions">
+      ${canAdminEndLoaToday(row) ? `
+        <button
+          class="btn btn-admin-end-today"
+          type="button"
+          data-admin-end-today-id="${row.id}"
+        >
+          End LOA Today
+        </button>
+      ` : ""}
+
+      ${canAdminRetractLoa(row) ? `
+        <button
+          class="btn btn-admin-retract"
+          type="button"
+          data-admin-retract-id="${row.id}"
+        >
+          Retract
+        </button>
+      ` : ""}
     </div>
   `;
 }
@@ -474,6 +549,12 @@ if (canAdminRetractLoa(row)) {
 document.querySelectorAll("[data-admin-retract-id]").forEach(button => {
   button.addEventListener("click", () => {
     adminRetractLoa(Number(button.dataset.adminRetractId));
+  });
+});
+
+document.querySelectorAll("[data-admin-end-today-id]").forEach(button => {
+  button.addEventListener("click", () => {
+    adminEndLoaToday(Number(button.dataset.adminEndTodayId));
   });
 });
 }
