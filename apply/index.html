@@ -1225,12 +1225,6 @@
       letter-spacing: 0.4px;
     }
 
-    .role-badge.paid {
-      background: #e7f0e8;
-      border-color: #9ab29d;
-      color: #355f3b;
-    }
-
     @media (max-width: 840px) {
       .role-grid.interactive-role-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1418,12 +1412,6 @@
       text-transform: uppercase;
       letter-spacing: 0.5px;
       vertical-align: middle;
-    }
-
-    .role-badge.paid {
-      background: #309f4a;
-      border: 1px solid #267d3a;
-      color: #fff;
     }
 
     .finder-results {
@@ -2062,6 +2050,50 @@
   #applicationPanel .draft-tools button {
     width: 100%;
   }
+}
+
+/* =========================================================
+   PAID POSITION NOTICE
+   ========================================================= */
+
+.paid-position-notice {
+  margin-top: 12px;
+  padding: 10px 11px;
+  background: #edf4ee;
+  border: 1px solid #a7b9aa;
+  border-left: 4px solid #3f7549;
+}
+
+.paid-position-label {
+  display: inline-block;
+  margin-bottom: 5px;
+  color: #2f6239;
+  font-size: 10px;
+  font-weight: bold;
+  line-height: 1.2;
+  text-transform: uppercase;
+  letter-spacing: 0.55px;
+}
+
+.paid-position-label::before {
+  content: "$";
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  margin-right: 6px;
+  background: #3f7549;
+  color: #fff;
+  font-size: 10px;
+  line-height: 16px;
+  text-align: center;
+  vertical-align: -1px;
+}
+
+.paid-position-notice p {
+  margin: 0;
+  color: #455248;
+  font-size: 11px;
+  line-height: 1.55;
 }
   </style>
 </head>
@@ -2772,7 +2804,15 @@
                 believable scenarios that respond to player decisions.
               </p>
 
-              <span class="role-badge paid">Possible paid position</span>
+              <div class="paid-position-notice">
+                <span class="paid-position-label">Paid opportunity</span>
+
+                <p>
+                  This position may become paid for applicants who consistently create,
+                  maintain, and operate high-quality missions. Payment is not guaranteed
+                  and depends on workload, reliability, quality, and unit requirements.
+                </p>
+              </div>
               <span class="role-card-prompt">Open to review role</span>
             </div>
 
