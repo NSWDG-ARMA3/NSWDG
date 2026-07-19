@@ -45,104 +45,403 @@
 </head>
 <body>
   <div class="gov-banner">NSW-TRNG // CONTROLLED ACCESS // INTELLIGENCE WORKSPACE</div>
-  <header class="site-header"><h1>Naval Special Warfare Command - Intelligence Workspace</h1><p>Collection, analysis, entity correlation and evidence management</p></header>
+  <header class="site-header">
+      <h1>Naval Special Warfare Command - Intelligence Workspace</h1>
+      <p>Collection, analysis, entity correlation and evidence management</p>
+  </header>
   <div id="portal-nav" class="portal-nav"></div>
   <div class="portal-body">
-    <aside id="portal-sidebar" class="sidebar"></aside>
-    <main class="portal-main">
-      <div class="classification-banner">CONTROLLED INTELLIGENCE INFORMATION</div>
-      <div class="page-title">Intelligence Database</div>
-      <div id="access-denied" class="denied" hidden><strong>Access denied.</strong> Your current role or billet is not authorized to access this workspace.</div>
-      <div id="intelligence-app" hidden>
-        <div class="dashboard">
-          <div class="stat-card"><div class="label">Reports</div><div id="report-count" class="value">0</div></div>
-          <div class="stat-card"><div class="label">Drafts</div><div id="draft-count" class="value">0</div></div>
-          <div class="stat-card"><div class="label">Awaiting HQ</div><div id="submitted-count" class="value">0</div></div>
-          <div class="stat-card"><div class="label">Entities</div><div id="entity-count" class="value">0</div></div>
-          <div class="stat-card"><div class="label">Connections</div><div id="relationship-count" class="value">0</div></div>
-        </div>
-        <div class="tabs">
-          <button class="tab-button active" data-tab="reports">Reports</button>
-          <button class="tab-button" data-tab="entities">Entities</button>
-          <button class="tab-button" data-tab="relationships">Connections</button>
-          <button class="tab-button hq-only" data-tab="review">HQ Review</button>
-          <button class="tab-button" data-tab="guide">How it works</button>
-        </div>
-
-        <section id="reports-screen" class="screen active">
-          <div class="intro-box"><strong>Reports:</strong> This is the written intelligence product. Every new report is automatically a DRAFT. Drafts can already be linked to entities and other reports. Submit it when finished; Troop Headquarters then approves or returns it.</div>
-          <div class="panel collapsed" id="report-editor-panel">
-            <div class="panel-header"><span>Create or edit intelligence report</span><button class="toggle-panel">Open editor</button></div>
-            <div class="panel-body">
-              <div class="form-grid">
-                <div class="field span-2"><label>Title</label><input id="report-title" maxlength="200"></div>
-                <div class="field"><label>Intelligence type</label><select id="report-type"><option>GENERAL</option><option>SIGINT</option><option>HUMINT</option><option>IMINT</option><option>OSINT</option><option>DOMEX</option><option>GEOINT</option><option>CYBINT</option><option>TECHINT</option></select></div>
-                <div class="field"><label>Status</label><input id="report-status" value="DRAFT" disabled></div>
-                <div class="field"><label>Classification</label><select id="report-classification"><option>UNCLASSIFIED</option><option>CUI</option><option>CONFIDENTIAL</option><option>SECRET</option><option>TOP SECRET</option></select></div>
-                <div class="field"><label>Priority</label><select id="report-priority"><option>ROUTINE</option><option>PRIORITY</option><option>IMMEDIATE</option><option>FLASH</option></select></div>
-                <div class="field"><label>Source reliability</label><select id="report-reliability"><option value="UNKNOWN">Unassessed</option><option value="A">A - Completely reliable</option><option value="B">B - Usually reliable</option><option value="C">C - Fairly reliable</option><option value="D">D - Not usually reliable</option><option value="E">E - Unreliable</option><option value="F">F - Cannot be judged</option></select></div>
-                <div class="field"><label>Information credibility</label><select id="report-credibility"><option value="UNKNOWN">Unassessed</option><option value="1">1 - Confirmed</option><option value="2">2 - Probably true</option><option value="3">3 - Possibly true</option><option value="4">4 - Doubtful</option><option value="5">5 - Improbable</option><option value="6">6 - Cannot be judged</option></select></div>
-                <div class="field"><label>Confidence</label><select id="report-confidence"><option>LOW</option><option selected>MODERATE</option><option>HIGH</option><option>CONFIRMED</option></select></div>
-                <div class="field span-4"><label>Executive summary</label><textarea id="report-summary"></textarea></div>
-                <div class="field span-4"><label>Full details</label><textarea id="report-details"></textarea></div>
-                <div class="field span-2"><label>Collection method</label><input id="report-collection-method"></div>
-                <div class="field span-2"><label>Source description</label><input id="report-source-description"></div>
-                <div class="field"><label>Observed at</label><input id="report-observed-at" type="datetime-local"></div>
-                <div class="field"><label>Collected at</label><input id="report-collected-at" type="datetime-local"></div>
-                <div class="field"><label>Location</label><input id="report-location"></div>
-                <div class="field"><label>Grid reference</label><input id="report-grid"></div>
-                <div class="field"><label>Latitude</label><input id="report-latitude" type="number" step="any"></div>
-                <div class="field"><label>Longitude</label><input id="report-longitude" type="number" step="any"></div>
-                <div class="field span-2"><label>Tags, comma-separated</label><input id="report-tags"></div>
-                <div class="field span-4"><label>Analyst assessment</label><textarea id="report-assessment"></textarea></div>
-                <div class="field span-2"><label>Intelligence gaps</label><textarea id="report-gaps"></textarea></div>
-                <div class="field span-2"><label>Recommended actions</label><textarea id="report-actions"></textarea></div>
-                <div class="field span-4"><label>Attach evidence</label><input id="report-files" type="file" multiple></div>
+      <aside id="portal-sidebar" class="sidebar"></aside>
+      <main class="portal-main">
+          <div class="classification-banner">CONTROLLED INTELLIGENCE INFORMATION</div>
+          <div class="page-title">Intelligence Database</div>
+          <div id="access-denied" class="denied" hidden><strong>Access denied.</strong> Your current role or billet is
+              not authorized to access this workspace.</div>
+          <div id="intelligence-app" hidden>
+              <div class="dashboard">
+                  <div class="stat-card">
+                      <div class="label">Reports</div>
+                      <div id="report-count" class="value">0</div>
+                  </div>
+                  <div class="stat-card">
+                      <div class="label">Drafts</div>
+                      <div id="draft-count" class="value">0</div>
+                  </div>
+                  <div class="stat-card">
+                      <div class="label">Awaiting HQ</div>
+                      <div id="submitted-count" class="value">0</div>
+                  </div>
+                  <div class="stat-card">
+                      <div class="label">Entities</div>
+                      <div id="entity-count" class="value">0</div>
+                  </div>
+                  <div class="stat-card">
+                      <div class="label">Connections</div>
+                      <div id="relationship-count" class="value">0</div>
+                  </div>
               </div>
-              <div class="actions"><button id="save-report" class="primary">Save draft</button><button id="submit-report" hidden>Submit to Troop HQ</button><button id="reset-report">Clear form</button><button id="delete-report" class="danger" hidden>Delete report</button></div>
-              <div id="report-status-line" class="status-line"></div>
-            </div>
+              <div class="tabs">
+                  <button class="tab-button active" data-tab="reports">Reports</button>
+                  <button class="tab-button" data-tab="entities">Entities</button>
+                  <button class="tab-button" data-tab="relationships">Connections</button>
+                  <button class="tab-button hq-only" data-tab="review">HQ Review</button>
+                  <button class="tab-button" data-tab="guide">How it works</button>
+              </div>
+
+              <section id="reports-screen" class="screen active">
+                  <div class="intro-box"><strong>Reports:</strong> This is the written intelligence product. Every new
+                      report is automatically a DRAFT. Drafts can already be linked to entities and other reports.
+                      Submit it when finished; Troop Headquarters then approves or returns it.</div>
+                  <div class="panel collapsed" id="report-editor-panel">
+                      <div class="panel-header"><span>Create or edit intelligence report</span><button
+                              class="toggle-panel">Open editor</button></div>
+                      <div class="panel-body">
+                          <div class="form-grid">
+                              <div class="field span-2"><label>Title</label><input id="report-title" maxlength="200">
+                              </div>
+                              <div class="field"><label>Intelligence type</label><select id="report-type">
+                                      <option>GENERAL</option>
+                                      <option>SIGINT</option>
+                                      <option>HUMINT</option>
+                                      <option>IMINT</option>
+                                      <option>OSINT</option>
+                                      <option>DOMEX</option>
+                                      <option>GEOINT</option>
+                                      <option>CYBINT</option>
+                                      <option>TECHINT</option>
+                                  </select></div>
+                              <div class="field"><label>Status</label><input id="report-status" value="DRAFT" disabled>
+                              </div>
+                              <div class="field"><label>Classification</label><select id="report-classification">
+                                      <option>UNCLASSIFIED</option>
+                                      <option>CUI</option>
+                                      <option>CONFIDENTIAL</option>
+                                      <option>SECRET</option>
+                                      <option>TOP SECRET</option>
+                                  </select></div>
+                              <div class="field"><label>Priority</label><select id="report-priority">
+                                      <option>ROUTINE</option>
+                                      <option>PRIORITY</option>
+                                      <option>IMMEDIATE</option>
+                                      <option>FLASH</option>
+                                  </select></div>
+                              <div class="field"><label>Source reliability</label><select id="report-reliability">
+                                      <option value="UNKNOWN">Unassessed</option>
+                                      <option value="A">A - Completely reliable</option>
+                                      <option value="B">B - Usually reliable</option>
+                                      <option value="C">C - Fairly reliable</option>
+                                      <option value="D">D - Not usually reliable</option>
+                                      <option value="E">E - Unreliable</option>
+                                      <option value="F">F - Cannot be judged</option>
+                                  </select></div>
+                              <div class="field"><label>Information credibility</label><select id="report-credibility">
+                                      <option value="UNKNOWN">Unassessed</option>
+                                      <option value="1">1 - Confirmed</option>
+                                      <option value="2">2 - Probably true</option>
+                                      <option value="3">3 - Possibly true</option>
+                                      <option value="4">4 - Doubtful</option>
+                                      <option value="5">5 - Improbable</option>
+                                      <option value="6">6 - Cannot be judged</option>
+                                  </select></div>
+                              <div class="field"><label>Confidence</label><select id="report-confidence">
+                                      <option>LOW</option>
+                                      <option selected>MODERATE</option>
+                                      <option>HIGH</option>
+                                      <option>CONFIRMED</option>
+                                  </select></div>
+                              <div class="field span-4"><label>Executive summary</label><textarea
+                                      id="report-summary"></textarea></div>
+                              <div class="field span-4"><label>Full details</label><textarea
+                                      id="report-details"></textarea></div>
+                              <div class="field span-2"><label>Collection method</label><input
+                                      id="report-collection-method"></div>
+                              <div class="field span-2"><label>Source description</label><input
+                                      id="report-source-description"></div>
+                              <div class="field"><label>Observed at</label><input id="report-observed-at"
+                                      type="datetime-local"></div>
+                              <div class="field"><label>Collected at</label><input id="report-collected-at"
+                                      type="datetime-local"></div>
+                              <div class="field"><label>Location</label><input id="report-location"></div>
+                              <div class="field"><label>Grid reference</label><input id="report-grid"></div>
+                              <div class="field"><label>Latitude</label><input id="report-latitude" type="number"
+                                      step="any"></div>
+                              <div class="field"><label>Longitude</label><input id="report-longitude" type="number"
+                                      step="any"></div>
+                              <div class="field span-2"><label>Tags, comma-separated</label><input id="report-tags">
+                              </div>
+                              <div class="field span-4"><label>Analyst assessment</label><textarea
+                                      id="report-assessment"></textarea></div>
+                              <div class="field span-2"><label>Intelligence gaps</label><textarea
+                                      id="report-gaps"></textarea></div>
+                              <div class="field span-2"><label>Recommended actions</label><textarea
+                                      id="report-actions"></textarea></div>
+                              <div class="field span-4"><label>Attach evidence</label><input id="report-files"
+                                      type="file" multiple></div>
+                          </div>
+                          <div class="actions"><button id="save-report" class="primary">Save draft</button><button
+                                  id="submit-report" hidden>Submit to Troop HQ</button><button id="reset-report">Clear
+                                  form</button><button id="delete-report" class="danger" hidden>Delete report</button>
+                          </div>
+                          <div id="report-status-line" class="status-line"></div>
+                      </div>
+                  </div>
+                  <div class="panel">
+                      <div class="panel-header"><span>Report database</span></div>
+                      <div class="panel-body">
+                          <div class="toolbar"><input id="report-search" placeholder="Search reports"><select
+                                  id="report-type-filter">
+                                  <option value="">All types</option>
+                                  <option>GENERAL</option>
+                                  <option>SIGINT</option>
+                                  <option>HUMINT</option>
+                                  <option>IMINT</option>
+                                  <option>OSINT</option>
+                                  <option>DOMEX</option>
+                                  <option>GEOINT</option>
+                                  <option>CYBINT</option>
+                                  <option>TECHINT</option>
+                              </select><select id="report-status-filter">
+                                  <option value="">All statuses</option>
+                                  <option>DRAFT</option>
+                                  <option>SUBMITTED</option>
+                                  <option>APPROVED</option>
+                                  <option>REJECTED</option>
+                              </select><select id="report-priority-filter">
+                                  <option value="">All priorities</option>
+                                  <option>ROUTINE</option>
+                                  <option>PRIORITY</option>
+                                  <option>IMMEDIATE</option>
+                                  <option>FLASH</option>
+                              </select><button id="refresh-reports">Refresh</button></div>
+                          <div class="table-wrap">
+                              <table>
+                                  <thead>
+                                      <tr>
+                                          <th>Report</th>
+                                          <th>Title</th>
+                                          <th>Type</th>
+                                          <th>Status</th>
+                                          <th>Priority</th>
+                                          <th>Written by</th>
+                                          <th>Collected</th>
+                                          <th></th>
+                                      </tr>
+                                  </thead>
+                                  <tbody id="reports-output"></tbody>
+                              </table>
+                          </div>
+                          <div id="report-viewer" class="viewer"></div>
+                      </div>
+                  </div>
+              </section>
+
+              <section id="entities-screen" class="screen">
+                  <div class="intro-box"><strong>Entities:</strong> Entities are reusable subjects such as people,
+                      vehicles, organizations, locations, callsigns or frequencies. Create one entity and link it to
+                      every relevant report instead of duplicating it.</div>
+                  <div class="panel collapsed" id="entity-editor-panel">
+                      <div class="panel-header"><span>Create or edit entity</span><button class="toggle-panel">Open
+                              editor</button></div>
+                      <div class="panel-body">
+                          <div class="form-grid">
+                              <div class="field"><label>Entity type</label><select id="entity-type">
+                                      <option>PERSON</option>
+                                      <option>ORGANIZATION</option>
+                                      <option>LOCATION</option>
+                                      <option>VEHICLE</option>
+                                      <option>VESSEL</option>
+                                      <option>AIRCRAFT</option>
+                                      <option>EQUIPMENT</option>
+                                      <option>WEAPON</option>
+                                      <option>FREQUENCY</option>
+                                      <option>CALLSIGN</option>
+                                      <option>PHONE</option>
+                                      <option>EMAIL</option>
+                                      <option>ACCOUNT</option>
+                                      <option>DOCUMENT</option>
+                                      <option>OTHER</option>
+                                  </select></div>
+                              <div class="field span-2"><label>Name or identifier</label><input id="entity-name"></div>
+                              <div class="field"><label>Status</label><select id="entity-status">
+                                      <option>ACTIVE</option>
+                                      <option>INACTIVE</option>
+                                      <option>UNKNOWN</option>
+                                      <option>ASSESSED</option>
+                                      <option>ARCHIVED</option>
+                                  </select></div>
+                              <div class="field"><label>Priority</label><select id="entity-priority">
+                                      <option>LOW</option>
+                                      <option selected>MEDIUM</option>
+                                      <option>HIGH</option>
+                                      <option>CRITICAL</option>
+                                  </select></div>
+                              <div class="field span-2"><label>Aliases, comma-separated</label><input
+                                      id="entity-aliases"></div>
+                              <div class="field"><label>Tags, comma-separated</label><input id="entity-tags"></div>
+                              <div class="field span-4"><label>Description</label><textarea
+                                      id="entity-description"></textarea></div>
+                              <div class="field span-2"><label>Location</label><input id="entity-location"></div>
+                              <div class="field"><label>Grid reference</label><input id="entity-grid"></div>
+                              <div class="field"><label>Identifiers as JSON</label><textarea
+                                      id="entity-identifiers">{}</textarea></div>
+                              <div class="field span-4"><label>Additional attributes as JSON</label><textarea
+                                      id="entity-attributes">{}</textarea></div>
+                          </div>
+                          <div class="actions"><button id="save-entity" class="primary">Save entity</button><button
+                                  id="reset-entity">Clear form</button><button id="delete-entity" class="danger"
+                                  hidden>Delete entity</button></div>
+                          <div id="entity-status-line" class="status-line"></div>
+                      </div>
+                  </div>
+                  <div class="panel">
+                      <div class="panel-header"><span>Entity database</span></div>
+                      <div class="panel-body">
+                          <div class="toolbar"><input id="entity-search"
+                                  placeholder="Search names, aliases or descriptions"><select id="entity-type-filter">
+                                  <option value="">All entity types</option>
+                              </select><select id="entity-priority-filter">
+                                  <option value="">All priorities</option>
+                                  <option>LOW</option>
+                                  <option>MEDIUM</option>
+                                  <option>HIGH</option>
+                                  <option>CRITICAL</option>
+                              </select><span></span><button id="refresh-entities">Refresh</button></div>
+                          <div class="table-wrap">
+                              <table>
+                                  <thead>
+                                      <tr>
+                                          <th>ID</th>
+                                          <th>Name</th>
+                                          <th>Type</th>
+                                          <th>Priority</th>
+                                          <th>Status</th>
+                                          <th>Created by</th>
+                                          <th>Location</th>
+                                          <th></th>
+                                      </tr>
+                                  </thead>
+                                  <tbody id="entities-output"></tbody>
+                              </table>
+                          </div>
+                      </div>
+                  </div>
+              </section>
+
+              <section id="relationships-screen" class="screen">
+                  <div class="intro-box"><strong>Connections:</strong> Connections explain how two records relate. You
+                      can connect entity-to-entity, report-to-entity or report-to-report. DRAFT records are valid. When
+                      a report is approved, its connections remain exactly the same.</div>
+                  <div class="panel collapsed" id="relationship-editor-panel">
+                      <div class="panel-header"><span>Create connection</span><button class="toggle-panel">Open
+                              editor</button></div>
+                      <div class="panel-body">
+                          <div class="form-grid">
+                              <div class="field span-2"><label>Source record</label><select
+                                      id="relationship-source"></select></div>
+                              <div class="field"><label>Relationship</label><input id="relationship-type"
+                                      placeholder="Mentions, owns, associated with..."></div>
+                              <div class="field"><label>Confidence</label><select id="relationship-confidence">
+                                      <option>LOW</option>
+                                      <option selected>MODERATE</option>
+                                      <option>HIGH</option>
+                                      <option>CONFIRMED</option>
+                                  </select></div>
+                              <div class="field span-2"><label>Target record</label><select
+                                      id="relationship-target"></select></div>
+                              <div class="field span-2"><label>Explanation</label><textarea
+                                      id="relationship-description"></textarea></div>
+                          </div>
+                          <div class="actions"><button id="save-relationship" class="primary">Create connection</button>
+                          </div>
+                          <div id="relationship-status-line" class="status-line"></div>
+                      </div>
+                  </div>
+                  <div class="panel">
+                      <div class="panel-header"><span>Connections database</span></div>
+                      <div class="panel-body">
+                          <div id="relationships-output"></div>
+                      </div>
+                  </div>
+              </section>
+
+              <section id="review-screen" class="screen">
+                  <div class="intro-box"><strong>HQ Review:</strong> Submitted reports appear here. Troop Headquarters
+                      can approve them for use or return them with a reason. Approval changes only the status and
+                      records the reviewer; all entities and connections stay intact.</div>
+                  <div class="panel">
+                      <div class="panel-header"><span>Reports awaiting Troop Headquarters approval</span></div>
+                      <div class="panel-body">
+                          <div class="table-wrap">
+                              <table>
+                                  <thead>
+                                      <tr>
+                                          <th>Report</th>
+                                          <th>Title</th>
+                                          <th>Written by</th>
+                                          <th>Submitted by</th>
+                                          <th>Submitted</th>
+                                          <th></th>
+                                      </tr>
+                                  </thead>
+                                  <tbody id="review-output"></tbody>
+                              </table>
+                          </div>
+                      </div>
+                  </div>
+              </section>
+
+              <section id="guide-screen" class="screen">
+                  <div class="intro-box"><strong>System workflow:</strong> The separate pages form one shared
+                      intelligence picture.</div>
+                  <div class="panel">
+                      <div class="panel-header"><span>How everything connects</span></div>
+                      <div class="panel-body">
+                          <ol class="help-list">
+    <li>
+        <strong>Reports</strong> are the actual intelligence products written by an analyst. A report contains the full story, observations, evidence, analysis and conclusions gathered during an investigation. Every report automatically begins as a <strong>DRAFT</strong>, allowing analysts to continue working before submitting it to Troop Headquarters for review and approval.
+        <br><br>
+        <em>Example:</em> "Suspicious White Ford Transit Observed Near Compound" containing witness statements, photographs, timings and analyst assessment.
+    </li>
+
+    <li>
+        <strong>Entities</strong> are individual subjects that exist independently from reports. Instead of writing the same information repeatedly, an entity is created once and can be linked to any number of reports. Entities represent the people, vehicles, locations, organizations, callsigns, frequencies, weapons, equipment or any other object that appears during intelligence collection.
+        <br><br>
+        <em>Example:</em> The vehicle "White Ford Transit - XX-123-AB" may appear in five different reports over several weeks. Rather than recreating the vehicle each time, every report simply references the same entity.
+    </li>
+
+    <li>
+        <strong>Connections</strong> describe the relationship between two records. They are used to build the intelligence picture by showing how reports and entities are connected. Connections can be created between two reports, between two entities, or between a report and an entity. Draft reports can also be connected before they have been approved.
+        <br><br>
+        <em>Examples:</em>
+        <ul style="margin-top:6px;margin-left:18px;">
+            <li>Person → Vehicle ("Operates")</li>
+            <li>Vehicle → Location ("Seen At")</li>
+            <li>Report → Vehicle ("Describes")</li>
+            <li>Report → Report ("Continuation Of")</li>
+            <li>Organization → Person ("Member Of")</li>
+        </ul>
+        These relationships allow analysts to quickly identify patterns, recurring subjects and operational links.
+    </li>
+
+    <li>
+        <strong>Evidence</strong> contains the supporting material used to validate intelligence. Evidence is uploaded directly to a report and permanently records who uploaded it and when. Evidence may consist of photographs, videos, audio recordings, documents, screenshots, GPS tracks or any other supporting files.
+        <br><br>
+        <em>Example:</em> A report about a suspicious vehicle may contain CCTV footage, photographs taken during surveillance and a scanned registration document. All of these remain attached to that report for future reference.
+    </li>
+
+    <li>
+        <strong>HQ Review</strong> is the final quality assurance stage. Once an analyst has completed a report, it is submitted to Troop Headquarters for review. Headquarters may approve the report for operational use or return it with comments for further analysis. Approval only changes the report's status—it does <strong>not</strong> modify or remove any entities, connections or evidence already associated with the report.
+    </li>
+
+    <li>
+        <strong>Audit Trail</strong> ensures complete accountability throughout the intelligence process. Every report records who created it, who last edited it, who uploaded supporting evidence, who submitted it for review and who ultimately approved or returned it. This creates a complete chain of responsibility and preserves the integrity of the intelligence database.
+    </li>
+</ol>
+                      </div>
+                  </div>
+              </section>
           </div>
-          <div class="panel"><div class="panel-header"><span>Report database</span></div><div class="panel-body">
-            <div class="toolbar"><input id="report-search" placeholder="Search reports"><select id="report-type-filter"><option value="">All types</option><option>GENERAL</option><option>SIGINT</option><option>HUMINT</option><option>IMINT</option><option>OSINT</option><option>DOMEX</option><option>GEOINT</option><option>CYBINT</option><option>TECHINT</option></select><select id="report-status-filter"><option value="">All statuses</option><option>DRAFT</option><option>SUBMITTED</option><option>APPROVED</option><option>REJECTED</option></select><select id="report-priority-filter"><option value="">All priorities</option><option>ROUTINE</option><option>PRIORITY</option><option>IMMEDIATE</option><option>FLASH</option></select><button id="refresh-reports">Refresh</button></div>
-            <div class="table-wrap"><table><thead><tr><th>Report</th><th>Title</th><th>Type</th><th>Status</th><th>Priority</th><th>Written by</th><th>Collected</th><th></th></tr></thead><tbody id="reports-output"></tbody></table></div><div id="report-viewer" class="viewer"></div>
-          </div></div>
-        </section>
-
-        <section id="entities-screen" class="screen">
-          <div class="intro-box"><strong>Entities:</strong> Entities are reusable subjects such as people, vehicles, organizations, locations, callsigns or frequencies. Create one entity and link it to every relevant report instead of duplicating it.</div>
-          <div class="panel collapsed" id="entity-editor-panel"><div class="panel-header"><span>Create or edit entity</span><button class="toggle-panel">Open editor</button></div><div class="panel-body">
-            <div class="form-grid">
-              <div class="field"><label>Entity type</label><select id="entity-type"><option>PERSON</option><option>ORGANIZATION</option><option>LOCATION</option><option>VEHICLE</option><option>VESSEL</option><option>AIRCRAFT</option><option>EQUIPMENT</option><option>WEAPON</option><option>FREQUENCY</option><option>CALLSIGN</option><option>PHONE</option><option>EMAIL</option><option>ACCOUNT</option><option>DOCUMENT</option><option>OTHER</option></select></div>
-              <div class="field span-2"><label>Name or identifier</label><input id="entity-name"></div><div class="field"><label>Status</label><select id="entity-status"><option>ACTIVE</option><option>INACTIVE</option><option>UNKNOWN</option><option>ASSESSED</option><option>ARCHIVED</option></select></div>
-              <div class="field"><label>Priority</label><select id="entity-priority"><option>LOW</option><option selected>MEDIUM</option><option>HIGH</option><option>CRITICAL</option></select></div><div class="field span-2"><label>Aliases, comma-separated</label><input id="entity-aliases"></div><div class="field"><label>Tags, comma-separated</label><input id="entity-tags"></div>
-              <div class="field span-4"><label>Description</label><textarea id="entity-description"></textarea></div><div class="field span-2"><label>Location</label><input id="entity-location"></div><div class="field"><label>Grid reference</label><input id="entity-grid"></div>
-              <div class="field"><label>Identifiers as JSON</label><textarea id="entity-identifiers">{}</textarea></div><div class="field span-4"><label>Additional attributes as JSON</label><textarea id="entity-attributes">{}</textarea></div>
-            </div><div class="actions"><button id="save-entity" class="primary">Save entity</button><button id="reset-entity">Clear form</button><button id="delete-entity" class="danger" hidden>Delete entity</button></div><div id="entity-status-line" class="status-line"></div>
-          </div></div>
-          <div class="panel"><div class="panel-header"><span>Entity database</span></div><div class="panel-body"><div class="toolbar"><input id="entity-search" placeholder="Search names, aliases or descriptions"><select id="entity-type-filter"><option value="">All entity types</option></select><select id="entity-priority-filter"><option value="">All priorities</option><option>LOW</option><option>MEDIUM</option><option>HIGH</option><option>CRITICAL</option></select><span></span><button id="refresh-entities">Refresh</button></div><div class="table-wrap"><table><thead><tr><th>ID</th><th>Name</th><th>Type</th><th>Priority</th><th>Status</th><th>Created by</th><th>Location</th><th></th></tr></thead><tbody id="entities-output"></tbody></table></div></div></div>
-        </section>
-
-        <section id="relationships-screen" class="screen">
-          <div class="intro-box"><strong>Connections:</strong> Connections explain how two records relate. You can connect entity-to-entity, report-to-entity or report-to-report. DRAFT records are valid. When a report is approved, its connections remain exactly the same.</div>
-          <div class="panel collapsed" id="relationship-editor-panel"><div class="panel-header"><span>Create connection</span><button class="toggle-panel">Open editor</button></div><div class="panel-body">
-            <div class="form-grid"><div class="field span-2"><label>Source record</label><select id="relationship-source"></select></div><div class="field"><label>Relationship</label><input id="relationship-type" placeholder="Mentions, owns, associated with..."></div><div class="field"><label>Confidence</label><select id="relationship-confidence"><option>LOW</option><option selected>MODERATE</option><option>HIGH</option><option>CONFIRMED</option></select></div><div class="field span-2"><label>Target record</label><select id="relationship-target"></select></div><div class="field span-2"><label>Explanation</label><textarea id="relationship-description"></textarea></div></div>
-            <div class="actions"><button id="save-relationship" class="primary">Create connection</button></div><div id="relationship-status-line" class="status-line"></div>
-          </div></div>
-          <div class="panel"><div class="panel-header"><span>Connections database</span></div><div class="panel-body"><div id="relationships-output"></div></div></div>
-        </section>
-
-        <section id="review-screen" class="screen">
-          <div class="intro-box"><strong>HQ Review:</strong> Submitted reports appear here. Troop Headquarters can approve them for use or return them with a reason. Approval changes only the status and records the reviewer; all entities and connections stay intact.</div>
-          <div class="panel"><div class="panel-header"><span>Reports awaiting Troop Headquarters approval</span></div><div class="panel-body"><div class="table-wrap"><table><thead><tr><th>Report</th><th>Title</th><th>Written by</th><th>Submitted by</th><th>Submitted</th><th></th></tr></thead><tbody id="review-output"></tbody></table></div></div></div>
-        </section>
-
-        <section id="guide-screen" class="screen">
-          <div class="intro-box"><strong>System workflow:</strong> The separate pages form one shared intelligence picture.</div>
-          <div class="panel"><div class="panel-header"><span>How everything connects</span></div><div class="panel-body"><ol class="help-list"><li><strong>Reports</strong> hold the written intelligence and always start as DRAFT.</li><li><strong>Entities</strong> hold reusable people, vehicles, locations, callsigns and other subjects.</li><li><strong>Connections</strong> link any two reports or entities, including drafts.</li><li><strong>Evidence</strong> is uploaded to a report and records who uploaded it.</li><li><strong>HQ Review</strong> approves the finished report. Approval does not alter its content or connections.</li><li>Authors, uploaders, submitters and approvers are shown for accountability.</li></ol></div></div>
-        </section>
-      </div>
-    </main>
+      </main>
   </div>
 
 <script type="module">
