@@ -465,11 +465,11 @@ function renderRows(rows) {
     });
   });
 
-  document.querySelectorAll("[data-retract-id]").forEach(button => {
-    button.addEventListener("click", () => {
-      retractLoa(Number(button.dataset.retractId));
-    });
+document.querySelectorAll("[data-admin-retract-id]").forEach(button => {
+  button.addEventListener("click", () => {
+    adminRetractLoa(Number(button.dataset.adminRetractId));
   });
+});
 }
 
 async function loadLoas() {
@@ -636,19 +636,22 @@ async function reviewLoa(id, newStatus) {
   await loadLoas();
 }
 
-async function retractLoa(id) {
+async function adminRetractLoa(id) {
   const row = loaRows.find(item => Number(item.id) === Number(id));
 
-  if (!row || !canRetractLocally(row)) {
-    setStatus("You cannot retract this LOA.", false);
+  if (!row || !canAdminRetractLoa(row)) {
+    setStatus("Only administrators can retract this LOA.", false);
     return;
   }
+
+  const memberProfile = profilesById.get(row.requester_id);
+  const memberName = memberProfile?.display_name || "this member";
 
   const startDate = formatDate(row.start_date);
   const endDate = formatDate(row.end_date);
 
   const confirmed = window.confirm(
-    `Retract your LOA from ${startDate} to ${endDate}?\n\n` +
+    `Retract ${memberName}'s LOA from ${startDate} to ${endDate}?\n\n` +
     "The LOA will be marked as cancelled."
   );
 
@@ -657,7 +660,7 @@ async function retractLoa(id) {
   }
 
   const button = document.querySelector(
-    `[data-retract-id="${id}"]`
+    `[data-admin-retract-id="${id}"]`
   );
 
   if (button) {
@@ -665,7 +668,7 @@ async function retractLoa(id) {
     button.textContent = "Retracting...";
   }
 
-  const { error } = await supabase.rpc("retract_loa_request", {
+  const { error } = await supabase.rpc("admin_retract_loa", {
     target_loa_id: id
   });
 
@@ -679,7 +682,7 @@ async function retractLoa(id) {
     return;
   }
 
-  setStatus("LOA retracted successfully.", true);
+  setStatus(`${memberName}'s LOA was retracted.`, true);
   await loadLoas();
 }
 
