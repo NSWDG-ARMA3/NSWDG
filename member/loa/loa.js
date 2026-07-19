@@ -272,13 +272,7 @@ function canAdminEndLoaToday(row) {
 
   const status = String(row.status || "").trim().toUpperCase();
 
-  if (status !== "PENDING" && status !== "APPROVED") {
-    return false;
-  }
-
-  const today = new Date().toISOString().slice(0, 10);
-
-  return row.start_date <= today && row.end_date > today;
+  return status === "PENDING" || status === "APPROVED";
 }
 
 async function loadProfiles() {
