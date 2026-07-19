@@ -2622,6 +2622,7 @@
                 <option value="">Select a role card above</option>
                 <option value="NSWDG Candidate">NSWDG Candidate</option>
                 <option value="SOAR Candidate">SOAR Candidate</option>
+                <option value="Fighter Pilot Candidate">Fighter Pilot Candidate</option>
                 <option value="OPFOR Candidate">OPFOR Candidate</option>
                 <option value="Zeus Candidate">Zeus Candidate</option>
               </select>
@@ -3511,11 +3512,16 @@
 
     function selectApplicationRoute(applicationRoute, specialty, finderSummary) {
       var roleApplied = document.getElementById('roleApplied');
+      var roleAppliedSubmission =
+      document.getElementById('roleAppliedSubmission');
       var applicationRouteField = document.getElementById('applicationRoute');
       var preferredSpecialty = document.getElementById('preferredSpecialty');
       var finderResultSummary = document.getElementById('finderResultSummary');
       if (roleApplied) {
         roleApplied.value = applicationRoute || '';
+      }
+      if (roleAppliedSubmission) {
+        roleAppliedSubmission.value = applicationRoute || '';
       }
       if (applicationRouteField) {
         applicationRouteField.value = applicationRoute || '';
@@ -4162,24 +4168,49 @@
     }
 
     function validateForm() {
-      var groups = document.querySelectorAll('.form-group[data-min][data-max]');
+      var groups = document.querySelectorAll(
+        '.form-group[data-min][data-max]'
+      );
+
       var valid = true;
       var firstInvalid = null;
+
       groups.forEach(function(group) {
+        /*
+          Do not validate fields whose parent section is hidden.
+          offsetParent is null when display:none is applied to the
+          element or one of its parents.
+        */
+        if (group.offsetParent === null) {
+          clearError(group);
+          return;
+        }
+
+        var field = group.querySelector('input, textarea, select');
+
+        if (!field || field.disabled) {
+          clearError(group);
+          return;
+        }
+
         var groupValid = validateGroup(group);
+
         if (!groupValid && !firstInvalid) {
           firstInvalid = group;
         }
+
         if (!groupValid) {
           valid = false;
         }
       });
+
       if (firstInvalid) {
         firstInvalid.scrollIntoView({
           behavior: 'smooth',
           block: 'center'
         });
       }
+
       return valid;
     }
 
@@ -4196,71 +4227,167 @@
       };
     }
 
-    function buildPayload() {
-      var preferredName = getValue('preferredName');
-      var age = getValue('age');
-      var timezone = getValue('timezone');
-      var discordUsername = getValue('discordUsername');
-      var selectedRole = getValue('roleApplied');
-      var roleConfig = ROLE_QUESTIONS[selectedRole];
-      var roleFields = [];
-      if (roleConfig) {
-        roleFields = roleConfig.questions.map(function(question, index) {
-          return answerField(index + 1, question.text, getValue(question.id));
-        });
+    function buildPayloads() {
+  var preferredName = getValue('preferredName');
+  var age = getValue('age');
+  var timezone = getValue('timezone');
+  var discordUsername = getValue('discordUsername');
+  var selectedRole = getValue('roleApplied');
+  var preferredSpecialty = getValue('preferredSpecialty');
+  var finderSummary = getValue('finderResultSummary');
+
+  var roleConfig = ROLE_QUESTIONS[selectedRole];
+  var payloads = [];
+
+  /*
+    Message 1: applicant summary
+  */
+  var summaryFields = [
+    {
+      name: 'Role Applied For',
+      value: selectedRole || 'Not provided',
+      inline: true
+    },
+    {
+      name: 'Name / Nickname',
+      value: preferredName || 'Not provided',
+      inline: true
+    },
+    {
+      name: 'Discord',
+      value: discordUsername || 'Not provided',
+      inline: true
+    },
+    {
+      name: 'Age',
+      value: age || 'Not provided',
+      inline: true
+    },
+    {
+      name: 'Timezone',
+      value: timezone || 'Not provided',
+      inline: true
+    }
+  ];
+
+  if (selectedRole === 'NSWDG Candidate') {
+    summaryFields.push({
+      name: 'Preferred Specialty',
+      value: preferredSpecialty || 'Not provided',
+      inline: false
+    });
+
+    summaryFields.push({
+      name: 'Specialty Interest Explanation',
+      value: clampText(
+        getValue('specialtyReason'),
+        1000
+      ),
+      inline: false
+    });
+  }
+
+  payloads.push({
+    username: 'NSWDG Recruitment Bot',
+    allowed_mentions: {
+      parse: []
+    },
+    embeds: [
+      {
+        title: 'New Unit Application Received',
+        color: 12298578,
+        fields: summaryFields,
+        timestamp: new Date().toISOString()
       }
-      return {
+    ]
+  });
+
+  /*
+    Messages 2 onward: role questions, split into groups
+    of four fields per Discord message.
+  */
+  if (roleConfig && roleConfig.questions.length) {
+    var answerFields = roleConfig.questions.map(function(question, index) {
+      return answerField(
+        index + 1,
+        question.text,
+        getValue(question.id)
+      );
+    });
+
+    var fieldsPerMessage = 4;
+
+    for (
+      var fieldIndex = 0;
+      fieldIndex < answerFields.length;
+      fieldIndex += fieldsPerMessage
+    ) {
+      var fieldChunk = answerFields.slice(
+        fieldIndex,
+        fieldIndex + fieldsPerMessage
+      );
+
+      payloads.push({
         username: 'NSWDG Recruitment Bot',
-        embeds: [{
-            title: 'New Unit Application Received',
-            color: 12298578,
-            fields: [{
-                name: 'Role Applied For',
-                value: selectedRole || 'Not provided',
-                inline: true
-              },
-              {
-                name: 'Name / Nickname',
-                value: preferredName || 'Not provided',
-                inline: true
-              },
-              {
-                name: 'Discord',
-                value: discordUsername || 'Not provided',
-                inline: true
-              },
-              {
-                name: 'Age',
-                value: age || 'Not provided',
-                inline: true
-              },
-              {
-                name: 'Timezone',
-                value: timezone || 'Not provided',
-                inline: true
-              }
-            ],
-            timestamp: new Date().toISOString()
-          },
+        allowed_mentions: {
+          parse: []
+        },
+        embeds: [
           {
-            title: selectedRole ? selectedRole + ' Application Answers' : 'Application Answers',
+            title:
+              selectedRole +
+              ' Application Answers ' +
+              '(' +
+              (fieldIndex + 1) +
+              '-' +
+              (fieldIndex + fieldChunk.length) +
+              ')',
             color: 12298578,
-            fields: roleFields
-          },
-          {
-            title: 'Final Notes',
-            color: 12298578,
-            fields: [
-              answerField('Final', 'Is there anything else we should know before reviewing your application?',
-                getValue('finalNotes'))
-            ],
-            footer: {
-              text: 'NSWDG Automated Application System'
-            }
+            fields: fieldChunk
           }
         ]
-      };
+      });
     }
+  }
+
+  /*
+    Final message: final notes and role-finder information.
+  */
+  var finalFields = [
+    answerField(
+      'Final',
+      'Is there anything else we should know before reviewing your application?',
+      getValue('finalNotes')
+    )
+  ];
+
+  if (finderSummary) {
+    finalFields.push({
+      name: 'Role Finder Result',
+      value: clampText(finderSummary, 1000),
+      inline: false
+    });
+  }
+
+  payloads.push({
+    username: 'NSWDG Recruitment Bot',
+    allowed_mentions: {
+      parse: []
+    },
+    embeds: [
+      {
+        title: 'Final Application Information',
+        color: 12298578,
+        fields: finalFields,
+        footer: {
+          text: 'NSWDG Automated Application System'
+        }
+      }
+    ]
+  });
+
+  return payloads;
+}
     initializeInteractiveRoleCards();
     restoreDraft();
     bindAllGroups();
@@ -4278,54 +4405,128 @@
         updateCounter(group);
       });
     });
-    document.getElementById('applicationForm').addEventListener('submit', async function(event) {
-      event.preventDefault();
-      if (!validateForm()) {
-        return;
-      }
-      if (!DISCORD_WEBHOOK_URL) {
-        document.getElementById('errorModalText').textContent =
-          'Discord webhook URL is not configured inside apply/index.html.';
-        openModal('errorModal');
-        return;
-      }
-      var payload = buildPayload();
-      var payloadSize = JSON.stringify(payload).length;
-      if (payloadSize > 5000) {
-        document.getElementById('errorModalText').textContent =
-          'Your application is too large for Discord to accept. Your answers have been preserved and were NOT cleared. Please shorten one or more responses and try again.';
-        openModal('errorModal');
-        return;
-      }
-      try {
-        var response = await fetch(DISCORD_WEBHOOK_URL, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(payload)
-        });
+    document
+  .getElementById('applicationForm')
+  .addEventListener('submit', async function(event) {
+    event.preventDefault();
+
+    var form = this;
+    var submitButton = form.querySelector('.btn-submit');
+
+    if (!validateForm()) {
+      return;
+    }
+
+    if (!DISCORD_WEBHOOK_URL) {
+      document.getElementById('errorModalText').textContent =
+        'Discord webhook URL is not configured.';
+      openModal('errorModal');
+      return;
+    }
+
+    var payloads = buildPayloads();
+
+    if (submitButton) {
+      submitButton.disabled = true;
+      submitButton.textContent = 'Submitting...';
+    }
+
+    try {
+      for (
+        var payloadIndex = 0;
+        payloadIndex < payloads.length;
+        payloadIndex += 1
+      ) {
+        var response = await fetch(
+          DISCORD_WEBHOOK_URL + '?wait=true',
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payloads[payloadIndex])
+          }
+        );
+
         if (!response.ok) {
-          document.getElementById('errorModalText').textContent =
-            'Discord rejected the application because one or more answers exceeded Discord embed limits. Your application has NOT been cleared. Please shorten some responses and try again.';
-          openModal('errorModal');
-          return;
+          var discordResponseText = '';
+
+          try {
+            discordResponseText = await response.text();
+          } catch (readError) {
+            discordResponseText = '';
+          }
+
+          throw new Error(
+            'Discord returned HTTP ' +
+            response.status +
+            (discordResponseText
+              ? ': ' + discordResponseText
+              : '')
+          );
         }
-        openModal('formModal');
-        this.reset();
-        clearDraft();
-        renderRoleQuestions('', null);
-        bindAllGroups();
-        document.querySelectorAll('.form-group[data-min][data-max]').forEach(function(group) {
+
+        /*
+          Small delay to reduce the chance of triggering the
+          webhook rate limit when sending several messages.
+        */
+        if (payloadIndex < payloads.length - 1) {
+          await new Promise(function(resolve) {
+            window.setTimeout(resolve, 500);
+          });
+        }
+      }
+
+      openModal('formModal');
+
+      form.reset();
+      clearDraft();
+
+      document.getElementById('applicationRoute').value = '';
+      document.getElementById('roleApplied').value = '';
+      document.getElementById('roleAppliedSubmission').value = '';
+      document.getElementById('finderResultSummary').value = '';
+
+      renderRoleQuestions('', null);
+      updateInternalInterestVisibility('');
+      updateApplicationRouteDisplay('', '');
+
+      var applicationPanel =
+        document.getElementById('applicationPanel');
+
+      if (applicationPanel) {
+        applicationPanel.classList.remove('visible');
+      }
+
+      document
+        .querySelectorAll('.role-card.interactive')
+        .forEach(function(card) {
+          card.classList.remove('selected');
+        });
+
+      bindAllGroups();
+
+      document
+        .querySelectorAll('.form-group[data-min][data-max]')
+        .forEach(function(group) {
           clearError(group);
           updateCounter(group);
         });
-      } catch (error) {
-        document.getElementById('errorModalText').textContent =
-          'Application could not be sent. Your answers have been preserved. Check the webhook URL and internet connection.';
-        openModal('errorModal');
+    } catch (error) {
+      console.error('Application submission failed:', error);
+
+      document.getElementById('errorModalText').textContent =
+        'Application could not be sent. Your answers have been preserved. ' +
+        error.message;
+
+      openModal('errorModal');
+    } finally {
+      if (submitButton) {
+        submitButton.disabled = false;
+        submitButton.textContent = 'Submit Application';
       }
-    });
+    }
+  });
     document.addEventListener('keydown', function(event) {
       if (event.key === 'Escape') {
         closeModal('formModal');
