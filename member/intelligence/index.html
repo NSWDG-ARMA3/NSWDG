@@ -397,45 +397,125 @@
                       <div class="panel-header"><span>How everything connects</span></div>
                       <div class="panel-body">
                           <ol class="help-list">
-    <li>
-        <strong>Reports</strong> are the actual intelligence products written by an analyst. A report contains the full story, observations, evidence, analysis and conclusions gathered during an investigation. Every report automatically begins as a <strong>DRAFT</strong>, allowing analysts to continue working before submitting it to Troop Headquarters for review and approval.
-        <br>
-        <em>Example:</em> "Suspicious White Ford Transit Observed Near Compound" containing witness statements, photographs, timings and analyst assessment.
-    </li>
+                              <li>
+                                  <strong>Reports</strong> are the actual intelligence products written by an analyst. A
+                                  report contains the full story, observations, evidence, analysis and conclusions
+                                  gathered during an investigation. Every report automatically begins as a
+                                  <strong>DRAFT</strong>, allowing analysts to continue working before submitting it to
+                                  Troop Headquarters for review and approval.
+                                  <br>
+                                  <em>Example:</em> "Suspicious White Ford Transit Observed Near Compound" containing
+                                  witness statements, photographs, timings and analyst assessment.
+                                  <br>
+                              </li>
 
-    <li>
-        <strong>Entities</strong> are individual subjects that exist independently from reports. Instead of writing the same information repeatedly, an entity is created once and can be linked to any number of reports. Entities represent the people, vehicles, locations, organizations, callsigns, frequencies, weapons, equipment or any other object that appears during intelligence collection.
-        <em>Example:</em> The vehicle "White Ford Transit - XX-123-AB" may appear in five different reports over several weeks. Rather than recreating the vehicle each time, every report simply references the same entity.
-    </li>
+                              <li>
+                                  <strong>Entities</strong> are individual subjects that exist independently from
+                                  reports. Instead of writing the same information repeatedly, an entity is created once
+                                  and can be linked to any number of reports. Entities represent the people, vehicles,
+                                  locations, organizations, callsigns, frequencies, weapons, equipment or any other
+                                  object that appears during intelligence collection.
+                                  <em>Example:</em> The vehicle "White Ford Transit - XX-123-AB" may appear in five
+                                  different reports over several weeks. Rather than recreating the vehicle each time,
+                                  every report simply references the same entity.
+                                  <br>
+                              </li>
 
-    <li>
-        <strong>Connections</strong> describe the relationship between two records. They are used to build the intelligence picture by showing how reports and entities are connected. Connections can be created between two reports, between two entities, or between a report and an entity. Draft reports can also be connected before they have been approved.
-                <br>
-        <em>Examples:</em>
-        <ul style="margin-top:6px;margin-left:18px;">
-            <li>Person → Vehicle ("Operates")</li>
-            <li>Vehicle → Location ("Seen At")</li>
-            <li>Report → Vehicle ("Describes")</li>
-            <li>Report → Report ("Continuation Of")</li>
-            <li>Organization → Person ("Member Of")</li>
-        </ul>
-        These relationships allow analysts to quickly identify patterns, recurring subjects and operational links.
-    </li>
+                              <li>
+                                  <strong>Connections</strong> describe the relationship between two records. They are
+                                  used to build the intelligence picture by showing how reports and entities are
+                                  connected. Connections can be created between two reports, between two entities, or
+                                  between a report and an entity. Draft reports can also be connected before they have
+                                  been approved.
+                                  <br>
+                                  <em>Examples:</em>
+                                  <ul style="margin-top:6px;margin-left:18px;">
+                                      <li>Person → Vehicle ("Operates")</li>
+                                      <li>Vehicle → Location ("Seen At")</li>
+                                      <li>Report → Vehicle ("Describes")</li>
+                                      <li>Report → Report ("Continuation Of")</li>
+                                      <li>Organization → Person ("Member Of")</li>
+                                  </ul>
+                                  These relationships allow analysts to quickly identify patterns, recurring subjects
+                                  and operational links.
+                              </li>
 
-    <li>
-        <strong>Evidence</strong> contains the supporting material used to validate intelligence. Evidence is uploaded directly to a report and permanently records who uploaded it and when. Evidence may consist of photographs, videos, audio recordings, documents, screenshots, GPS tracks or any other supporting files.
-                <br>
-        <em>Example:</em> A report about a suspicious vehicle may contain CCTV footage, photographs taken during surveillance and a scanned registration document. All of these remain attached to that report for future reference.
-    </li>
+                              <li>
+                                  <strong>Evidence</strong> contains the supporting material used to validate
+                                  intelligence. Evidence is uploaded directly to a report and permanently records who
+                                  uploaded it and when. Evidence may consist of photographs, videos, audio recordings,
+                                  documents, screenshots, GPS tracks or any other supporting files.
+                                  <br>
+                                  <em>Example:</em> A report about a suspicious vehicle may contain CCTV footage,
+                                  photographs taken during surveillance and a scanned registration document. All of
+                                  these remain attached to that report for future reference.
+                                  <br>
+                              </li>
 
-    <li>
-        <strong>HQ Review</strong> is the final quality assurance stage. Once an analyst has completed a report, it is submitted to Troop Headquarters for review. Headquarters may approve the report for operational use or return it with comments for further analysis. Approval only changes the report's status—it does <strong>not</strong> modify or remove any entities, connections or evidence already associated with the report.
-    </li>
+                              <li>
+                                  <strong>HQ Review</strong> is the final quality assurance stage. Once an analyst has
+                                  completed a report, it is submitted to Troop Headquarters for review. Headquarters may
+                                  approve the report for operational use or return it with comments for further
+                                  analysis. Approval only changes the report's status—it does <strong>not</strong>
+                                  modify or remove any entities, connections or evidence already associated with the
+                                  report.
+                              </li>
 
-    <li>
-        <strong>Audit Trail</strong> ensures complete accountability throughout the intelligence process. Every report records who created it, who last edited it, who uploaded supporting evidence, who submitted it for review and who ultimately approved or returned it. This creates a complete chain of responsibility and preserves the integrity of the intelligence database.
-    </li>
-</ol>
+                              <li>
+                                  <strong>Audit Trail</strong> ensures complete accountability throughout the
+                                  intelligence process. Every report records who created it, who last edited it, who
+                                  uploaded supporting evidence, who submitted it for review and who ultimately approved
+                                  or returned it. This creates a complete chain of responsibility and preserves the
+                                  integrity of the intelligence database.
+                              </li>
+
+                              <li>
+    <strong>Signals Intelligence (SIGINT)</strong> is used whenever information is collected from radio, satellite,
+    electronic or other electromagnetic transmissions. Unlike a normal observation report, SIGINT reports can record
+    technical information about the intercepted signal in addition to the analyst's observations. This allows analysts
+    to compare multiple transmissions over time and identify recurring emitters, communication networks and operating
+    patterns.
+
+    <br><br>
+
+    A SIGINT report may include fields such as the transmission frequency, callsign heard, intercepted message,
+    direction of arrival (bearing), received signal strength, collection method and the location from which the signal
+    was intercepted. These technical details are stored alongside the written report and can be linked to entities such
+    as radio operators, vehicles, command posts or communication equipment.
+
+    <br><br>
+
+    <strong>Frequency</strong> identifies the radio channel or frequency used during the interception.
+    <br>
+
+    <strong>Bearing</strong> records the estimated direction from which the transmission originated. Multiple bearings
+    collected from different observation points may later be combined to estimate the transmitter's location.
+
+    <br>
+
+    <strong>Signal Strength (RSSI / dBm)</strong> records how strong the received transmission was at the collection
+    point. While signal strength alone cannot determine a precise location, stronger or weaker readings collected over
+    time can assist analysts in estimating distance, identifying fixed transmitters and comparing repeated
+    transmissions.
+
+    <br>
+
+    <strong>Callsign</strong> stores the identifier used by the transmitting station, if one was heard during the
+    interception.
+
+    <br>
+
+    <strong>Transmission</strong> contains the intercepted message itself or a summary of the communication.
+
+    <br><br>
+
+    <em>Example:</em> During an operation, an analyst intercepts a transmission on <strong>148.325 MHz</strong>. The
+    operator identifies themselves as "<strong>VIKING 2</strong>", the signal arrives from approximately
+    <strong>087°</strong>, and the receiver records a signal strength of <strong>-63 dBm</strong>. The intercepted
+    message is stored in the report, while "<strong>VIKING 2</strong>" becomes a reusable entity that can later be
+    linked to additional reports, equipment or personnel as more intelligence is collected.
+</li>
+                          </ol>
                       </div>
                   </div>
               </section>
