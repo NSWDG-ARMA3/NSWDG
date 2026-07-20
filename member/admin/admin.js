@@ -245,11 +245,9 @@ function normalizeEmail(email) {
 }
 
 function getBranchFromEmail(email) {
-  const normalizedEmail = normalizeEmail(email);
-
-  if (normalizedEmail.endsWith("@navy.mil")) {
-    return "NAVY";
-  }
+  const normalizedEmail = String(email || "")
+    .trim()
+    .toLowerCase();
 
   if (normalizedEmail.endsWith("@us.af.mil")) {
     return "AIR_FORCE";
@@ -257,6 +255,10 @@ function getBranchFromEmail(email) {
 
   if (normalizedEmail.endsWith("@army.mil")) {
     return "ARMY";
+  }
+
+  if (normalizedEmail.endsWith("@navy.mil")) {
+    return "NAVY";
   }
 
   return "UNKNOWN";
