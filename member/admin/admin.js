@@ -1,3 +1,5 @@
+console.log("ADMIN JS BUILD 2026-07-20 AIR FORCE FIX");
+
 import { supabase } from "/js/auth.js";
 import { renderPortalLayout } from "/js/portal-layout.js";
 
@@ -245,29 +247,23 @@ function normalizeEmail(email) {
 }
 
 function getBranchFromEmail(email) {
-    alert("EMAIL = " + email);
+  const normalizedEmail = String(email || "")
+    .trim()
+    .toLowerCase();
 
-    const normalizedEmail = String(email || "")
-        .trim()
-        .toLowerCase();
+  if (normalizedEmail.endsWith("@us.af.mil")) {
+    return "AIR_FORCE";
+  }
 
-    if (normalizedEmail.endsWith("@us.af.mil")) {
-        alert("AIR FORCE");
-        return "AIR_FORCE";
-    }
+  if (normalizedEmail.endsWith("@army.mil")) {
+    return "ARMY";
+  }
 
-    if (normalizedEmail.endsWith("@army.mil")) {
-        alert("ARMY");
-        return "ARMY";
-    }
+  if (normalizedEmail.endsWith("@navy.mil")) {
+    return "NAVY";
+  }
 
-    if (normalizedEmail.endsWith("@navy.mil")) {
-        alert("NAVY");
-        return "NAVY";
-    }
-
-    alert("UNKNOWN");
-    return "UNKNOWN";
+  return "UNKNOWN";
 }
 
 function getRankGroupsForEmail(email) {
