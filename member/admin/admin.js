@@ -6,6 +6,176 @@ renderPortalLayout("admin");
 const DEFAULT_AVATAR = "../../nsw.png";
 const ADMIN_EMAILS = ["evans@navy.mil", "carver@navy.mil"];
 
+const NAVY_RANK_GROUPS = [
+  {
+    label: "Candidate",
+    ranks: [
+      "Candidate"
+    ]
+  },
+  {
+    label: "Enlisted",
+    ranks: [
+      "Seaman Recruit",
+      "Seaman Apprentice",
+      "Seaman",
+      "Petty Officer Third Class",
+      "Petty Officer Second Class",
+      "Petty Officer First Class",
+      "Chief Petty Officer",
+      "Senior Chief Petty Officer",
+      "Master Chief Petty Officer",
+      "Command Master Chief Petty Officer",
+      "Fleet Master Chief Petty Officer",
+      "Force Master Chief Petty Officer",
+      "Master Chief Petty Officer of the Navy"
+    ]
+  },
+  {
+    label: "Warrant Officers",
+    ranks: [
+      "Warrant Officer 1",
+      "Chief Warrant Officer 2",
+      "Chief Warrant Officer 3",
+      "Chief Warrant Officer 4",
+      "Chief Warrant Officer 5"
+    ]
+  },
+  {
+    label: "Commissioned Officers",
+    ranks: [
+      "Ensign",
+      "Lieutenant Junior Grade",
+      "Lieutenant",
+      "Lieutenant Commander",
+      "Commander",
+      "Captain"
+    ]
+  },
+  {
+    label: "Flag Officers",
+    ranks: [
+      "Rear Admiral Lower Half",
+      "Rear Admiral Upper Half",
+      "Vice Admiral",
+      "Admiral",
+      "Fleet Admiral"
+    ]
+  }
+];
+
+const AIR_FORCE_RANK_GROUPS = [
+  {
+    label: "Candidate",
+    ranks: [
+      "Candidate"
+    ]
+  },
+  {
+    label: "Enlisted Airmen",
+    ranks: [
+      "Airman Basic",
+      "Airman",
+      "Airman First Class",
+      "Senior Airman",
+      "Staff Sergeant",
+      "Technical Sergeant",
+      "Master Sergeant",
+      "First Sergeant (E-7)",
+      "Senior Master Sergeant",
+      "First Sergeant (E-8)",
+      "Chief Master Sergeant",
+      "First Sergeant (E-9)",
+      "Command Chief Master Sergeant",
+      "Chief Master Sergeant of the Air Force"
+    ]
+  },
+  {
+    label: "Commissioned Officers",
+    ranks: [
+      "Second Lieutenant",
+      "First Lieutenant",
+      "Captain",
+      "Major",
+      "Lieutenant Colonel",
+      "Colonel"
+    ]
+  },
+  {
+    label: "General Officers",
+    ranks: [
+      "Brigadier General",
+      "Major General",
+      "Lieutenant General",
+      "General",
+      "General of the Air Force"
+    ]
+  }
+];
+
+const ARMY_RANK_GROUPS = [
+  {
+    label: "Candidate",
+    ranks: [
+      "Candidate"
+    ]
+  },
+  {
+    label: "Junior Enlisted",
+    ranks: [
+      "Private (E-1)",
+      "Private (E-2)",
+      "Private First Class",
+      "Specialist"
+    ]
+  },
+  {
+    label: "Noncommissioned Officers",
+    ranks: [
+      "Corporal",
+      "Sergeant",
+      "Staff Sergeant",
+      "Sergeant First Class",
+      "Master Sergeant",
+      "First Sergeant",
+      "Sergeant Major",
+      "Command Sergeant Major",
+      "Sergeant Major of the Army"
+    ]
+  },
+  {
+    label: "Warrant Officers",
+    ranks: [
+      "Warrant Officer 1",
+      "Chief Warrant Officer 2",
+      "Chief Warrant Officer 3",
+      "Chief Warrant Officer 4",
+      "Chief Warrant Officer 5"
+    ]
+  },
+  {
+    label: "Commissioned Officers",
+    ranks: [
+      "Second Lieutenant",
+      "First Lieutenant",
+      "Captain",
+      "Major",
+      "Lieutenant Colonel",
+      "Colonel"
+    ]
+  },
+  {
+    label: "General Officers",
+    ranks: [
+      "Brigadier General",
+      "Major General",
+      "Lieutenant General",
+      "General",
+      "General of the Army"
+    ]
+  }
+];
+
 const memberList = document.getElementById("member-list");
 const adminWarning = document.getElementById("admin-warning");
 const adminContent = document.getElementById("admin-content");
@@ -22,6 +192,7 @@ const displayNameInput = document.getElementById("display-name");
 const roleInput = document.getElementById("role");
 const statusInput = document.getElementById("status");
 const navalRankInput = document.getElementById("naval-rank");
+const selectedEmailInput = document.getElementById("selected-email");
 const callsignInput = document.getElementById("callsign");
 const steamNameInput = document.getElementById("steam-name");
 const steamIdInput = document.getElementById("steam-id");
@@ -69,6 +240,97 @@ function fallbackUserId(email) {
   return email.split("@")[0];
 }
 
+function normalizeEmail(email) {
+  return String(email || "").trim().toLowerCase();
+}
+
+function getBranchFromEmail(email) {
+  const normalizedEmail = normalizeEmail(email);
+
+  if (normalizedEmail.endsWith("@navy.mil")) {
+    return "NAVY";
+  }
+
+  if (normalizedEmail.endsWith("@us.af.mil")) {
+    return "AIR_FORCE";
+  }
+
+  if (normalizedEmail.endsWith("@army.mil")) {
+    return "ARMY";
+  }
+
+  return "UNKNOWN";
+}
+
+function getRankGroupsForEmail(email) {
+  const branch = getBranchFromEmail(email);
+
+  switch (branch) {
+    case "NAVY":
+      return NAVY_RANK_GROUPS;
+
+    case "AIR_FORCE":
+      return AIR_FORCE_RANK_GROUPS;
+
+    case "ARMY":
+      return ARMY_RANK_GROUPS;
+
+    default:
+      return [
+        {
+          label: "Unrecognized Service",
+          ranks: ["Candidate"]
+        }
+      ];
+  }
+}
+
+function getBranchLabel(email) {
+  switch (getBranchFromEmail(email)) {
+    case "NAVY":
+      return "United States Navy";
+
+    case "AIR_FORCE":
+      return "United States Air Force";
+
+    case "ARMY":
+      return "United States Army";
+
+    default:
+      return "Unrecognized Service";
+  }
+}
+
+function renderRankOptions(email, selectedRank = "Candidate") {
+  const groups = getRankGroupsForEmail(email);
+  const availableRanks = groups.flatMap(group => group.ranks);
+
+  const validSelectedRank = availableRanks.includes(selectedRank)
+    ? selectedRank
+    : "Candidate";
+
+  navalRankInput.innerHTML = "";
+
+  groups.forEach(group => {
+    const optgroup = document.createElement("optgroup");
+    optgroup.label = group.label;
+
+    group.ranks.forEach(rank => {
+      const option = document.createElement("option");
+
+      option.value = rank;
+      option.textContent = rank;
+      option.selected = rank === validSelectedRank;
+
+      optgroup.appendChild(option);
+    });
+
+    navalRankInput.appendChild(optgroup);
+  });
+
+  navalRankInput.value = validSelectedRank;
+}
+
 function setChrome(profile) {
   const displayName = profile.display_name || profile.user_id || fallbackUserId(authUser.email);
   if (sessionLabel) sessionLabel.textContent = displayName;
@@ -102,8 +364,25 @@ function renderMemberList() {
     return `
       <div class="member-row ${activeClass}" data-profile-id="${escapeHtml(member.id)}">
         <strong>${escapeHtml(member.display_name || member.user_id)}</strong>
-        <span>${escapeHtml(member.naval_rank || "Candidate")} | ${escapeHtml(member.callsign || "Candidate")}</span><br>
-        <span class="muted">${escapeHtml(member.status || "ACTIVE")} | Attendance ${escapeHtml(percent)} | ${escapeHtml(compliance)}</span>
+          <span>
+            ${escapeHtml(member.naval_rank || "Candidate")}
+            |
+            ${escapeHtml(member.callsign || "Candidate")}
+          </span><br>
+
+          <span class="muted">
+            ${escapeHtml(member.email || "No account email")}
+            |
+            ${escapeHtml(getBranchLabel(member.email))}
+          </span><br>
+
+          <span class="muted">
+            ${escapeHtml(member.status || "ACTIVE")}
+            |
+            Attendance ${escapeHtml(percent)}
+            |
+            ${escapeHtml(compliance)}
+          </span>
       </div>
     `;
   }).join("");
@@ -205,17 +484,32 @@ function renderHistoryPill(row) {
 
 function selectProfile(profile) {
   selectedProfile = profile;
+
+  const selectedEmail = normalizeEmail(profile.email);
+  const branchLabel = getBranchLabel(selectedEmail);
+
   profileIdInput.value = profile.id;
   displayNameInput.value = profile.display_name || "";
   roleInput.value = profile.role || "MEMBER";
   statusInput.value = profile.status || "ACTIVE";
-  navalRankInput.value = profile.naval_rank || "Candidate";
+
+  if (selectedEmailInput) {
+    selectedEmailInput.value = selectedEmail;
+    selectedEmailInput.title = branchLabel;
+  }
+
+  renderRankOptions(
+    selectedEmail,
+    profile.naval_rank || "Candidate"
+  );
+
   callsignInput.value = profile.callsign || "";
   steamNameInput.value = profile.steam_name || "";
   steamIdInput.value = profile.steam_id || "";
   discordNameInput.value = profile.discord_name || "";
   discordIdInput.value = profile.discord_id || "";
   profileNotesInput.value = profile.profile_notes || "";
+
   clearStatus();
   renderMemberList();
   renderAttendancePanel();
@@ -259,22 +553,37 @@ async function loadSessionAndProfile() {
 
 async function loadMembers() {
   clearStatus();
-  const { data, error } = await supabase
-    .from("profiles")
-    .select("id,user_id,display_name,role,status,avatar_url,naval_rank,callsign,steam_name,steam_id,discord_name,discord_id,profile_notes")
-    .order("display_name", { ascending: true });
+
+  const previouslySelectedId = selectedProfile?.id || null;
+
+  const { data, error } = await supabase.rpc(
+    "admin_list_profiles_with_email"
+  );
 
   if (error) {
     console.error(error);
-    setStatus("Failed to load members.", "err");
+    setStatus(
+      error.message || "Failed to load members and account emails.",
+      "err"
+    );
     return;
   }
 
-  members = data || [];
+  members = Array.isArray(data) ? data : [];
+
   await loadAttendanceData();
 
-  if (members.length) selectProfile(selectedProfile ? members.find(m => m.id === selectedProfile.id) || members[0] : members[0]);
-  else renderMemberList();
+  if (!members.length) {
+    selectedProfile = null;
+    renderMemberList();
+    return;
+  }
+
+  const profileToSelect =
+    members.find(member => member.id === previouslySelectedId) ||
+    members[0];
+
+  selectProfile(profileToSelect);
 }
 
 async function loadAttendanceData() {
@@ -565,8 +874,19 @@ async function saveSelectedProfile(event) {
     return;
   }
 
-  members = members.map(member => member.id === data.id ? data : member);
-  selectProfile(data);
+  const updatedProfile = {
+    ...selectedProfile,
+    ...data,
+    email: selectedProfile.email
+  };
+
+  members = members.map(member =>
+    member.id === updatedProfile.id
+      ? updatedProfile
+      : member
+  );
+
+  selectProfile(updatedProfile);
   setStatus("Profile updated.", "ok");
 }
 
