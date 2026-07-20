@@ -245,23 +245,29 @@ function normalizeEmail(email) {
 }
 
 function getBranchFromEmail(email) {
-  const normalizedEmail = String(email || "")
-    .trim()
-    .toLowerCase();
+    alert("EMAIL = " + email);
 
-  if (normalizedEmail.endsWith("@us.af.mil")) {
-    return "AIR_FORCE";
-  }
+    const normalizedEmail = String(email || "")
+        .trim()
+        .toLowerCase();
 
-  if (normalizedEmail.endsWith("@army.mil")) {
-    return "ARMY";
-  }
+    if (normalizedEmail.endsWith("@us.af.mil")) {
+        alert("AIR FORCE");
+        return "AIR_FORCE";
+    }
 
-  if (normalizedEmail.endsWith("@navy.mil")) {
-    return "NAVY";
-  }
+    if (normalizedEmail.endsWith("@army.mil")) {
+        alert("ARMY");
+        return "ARMY";
+    }
 
-  return "UNKNOWN";
+    if (normalizedEmail.endsWith("@navy.mil")) {
+        alert("NAVY");
+        return "NAVY";
+    }
+
+    alert("UNKNOWN");
+    return "UNKNOWN";
 }
 
 function getRankGroupsForEmail(email) {
