@@ -1062,6 +1062,57 @@
       letter-spacing: 0.2px;
     }
 
+    .role-status {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  margin: 0 0 9px;
+  padding: 3px 7px;
+  border: 1px solid;
+  font-size: 9px;
+  font-weight: bold;
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.55px;
+}
+
+.role-status::before {
+  content: "";
+  width: 5px;
+  height: 5px;
+  margin-right: 5px;
+  background: currentColor;
+  border-radius: 50%;
+}
+
+/* Normal recruitment */
+.role-status.open {
+  background: #edf5ed;
+  border-color: #8daa8d;
+  color: #315f35;
+}
+
+/* Positions you urgently need */
+.role-status.priority {
+  background: #fff3d4;
+  border-color: #c8a34a;
+  color: #785900;
+}
+
+/* Still open, but nearly full */
+.role-status.limited {
+  background: #f2f2f2;
+  border-color: #aaa;
+  color: #555;
+}
+
+/* Applications disabled */
+.role-status.closed {
+  background: #f4e7e7;
+  border-color: #b98b8b;
+  color: #812d2d;
+}
+
     .role-card-summary p {
       margin: 0;
       color: #414141;
@@ -2135,6 +2186,7 @@
         <div class="unit-title-block">
           <h1>NSWDG</h1>
           <p>Naval special Warfare Development Group</p>
+          <span class="role-status open">Open</span>
         </div>
       </div>
 
