@@ -1368,6 +1368,7 @@
     }
 
     .role-finder-question {
+      margin-bottom: 10px;
       display: none;
     }
 
@@ -4399,92 +4400,47 @@ function changeApplicationRoute() {
     }
 
     function restoreDraft() {
-      try {
-        var saved = localStorage.getItem(DRAFT_STORAGE_KEY);
-if (!saved) {
   var applicationPanel =
     document.getElementById('applicationPanel');
 
-  if (applicationPanel) {
-    applicationPanel.classList.remove('visible');
+  var roleField =
+    document.getElementById('roleApplied');
+
+  var roleSubmissionField =
+    document.getElementById('roleAppliedSubmission');
+
+  var applicationRouteField =
+    document.getElementById('applicationRoute');
+
+  var preferredSpecialtyField =
+    document.getElementById('preferredSpecialty');
+
+  var finderResultSummaryField =
+    document.getElementById('finderResultSummary');
+
+  try {
+    var saved = localStorage.getItem(DRAFT_STORAGE_KEY);
+
+    if (saved) {
+      var draft = JSON.parse(saved);
+
+      getDraftFields().forEach(function(field) {
+        if (
+          field.id &&
+          field.id !== 'roleApplied' &&
+          field.id !== 'roleAppliedSubmission' &&
+          field.id !== 'applicationRoute' &&
+          field.id !== 'preferredSpecialty' &&
+          field.id !== 'finderResultSummary' &&
+          Object.prototype.hasOwnProperty.call(draft, field.id)
+        ) {
+          field.value = draft[field.id];
+        }
+      });
+    }
+  } catch (error) {
+    // Continue with the application form closed.
   }
-
-  renderRoleQuestions('', null);
-  updateInternalInterestVisibility('');
-  updateApplicationRouteDisplay('', '');
-  updateSelectedRoleCard('', '');
-
-  return;
-}
-        var draft = JSON.parse(saved);
-        getDraftFields().forEach(function(field) {
-          if (
-            field.id &&
-            Object.prototype.hasOwnProperty.call(draft, field.id)
-          ) {
-            field.value = draft[field.id];
-          }
-        });
-        var selectedRole =
-          draft.roleApplied ||
-          draft.applicationRoute ||
-          '';
-        var selectedSpecialty =
-          draft.preferredSpecialty ||
-          '';
-        var roleField = document.getElementById('roleApplied');
-
-        var roleSubmissionField =
-          document.getElementById('roleAppliedSubmission');
-
-        var applicationRouteField =
-          document.getElementById('applicationRoute');
-
-        var preferredSpecialtyField =
-          document.getElementById('preferredSpecialty');
-        if (roleField) {
-          roleField.value = selectedRole;
-        }
-
-        if (roleSubmissionField) {
-          roleSubmissionField.value = selectedRole;
-        }
-
-        if (applicationRouteField) {
-          applicationRouteField.value = selectedRole;
-        }
-        if (preferredSpecialtyField) {
-          preferredSpecialtyField.value = selectedSpecialty;
-        }
-        renderRoleQuestions(selectedRole, draft);
-        updateInternalInterestVisibility(selectedRole);
-        updateApplicationRouteDisplay(
-          selectedRole,
-          selectedSpecialty
-        );
-        updateSelectedRoleCard(
-          selectedRole,
-          selectedSpecialty
-        );
-var applicationPanel =
-  document.getElementById('applicationPanel');
-
-var validSavedRole =
-  selectedRole &&
-  Object.prototype.hasOwnProperty.call(
-    ROLE_QUESTIONS,
-    selectedRole
-  ) &&
-  roleField &&
-  roleField.value === selectedRole;
-
-if (validSavedRole) {
-  if (applicationPanel) {
-    applicationPanel.classList.add('visible');
-  }
-} else {
-  selectedRole = '';
-  selectedSpecialty = '';
 
   if (roleField) {
     roleField.value = '';
@@ -4502,6 +4458,10 @@ if (validSavedRole) {
     preferredSpecialtyField.value = '';
   }
 
+  if (finderResultSummaryField) {
+    finderResultSummaryField.value = '';
+  }
+
   renderRoleQuestions('', null);
   updateInternalInterestVisibility('');
   updateApplicationRouteDisplay('', '');
@@ -4511,26 +4471,6 @@ if (validSavedRole) {
     applicationPanel.classList.remove('visible');
   }
 }
-} catch (error) {
-  var applicationPanel =
-    document.getElementById('applicationPanel');
-
-  if (applicationPanel) {
-    applicationPanel.classList.remove('visible');
-  }
-
-  document.getElementById('roleApplied').value = '';
-  document.getElementById('roleAppliedSubmission').value = '';
-  document.getElementById('applicationRoute').value = '';
-  document.getElementById('preferredSpecialty').value = '';
-  document.getElementById('finderResultSummary').value = '';
-
-  renderRoleQuestions('', null);
-  updateInternalInterestVisibility('');
-  updateApplicationRouteDisplay('', '');
-  updateSelectedRoleCard('', '');
-}
-    }
 
     function clearDraft() {
       try {
