@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>
+    NSW Operations Portal - CQB Checklist
+  </title>
+
+  <link
+    rel="shortcut icon"
+    href="../../nsw.png"
+    type="image/x-icon"
+  >
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      background: #f0f0f0;
+      color: #1a1a1a;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 12px;
+    }
+
+    button,
+    input,
+    textarea,
+    select {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .gov-banner {
+      background: #1a1a1a;
+      color: #ccc;
+      font-size: 11px;
+      padding: 3px 12px;
+    }
+
+    .site-header {
+      background: #1d3f5e;
+      color: #fff;
+      padding: 10px 16px;
+      border-bottom: 3px solid #c8a800;
+    }
+
+    .site-header h1 {
+      font-size: 16px;
+    }
+
+    .site-header p {
+      color: #c5d8ec;
+      font-size: 11px;
+      margin-top: 2px;
+    }
+
+    .portal-nav {
+      display: flex;
+      background: #1d3f5e;
+      border-bottom: 2px solid #c8a800;
+    }
+
+    .portal-nav a {
+      color: #cde;
+      text-decoration: none;
+      font-size: 12px;
+      padding: 8px 12px;
+      border-right: 1px solid #00284e;
+    }
+
+    .portal-nav a.active {
+      color: #fff;
+      font-weight: bold;
+      border-bottom: 2px solid #c8a800;
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-left: auto;
+      padding: 0 12px;
+      color: #7a9ab8;
+      font-size: 11px;
+    }
+
+    .nav-avatar {
+      width: 22px;
+      height: 22px;
+      border: 1px solid #7a9ab8;
+      border-radius: 50%;
+      background: #e8e8e8;
+      object-fit: cover;
+    }
+
+    .portal-body {
+      display: flex;
+      min-height: calc(100vh - 94px);
+    }
+
+    .sidebar {
+      width: 180px;
+      flex-shrink: 0;
+      padding: 12px 0;
+      background: #e8e8e8;
+      border-right: 1px solid #bbb;
+    }
+
+    .sidebar-user-box {
+      margin-bottom: 6px;
+      padding: 7px 12px 10px;
+      border-bottom: 1px solid #ccc;
+      color: #444;
+      font-size: 11px;
+      line-height: 1.6;
+    }
+
+    .sidebar-user-box strong {
+      display: block;
+      color: #1a1a1a;
+      font-size: 12px;
+    }
+
+    .sidebar-section {
+      padding: 8px 12px 4px;
+      color: #777;
+      font-size: 10px;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .sidebar-link {
+      display: block;
+      padding: 5px 12px;
+      border-left: 3px solid transparent;
+      color: #1d3f5e;
+      font-size: 12px;
+      text-decoration: none;
+    }
+
+    .sidebar-link.active {
+      background: #d0dae8;
+      border-left-color: #1d3f5e;
+      font-weight: bold;
+    }
+
+    .portal-main {
+      flex: 1;
+      min-width: 0;
+      padding: 16px 18px;
+      background: #fff;
+      overflow-y: auto;
+    }
+
+    .page-heading {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 15px;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #ccc;
+    }
+
+    .page-title {
+      color: #1d3f5e;
+      font-size: 15px;
+      font-weight: bold;
+    }
+
+    .page-description {
+      max-width: 760px;
+      margin-top: 4px;
+      color: #555;
+      font-size: 11px;
+      line-height: 1.5;
+    }
+
+    .button {
+      min-height: 28px;
+      padding: 5px 10px;
+      border: 1px solid #1d3f5e;
+      background: #1d3f5e;
+      color: #fff;
+      font-weight: bold;
+    }
+
+    .button:hover {
+      background: #143149;
+    }
+
+    .button:disabled {
+      cursor: not-allowed;
+      opacity: 0.55;
+    }
+
+    .notice-box {
+      margin-bottom: 12px;
+      padding: 10px 12px;
+      border: 1px solid #bbb;
+      background: #fafafa;
+      font-size: 11px;
+      line-height: 1.6;
+    }
+
+    .notice-box.error {
+      border-color: #a50000;
+      background: #fff1f1;
+      color: #800;
+    }
+
+    .status-line {
+      min-height: 18px;
+      margin-bottom: 8px;
+      color: #555;
+      font-size: 11px;
+    }
+
+    .status-line.error {
+      color: #9b1c1c;
+      font-weight: bold;
+    }
+
+    .checklist-layout {
+      display: grid;
+      grid-template-columns: 300px minmax(0, 1fr);
+      gap: 12px;
+      align-items: start;
+    }
+
+    .panel {
+      border: 1px solid #c6c6c6;
+      background: #fafafa;
+    }
+
+    .panel-header {
+      padding: 9px 10px;
+      border-bottom: 1px solid #ccc;
+      background: #e9eef3;
+    }
+
+    .panel-header h2 {
+      color: #1d3f5e;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .panel-header p {
+      margin-top: 3px;
+      color: #666;
+      font-size: 10px;
+      line-height: 1.4;
+    }
+
+    .member-panel {
+      position: sticky;
+      top: 0;
+    }
+
+    .member-search-wrapper {
+      padding: 8px;
+      border-bottom: 1px solid #d1d1d1;
+      background: #f5f5f5;
+    }
+
+    .member-search-wrapper label {
+      display: block;
+      margin-bottom: 3px;
+      color: #444;
+      font-size: 10px;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+
+    .member-search-wrapper input {
+      width: 100%;
+      height: 28px;
+      padding: 4px 7px;
+      border: 1px solid #888;
+      background: #fff;
+    }
+
+    .member-count {
+      padding: 6px 8px;
+      border-bottom: 1px solid #ddd;
+      color: #666;
+      font-size: 10px;
+    }
+
+    .member-list {
+      display: grid;
+      max-height: calc(100vh - 280px);
+      overflow-y: auto;
+    }
+
+    .member-row {
+      display: grid;
+      grid-template-columns: 34px minmax(0, 1fr) 48px;
+      align-items: center;
+      gap: 7px;
+      width: 100%;
+      padding: 7px 8px;
+      border: 0;
+      border-bottom: 1px solid #ddd;
+      background: #fff;
+      color: #222;
+      text-align: left;
+    }
+
+    .member-row:hover {
+      background: #f1f5f8;
+    }
+
+    .member-row.active {
+      background: #d0dae8;
+      box-shadow: inset 3px 0 0 #1d3f5e;
+    }
+
+    .member-avatar {
+      width: 32px;
+      height: 32px;
+      border: 1px solid #aaa;
+      border-radius: 50%;
+      background: #eee;
+      object-fit: cover;
+    }
+
+    .member-row-main {
+      min-width: 0;
+    }
+
+    .member-row-main strong {
+      display: block;
+      overflow: hidden;
+      color: #1d3f5e;
+      font-size: 11px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .member-row-main span {
+      display: block;
+      margin-top: 2px;
+      overflow: hidden;
+      color: #666;
+      font-size: 10px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .member-progress {
+      text-align: right;
+    }
+
+    .member-progress strong {
+      display: block;
+      color: #1d3f5e;
+      font-size: 11px;
+    }
+
+    .member-progress span {
+      color: #666;
+      font-size: 9px;
+    }
+
+    .selected-member-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 15px;
+      padding: 11px 12px;
+      border-bottom: 1px solid #ccc;
+      background: #f5f5f5;
+    }
+
+    .selected-member-header h2 {
+      color: #1d3f5e;
+      font-size: 15px;
+    }
+
+    .selected-member-meta {
+      margin-top: 3px;
+      color: #666;
+      font-size: 10px;
+    }
+
+    .progress-summary {
+      display: grid;
+      grid-template-columns: 130px 130px minmax(160px, 1fr);
+      align-items: center;
+      gap: 10px;
+      min-width: 430px;
+    }
+
+    .summary-stat {
+      padding-left: 10px;
+      border-left: 1px solid #ccc;
+    }
+
+    .summary-stat span {
+      display: block;
+      color: #666;
+      font-size: 9px;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+
+    .summary-stat strong {
+      display: block;
+      margin-top: 2px;
+      color: #1d3f5e;
+      font-size: 13px;
+    }
+
+    .progress-track {
+      height: 10px;
+      border: 1px solid #888;
+      background: #fff;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: #316d39;
+      transition: width 160ms ease;
+    }
+
+    .checklist-rows {
+      display: grid;
+      gap: 8px;
+      padding: 10px;
+    }
+
+    .checklist-item {
+      display: grid;
+      grid-template-columns: 42px minmax(0, 1fr);
+      border: 1px solid #c8c8c8;
+      background: #fff;
+    }
+
+    .checklist-item.complete {
+      border-color: #668b69;
+      box-shadow: inset 3px 0 0 #316d39;
+    }
+
+    .item-number {
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding-top: 12px;
+      border-right: 1px solid #ccc;
+      background: #e9eef3;
+      color: #1d3f5e;
+      font-size: 11px;
+      font-weight: bold;
+    }
+
+    .checklist-item.complete .item-number {
+      background: #e7f0e8;
+      color: #245629;
+    }
+
+    .item-content {
+      min-width: 0;
+      padding: 10px;
+    }
+
+    .item-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .completion-control {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      color: #1d3f5e;
+      font-size: 12px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .completion-control input {
+      width: 16px;
+      height: 16px;
+      accent-color: #316d39;
+    }
+
+    .minimum-standard {
+      padding: 3px 6px;
+      border: 1px solid #b78f22;
+      background: #fff8dc;
+      color: #6c5200;
+      font-size: 9px;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+
+    .item-standard {
+      margin-top: 6px;
+      color: #555;
+      font-size: 10px;
+      line-height: 1.5;
+    }
+
+    .item-fields {
+      display: grid;
+      grid-template-columns: 140px minmax(220px, 1fr);
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .item-fields label {
+      display: block;
+    }
+
+    .item-fields label > span {
+      display: block;
+      margin-bottom: 3px;
+      color: #444;
+      font-size: 9px;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+
+    .item-fields input,
+    .item-fields textarea {
+      width: 100%;
+      border: 1px solid #888;
+      background: #fff;
+      color: #222;
+    }
+
+    .item-fields input {
+      height: 27px;
+      padding: 4px 6px;
+    }
+
+    .item-fields textarea {
+      min-height: 50px;
+      padding: 6px;
+      line-height: 1.4;
+      resize: vertical;
+    }
+
+    .notes-field {
+      grid-column: 1 / -1;
+    }
+
+    .item-fields input:disabled,
+    .item-fields textarea:disabled {
+      background: #eee;
+      cursor: not-allowed;
+    }
+
+    .item-footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 7px;
+      padding-top: 6px;
+      border-top: 1px solid #e2e2e2;
+      color: #777;
+      font-size: 9px;
+    }
+
+    .save-state {
+      font-weight: bold;
+    }
+
+    .save-state.pending {
+      color: #7a6200;
+    }
+
+    .save-state.saving {
+      color: #1d3f5e;
+    }
+
+    .save-state.saved {
+      color: #286331;
+    }
+
+    .save-state.error {
+      color: #a00000;
+    }
+
+    .empty-state {
+      padding: 20px;
+      color: #666;
+      font-size: 11px;
+      text-align: center;
+    }
+
+    @media (max-width: 1100px) {
+      .checklist-layout {
+        grid-template-columns: 250px minmax(0, 1fr);
+      }
+
+      .selected-member-header {
+        display: block;
+      }
+
+      .progress-summary {
+        margin-top: 10px;
+        min-width: 0;
+      }
+    }
+
+    @media (max-width: 800px) {
+      .portal-body {
+        display: block;
+      }
+
+      .sidebar {
+        display: none;
+      }
+
+      .portal-nav {
+        flex-wrap: wrap;
+      }
+
+      .nav-right {
+        width: 100%;
+        margin-left: 0;
+        padding: 7px 10px;
+      }
+
+      .portal-main {
+        padding: 10px;
+      }
+
+      .page-heading {
+        display: block;
+      }
+
+      .page-heading .button {
+        margin-top: 8px;
+      }
+
+      .checklist-layout {
+        display: block;
+      }
+
+      .member-panel {
+        position: static;
+        margin-bottom: 10px;
+      }
+
+      .member-list {
+        max-height: 300px;
+      }
+
+      .progress-summary {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .progress-track {
+        grid-column: 1 / -1;
+      }
+
+      .item-fields {
+        grid-template-columns: 1fr;
+      }
+
+      .notes-field {
+        grid-column: auto;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="gov-banner">
+    U.S. Department of the Navy
+    &nbsp;|&nbsp;
+    Official Government System
+    &nbsp;|&nbsp;
+    Authorized Users Only
+  </div>
+
+  <header class="site-header">
+    <h1>
+      Naval Special Warfare Command - Operations Portal
+    </h1>
+
+    <p>
+      NSW-OPS // UNCLASSIFIED // FOR OFFICIAL USE ONLY
+    </p>
+  </header>
+
+  <nav
+    id="portal-nav"
+    class="portal-nav"
+  ></nav>
+
+  <div class="portal-body">
+    <aside
+      id="portal-sidebar"
+      class="sidebar"
+    ></aside>
+
+    <main class="portal-main">
+      <div class="page-heading">
+        <div>
+          <div class="page-title">
+            Member Development Checklist
+          </div>
+
+          <p class="page-description">
+            Track individual CQB development, required training
+            iterations, instructor observations, and the best recorded
+            performance for each training category.
+          </p>
+        </div>
+
+        <button
+          id="refresh-button"
+          class="button"
+          type="button"
+        >
+          Refresh Records
+        </button>
+      </div>
+
+      <div
+        id="access-denied"
+        class="notice-box error"
+        style="display:none;"
+      >
+        This page is restricted to administrators, team leaders,
+        and Green Team class leads.
+      </div>
+
+      <div
+        id="status-line"
+        class="status-line"
+        aria-live="polite"
+      ></div>
+
+      <div
+        id="checklist-content"
+        class="checklist-layout"
+        style="display:none;"
+      >
+        <section class="panel member-panel">
+          <div class="panel-header">
+            <h2>Active Members</h2>
+
+            <p>
+              Select a member to view or update their CQB
+              development record.
+            </p>
+          </div>
+
+          <div class="member-search-wrapper">
+            <label for="member-search">
+              Search Members
+            </label>
+
+            <input
+              id="member-search"
+              type="search"
+              autocomplete="off"
+              placeholder="Name, callsign, rank, or position"
+            >
+          </div>
+
+          <div
+            id="member-count"
+            class="member-count"
+          >
+            0 members
+          </div>
+
+          <div
+            id="member-list"
+            class="member-list"
+          ></div>
+        </section>
+
+        <section class="panel">
+          <div class="selected-member-header">
+            <div>
+              <h2 id="selected-member">
+                Select a member
+              </h2>
+
+              <div
+                id="selected-member-meta"
+                class="selected-member-meta"
+              ></div>
+            </div>
+
+            <div
+              id="progress-summary"
+              class="progress-summary"
+            ></div>
+          </div>
+
+          <div
+            id="checklist-rows"
+            class="checklist-rows"
+          >
+            <div class="empty-state">
+              Select a member to view their CQB checklist.
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <script type="module" src="./checklist.js"></script>
+</body>
+
+</html>
