@@ -560,7 +560,7 @@ function renderBoard() {
               <img
                 class="avatar"
                 src="${escapeHtml(
-                  avatarUrl(member.avatar_url) || "../../nsw.png"
+                  avatarUrl(member.avatar_url) || getDefaultAvatar(member)
                 )}"
                 alt=""
               >
@@ -734,5 +734,21 @@ console.error(error);
 board.innerHTML = `<div class="notice-box error">Refresh failed: ${escapeHtml(error.message)}</div>`;
 }
 });
+
+function getDefaultAvatar(member) {
+  const email = String(member?.user_id || "")
+    .trim()
+    .toLowerCase();
+
+  if (email.endsWith("@us.af.mil")) {
+    return "../../airforce.png";
+  }
+
+  if (email.endsWith("@army.mil")) {
+    return "../../army.png";
+  }
+
+  return "../../nsw.png";
+}
 
 boot();
