@@ -670,11 +670,16 @@ function renderSessions() {
 function renderAdminMarkingTable(session, attendanceRows) {
   const rows = state.profiles
     .slice()
-    .sort((a, b) => String(a.display_name || "").localeCompare(String(b.display_name || "")));
+    .sort((a, b) =>
+      String(a.display_name || "").localeCompare(
+        String(b.display_name || "")
+      )
+    );
 
   return `
     <div class="admin-marking-note">
-      Mark final attendance for this training. Late minutes only apply when status is set to LATE.
+      Mark final attendance for this training. Members covered by an approved
+      LOA are locked until the LOA is revoked or ended.
     </div>
 
     <div class="admin-marking-table-wrap">
@@ -693,8 +698,15 @@ function renderAdminMarkingTable(session, attendanceRows) {
 
         <tbody>
           ${rows.map(profile => {
-            const row = attendanceRows.find(a => a.user_id === profile.id);
-            return renderAdminMarkingRow(session, profile, row);
+            const row = attendanceRows.find(
+              attendanceRow => attendanceRow.user_id === profile.id
+            );
+
+            return renderAdminMarkingRow(
+              session,
+              profile,
+              row
+            );
           }).join("")}
         </tbody>
       </table>
@@ -703,14 +715,97 @@ function renderAdminMarkingTable(session, attendanceRows) {
 }
 
 function renderAdminMarkingRow(session, profile, row) {
-  const rsvp = row?.attendance || "NO_RESPONSE";
-  const actual = row?.actual_status || guessActualStatusFromRsvp(rsvp);
+  const approvedLoa = getApprovedLoaForUserSession(
+    session,
+    profile.id
+  );
+
+  const lockedByLoa =
+    Boolean(approvedLoa) ||
+    Boolean(row?.locked_by_loa_id);
+
+  const rsvp = lockedByLoa
+    ? "NOT_ATTENDING"
+    : row?.attendance || "NO_RESPONSE";
+
+  const actual = lockedByLoa
+    ? "LOA"
+    : row?.actual_status || guessActualStatusFromRsvp(rsvp);
+
+  if (lockedByLoa) {
+    return `
+      <tr
+        data-admin-mark-row="${escapeHtml(profile.id)}"
+        class="loa-locked-attendance-row"
+      >
+        <td>
+          <strong>
+            ${escapeHtml(
+              profile.display_name ||
+              profile.user_id ||
+              profile.id
+            )}
+          </strong>
+          <br>
+
+          <span class="muted">
+            ${escapeHtml(profile.naval_rank || "Candidate")}
+            ${profile.callsign
+              ? ` | ${escapeHtml(profile.callsign)}`
+              : ""
+            }
+          </span>
+        </td>
+
+        <td>NOT_ATTENDING</td>
+
+        <td>
+          <strong>LOA</strong>
+          <br>
+          <span class="muted">Approved LOA</span>
+        </td>
+
+        <td>0</td>
+        <td>0</td>
+
+        <td>
+          <span class="muted">
+            Locked until the LOA is revoked or ended.
+          </span>
+        </td>
+
+        <td>
+          <button
+            class="btn btn-secondary btn-small"
+            type="button"
+            disabled
+          >
+            Locked
+          </button>
+        </td>
+      </tr>
+    `;
+  }
 
   return `
     <tr data-admin-mark-row="${escapeHtml(profile.id)}">
       <td>
-        <strong>${escapeHtml(profile.display_name || profile.user_id || profile.id)}</strong><br>
-        <span class="muted">${escapeHtml(profile.naval_rank || "Candidate")}${profile.callsign ? ` | ${escapeHtml(profile.callsign)}` : ""}</span>
+        <strong>
+          ${escapeHtml(
+            profile.display_name ||
+            profile.user_id ||
+            profile.id
+          )}
+        </strong>
+        <br>
+
+        <span class="muted">
+          ${escapeHtml(profile.naval_rank || "Candidate")}
+          ${profile.callsign
+            ? ` | ${escapeHtml(profile.callsign)}`
+            : ""
+          }
+        </span>
       </td>
 
       <td>${escapeHtml(rsvp)}</td>
@@ -729,15 +824,32 @@ function renderAdminMarkingRow(session, profile, row) {
       </td>
 
       <td>
-        <input data-field="minutes_late" type="number" min="0" step="1" value="${escapeHtml(row?.minutes_late || 0)}">
+        <input
+          data-field="minutes_late"
+          type="number"
+          min="0"
+          step="1"
+          value="${escapeHtml(row?.minutes_late || 0)}"
+        >
       </td>
 
       <td>
-        <input data-field="minutes_left_early" type="number" min="0" step="1" value="${escapeHtml(row?.minutes_left_early || 0)}">
+        <input
+          data-field="minutes_left_early"
+          type="number"
+          min="0"
+          step="1"
+          value="${escapeHtml(row?.minutes_left_early || 0)}"
+        >
       </td>
 
       <td>
-        <input data-field="admin_note" type="text" maxlength="1000" value="${escapeHtml(row?.admin_note || "")}">
+        <input
+          data-field="admin_note"
+          type="text"
+          maxlength="1000"
+          value="${escapeHtml(row?.admin_note || "")}"
+        >
       </td>
 
       <td>
@@ -746,7 +858,8 @@ function renderAdminMarkingRow(session, profile, row) {
           type="button"
           data-admin-save-mark
           data-session-id="${escapeHtml(session.id)}"
-          data-user-id="${escapeHtml(profile.id)}">
+          data-user-id="${escapeHtml(profile.id)}"
+        >
           Save
         </button>
       </td>
@@ -804,22 +917,54 @@ async function saveAdminMarkingRow(button) {
 }
 
 function renderViewer(session) {
-  const attendanceRows = state.attendance.filter(a => Number(a.session_id) === Number(session.id));
-
-  const attending = attendanceRows.filter(a => a.attendance === "ATTENDING");
-  const notAttending = attendanceRows.filter(a => a.attendance === "NOT_ATTENDING");
-
-  const noResponse = state.profiles.filter(profile => {
-    return !attendanceRows.some(a => a.user_id === profile.id);
-  });
+  const attendanceRows = state.attendance.filter(
+    row => Number(row.session_id) === Number(session.id)
+  );
 
   const loaRows = getLoaForSession(session);
-  const loaUserIds = new Set(loaRows.map(loa => loa.requester_id));
 
-  const showingUp = attending.filter(row => !loaUserIds.has(row.user_id));
-  const blockedByLoa = state.profiles.filter(profile => loaUserIds.has(profile.id));
+  const loaUserIds = new Set(
+    loaRows.map(loa => loa.requester_id)
+  );
 
-  const myAttendance = attendanceRows.find(a => a.user_id === state.authUser.id);
+  const blockedByLoa = state.profiles.filter(
+    profile => loaUserIds.has(profile.id)
+  );
+
+  const attending = attendanceRows.filter(row => {
+    return (
+      row.attendance === "ATTENDING" &&
+      !loaUserIds.has(row.user_id)
+    );
+  });
+
+  const notAttending = attendanceRows.filter(row => {
+    return (
+      row.attendance === "NOT_ATTENDING" &&
+      !loaUserIds.has(row.user_id)
+    );
+  });
+
+  const noResponse = state.profiles.filter(profile => {
+    if (loaUserIds.has(profile.id)) {
+      return false;
+    }
+
+    return !attendanceRows.some(
+      row => row.user_id === profile.id
+    );
+  });
+
+  const showingUp = attending;
+
+  const myAttendance = attendanceRows.find(
+    row => row.user_id === state.authUser.id
+  );
+
+  const myApprovedLoa = getApprovedLoaForUserSession(
+    session,
+    state.authUser.id
+  );
   const canManage = canManageSession(session);
   const canAar = canAarSession(session);
   const admin = isAdmin();
@@ -872,7 +1017,15 @@ function renderViewer(session) {
 
         <div>
           <span>Your Response</span>
-          <strong>${escapeHtml(myAttendance ? attendanceLabel(myAttendance.attendance) : "No Response")}</strong>
+          <strong>
+            ${escapeHtml(
+              myApprovedLoa
+                ? "Approved LOA"
+                : myAttendance
+                  ? attendanceLabel(myAttendance.attendance)
+                  : "No Response"
+            )}
+          </strong>
         </div>
       </div>
 
@@ -916,15 +1069,42 @@ function renderViewer(session) {
           <h3>Your Response</h3>
         </div>
 
-        <div class="response-buttons">
-          <button class="response-btn response-attending" type="button" id="attending-button">
-            ✓ Attending
-          </button>
+        ${myApprovedLoa ? `
+          <div class="admin-attendance-note">
+            Your response is automatically set to
+            <strong>Not Attending</strong> because an approved LOA covers
+            this training. The response cannot be changed unless the LOA is
+            revoked or ended.
+          </div>
 
-          <button class="response-btn response-not-attending" type="button" id="not-attending-button">
-            ✕ Not Attending
-          </button>
-        </div>
+          <div class="response-buttons">
+            <button
+              class="response-btn response-not-attending"
+              type="button"
+              disabled
+            >
+              ✕ Not Attending · Approved LOA
+            </button>
+          </div>
+        ` : `
+          <div class="response-buttons">
+            <button
+              class="response-btn response-attending"
+              type="button"
+              id="attending-button"
+            >
+              ✓ Attending
+            </button>
+
+            <button
+              class="response-btn response-not-attending"
+              type="button"
+              id="not-attending-button"
+            >
+              ✕ Not Attending
+            </button>
+          </div>
+        `}
       </div>
 
       <details class="training-v2-details" open>
@@ -1024,8 +1204,23 @@ function renderViewer(session) {
       ` : ""}
     </div>
   `;
-document.getElementById("attending-button").addEventListener("click", () => saveAttendance(session.id, "ATTENDING"));
-document.getElementById("not-attending-button").addEventListener("click", () => saveAttendance(session.id, "NOT_ATTENDING"));
+const attendingButton =
+  document.getElementById("attending-button");
+
+const notAttendingButton =
+  document.getElementById("not-attending-button");
+
+if (attendingButton) {
+  attendingButton.addEventListener("click", () => {
+    saveAttendance(session.id, "ATTENDING");
+  });
+}
+
+if (notAttendingButton) {
+  notAttendingButton.addEventListener("click", () => {
+    saveAttendance(session.id, "NOT_ATTENDING");
+  });
+}
 
 el.viewer.querySelectorAll("[data-session-status]").forEach(select => {
   select.addEventListener("change", async () => {
@@ -1502,6 +1697,16 @@ function getLoaForSession(session) {
   });
 }
 
+function getApprovedLoaForUserSession(session, userId) {
+  if (!session || !userId) {
+    return null;
+  }
+
+  return getLoaForSession(session).find(
+    loa => loa.requester_id === userId
+  ) || null;
+}
+
 function renderProfileCards(profiles) {
   if (!profiles.length) return `<span class="muted">None</span>`;
 
@@ -1635,19 +1840,41 @@ function renderAar(session, canAar) {
 }
 
 async function saveAttendance(sessionId, attendance) {
-  const payload = {
-    session_id: Number(sessionId),
-    user_id: state.authUser.id,
-    attendance,
-    updated_at: new Date().toISOString()
-  };
+  const session = state.sessions.find(
+    item => Number(item.id) === Number(sessionId)
+  );
 
-  const result = await supabase
-    .from("training_attendance")
-    .upsert(payload, { onConflict: "session_id,user_id" });
+  if (!session) {
+    alert("Training session not found.");
+    return;
+  }
+
+  const approvedLoa = getApprovedLoaForUserSession(
+    session,
+    state.authUser.id
+  );
+
+  if (approvedLoa) {
+    alert(
+      "Your response is locked because an approved LOA covers this training."
+    );
+    return;
+  }
+
+  const result = await supabase.rpc(
+    "set_my_training_response",
+    {
+      p_session_id: Number(sessionId),
+      p_attendance: attendance
+    }
+  );
 
   if (result.error) {
-    alert("Attendance save failed: " + result.error.message);
+    alert(
+      "Attendance save failed: " +
+      result.error.message
+    );
+
     return;
   }
 

@@ -400,24 +400,34 @@ function renderMemberList() {
 }
 
 function renderTrainingHistory() {
-  if (!selectedProfile || !trainingHistoryPanel) return;
+  if (!selectedProfile || !trainingHistoryPanel) {
+    return;
+  }
 
   const rows = trainingHistoryRows
-    .filter(row => row.profile_id === selectedProfile.id)
-    .sort((a, b) => new Date(b.start_at) - new Date(a.start_at));
+    .filter(
+      row => row.profile_id === selectedProfile.id
+    )
+    .sort(
+      (a, b) =>
+        new Date(b.start_at) -
+        new Date(a.start_at)
+    );
 
-  const total = rows.length;
+  const metrics = calculateAttendanceMetrics(rows);
 
-  const attended = rows.filter(row => {
-    return ["PRESENT", "LATE", "LEFT_EARLY", "PARTIAL"].includes(row.resolved_status);
-  }).length;
+  const lateRows = rows.filter(
+    row => row.resolved_status === "LATE"
+  );
 
-  const lateRows = rows.filter(row => row.resolved_status === "LATE");
   const lateCount = lateRows.length;
-  const totalLateMinutes = lateRows.reduce((sum, row) => sum + Number(row.minutes_late || 0), 0);
 
-  const loa = rows.filter(row => row.resolved_status === "LOA").length;
-  const percent = total > 0 ? ((attended / total) * 100).toFixed(1) : "0.0";
+  const totalLateMinutes = lateRows.reduce(
+    (sum, row) =>
+      sum + Number(row.minutes_late || 0),
+    0
+  );
+
   const lastTen = rows.slice(0, 10);
 
   trainingHistoryPanel.innerHTML = `
@@ -426,32 +436,77 @@ function renderTrainingHistory() {
     <div class="training-history-cards">
       <div class="training-history-card">
         <span>Total Trainings</span>
-        <strong>${escapeHtml(total)}</strong>
+        <strong>
+          ${escapeHtml(metrics.total)}
+        </strong>
       </div>
 
       <div class="training-history-card">
-        <span>Attendance</span>
-        <strong>${escapeHtml(percent)}%</strong>
+        <span>Attendance Rate</span>
+        <strong>
+          ${escapeHtml(metrics.attendanceRate)}%
+        </strong>
+      </div>
+
+      <div class="training-history-card">
+        <span>Excused Absence Rate</span>
+        <strong>
+          ${escapeHtml(metrics.excusedAbsenceRate)}%
+        </strong>
+      </div>
+
+      <div class="training-history-card">
+        <span>Unexcused Absence Rate</span>
+        <strong>
+          ${escapeHtml(metrics.unexcusedAbsenceRate)}%
+        </strong>
+      </div>
+
+      <div class="training-history-card">
+        <span>Attended</span>
+        <strong>
+          ${escapeHtml(metrics.attended)}
+        </strong>
+      </div>
+
+      <div class="training-history-card">
+        <span>Excused Absences</span>
+        <strong>
+          ${escapeHtml(metrics.excusedAbsences)}
+        </strong>
+      </div>
+
+      <div class="training-history-card">
+        <span>Unexcused Absences</span>
+        <strong>
+          ${escapeHtml(metrics.unexcusedAbsences)}
+        </strong>
       </div>
 
       <div class="training-history-card">
         <span>Times Late</span>
-        <strong>${escapeHtml(lateCount)}</strong>
+        <strong>
+          ${escapeHtml(lateCount)}
+        </strong>
       </div>
 
       <div class="training-history-card">
         <span>Late Minutes</span>
-        <strong>${escapeHtml(totalLateMinutes)}</strong>
-      </div>
-
-      <div class="training-history-card">
-        <span>LOA</span>
-        <strong>${escapeHtml(loa)}</strong>
+        <strong>
+          ${escapeHtml(totalLateMinutes)}
+        </strong>
       </div>
     </div>
 
     <div class="training-history-last10">
-      ${lastTen.length ? lastTen.map(renderHistoryPill).join("") : `<span class="muted">No completed training history.</span>`}
+      ${lastTen.length
+        ? lastTen.map(renderHistoryPill).join("")
+        : `
+          <span class="muted">
+            No completed training history.
+          </span>
+        `
+      }
     </div>
   `;
 }
@@ -615,11 +670,129 @@ async function loadAttendanceData() {
   }
 
   if (historyResult.error) {
-    console.error("Training history failed:", historyResult.error);
+    console.error(
+      "Training history failed:",
+      historyResult.error
+    );
+
     trainingHistoryRows = [];
+    attendanceSummaryRows = [];
   } else {
     trainingHistoryRows = historyResult.data || [];
+
+    attendanceSummaryRows =
+      buildAttendanceSummaries(trainingHistoryRows);
   }
+}
+
+function buildAttendanceSummaries(rows) {
+  const grouped = new Map();
+
+  rows.forEach(row => {
+    if (!grouped.has(row.profile_id)) {
+      grouped.set(row.profile_id, []);
+    }
+
+    grouped.get(row.profile_id).push(row);
+  });
+
+  return Array.from(grouped.entries()).map(
+    ([profileId, profileRows]) => {
+      const metrics = calculateAttendanceMetrics(
+        profileRows
+      );
+
+      return {
+        profile_id: profileId,
+        overall_percent: metrics.attendanceRate,
+        excused_absence_percent:
+          metrics.excusedAbsenceRate,
+        unexcused_absence_percent:
+          metrics.unexcusedAbsenceRate,
+        compliance_status:
+          getAttendanceComplianceStatus(metrics)
+      };
+    }
+  );
+}
+
+function calculateAttendanceMetrics(rows) {
+  const countedRows = rows.filter(row => {
+    return row.counts_towards_attendance !== false;
+  });
+
+  const total = countedRows.length;
+
+  const attended = countedRows.filter(row => {
+    return [
+      "PRESENT",
+      "LATE",
+      "LEFT_EARLY",
+      "PARTIAL"
+    ].includes(row.resolved_status);
+  }).length;
+
+  const excusedAbsences = countedRows.filter(row => {
+    return [
+      "LOA",
+      "EXCUSED"
+    ].includes(row.resolved_status);
+  }).length;
+
+  const unexcusedAbsences = countedRows.filter(row => {
+    return [
+      "ABSENT",
+      "NO_SHOW"
+    ].includes(row.resolved_status);
+  }).length;
+
+  return {
+    total,
+    attended,
+    excusedAbsences,
+    unexcusedAbsences,
+
+    attendanceRate:
+      total > 0
+        ? Number(((attended / total) * 100).toFixed(1))
+        : 0,
+
+    excusedAbsenceRate:
+      total > 0
+        ? Number(
+            (
+              (excusedAbsences / total) *
+              100
+            ).toFixed(1)
+          )
+        : 0,
+
+    unexcusedAbsenceRate:
+      total > 0
+        ? Number(
+            (
+              (unexcusedAbsences / total) *
+              100
+            ).toFixed(1)
+          )
+        : 0
+  };
+}
+
+function getAttendanceComplianceStatus(metrics) {
+  if (metrics.total === 0) {
+    return "NO_DATA";
+  }
+
+  if (metrics.unexcusedAbsenceRate >= 25) {
+    return "REVIEW";
+  }
+
+  if (metrics.attendanceRate < 75) {
+    return "BELOW_STANDARD";
+  }
+
+  return "IN_STANDARD";
 }
 
 function renderAttendancePanel() {
@@ -635,19 +808,55 @@ function renderAttendancePanel() {
     rows = rows.filter(row => row.resolved_status === statusFilter);
   }
 
-  const lateRows = rows.filter(row => row.resolved_status === "LATE");
-  const totalLateMinutes = lateRows.reduce((sum, row) => sum + Number(row.minutes_late || 0), 0);
+const lateRows = rows.filter(
+  row => row.resolved_status === "LATE"
+);
 
-  if (attendanceSummary) {
-    attendanceSummary.innerHTML = `
-      <div class="attendance-cards">
-        ${metricCard("Rows", rows.length)}
-        ${metricCard("Times Late", lateRows.length)}
-        ${metricCard("Late Minutes", totalLateMinutes)}
-        ${metricCard("Selected", selectedProfile.display_name || selectedProfile.user_id)}
-      </div>
-    `;
-  }
+const totalLateMinutes = lateRows.reduce(
+  (sum, row) =>
+    sum + Number(row.minutes_late || 0),
+  0
+);
+
+const attendanceMetrics =
+  calculateAttendanceMetrics(rows);
+
+if (attendanceSummary) {
+  attendanceSummary.innerHTML = `
+    <div class="attendance-cards">
+      ${metricCard(
+        "Attendance Rate",
+        `${attendanceMetrics.attendanceRate}%`
+      )}
+
+      ${metricCard(
+        "Excused Absence Rate",
+        `${attendanceMetrics.excusedAbsenceRate}%`
+      )}
+
+      ${metricCard(
+        "Unexcused Absence Rate",
+        `${attendanceMetrics.unexcusedAbsenceRate}%`
+      )}
+
+      ${metricCard(
+        "Times Late",
+        lateRows.length
+      )}
+
+      ${metricCard(
+        "Late Minutes",
+        totalLateMinutes
+      )}
+
+      ${metricCard(
+        "Selected",
+        selectedProfile.display_name ||
+        selectedProfile.user_id
+      )}
+    </div>
+  `;
+}
 
   if (!rows.length) {
     attendanceDetails.innerHTML = `<div class="notice-box">No completed training rows for this member.</div>`;
@@ -740,21 +949,96 @@ function renderAttendanceDetails() {
 }
 
 function renderAttendanceRow(row) {
-  const id = `${row.session_id}-${row.profile_id}`;
-  const currentStatus = row.resolved_status || "NO_RESPONSE";
+  const id =
+    `${row.session_id}-${row.profile_id}`;
+
+  const currentStatus =
+    row.resolved_status || "NO_RESPONSE";
+
+  const lockedByLoa =
+    currentStatus === "LOA" ||
+    Boolean(row.locked_by_loa_id) ||
+    Boolean(row.approved_loa_id);
+
+  if (lockedByLoa) {
+    return `
+      <tr
+        data-attendance-row="${escapeHtml(id)}"
+        class="loa-locked-attendance-row"
+      >
+        <td>
+          ${escapeHtml(formatDateTime(row.start_at))}
+        </td>
+
+        <td>
+          <strong>${escapeHtml(row.title)}</strong>
+          <br>
+          <span class="muted">
+            ${escapeHtml(row.category || "-")}
+          </span>
+        </td>
+
+        <td>
+          <strong>LOA</strong>
+          <br>
+          <span class="muted">
+            Excused absence
+          </span>
+        </td>
+
+        <td>
+          <select disabled>
+            <option selected>LOA</option>
+          </select>
+        </td>
+
+        <td>0</td>
+
+        <td>
+          <span class="muted">
+            Locked by approved LOA.
+          </span>
+        </td>
+
+        <td>
+          <button
+            class="btn btn-secondary btn-small"
+            type="button"
+            disabled
+          >
+            Locked
+          </button>
+        </td>
+      </tr>
+    `;
+  }
 
   return `
     <tr data-attendance-row="${escapeHtml(id)}">
-      <td>${escapeHtml(formatDateTime(row.start_at))}</td>
+      <td>
+        ${escapeHtml(formatDateTime(row.start_at))}
+      </td>
 
       <td>
-        <strong>${escapeHtml(row.title)}</strong><br>
-        <span class="muted">${escapeHtml(row.category || "-")}</span>
+        <strong>${escapeHtml(row.title)}</strong>
+        <br>
+        <span class="muted">
+          ${escapeHtml(row.category || "-")}
+        </span>
       </td>
 
       <td>
         <strong>${escapeHtml(currentStatus)}</strong>
-        ${Number(row.minutes_late || 0) > 0 ? `<br><span class="muted">${escapeHtml(row.minutes_late)} min late</span>` : ""}
+
+        ${Number(row.minutes_late || 0) > 0
+          ? `
+            <br>
+            <span class="muted">
+              ${escapeHtml(row.minutes_late)} min late
+            </span>
+          `
+          : ""
+        }
       </td>
 
       <td>
@@ -777,7 +1061,10 @@ function renderAttendanceRow(row) {
           type="number"
           min="0"
           step="1"
-          value="${escapeHtml(row.minutes_late || 0)}">
+          value="${escapeHtml(
+            row.minutes_late || 0
+          )}"
+        >
       </td>
 
       <td>
@@ -785,8 +1072,11 @@ function renderAttendanceRow(row) {
           class="attendance-note-input"
           data-field="admin_note"
           type="text"
-          value="${escapeHtml(row.admin_note || "")}"
-          maxlength="1000">
+          value="${escapeHtml(
+            row.admin_note || ""
+          )}"
+          maxlength="1000"
+        >
       </td>
 
       <td>
@@ -795,7 +1085,8 @@ function renderAttendanceRow(row) {
           type="button"
           data-save-attendance="${escapeHtml(id)}"
           data-session-id="${escapeHtml(row.session_id)}"
-          data-profile-id="${escapeHtml(row.profile_id)}">
+          data-profile-id="${escapeHtml(row.profile_id)}"
+        >
           Save
         </button>
       </td>
