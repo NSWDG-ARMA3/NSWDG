@@ -35,6 +35,16 @@ const intelligenceRoles = [
   "HQ"
 ];
 
+const checklistTeamLeaderCallsigns = [
+  "EG1",
+  "EH1",
+  "EI1"
+];
+
+const checklistAdminRoles = [
+  "ADMIN",
+  "SUPERADMIN"
+];
 
 const _0x9a7b = [
   "https://discord.com/api/webhooks/",
@@ -226,16 +236,42 @@ async function updateLayoutUserInfo() {
       .trim()
       .toUpperCase();
 
+      const normalizedGreenTeamOrder =
+        Number(profile.green_team_order);
+
+      const isChecklistTeamLeader =
+        checklistTeamLeaderCallsigns.includes(
+          normalizedCallsign
+        );
+
+      const isChecklistClassLead =
+        normalizedRank === "CANDIDATE" &&
+        normalizedCallsign === "" &&
+        Number.isInteger(
+          normalizedGreenTeamOrder
+        ) &&
+        normalizedGreenTeamOrder >= 1 &&
+        normalizedGreenTeamOrder <= 2;
+
     const adminEmails = [
       "evans@navy.mil",
       "carver@navy.mil"
     ];
 
     const isAdmin =
-      normalizedRole === "ADMIN" ||
+      checklistAdminRoles.includes(
+        normalizedRole
+      ) ||
       profile.is_admin === true ||
       profile.admin === true ||
-      adminEmails.includes(normalizedEmail);
+      adminEmails.includes(
+        normalizedEmail
+      );
+
+    const canViewChecklist =
+      isAdmin ||
+      isChecklistTeamLeader ||
+      isChecklistClassLead;
 
     const canViewIntelligence =
       isAdmin ||
@@ -302,6 +338,29 @@ async function updateLayoutUserInfo() {
           : "none";
       });
 
+      document
+  .querySelectorAll(
+    ".checklist-only-link"
+  )
+  .forEach(element => {
+    element.style.display =
+      canViewChecklist
+        ? ""
+        : "none";
+  });
+
+document
+  .querySelectorAll(
+    ".management-only-link"
+  )
+  .forEach(element => {
+    element.style.display =
+      isAdmin ||
+      canViewChecklist
+        ? ""
+        : "none";
+  });
+
     console.log("Portal permissions:", {
       email: normalizedEmail,
       role: normalizedRole,
@@ -334,8 +393,28 @@ export function renderPortalLayout(activePage = "") {
       <a class="intelligence-only-link ${activePage === "intelligence" ? "active" : ""}" href="/member/intelligence/" style="display:none;">Intelligence</a>
       <a class="${activePage === "training" ? "active" : ""}" href="/member/training/">Training</a>
       <a class="orbat-only-link ${activePage === "orbat" ? "active" : ""}" href="/member/orbat/" style="display:none;">ORBAT</a>
-      <a class="${activePage === "profile" ? "active" : ""}" href="/member/profile/">Profile</a>
-      <a class="admin-only-link ${activePage === "admin" ? "active" : ""}" href="/member/admin/" style="display:none;">Admin</a>
+      <a
+        class="${activePage === "profile" ? "active" : ""}"
+        href="/member/profile/"
+      >
+        Profile
+      </a>
+
+      <a
+        class="checklist-only-link ${activePage === "checklist" ? "active" : ""}"
+        href="/member/checklist/"
+        style="display:none;"
+      >
+        Checklist
+      </a>
+
+      <a
+        class="admin-only-link ${activePage === "admin" ? "active" : ""}"
+        href="/member/admin/"
+        style="display:none;"
+      >
+        Admin
+      </a>
 
       <div class="nav-right">
         <img id="nav-avatar" class="nav-avatar" src="/nsw.png" alt="Profile picture">
@@ -369,8 +448,28 @@ export function renderPortalLayout(activePage = "") {
       <a class="sidebar-link ${activePage === "documentation" ? "active" : ""}" href="/member/documentation/">Documentation</a>
       <a class="sidebar-link orbat-only-link ${activePage === "orbat" ? "active" : ""}" href="/member/orbat/" style="display:none;">ORBAT</a>
 
-      <div class="sidebar-section admin-only-link" style="display:none;">System</div>
-      <a class="sidebar-link admin-only-link ${activePage === "admin" ? "active" : ""}" href="/member/admin/" style="display:none;">Admin</a>
+      <div
+        class="sidebar-section management-only-link"
+        style="display:none;"
+      >
+        System
+      </div>
+
+      <a
+        class="sidebar-link admin-only-link ${activePage === "admin" ? "active" : ""}"
+        href="/member/admin/"
+        style="display:none;"
+      >
+        Admin
+      </a>
+
+      <a
+        class="sidebar-link checklist-only-link ${activePage === "checklist" ? "active" : ""}"
+        href="/member/checklist/"
+        style="display:none;"
+      >
+        Checklist
+      </a>
     `;
   }
 
