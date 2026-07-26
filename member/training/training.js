@@ -436,10 +436,16 @@ async function sendTrainingScheduledWebhook(
           "application/json"
       },
       body: JSON.stringify({
-        username:
-          "NAVADMIN",
-        avatar_url:
-          `${PORTAL_BASE_URL}/nsw.png`,
+        content: "<@&1424715895015739516>",
+
+        allowed_mentions: {
+          parse: [],
+          roles: ["1424715895015739516"]
+        },
+
+        username: "NSWDG Training Portal",
+        avatar_url: `${PORTAL_BASE_URL}/nsw.png`,
+
         embeds: [
           {
             title:

@@ -244,11 +244,16 @@ async function sendReminder(session) {
           "Content-Type":
             "application/json"
         },
-        body: JSON.stringify({
-          username:
-            "NAVADMIN",
-          avatar_url:
-            "https://www.rsqdn.com/nsw.png",
+            body: JSON.stringify({
+            content: "<@&1424715895015739516>",
+
+            allowed_mentions: {
+                parse: [],
+                roles: ["1424715895015739516"]
+            },
+
+            username: "NAVADMIN",
+            avatar_url: "https://www.rsqdn.com/nsw.png",
           embeds: [
             {
               title:
@@ -262,7 +267,7 @@ async function sendReminder(session) {
               fields,
               footer: {
                 text:
-                  "Naval Special Warfare Command | Training Portal"
+                  "NAVADMIN"
               },
               timestamp:
                 new Date().toISOString()
