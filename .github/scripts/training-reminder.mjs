@@ -246,7 +246,7 @@ async function sendReminder(session) {
         },
         body: JSON.stringify({
           username:
-            "NSWDG Training Portal",
+            "NAVADMIN",
           avatar_url:
             "https://www.rsqdn.com/nsw.png",
           embeds: [

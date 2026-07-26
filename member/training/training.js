@@ -437,7 +437,7 @@ async function sendTrainingScheduledWebhook(
       },
       body: JSON.stringify({
         username:
-          "NSWDG Training Portal",
+          "NAVADMIN",
         avatar_url:
           `${PORTAL_BASE_URL}/nsw.png`,
         embeds: [
@@ -453,7 +453,7 @@ async function sendTrainingScheduledWebhook(
             fields,
             footer: {
               text:
-                "Naval Special Warfare Command | Training Portal"
+                "NAVADMIN, Naval Administrative Message"
             },
             timestamp:
               new Date().toISOString()

@@ -43,7 +43,7 @@ jobs:
             exit 0
           fi
 
-          git config user.name "NSWDG Training Portal"
+          git config user.name "NAVADMIN"
           git config user.email "actions@users.noreply.github.com"
 
           git add .github/training-reminder-state.json
