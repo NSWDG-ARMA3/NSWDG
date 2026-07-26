@@ -3,15 +3,38 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
   <title>NSW Operations Portal</title>
 
-  <meta property="og:title" content="RSQDN, Navy Portal">
-  <meta property="og:image" content="../nsw.png">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="http://www.rsqdn.com/member/">
+  <meta
+    property="og:title"
+    content="RSQDN, Navy Portal"
+  >
 
-  <link rel="shortcut icon" href="../nsw.png" type="image/x-icon">
+  <meta
+    property="og:image"
+    content="../nsw.png"
+  >
+
+  <meta
+    property="og:type"
+    content="website"
+  >
+
+  <meta
+    property="og:url"
+    content="http://www.rsqdn.com/member/"
+  >
+
+  <link
+    rel="shortcut icon"
+    href="../nsw.png"
+    type="image/x-icon"
+  >
 
   <style>
     * {
@@ -363,183 +386,1955 @@
       padding: 7px;
       flex-shrink: 0;
     }
+
+    /*
+      Dashboard-specific styling begins here.
+      Existing portal styling above remains unchanged.
+    */
+
+    .dashboard-welcome {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .dashboard-welcome-avatar {
+      width: 46px;
+      height: 46px;
+      border: 1px solid #aaa;
+      background: #eee;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+
+    .dashboard-welcome-text {
+      min-width: 0;
+    }
+
+    .dashboard-welcome-name {
+      color: #1d3f5e;
+      font-size: 14px;
+      font-weight: bold;
+      margin-bottom: 2px;
+    }
+
+    .dashboard-welcome-meta {
+      color: #555;
+      font-size: 11px;
+      line-height: 1.5;
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 2fr) minmax(260px, 1fr);
+      gap: 14px;
+      align-items: start;
+    }
+
+    .dashboard-column {
+      min-width: 0;
+    }
+
+    .dashboard-panel {
+      border: 1px solid #bbb;
+      background: #fff;
+      margin-bottom: 14px;
+    }
+
+    .dashboard-panel-header {
+      background: #1d3f5e;
+      color: #fff;
+      font-size: 11px;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      padding: 6px 8px;
+      border-bottom: 1px solid #16304a;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .dashboard-panel-header-detail {
+      color: #c5d8ec;
+      font-size: 10px;
+      font-weight: normal;
+      text-transform: none;
+      letter-spacing: normal;
+    }
+
+    .dashboard-panel-body {
+      padding: 10px;
+      background: #fff;
+    }
+
+    .dashboard-panel-body.no-padding {
+      padding: 0;
+    }
+
+    .dashboard-status-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      border: 1px solid #bbb;
+      margin-bottom: 14px;
+      background: #fafafa;
+    }
+
+    .dashboard-status-item {
+      padding: 9px 10px;
+      border-right: 1px solid #ccc;
+      min-width: 0;
+    }
+
+    .dashboard-status-item:last-child {
+      border-right: 0;
+    }
+
+    .dashboard-status-label {
+      color: #777;
+      font-size: 9px;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      margin-bottom: 4px;
+    }
+
+    .dashboard-status-value {
+      color: #1d3f5e;
+      font-size: 13px;
+      font-weight: bold;
+      overflow-wrap: anywhere;
+    }
+
+    .dashboard-status-subtext {
+      color: #777;
+      font-size: 10px;
+      margin-top: 2px;
+    }
+
+    .dashboard-action-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 7px;
+    }
+
+    .dashboard-action {
+      display: block;
+      border: 1px solid #aeb7c0;
+      background: #f5f7fa;
+      color: #1d3f5e;
+      padding: 8px 9px;
+      text-decoration: none;
+      font-size: 11px;
+      font-weight: bold;
+      line-height: 1.3;
+    }
+
+    .dashboard-action:hover {
+      background: #e5ebf2;
+      border-color: #1d3f5e;
+    }
+
+    .dashboard-action-title {
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    .dashboard-action-description {
+      color: #68717a;
+      display: block;
+      font-size: 10px;
+      font-weight: normal;
+    }
+
+    .dashboard-data-list {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11px;
+    }
+
+    .dashboard-data-list td {
+      padding: 6px 8px;
+      border-bottom: 1px solid #ddd;
+      vertical-align: top;
+    }
+
+    .dashboard-data-list tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .dashboard-data-list tr:nth-child(even) td {
+      background: #f5f7fa;
+    }
+
+    .dashboard-data-label {
+      width: 125px;
+      color: #555;
+      font-weight: bold;
+    }
+
+    .dashboard-data-value {
+      color: #222;
+      overflow-wrap: anywhere;
+    }
+
+    .dashboard-time-block {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .dashboard-clock {
+      border: 1px solid #ccc;
+      background: #fafafa;
+      padding: 9px;
+    }
+
+    .dashboard-clock-label {
+      color: #777;
+      font-size: 9px;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      margin-bottom: 4px;
+    }
+
+    .dashboard-clock-time {
+      color: #1d3f5e;
+      font-size: 17px;
+      font-weight: bold;
+    }
+
+    .dashboard-clock-date {
+      color: #666;
+      font-size: 10px;
+      margin-top: 2px;
+    }
+
+    .dashboard-readiness-row {
+      margin-bottom: 10px;
+    }
+
+    .dashboard-readiness-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .dashboard-readiness-heading {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 4px;
+      font-size: 11px;
+    }
+
+    .dashboard-readiness-name {
+      font-weight: bold;
+      color: #333;
+    }
+
+    .dashboard-readiness-value {
+      color: #666;
+    }
+
+    .dashboard-progress {
+      height: 9px;
+      border: 1px solid #aaa;
+      background: #eee;
+      overflow: hidden;
+    }
+
+    .dashboard-progress-fill {
+      height: 100%;
+      background: #1d3f5e;
+      width: 0%;
+      transition: width 0.25s ease;
+    }
+
+    .dashboard-empty {
+      color: #777;
+      font-size: 11px;
+      line-height: 1.6;
+      padding: 4px 0;
+    }
+
+    .dashboard-system-line {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      margin-bottom: 7px;
+      font-size: 11px;
+    }
+
+    .dashboard-system-line:last-child {
+      margin-bottom: 0;
+    }
+
+    .dashboard-indicator {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      background: #777;
+    }
+
+    .dashboard-indicator.online {
+      background: #27742f;
+    }
+
+    .dashboard-indicator.warning {
+      background: #c8a800;
+    }
+
+    .dashboard-indicator.offline {
+      background: #a80000;
+    }
+
+    .dashboard-module-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11px;
+    }
+
+    .dashboard-module-table th {
+      background: #eef2f6;
+      color: #1d3f5e;
+      text-align: left;
+      padding: 6px 8px;
+      border-bottom: 1px solid #bbb;
+      font-size: 10px;
+      text-transform: uppercase;
+    }
+
+    .dashboard-module-table td {
+      padding: 7px 8px;
+      border-bottom: 1px solid #ddd;
+      vertical-align: middle;
+    }
+
+    .dashboard-module-table tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .dashboard-module-table tr:nth-child(even) td {
+      background: #f7f8fa;
+    }
+
+    .dashboard-module-table a {
+      color: #1d3f5e;
+      font-weight: bold;
+      text-decoration: none;
+    }
+
+    .dashboard-module-table a:hover {
+      text-decoration: underline;
+    }
+
+    .dashboard-note {
+      color: #666;
+      font-size: 10px;
+      line-height: 1.5;
+      margin-top: 8px;
+    }
+
+    .badge-red {
+      color: #800;
+      border-color: #c00;
+      background: #fdf0f0;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (max-width: 1000px) {
+      .dashboard-status-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .dashboard-status-item:nth-child(2) {
+        border-right: 0;
+      }
+
+      .dashboard-status-item:nth-child(-n+2) {
+        border-bottom: 1px solid #ccc;
+      }
+    }
+
+    @media (max-width: 820px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 680px) {
+      .portal-body {
+        display: block;
+      }
+
+      .sidebar {
+        width: 100%;
+        border-right: 0;
+        border-bottom: 1px solid #bbb;
+      }
+
+      .portal-main {
+        padding: 14px;
+      }
+
+      .dashboard-status-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .dashboard-status-item {
+        border-right: 0;
+        border-bottom: 1px solid #ccc;
+      }
+
+      .dashboard-status-item:last-child {
+        border-bottom: 0;
+      }
+
+      .dashboard-action-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 460px) {
+      .dashboard-time-block {
+        grid-template-columns: 1fr;
+      }
+
+      .dashboard-welcome {
+        align-items: flex-start;
+      }
+    }
   </style>
 </head>
 
 <body>
 
-  <div class="gov-banner">U.S. Department of the Navy &nbsp;|&nbsp; Official Government System &nbsp;|&nbsp; Authorized
-    Users Only</div>
-
-  <div class="site-header">
-    <h1>Naval Special Warfare Command - Operations Portal</h1>
-    <p>NSW-OPS // UNCLASSIFIED // FOR OFFICIAL USE ONLY</p>
+  <div class="gov-banner">
+    U.S. Department of the Navy
+    &nbsp;|&nbsp;
+    Official Government System
+    &nbsp;|&nbsp;
+    Authorized Users Only
   </div>
 
-  <div id="screen-portal" class="screen active">
-    <div id="portal-nav" class="portal-nav"></div>
+  <div class="site-header">
+    <h1>
+      Naval Special Warfare Command - Operations Portal
+    </h1>
+
+    <p>
+      NSW-OPS // UNCLASSIFIED // FOR OFFICIAL USE ONLY
+    </p>
+  </div>
+
+  <div
+    id="screen-portal"
+    class="screen active"
+  >
+    <div
+      id="portal-nav"
+      class="portal-nav"
+    ></div>
 
     <div class="portal-body">
-      <div id="portal-sidebar" class="sidebar"></div>
+      <div
+        id="portal-sidebar"
+        class="sidebar"
+      ></div>
 
-      <div class="portal-main">
-        <div class="page-title">Home / Dashboard</div>
-
-        <div class="notice-box warning">
-          <h4>System Notice</h4>
-          Welcome to the training portal. Additional training modules will be added one by one.
+      <main class="portal-main">
+        <div class="page-title">
+          Home / Dashboard
         </div>
 
-        <table class="info-table">
-          <tr>
-            <th colspan="2">Session Information</th>
-          </tr>
-          <tr>
-            <td style="width:130px">Logged in as</td>
-            <td id="dash-user">Loading...</td>
-          </tr>
-          <tr>
-            <td>User ID</td>
-            <td id="dash-userid">Loading...</td>
-          </tr>
-          <tr>
-            <td>Role</td>
-            <td id="dash-role">Loading...</td>
-          </tr>
-          <tr>
-            <td>Status</td>
-            <td id="dash-status">Loading...</td>
-          </tr>
-          <tr>
-            <td>Login Time</td>
-            <td id="dash-time">Loading...</td>
-          </tr>
-          <tr>
-            <td>System</td>
-            <td>NSW-OPS-PORTAL v2.0 // UNCLASSIFIED // FOUO</td>
-          </tr>
-        </table>
+        <div
+          id="dashboard-error"
+          class="notice-box error hidden"
+        >
+          <h4>Dashboard Error</h4>
 
-        <table class="info-table">
-          <tr>
-            <th>Module</th>
-            <th>Status</th>
-            <th>Function</th>
-          </tr>
-          <tr>
-            <td>Home / Dashboard</td>
-            <td><span class="badge badge-green">Online</span></td>
-            <td>Shows authenticated Supabase user profile</td>
-          </tr>
-          <tr>
-            <td>Documentation</td>
-            <td><span class="badge badge-green">Online</span></td>
-            <td>Training files and references</td>
-          </tr>
-          <tr>
-            <td>Scheduling</td>
-            <td><span class="badge badge-green">Online</span></td>
-            <td>Availability and training attendance</td>
-          </tr>
-        </table>
-      </div>
+          <span id="dashboard-error-message">
+            The dashboard could not be loaded.
+          </span>
+        </div>
+
+        <div class="notice-box warning">
+          <div class="dashboard-welcome">
+            <img
+              id="dashboard-avatar"
+              class="dashboard-welcome-avatar"
+              src="../nsw.png"
+              alt=""
+            >
+
+            <div class="dashboard-welcome-text">
+              <div
+                id="dashboard-welcome-name"
+                class="dashboard-welcome-name"
+              >
+                Authenticating user...
+              </div>
+
+              <div class="dashboard-welcome-meta">
+                <span id="dashboard-welcome-position">
+                  Loading assignment information...
+                </span>
+
+                <br>
+
+                This dashboard displays your current account,
+                assignment and portal access information.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <section class="dashboard-status-grid">
+          <div class="dashboard-status-item">
+            <div class="dashboard-status-label">
+              Account Status
+            </div>
+
+            <div
+              id="summary-status"
+              class="dashboard-status-value"
+            >
+              Loading...
+            </div>
+
+            <div class="dashboard-status-subtext">
+              Supabase profile status
+            </div>
+          </div>
+
+          <div class="dashboard-status-item">
+            <div class="dashboard-status-label">
+              Assignment
+            </div>
+
+            <div
+              id="summary-callsign"
+              class="dashboard-status-value"
+            >
+              Loading...
+            </div>
+
+            <div
+              id="summary-billet"
+              class="dashboard-status-subtext"
+            >
+              Checking ORBAT assignment
+            </div>
+          </div>
+
+          <div class="dashboard-status-item">
+            <div class="dashboard-status-label">
+              Service
+            </div>
+
+            <div
+              id="summary-branch"
+              class="dashboard-status-value"
+            >
+              Loading...
+            </div>
+
+            <div
+              id="summary-email-domain"
+              class="dashboard-status-subtext"
+            >
+              Determined by account
+            </div>
+          </div>
+
+          <div class="dashboard-status-item">
+            <div class="dashboard-status-label">
+              Portal Role
+            </div>
+
+            <div
+              id="summary-role"
+              class="dashboard-status-value"
+            >
+              Loading...
+            </div>
+
+            <div class="dashboard-status-subtext">
+              Current access group
+            </div>
+          </div>
+        </section>
+
+        <div class="dashboard-grid">
+          <div class="dashboard-column">
+
+            <section class="dashboard-panel">
+              <div class="dashboard-panel-header">
+                <span>Quick Actions</span>
+
+                <span class="dashboard-panel-header-detail">
+                  Common portal functions
+                </span>
+              </div>
+
+              <div class="dashboard-panel-body">
+                <div class="dashboard-action-grid">
+                  <a
+                    class="dashboard-action"
+                    href="/member/scheduling/"
+                  >
+                    <span class="dashboard-action-title">
+                      Scheduling
+                    </span>
+
+                    <span class="dashboard-action-description">
+                      Submit availability and review training events
+                    </span>
+                  </a>
+
+                  <a
+                    class="dashboard-action"
+                    href="/member/checklist/"
+                  >
+                    <span class="dashboard-action-title">
+                      Training Checklist
+                    </span>
+
+                    <span class="dashboard-action-description">
+                      Review member progression and completed items
+                    </span>
+                  </a>
+
+                  <a
+                    class="dashboard-action"
+                    href="/member/orbat/"
+                  >
+                    <span class="dashboard-action-title">
+                      ORBAT
+                    </span>
+
+                    <span class="dashboard-action-description">
+                      View current troop structure and assignments
+                    </span>
+                  </a>
+
+                  <a
+                    class="dashboard-action"
+                    href="/member/documentation/"
+                  >
+                    <span class="dashboard-action-title">
+                      Documentation
+                    </span>
+
+                    <span class="dashboard-action-description">
+                      Open training files, references and procedures
+                    </span>
+                  </a>
+
+                  <a
+                    class="dashboard-action"
+                    href="/member/loa/"
+                  >
+                    <span class="dashboard-action-title">
+                      Leave of Absence
+                    </span>
+
+                    <span class="dashboard-action-description">
+                      Submit or review planned periods of absence
+                    </span>
+                  </a>
+
+                  <a
+                    class="dashboard-action"
+                    href="/member/profile/"
+                  >
+                    <span class="dashboard-action-title">
+                      Member Profile
+                    </span>
+
+                    <span class="dashboard-action-description">
+                      Review your profile and account information
+                    </span>
+                  </a>
+                </div>
+              </div>
+            </section>
+
+            <section class="dashboard-panel">
+              <div class="dashboard-panel-header">
+                <span>Personnel Information</span>
+
+                <span class="dashboard-panel-header-detail">
+                  Authenticated profile
+                </span>
+              </div>
+
+              <div class="dashboard-panel-body no-padding">
+                <table class="dashboard-data-list">
+                  <tr>
+                    <td class="dashboard-data-label">
+                      Display Name
+                    </td>
+
+                    <td
+                      id="dash-user"
+                      class="dashboard-data-value"
+                    >
+                      Loading...
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td class="dashboard-data-label">
+                      User ID
+                    </td>
+
+                    <td
+                      id="dash-userid"
+                      class="dashboard-data-value"
+                    >
+                      Loading...
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td class="dashboard-data-label">
+                      Rank
+                    </td>
+
+                    <td
+                      id="dash-rank"
+                      class="dashboard-data-value"
+                    >
+                      Loading...
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td class="dashboard-data-label">
+                      Callsign
+                    </td>
+
+                    <td
+                      id="dash-callsign"
+                      class="dashboard-data-value"
+                    >
+                      Loading...
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td class="dashboard-data-label">
+                      Billet
+                    </td>
+
+                    <td
+                      id="dash-billet"
+                      class="dashboard-data-value"
+                    >
+                      Loading...
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td class="dashboard-data-label">
+                      Role
+                    </td>
+
+                    <td
+                      id="dash-role"
+                      class="dashboard-data-value"
+                    >
+                      Loading...
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td class="dashboard-data-label">
+                      Status
+                    </td>
+
+                    <td
+                      id="dash-status"
+                      class="dashboard-data-value"
+                    >
+                      Loading...
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td class="dashboard-data-label">
+                      Service
+                    </td>
+
+                    <td
+                      id="dash-branch"
+                      class="dashboard-data-value"
+                    >
+                      Loading...
+                    </td>
+                  </tr>
+                </table>
+              </div>
+            </section>
+
+            <section class="dashboard-panel">
+              <div class="dashboard-panel-header">
+                <span>Portal Modules</span>
+
+                <span class="dashboard-panel-header-detail">
+                  Available systems
+                </span>
+              </div>
+
+              <div class="dashboard-panel-body no-padding">
+                <table class="dashboard-module-table">
+                  <thead>
+                    <tr>
+                      <th>Module</th>
+                      <th>Status</th>
+                      <th>Function</th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    <tr>
+                      <td>
+                        <a href="/member/">
+                          Home / Dashboard
+                        </a>
+                      </td>
+
+                      <td>
+                        <span class="badge badge-green">
+                          Online
+                        </span>
+                      </td>
+
+                      <td>
+                        Account and portal overview
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td>
+                        <a href="/member/scheduling/">
+                          Scheduling
+                        </a>
+                      </td>
+
+                      <td>
+                        <span class="badge badge-green">
+                          Online
+                        </span>
+                      </td>
+
+                      <td>
+                        Availability, training and attendance
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td>
+                        <a href="/member/checklist/">
+                          Training Checklist
+                        </a>
+                      </td>
+
+                      <td>
+                        <span class="badge badge-green">
+                          Online
+                        </span>
+                      </td>
+
+                      <td>
+                        Training progression and evaluation records
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td>
+                        <a href="/member/orbat/">
+                          ORBAT
+                        </a>
+                      </td>
+
+                      <td>
+                        <span class="badge badge-green">
+                          Online
+                        </span>
+                      </td>
+
+                      <td>
+                        Current troop organization and assignments
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td>
+                        <a href="/member/documentation/">
+                          Documentation
+                        </a>
+                      </td>
+
+                      <td>
+                        <span class="badge badge-green">
+                          Online
+                        </span>
+                      </td>
+
+                      <td>
+                        Training files, references and procedures
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </section>
+
+          </div>
+
+          <aside class="dashboard-column">
+
+            <section class="dashboard-panel">
+              <div class="dashboard-panel-header">
+                <span>System Time</span>
+
+                <span class="dashboard-panel-header-detail">
+                  Live
+                </span>
+              </div>
+
+              <div class="dashboard-panel-body">
+                <div class="dashboard-time-block">
+                  <div class="dashboard-clock">
+                    <div class="dashboard-clock-label">
+                      Zulu Time
+                    </div>
+
+                    <div
+                      id="clock-zulu"
+                      class="dashboard-clock-time"
+                    >
+                      ----Z
+                    </div>
+
+                    <div
+                      id="date-zulu"
+                      class="dashboard-clock-date"
+                    >
+                      Loading...
+                    </div>
+                  </div>
+
+                  <div class="dashboard-clock">
+                    <div class="dashboard-clock-label">
+                      Local Time
+                    </div>
+
+                    <div
+                      id="clock-local"
+                      class="dashboard-clock-time"
+                    >
+                      --:--
+                    </div>
+
+                    <div
+                      id="date-local"
+                      class="dashboard-clock-date"
+                    >
+                      Loading...
+                    </div>
+                  </div>
+                </div>
+
+                <div class="dashboard-note">
+                  Zulu time is displayed in UTC. Local time is
+                  based on the device currently accessing the portal.
+                </div>
+              </div>
+            </section>
+
+            <section class="dashboard-panel">
+              <div class="dashboard-panel-header">
+                <span>Account Readiness</span>
+
+                <span class="dashboard-panel-header-detail">
+                  Profile checks
+                </span>
+              </div>
+
+              <div class="dashboard-panel-body">
+                <div class="dashboard-readiness-row">
+                  <div class="dashboard-readiness-heading">
+                    <span class="dashboard-readiness-name">
+                      Profile Information
+                    </span>
+
+                    <span
+                      id="profile-completion-value"
+                      class="dashboard-readiness-value"
+                    >
+                      0%
+                    </span>
+                  </div>
+
+                  <div class="dashboard-progress">
+                    <div
+                      id="profile-completion-bar"
+                      class="dashboard-progress-fill"
+                    ></div>
+                  </div>
+                </div>
+
+                <div class="dashboard-readiness-row">
+                  <div class="dashboard-readiness-heading">
+                    <span class="dashboard-readiness-name">
+                      Account Access
+                    </span>
+
+                    <span
+                      id="account-access-value"
+                      class="dashboard-readiness-value"
+                    >
+                      Checking
+                    </span>
+                  </div>
+
+                  <div class="dashboard-progress">
+                    <div
+                      id="account-access-bar"
+                      class="dashboard-progress-fill"
+                    ></div>
+                  </div>
+                </div>
+
+                <div class="dashboard-readiness-row">
+                  <div class="dashboard-readiness-heading">
+                    <span class="dashboard-readiness-name">
+                      ORBAT Assignment
+                    </span>
+
+                    <span
+                      id="assignment-value"
+                      class="dashboard-readiness-value"
+                    >
+                      Checking
+                    </span>
+                  </div>
+
+                  <div class="dashboard-progress">
+                    <div
+                      id="assignment-bar"
+                      class="dashboard-progress-fill"
+                    ></div>
+                  </div>
+                </div>
+
+                <div class="dashboard-note">
+                  These checks only use your current profile. They
+                  do not represent attendance or training qualification.
+                </div>
+              </div>
+            </section>
+
+            <section class="dashboard-panel">
+              <div class="dashboard-panel-header">
+                <span>System Status</span>
+
+                <span class="dashboard-panel-header-detail">
+                  Current session
+                </span>
+              </div>
+
+              <div class="dashboard-panel-body">
+                <div class="dashboard-system-line">
+                  <span
+                    id="auth-indicator"
+                    class="dashboard-indicator"
+                  ></span>
+
+                  <span>
+                    Authentication:
+                    <strong id="auth-status">
+                      Checking
+                    </strong>
+                  </span>
+                </div>
+
+                <div class="dashboard-system-line">
+                  <span
+                    id="profile-indicator"
+                    class="dashboard-indicator"
+                  ></span>
+
+                  <span>
+                    Profile:
+                    <strong id="profile-status">
+                      Checking
+                    </strong>
+                  </span>
+                </div>
+
+                <div class="dashboard-system-line">
+                  <span
+                    id="portal-indicator"
+                    class="dashboard-indicator online"
+                  ></span>
+
+                  <span>
+                    Portal:
+                    <strong>Operational</strong>
+                  </span>
+                </div>
+
+                <div class="dashboard-system-line">
+                  <span
+                    id="session-indicator"
+                    class="dashboard-indicator"
+                  ></span>
+
+                  <span>
+                    Session:
+                    <strong id="session-status">
+                      Checking
+                    </strong>
+                  </span>
+                </div>
+              </div>
+            </section>
+
+            <section class="dashboard-panel">
+              <div class="dashboard-panel-header">
+                <span>Session Information</span>
+              </div>
+
+              <div class="dashboard-panel-body no-padding">
+                <table class="dashboard-data-list">
+                  <tr>
+                    <td class="dashboard-data-label">
+                      Login Time
+                    </td>
+
+                    <td
+                      id="dash-time"
+                      class="dashboard-data-value"
+                    >
+                      Loading...
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td class="dashboard-data-label">
+                      Email
+                    </td>
+
+                    <td
+                      id="dash-email"
+                      class="dashboard-data-value"
+                    >
+                      Loading...
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td class="dashboard-data-label">
+                      System
+                    </td>
+
+                    <td class="dashboard-data-value">
+                      NSW-OPS-PORTAL v2.0
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td class="dashboard-data-label">
+                      Classification
+                    </td>
+
+                    <td class="dashboard-data-value">
+                      UNCLASSIFIED // FOUO
+                    </td>
+                  </tr>
+                </table>
+              </div>
+            </section>
+
+          </aside>
+        </div>
+      </main>
     </div>
 
-    <div class="page-footer">Naval Special Warfare Command - Operations Portal &nbsp;|&nbsp; UNCLASSIFIED // FOUO
-      &nbsp;|&nbsp; Contact your unit S6 for technical support</div>
+    <div class="page-footer">
+      Naval Special Warfare Command - Operations Portal
+      &nbsp;|&nbsp;
+      UNCLASSIFIED // FOUO
+      &nbsp;|&nbsp;
+      Contact your unit S6 for technical support
+    </div>
   </div>
 
   <script type="module">
-    import { supabase } from "/js/auth.js";
-    import { renderPortalLayout } from "/js/portal-layout.js";
+    import {
+      supabase
+    } from "/js/auth.js";
 
-renderPortalLayout("home");
+    import {
+      renderPortalLayout
+    } from "/js/portal-layout.js";
 
-function zp(n) {
-  return String(n).padStart(2, "0");
-}
+    renderPortalLayout("home");
 
-function timeStr() {
-  const d = new Date();
-  const months = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
-  return `${zp(d.getUTCHours())}${zp(d.getUTCMinutes())}Z ${d.getUTCDate()} ${months[d.getUTCMonth()]} ${d.getUTCFullYear()}`;
-}
+    const SPECIAL_ACCESS_EMAILS = new Set([
+      "evans@navy.mil",
+      "carver@navy.mil"
+    ]);
 
-function getFallbackUserId(email) {
-  if (!email || !email.includes("@")) return "unknown";
-  return email.split("@")[0];
-}
+    const loginDate = new Date();
 
-function showAdminLinksIfAllowed(email) {
-  const normalized = String(email || "").trim().toLowerCase();
+    function zp(number) {
+      return String(number).padStart(2, "0");
+    }
 
-  if (
-    normalized !== "evans@navy.mil" &&
-    normalized !== "carver@navy.mil"
-  ) {
-    return;
-  }
+    function safeText(value, fallback = "Not assigned") {
+      const normalized = String(value || "").trim();
+      return normalized || fallback;
+    }
 
-  document.querySelectorAll(".admin-only-link").forEach(link => {
-    link.style.display = "";
-  });
-}
+    function setText(id, value) {
+      const element = document.getElementById(id);
 
-async function loadDashboard() {
-  const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+      if (element) {
+        element.textContent = value;
+      }
+    }
 
-  if (sessionError || !sessionData.session) {
-    window.location.href = "/login/";
-    return;
-  }
+    function setIndicator(id, state) {
+      const indicator = document.getElementById(id);
 
-  const user = sessionData.session.user;
-  showAdminLinksIfAllowed(user.email);
-  const fallbackUserId = getFallbackUserId(user.email);
+      if (!indicator) {
+        return;
+      }
 
-  let profile = {
-    user_id: fallbackUserId,
-    display_name: fallbackUserId,
-    role: "MEMBER",
-    status: "ACTIVE",
-    avatar_url: null
-  };
+      indicator.classList.remove(
+        "online",
+        "warning",
+        "offline"
+      );
 
-  const { data: profileData, error: profileError } = await supabase
-    .from("profiles")
-    .select("user_id, display_name, role, status, avatar_url")
-    .eq("id", user.id)
-    .single();
+      indicator.classList.add(state);
+    }
 
-  if (!profileError && profileData) {
-    profile = profileData;
-  }
+    function setProgress(barId, valueId, percentage, label) {
+      const normalizedPercentage = Math.max(
+        0,
+        Math.min(100, Number(percentage) || 0)
+      );
 
-  document.getElementById("session-label").textContent = profile.display_name;
-  document.getElementById("sidebar-name").textContent = profile.display_name;
-  document.getElementById("sidebar-role").textContent = profile.role;
+      const bar = document.getElementById(barId);
+      const value = document.getElementById(valueId);
 
-  const navAvatar = document.getElementById("nav-avatar");
-  if (navAvatar && profile.avatar_url) {
-    navAvatar.src = profile.avatar_url;
-  }
+      if (bar) {
+        bar.style.width = `${normalizedPercentage}%`;
+      }
 
-  document.getElementById("dash-user").textContent = profile.display_name;
-  document.getElementById("dash-userid").textContent = profile.user_id;
-  document.getElementById("dash-role").textContent = profile.role;
-  document.getElementById("dash-status").textContent = profile.status;
-  document.getElementById("dash-time").textContent = timeStr();
-}
+      if (value) {
+        value.textContent =
+          label || `${normalizedPercentage}%`;
+      }
+    }
 
-async function doLogout() {
-  await supabase.auth.signOut();
-  window.location.href = "/login/";
-}
+    function formatZulu(date) {
+      const months = [
+        "JAN",
+        "FEB",
+        "MAR",
+        "APR",
+        "MAY",
+        "JUN",
+        "JUL",
+        "AUG",
+        "SEP",
+        "OCT",
+        "NOV",
+        "DEC"
+      ];
 
-window.doLogout = doLogout;
+      return (
+        `${zp(date.getUTCHours())}` +
+        `${zp(date.getUTCMinutes())}Z ` +
+        `${date.getUTCDate()} ` +
+        `${months[date.getUTCMonth()]} ` +
+        `${date.getUTCFullYear()}`
+      );
+    }
 
-loadDashboard();
-</script>
+    function formatZuluClock(date) {
+      return (
+        `${zp(date.getUTCHours())}` +
+        `${zp(date.getUTCMinutes())}` +
+        `${zp(date.getUTCSeconds())}Z`
+      );
+    }
+
+    function formatZuluDate(date) {
+      const months = [
+        "JAN",
+        "FEB",
+        "MAR",
+        "APR",
+        "MAY",
+        "JUN",
+        "JUL",
+        "AUG",
+        "SEP",
+        "OCT",
+        "NOV",
+        "DEC"
+      ];
+
+      return (
+        `${zp(date.getUTCDate())} ` +
+        `${months[date.getUTCMonth()]} ` +
+        `${date.getUTCFullYear()}`
+      );
+    }
+
+    function formatLocalClock(date) {
+      return date.toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit"
+      });
+    }
+
+    function formatLocalDate(date) {
+      return date.toLocaleDateString([], {
+        weekday: "short",
+        day: "2-digit",
+        month: "short",
+        year: "numeric"
+      });
+    }
+
+    function updateClocks() {
+      const now = new Date();
+
+      setText(
+        "clock-zulu",
+        formatZuluClock(now)
+      );
+
+      setText(
+        "date-zulu",
+        formatZuluDate(now)
+      );
+
+      setText(
+        "clock-local",
+        formatLocalClock(now)
+      );
+
+      setText(
+        "date-local",
+        formatLocalDate(now)
+      );
+    }
+
+    function getFallbackUserId(email) {
+      if (!email || !email.includes("@")) {
+        return "unknown";
+      }
+
+      return email.split("@")[0];
+    }
+
+    function getServiceBranch(email) {
+      const normalized = String(email || "")
+        .trim()
+        .toLowerCase();
+
+      if (normalized.endsWith("@us.af.mil")) {
+        return {
+          name: "United States Air Force",
+          shortName: "Air Force",
+          logo: "../airforce.png",
+          domain: "us.af.mil"
+        };
+      }
+
+      if (normalized.endsWith("@army.mil")) {
+        return {
+          name: "United States Army",
+          shortName: "Army",
+          logo: "../army.png",
+          domain: "army.mil"
+        };
+      }
+
+      if (normalized.endsWith("@navy.mil")) {
+        return {
+          name: "United States Navy",
+          shortName: "Navy",
+          logo: "../nsw.png",
+          domain: "navy.mil"
+        };
+      }
+
+      return {
+        name: "Joint / Other",
+        shortName: "Other",
+        logo: "../nsw.png",
+        domain: normalized.includes("@")
+          ? normalized.split("@")[1]
+          : "unknown"
+      };
+    }
+
+    function getDefaultAvatar(profile, email) {
+      const customAvatar = String(
+        profile?.avatar_url || ""
+      ).trim();
+
+      if (customAvatar) {
+        return customAvatar;
+      }
+
+      return getServiceBranch(email).logo;
+    }
+
+    function getBillet(callsign) {
+      const value = String(callsign || "")
+        .trim()
+        .toUpperCase();
+
+      if (!value) {
+        return "Not assigned";
+      }
+
+      if (value === "E31") {
+        return "Troop Commander";
+      }
+
+      if (value === "E32") {
+        return "Troop Chief";
+      }
+
+      const specialistBillets = {
+        EX1: "Military Working Dog Handler",
+        EN1: "Explosive Ordnance Disposal Technician",
+        ER1: "Information Systems Technician",
+        EY1: "Cryptologic Technician",
+        EY2: "Cryptologic Technician",
+        EY3: "Cryptologic Technician",
+        EY4: "Cryptologic Technician",
+        EU1: "Combat Controller",
+        EU2: "Combat Controller",
+        EP1: "Pararescueman",
+        EP2: "Pararescueman"
+      };
+
+      if (specialistBillets[value]) {
+        return specialistBillets[value];
+      }
+
+      const slot = Number(value.slice(-1));
+
+      if (value.startsWith("EG")) {
+        return [
+          "",
+          "Golf Team Leader",
+          "Golf Assistant Team Leader",
+          "Golf Team Assaulter",
+          "Golf Team Assaulter",
+          "Golf Team Assaulter",
+          "Golf Team Assaulter"
+        ][slot] || "Golf Team";
+      }
+
+      if (value.startsWith("EH")) {
+        return [
+          "",
+          "Hotel Team Leader",
+          "Hotel Assistant Team Leader",
+          "Hotel Team Assaulter",
+          "Hotel Team Assaulter",
+          "Hotel Team Assaulter",
+          "Hotel Team Assaulter"
+        ][slot] || "Hotel Team";
+      }
+
+      if (value.startsWith("EI")) {
+        return [
+          "",
+          "India Team Leader",
+          "India Assistant Team Leader",
+          "Reconnaissance Operator",
+          "Reconnaissance Operator",
+          "Reconnaissance Operator",
+          "Reconnaissance Operator"
+        ][slot] || "India Team";
+      }
+
+      return "Assigned Personnel";
+    }
+
+    function showAdminLinksIfAllowed(email, role) {
+      const normalizedEmail = String(email || "")
+        .trim()
+        .toLowerCase();
+
+      const normalizedRole = String(role || "")
+        .trim()
+        .toUpperCase();
+
+      const authorizedRoles = new Set([
+        "ADMIN",
+        "SUPERADMIN",
+        "TROOP_HQ",
+        "HQ"
+      ]);
+
+      const allowed =
+        SPECIAL_ACCESS_EMAILS.has(normalizedEmail) ||
+        authorizedRoles.has(normalizedRole);
+
+      if (!allowed) {
+        return;
+      }
+
+      document
+        .querySelectorAll(".admin-only-link")
+        .forEach(link => {
+          link.style.display = "";
+        });
+    }
+
+    function calculateProfileCompletion(profile) {
+      const fields = [
+        profile.display_name,
+        profile.user_id,
+        profile.role,
+        profile.status,
+        profile.naval_rank,
+        profile.callsign,
+        profile.steam_name,
+        profile.discord_name
+      ];
+
+      const completed = fields.filter(value => {
+        return String(value || "").trim().length > 0;
+      }).length;
+
+      return Math.round(
+        (completed / fields.length) * 100
+      );
+    }
+
+    function renderDashboard(profile, user) {
+      const email = String(user?.email || "").trim();
+      const branch = getServiceBranch(email);
+      const callsign = safeText(
+        profile.callsign,
+        "Unassigned"
+      );
+
+      const billet = getBillet(profile.callsign);
+      const rank = safeText(
+        profile.naval_rank,
+        "No rank assigned"
+      );
+
+      const role = safeText(
+        profile.role,
+        "MEMBER"
+      ).toUpperCase();
+
+      const status = safeText(
+        profile.status,
+        "UNKNOWN"
+      ).toUpperCase();
+
+      const active = status === "ACTIVE";
+      const assigned =
+        String(profile.callsign || "").trim().length > 0;
+
+      const displayName = safeText(
+        profile.display_name,
+        getFallbackUserId(email)
+      );
+
+      const avatarUrl = getDefaultAvatar(
+        profile,
+        email
+      );
+
+      const dashboardAvatar =
+        document.getElementById("dashboard-avatar");
+
+      if (dashboardAvatar) {
+        dashboardAvatar.src = avatarUrl;
+
+        dashboardAvatar.onerror = () => {
+          dashboardAvatar.onerror = null;
+          dashboardAvatar.src = "../nsw.png";
+        };
+      }
+
+      const navAvatar =
+        document.getElementById("nav-avatar");
+
+      if (navAvatar) {
+        navAvatar.src = avatarUrl;
+
+        navAvatar.onerror = () => {
+          navAvatar.onerror = null;
+          navAvatar.src = "../nsw.png";
+        };
+      }
+
+      setText(
+        "dashboard-welcome-name",
+        `Welcome, ${displayName}`
+      );
+
+      setText(
+        "dashboard-welcome-position",
+        `${rank} // ${callsign} // ${billet}`
+      );
+
+      setText(
+        "summary-status",
+        status
+      );
+
+      setText(
+        "summary-callsign",
+        callsign
+      );
+
+      setText(
+        "summary-billet",
+        billet
+      );
+
+      setText(
+        "summary-branch",
+        branch.shortName
+      );
+
+      setText(
+        "summary-email-domain",
+        branch.domain
+      );
+
+      setText(
+        "summary-role",
+        role
+      );
+
+      setText(
+        "dash-user",
+        displayName
+      );
+
+      setText(
+        "dash-userid",
+        safeText(
+          profile.user_id,
+          getFallbackUserId(email)
+        )
+      );
+
+      setText(
+        "dash-rank",
+        rank
+      );
+
+      setText(
+        "dash-callsign",
+        callsign
+      );
+
+      setText(
+        "dash-billet",
+        billet
+      );
+
+      setText(
+        "dash-role",
+        role
+      );
+
+      setText(
+        "dash-status",
+        status
+      );
+
+      setText(
+        "dash-branch",
+        branch.name
+      );
+
+      setText(
+        "dash-email",
+        email || "Unavailable"
+      );
+
+      setText(
+        "dash-time",
+        formatZulu(loginDate)
+      );
+
+      setText(
+        "auth-status",
+        "Authenticated"
+      );
+
+      setText(
+        "profile-status",
+        "Loaded"
+      );
+
+      setText(
+        "session-status",
+        "Active"
+      );
+
+      setIndicator(
+        "auth-indicator",
+        "online"
+      );
+
+      setIndicator(
+        "profile-indicator",
+        "online"
+      );
+
+      setIndicator(
+        "session-indicator",
+        "online"
+      );
+
+      const completion =
+        calculateProfileCompletion(profile);
+
+      setProgress(
+        "profile-completion-bar",
+        "profile-completion-value",
+        completion,
+        `${completion}%`
+      );
+
+      setProgress(
+        "account-access-bar",
+        "account-access-value",
+        active ? 100 : 20,
+        active ? "Authorized" : status
+      );
+
+      setProgress(
+        "assignment-bar",
+        "assignment-value",
+        assigned ? 100 : 25,
+        assigned ? callsign : "Unassigned"
+      );
+
+      const sessionLabel =
+        document.getElementById("session-label");
+
+      if (sessionLabel) {
+        sessionLabel.textContent = displayName;
+      }
+
+      const sidebarName =
+        document.getElementById("sidebar-name");
+
+      if (sidebarName) {
+        sidebarName.textContent = displayName;
+      }
+
+      const sidebarRole =
+        document.getElementById("sidebar-role");
+
+      if (sidebarRole) {
+        sidebarRole.textContent = role;
+      }
+
+      showAdminLinksIfAllowed(
+        email,
+        role
+      );
+    }
+
+    function showDashboardError(message) {
+      const errorBox =
+        document.getElementById("dashboard-error");
+
+      const errorMessage =
+        document.getElementById(
+          "dashboard-error-message"
+        );
+
+      if (errorMessage) {
+        errorMessage.textContent =
+          message ||
+          "The dashboard could not be loaded.";
+      }
+
+      if (errorBox) {
+        errorBox.classList.remove("hidden");
+      }
+
+      setText(
+        "auth-status",
+        "Failed"
+      );
+
+      setText(
+        "profile-status",
+        "Unavailable"
+      );
+
+      setText(
+        "session-status",
+        "Unknown"
+      );
+
+      setIndicator(
+        "auth-indicator",
+        "offline"
+      );
+
+      setIndicator(
+        "profile-indicator",
+        "offline"
+      );
+
+      setIndicator(
+        "session-indicator",
+        "warning"
+      );
+    }
+
+    async function loadDashboard() {
+      try {
+        const {
+          data: sessionData,
+          error: sessionError
+        } = await supabase.auth.getSession();
+
+        if (
+          sessionError ||
+          !sessionData?.session
+        ) {
+          window.location.href = "/login/";
+          return;
+        }
+
+        const user = sessionData.session.user;
+        const email = String(user.email || "");
+        const fallbackUserId =
+          getFallbackUserId(email);
+
+        setText(
+          "auth-status",
+          "Authenticated"
+        );
+
+        setIndicator(
+          "auth-indicator",
+          "online"
+        );
+
+        const fallbackProfile = {
+          id: user.id,
+          user_id: fallbackUserId,
+          display_name: fallbackUserId,
+          role: "MEMBER",
+          status: "ACTIVE",
+          avatar_url: null,
+          naval_rank: "",
+          callsign: "",
+          steam_name: "",
+          discord_name: ""
+        };
+
+        const {
+          data: profileData,
+          error: profileError
+        } = await supabase
+          .from("profiles")
+          .select(`
+            id,
+            user_id,
+            display_name,
+            role,
+            status,
+            avatar_url,
+            naval_rank,
+            callsign,
+            steam_name,
+            discord_name
+          `)
+          .eq("id", user.id)
+          .maybeSingle();
+
+        let profile = fallbackProfile;
+
+        if (!profileError && profileData) {
+          profile = {
+            ...fallbackProfile,
+            ...profileData
+          };
+        } else if (profileError) {
+          console.warn(
+            "Profile query failed:",
+            profileError
+          );
+
+          setText(
+            "profile-status",
+            "Fallback profile"
+          );
+
+          setIndicator(
+            "profile-indicator",
+            "warning"
+          );
+        }
+
+        renderDashboard(
+          profile,
+          user
+        );
+      } catch (error) {
+        console.error(error);
+
+        showDashboardError(
+          error?.message ||
+          "An unexpected error occurred."
+        );
+      }
+    }
+
+    async function doLogout() {
+      await supabase.auth.signOut();
+      window.location.href = "/login/";
+    }
+
+    window.doLogout = doLogout;
+
+    updateClocks();
+    window.setInterval(updateClocks, 1000);
+
+    loadDashboard();
+  </script>
 
 </body>
 
