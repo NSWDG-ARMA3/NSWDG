@@ -1,0 +1,51 @@
+name: Training Reminders
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: training-reminders
+  cancel-in-progress: false
+
+jobs:
+  send-reminders:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Run training reminder
+        env:
+          SUPABASE_URL: "https://lshdabctlaifkeptyfoz.supabase.co"
+          SUPABASE_ANON_KEY: "sb_publishable_NpY_RXqnMC9UwNmkxCiK-Q_zNX6g6CH"
+          DISCORD_WEBHOOK_URL: "https://discord.com/api/webhooks/1530732785390850099/VL4qWIFgveFl7JBwkAg7k8zvjLLFRmoRAM9P7GH_aPe8zl4OiSlPmX8X2pOqBPMTvvZ0"
+          PORTAL_URL: "https://www.rsqdn.com/member/training/"
+        run: node .github/scripts/training-reminder.mjs
+
+      - name: Commit reminder state
+        run: |
+          if git diff --quiet; then
+            echo "No reminder state changes."
+            exit 0
+          fi
+
+          git config user.name "NSWDG Training Portal"
+          git config user.email "actions@users.noreply.github.com"
+
+          git add .github/training-reminder-state.json
+          git commit -m "Update training reminder state"
+          git push

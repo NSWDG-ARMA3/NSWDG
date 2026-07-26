@@ -1,6 +1,11 @@
 import { supabase } from "/js/auth.js";
 import { renderPortalLayout } from "/js/portal-layout.js";
 
+const TRAINING_DISCORD_WEBHOOK =
+  "https://discord.com/api/webhooks/1530732785390850099/VL4qWIFgveFl7JBwkAg7k8zvjLLFRmoRAM9P7GH_aPe8zl4OiSlPmX8X2pOqBPMTvvZ0";
+
+const PORTAL_BASE_URL = "https://www.rsqdn.com";
+
 renderPortalLayout("training");
 
 const TEAM_LEADER_CALLSIGNS = ["EG1", "EH1", "EI1"];
@@ -226,7 +231,39 @@ async function saveTraining() {
   }
 
   if (!canCreateSelectedCategory()) {
-    showStatus("You do not have permission to host Unit Wide Training.", false);
+    showStatus(
+      "You do not have permission to host Unit Wide Training.",
+      false
+    );
+    return;
+  }
+
+  const startDate = new Date(el.start.value);
+  const endDate = el.end.value
+    ? new Date(el.end.value)
+    : null;
+
+  if (Number.isNaN(startDate.getTime())) {
+    showStatus("The selected start time is invalid.", false);
+    return;
+  }
+
+  if (
+    endDate &&
+    Number.isNaN(endDate.getTime())
+  ) {
+    showStatus("The selected end time is invalid.", false);
+    return;
+  }
+
+  if (
+    endDate &&
+    endDate.getTime() <= startDate.getTime()
+  ) {
+    showStatus(
+      "The end time must be after the start time.",
+      false
+    );
     return;
   }
 
@@ -234,30 +271,265 @@ async function saveTraining() {
     category: el.category.value,
     title,
     description: el.description.value.trim(),
-    start_at: new Date(el.start.value).toISOString(),
-    end_at: el.end.value ? new Date(el.end.value).toISOString() : null,
+    start_at: startDate.toISOString(),
+    end_at: endDate
+      ? endDate.toISOString()
+      : null,
     location: el.location.value.trim(),
     status: el.status.value,
     host_id: state.authUser.id,
     updated_at: new Date().toISOString()
   };
 
-  setButtonLoading(el.saveButton, true, "Saving...");
+  setButtonLoading(
+    el.saveButton,
+    true,
+    "Saving..."
+  );
 
   const result = await supabase
     .from("training_sessions")
-    .insert(payload);
+    .insert(payload)
+    .select("*")
+    .single();
 
-  setButtonLoading(el.saveButton, false, "Create Training");
+  setButtonLoading(
+    el.saveButton,
+    false,
+    "Create Training"
+  );
 
   if (result.error) {
-    showStatus("Database save failed: " + result.error.message, false);
+    showStatus(
+      "Database save failed: " +
+        result.error.message,
+      false
+    );
     return;
   }
 
+  const createdSession = result.data;
+
+  if (
+    createdSession.status === "SCHEDULED" ||
+    createdSession.status === "POSTPONED"
+  ) {
+    try {
+      await sendTrainingScheduledWebhook(
+        createdSession
+      );
+    } catch (error) {
+      console.error(
+        "Training webhook failed:",
+        error
+      );
+    }
+
+    publishLocalTrainingNotice(
+      createdSession
+    );
+  }
+
   resetForm();
-  showStatus("Training session created.", true);
+
+  showStatus(
+    "Training session created.",
+    true
+  );
+
   await loadData();
+}
+
+async function sendTrainingScheduledWebhook(
+  session
+) {
+  if (
+    !TRAINING_DISCORD_WEBHOOK ||
+    TRAINING_DISCORD_WEBHOOK.includes(
+      "PASTE_YOUR"
+    )
+  ) {
+    console.warn(
+      "Training Discord webhook is not configured."
+    );
+    return;
+  }
+
+  const startTimestamp = Math.floor(
+    new Date(session.start_at).getTime() /
+      1000
+  );
+
+  const endTimestamp = session.end_at
+    ? Math.floor(
+        new Date(
+          session.end_at
+        ).getTime() / 1000
+      )
+    : null;
+
+  const category =
+    formatWebhookCategory(
+      session.category
+    );
+
+  const hostName =
+    state.profile?.callsign ||
+    state.profile?.display_name ||
+    state.authUser?.email ||
+    "Portal Staff";
+
+  const description =
+    String(session.description || "").trim() ||
+    "No additional instructions were issued.";
+
+  const location =
+    String(session.location || "").trim() ||
+    "To be confirmed";
+
+  const fields = [
+    {
+      name: "Start",
+      value:
+        `<t:${startTimestamp}:F>\n` +
+        `<t:${startTimestamp}:R>`,
+      inline: true
+    },
+    {
+      name: "Location",
+      value: location,
+      inline: true
+    },
+    {
+      name: "Category",
+      value: category,
+      inline: true
+    },
+    {
+      name: "Host",
+      value: hostName,
+      inline: true
+    },
+    {
+      name: "Attendance",
+      value: session.mandatory === false
+        ? "Optional"
+        : "Required",
+      inline: true
+    }
+  ];
+
+  if (endTimestamp) {
+    fields.splice(1, 0, {
+      name: "End",
+      value: `<t:${endTimestamp}:t>`,
+      inline: true
+    });
+  }
+
+  const response = await fetch(
+    `${TRAINING_DISCORD_WEBHOOK}?wait=true`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type":
+          "application/json"
+      },
+      body: JSON.stringify({
+        username:
+          "NSWDG Training Portal",
+        avatar_url:
+          `${PORTAL_BASE_URL}/nsw.png`,
+        embeds: [
+          {
+            title:
+              "TRAINING NOTICE",
+            description:
+              `**${session.title}**\n\n` +
+              description,
+            url:
+              `${PORTAL_BASE_URL}/member/training/`,
+            color: 1207352,
+            fields,
+            footer: {
+              text:
+                "Naval Special Warfare Command | Training Portal"
+            },
+            timestamp:
+              new Date().toISOString()
+          }
+        ]
+      })
+    }
+  );
+
+  if (!response.ok) {
+    const responseText =
+      await response.text();
+
+    throw new Error(
+      `Discord returned ${response.status}: ${responseText}`
+    );
+  }
+
+  return response.json();
+}
+
+function formatWebhookCategory(
+  category
+) {
+  switch (category) {
+    case "PRO_DEVELOPMENT":
+      return "Professional Development";
+
+    case "UNIT_WIDE":
+      return "Unit Wide";
+
+    case "INNER_TEAM":
+      return "Inner Team";
+
+    default:
+      return String(category || "Training")
+        .replaceAll("_", " ");
+  }
+}
+
+function publishLocalTrainingNotice(
+  session
+) {
+  const payload = {
+    type: "TRAINING_CREATED",
+    session,
+    createdAt:
+      new Date().toISOString()
+  };
+
+  localStorage.setItem(
+    "nswdg_latest_training_notice",
+    JSON.stringify(payload)
+  );
+
+  window.dispatchEvent(
+    new CustomEvent(
+      "nswdg-training-notice",
+      {
+        detail: payload
+      }
+    )
+  );
+
+  try {
+    const channel =
+      new BroadcastChannel(
+        "nswdg-portal-notifications"
+      );
+
+    channel.postMessage(payload);
+    channel.close();
+  } catch {
+    // BroadcastChannel is not available
+    // in every browser.
+  }
 }
 
 function resetForm() {
