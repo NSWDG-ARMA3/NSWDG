@@ -99,7 +99,9 @@ async function loadSessionAndProfile() {
 
   const profileResult = await supabase
     .from("profiles")
-    .select("id,user_id,display_name,role,status,avatar_url,callsign,naval_rank")
+    .select(
+      "id,user_id,display_name,role,status,avatar_url,callsign,naval_rank,account_created_at"
+    )
     .eq("id", state.authUser.id)
     .single();
 
@@ -133,7 +135,9 @@ async function loadData() {
 
     supabase
       .from("profiles")
-      .select("id,user_id,display_name,role,status,avatar_url,callsign,naval_rank")
+      .select(
+        "id,user_id,display_name,role,status,avatar_url,callsign,naval_rank,account_created_at"
+      )
       .eq("status", "ACTIVE")
       .order("display_name", { ascending: true }),
 
@@ -668,7 +672,7 @@ function renderSessions() {
 }
 
 function renderAdminMarkingTable(session, attendanceRows) {
-  const rows = state.profiles
+  const rows = getEligibleProfilesForSession(session)
     .slice()
     .sort((a, b) =>
       String(a.display_name || "").localeCompare(
@@ -917,19 +921,31 @@ async function saveAdminMarkingRow(button) {
 }
 
 function renderViewer(session) {
-  const attendanceRows = state.attendance.filter(
-    row => Number(row.session_id) === Number(session.id)
+  const eligibleProfiles =
+    getEligibleProfilesForSession(session);
+
+  const eligibleProfileIds = new Set(
+    eligibleProfiles.map(profile => profile.id)
   );
 
-  const loaRows = getLoaForSession(session);
+  const attendanceRows = state.attendance.filter(row => {
+    return (
+      Number(row.session_id) === Number(session.id) &&
+      eligibleProfileIds.has(row.user_id)
+    );
+  });
+
+  const loaRows = getLoaForSession(session).filter(loa => {
+    return eligibleProfileIds.has(loa.requester_id);
+  });
 
   const loaUserIds = new Set(
     loaRows.map(loa => loa.requester_id)
   );
 
-  const blockedByLoa = state.profiles.filter(
-    profile => loaUserIds.has(profile.id)
-  );
+  const blockedByLoa = eligibleProfiles.filter(profile => {
+    return loaUserIds.has(profile.id);
+  });
 
   const attending = attendanceRows.filter(row => {
     return (
@@ -945,7 +961,7 @@ function renderViewer(session) {
     );
   });
 
-  const noResponse = state.profiles.filter(profile => {
+  const noResponse = eligibleProfiles.filter(profile => {
     if (loaUserIds.has(profile.id)) {
       return false;
     }
@@ -1058,8 +1074,8 @@ function renderViewer(session) {
           </div>
 
           <div class="stat-card dark">
-            <b>${state.profiles.length}</b>
-            <span>Total Members</span>
+            <b>${eligibleProfiles.length}</b>
+            <span>Eligible Members</span>
           </div>
         </div>
       </div>
@@ -1252,6 +1268,44 @@ if (admin) {
   if (canAar) {
     document.getElementById("save-aar-button").addEventListener("click", () => saveAar(session.id));
   }
+}
+
+function accountExistedForSession(profile, session) {
+  if (!profile || !session) {
+    return false;
+  }
+
+  if (!profile.account_created_at) {
+    /*
+     * This fallback keeps older or incomplete profiles visible.
+     * After running the SQL migration, every profile should have
+     * account_created_at.
+     */
+    return true;
+  }
+
+  const accountCreatedAt = new Date(
+    profile.account_created_at
+  ).getTime();
+
+  const sessionStartedAt = new Date(
+    session.start_at
+  ).getTime();
+
+  if (
+    !Number.isFinite(accountCreatedAt) ||
+    !Number.isFinite(sessionStartedAt)
+  ) {
+    return true;
+  }
+
+  return sessionStartedAt >= accountCreatedAt;
+}
+
+function getEligibleProfilesForSession(session) {
+  return state.profiles.filter(profile => {
+    return accountExistedForSession(profile, session);
+  });
 }
 
 function renderAdminTrainingControls(session) {
@@ -1849,6 +1903,13 @@ async function saveAttendance(sessionId, attendance) {
     return;
   }
 
+  if (!accountExistedForSession(state.profile, session)) {
+    alert(
+      "This training occurred before your account was created and does not apply to your attendance."
+    );
+    return;
+  }
+
   const approvedLoa = getApprovedLoaForUserSession(
     session,
     state.authUser.id
@@ -1940,25 +2001,45 @@ async function deleteTraining(sessionId) {
 }
 
 function getAttendanceCounts(session) {
-  const rows = state.attendance.filter(
-    attendanceRow =>
-      Number(attendanceRow.session_id) === Number(session.id)
+  const eligibleProfiles =
+    getEligibleProfilesForSession(session);
+
+  const eligibleProfileIds = new Set(
+    eligibleProfiles.map(profile => profile.id)
   );
 
   const loaUserIds = new Set(
     getLoaForSession(session)
       .map(loa => loa.requester_id)
-      .filter(Boolean)
+      .filter(userId => {
+        return (
+          Boolean(userId) &&
+          eligibleProfileIds.has(userId)
+        );
+      })
   );
 
-  return {
-    attending: rows.filter(
-      attendanceRow => attendanceRow.attendance === "ATTENDING"
-    ).length,
+  const rows = state.attendance.filter(attendanceRow => {
+    return (
+      Number(attendanceRow.session_id) === Number(session.id) &&
+      eligibleProfileIds.has(attendanceRow.user_id)
+    );
+  });
 
-    notAttending: rows.filter(
-      attendanceRow => attendanceRow.attendance === "NOT_ATTENDING"
-    ).length,
+  return {
+    attending: rows.filter(attendanceRow => {
+      return (
+        attendanceRow.attendance === "ATTENDING" &&
+        !loaUserIds.has(attendanceRow.user_id)
+      );
+    }).length,
+
+    notAttending: rows.filter(attendanceRow => {
+      return (
+        attendanceRow.attendance === "NOT_ATTENDING" &&
+        !loaUserIds.has(attendanceRow.user_id)
+      );
+    }).length,
 
     loaAbsent: loaUserIds.size
   };
