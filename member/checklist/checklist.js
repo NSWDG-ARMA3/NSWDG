@@ -718,18 +718,16 @@ function renderBlockTabs() {
 
 function getDefaultAvatar(member) {
   const email =
-    String(
-      member?.user_id || ""
-    )
+    String(member?.user_id || "")
       .trim()
       .toLowerCase();
 
-  if (
-    email.endsWith(
-      "@us.af.mil"
-    )
-  ) {
+  if (email.endsWith("@us.af.mil")) {
     return "/airforce.png";
+  }
+
+  if (email.endsWith("@army.mil")) {
+    return "/army.png";
   }
 
   return "/nsw.png";
