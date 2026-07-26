@@ -716,6 +716,25 @@ function renderBlockTabs() {
       .join("");
 }
 
+function getDefaultAvatar(member) {
+  const email =
+    String(
+      member?.user_id || ""
+    )
+      .trim()
+      .toLowerCase();
+
+  if (
+    email.endsWith(
+      "@us.af.mil"
+    )
+  ) {
+    return "/airforce.png";
+  }
+
+  return "/nsw.png";
+}
+
 function renderMemberList() {
   const blockItems =
     getSelectedBlockItems();
@@ -806,14 +825,14 @@ function renderMemberList() {
                 member.id
               )}"
             >
-              <img
-                class="member-avatar"
-                src="${escapeHtml(
-                  member.avatar_url ||
-                  "/nsw.png"
-                )}"
-                alt=""
-              >
+            <img
+            class="member-avatar"
+            src="${escapeHtml(
+                member.avatar_url ||
+                getDefaultAvatar(member)
+            )}"
+            alt=""
+            >
 
               <span class="member-row-main">
                 <strong>
