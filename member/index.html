@@ -3419,15 +3419,20 @@ async function loadMonthlyMemberHighlights() {
     attendanceByMember.get(memberId).push(row);
   }
 
-  const memberStats = profiles.map((profile) => {
-    const rows =
-      attendanceByMember.get(String(profile.id)) || [];
+const memberStats = profiles.map((profile) => {
+  const profileId = String(profile.id || "");
+  const authUserId = String(profile.user_id || "");
 
-    return calculateMonthlyMemberStats(
-      profile,
-      rows
-    );
-  });
+  const rows =
+    attendanceByMember.get(authUserId) ||
+    attendanceByMember.get(profileId) ||
+    [];
+
+  return calculateMonthlyMemberStats(
+    profile,
+    rows
+  );
+});
 
   const strongMembers = memberStats
     .filter(qualifiesForStrongPerformance)
