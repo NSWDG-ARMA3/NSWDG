@@ -3288,16 +3288,21 @@ function calculateMonthlyMemberStats(
   };
 }
 
-function qualifiesForStrongPerformance(member) {
-  return (
-    member.eligibleSessions >= 1 &&
-    member.attendancePercent >= 90 &&
-    member.noShows === 0 &&
-    member.unexcusedAbsences === 0 &&
-    member.averageLateness <= 5
-  );
-}
+function getMonthlyPerformanceScore(member) {
+  let score = 100;
 
+  score -= member.noShows * 35;
+  score -= member.unexcusedAbsences * 25;
+  score -= member.lateArrivals * 5;
+  score -= member.leftEarly * 5;
+  score -= member.excludedSessions * 2;
+
+  if (member.attendancePercent < 100) {
+    score -= (100 - member.attendancePercent);
+  }
+
+  return Math.max(0, Math.round(score));
+}
 function qualifiesForNeedsAttention(member) {
   return (
     member.eligibleSessions >= 2 &&
@@ -3431,66 +3436,18 @@ const memberStats = profiles.map((profile) => {
   );
 });
 
-  const strongMembers = memberStats
-    .filter(qualifiesForStrongPerformance)
-    .sort((a, b) => {
-      if (
-        b.attendancePercent !== a.attendancePercent
-      ) {
-        return (
-          b.attendancePercent -
-          a.attendancePercent
-        );
-      }
+memberStats.forEach(member => {
+    member.score = getMonthlyPerformanceScore(member);
+});
 
-      if (
-        a.averageLateness !== b.averageLateness
-      ) {
-        return (
-          a.averageLateness -
-          b.averageLateness
-        );
-      }
-
-      return (
-        b.eligibleSessions -
-        a.eligibleSessions
-      );
-    })
+const strongMembers = [...memberStats]
+    .filter(member => member.eligibleSessions > 0)
+    .sort((a, b) => b.score - a.score)
     .slice(0, 6);
 
-  const concernMembers = memberStats
-    .filter(qualifiesForNeedsAttention)
-    .sort((a, b) => {
-      if (b.noShows !== a.noShows) {
-        return b.noShows - a.noShows;
-      }
-
-      if (
-        b.unexcusedAbsences !==
-        a.unexcusedAbsences
-      ) {
-        return (
-          b.unexcusedAbsences -
-          a.unexcusedAbsences
-        );
-      }
-
-      if (
-        a.attendancePercent !==
-        b.attendancePercent
-      ) {
-        return (
-          a.attendancePercent -
-          b.attendancePercent
-        );
-      }
-
-      return (
-        b.averageLateness -
-        a.averageLateness
-      );
-    })
+const concernMembers = [...memberStats]
+    .filter(member => member.eligibleSessions > 0)
+    .sort((a, b) => a.score - b.score)
     .slice(0, 6);
 
   renderMonthlyHighlightList(
