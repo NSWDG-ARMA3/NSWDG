@@ -533,6 +533,213 @@
   }
 }
 
+.monthly-highlights {
+  display: none;
+  margin-bottom: 14px;
+  border: 1px solid #8f9dac;
+  background: #f7f9fb;
+}
+
+.monthly-highlights.visible {
+  display: block;
+}
+
+.monthly-highlights-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 10px;
+  color: #ffffff;
+  background: #243746;
+  border-bottom: 2px solid #c8a800;
+}
+
+.monthly-highlights-title {
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+.monthly-highlights-period {
+  font-size: 9px;
+  color: #c8d4de;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.monthly-highlights-body {
+  padding: 10px;
+}
+
+.monthly-highlights-summary {
+  margin-bottom: 10px;
+  padding: 7px 9px;
+  font-size: 10px;
+  line-height: 1.5;
+  color: #4f5962;
+  background: #ffffff;
+  border: 1px solid #c1c8ce;
+}
+
+.monthly-highlights-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.monthly-highlight-column {
+  min-width: 0;
+  background: #ffffff;
+  border: 1px solid #c1c8ce;
+}
+
+.monthly-highlight-column-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 7px 9px;
+  font-size: 10px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid #c1c8ce;
+}
+
+.monthly-highlight-column.good
+.monthly-highlight-column-header {
+  color: #315936;
+  background: #e8f1e8;
+}
+
+.monthly-highlight-column.concern
+.monthly-highlight-column-header {
+  color: #6e3d2f;
+  background: #f4e9e5;
+}
+
+.monthly-highlight-count {
+  min-width: 22px;
+  padding: 2px 5px;
+  text-align: center;
+  color: #ffffff;
+  background: #526574;
+  border-radius: 2px;
+}
+
+.monthly-highlight-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.monthly-highlight-entry {
+  padding: 9px;
+  border-bottom: 1px solid #dfe3e6;
+}
+
+.monthly-highlight-entry:last-child {
+  border-bottom: 0;
+}
+
+.monthly-highlight-person {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.monthly-highlight-name {
+  min-width: 0;
+  font-size: 12px;
+  font-weight: bold;
+  color: #243746;
+}
+
+.monthly-highlight-identity {
+  display: block;
+  margin-top: 2px;
+  font-size: 9px;
+  font-weight: normal;
+  color: #6b747c;
+}
+
+.monthly-highlight-score {
+  flex-shrink: 0;
+  padding: 3px 6px;
+  font-size: 11px;
+  font-weight: bold;
+  border: 1px solid #aeb7be;
+  background: #f1f4f6;
+}
+
+.monthly-highlight-details {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px 10px;
+}
+
+.monthly-highlight-detail {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 3px 0;
+  font-size: 10px;
+  border-bottom: 1px dotted #d8dde0;
+}
+
+.monthly-highlight-detail-label {
+  color: #646d75;
+}
+
+.monthly-highlight-detail-value {
+  font-weight: bold;
+  color: #263e51;
+  text-align: right;
+}
+
+.monthly-highlight-reason {
+  margin-top: 7px;
+  padding: 6px 7px;
+  font-size: 10px;
+  line-height: 1.4;
+  color: #4e565d;
+  background: #f6f7f8;
+  border-left: 3px solid #8c99a3;
+}
+
+.monthly-highlight-empty {
+  padding: 14px 10px;
+  font-size: 10px;
+  line-height: 1.5;
+  color: #66717a;
+  text-align: center;
+}
+
+.monthly-highlight-error {
+  color: #7a3127;
+  background: #f8e9e6;
+}
+
+@media (max-width: 800px) {
+  .monthly-highlights-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .monthly-highlights-header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .monthly-highlight-details {
+    grid-template-columns: 1fr;
+  }
+}
+
     .dashboard-welcome {
       display: flex;
       align-items: center;
@@ -1089,6 +1296,78 @@
             </span>
           </div>
         </div>
+        <section
+  id="monthly-highlights"
+  class="monthly-highlights"
+  aria-hidden="true"
+>
+  <div class="monthly-highlights-header">
+    <div class="monthly-highlights-title">
+      Monthly Member Highlights
+    </div>
+
+    <div
+      id="monthly-highlights-period"
+      class="monthly-highlights-period"
+    >
+      Current month
+    </div>
+  </div>
+
+  <div class="monthly-highlights-body">
+    <div class="monthly-highlights-summary">
+      This report is generated from finalized training attendance
+      during the current calendar month. Approved LOA and excused
+      records are excluded from attendance scoring.
+    </div>
+
+    <div class="monthly-highlights-grid">
+      <section class="monthly-highlight-column good">
+        <div class="monthly-highlight-column-header">
+          <span>Strong Performance</span>
+
+          <span
+            id="monthly-good-count"
+            class="monthly-highlight-count"
+          >
+            0
+          </span>
+        </div>
+
+        <ul
+          id="monthly-good-list"
+          class="monthly-highlight-list"
+        >
+          <li class="monthly-highlight-empty">
+            Reviewing monthly attendance records...
+          </li>
+        </ul>
+      </section>
+
+      <section class="monthly-highlight-column concern">
+        <div class="monthly-highlight-column-header">
+          <span>Needs Attention</span>
+
+          <span
+            id="monthly-concern-count"
+            class="monthly-highlight-count"
+          >
+            0
+          </span>
+        </div>
+
+        <ul
+          id="monthly-concern-list"
+          class="monthly-highlight-list"
+        >
+          <li class="monthly-highlight-empty">
+            Reviewing monthly attendance records...
+          </li>
+        </ul>
+      </section>
+    </div>
+  </div>
+</section>
       </section>
 
       <section class="admin-readiness-card">
@@ -2199,6 +2478,42 @@ function hasAdminAccess(email, role) {
   );
 }
 
+function hasMonthlyHighlightsAccess(email, role, callsign) {
+  const normalizedEmail = String(email || "")
+    .trim()
+    .toLowerCase();
+
+  const normalizedRole = String(role || "")
+    .trim()
+    .toUpperCase();
+
+  const normalizedCallsign = String(callsign || "")
+    .trim()
+    .toUpperCase();
+
+  const allowedRoles = new Set([
+    "ADMIN",
+    "SUPERADMIN",
+    "HQ",
+    "TROOP_HQ",
+    "TROOPHQ"
+  ]);
+
+  const allowedCallsigns = new Set([
+    "E31",
+    "E32",
+    "EG1",
+    "EH1",
+    "EI1"
+  ]);
+
+  return (
+    SPECIAL_ACCESS_EMAILS.has(normalizedEmail) ||
+    allowedRoles.has(normalizedRole) ||
+    allowedCallsigns.has(normalizedCallsign)
+  );
+}
+
 function setReadinessValue(id, value) {
   const element = document.getElementById(id);
 
@@ -2686,6 +3001,694 @@ async function loadAdminReadiness() {
   section.setAttribute("aria-hidden", "false");
 }
 
+function getAmsterdamMonthRange() {
+  const dateParts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Europe/Amsterdam",
+    year: "numeric",
+    month: "2-digit"
+  }).formatToParts(new Date());
+
+  const values = {};
+
+  for (const part of dateParts) {
+    if (part.type !== "literal") {
+      values[part.type] = part.value;
+    }
+  }
+
+  const year = Number(values.year);
+  const month = Number(values.month);
+
+  const monthStart = amsterdamCalendarDateToUtc(
+    year,
+    month,
+    1
+  );
+
+  const nextMonthDate = new Date(
+    Date.UTC(year, month, 1)
+  );
+
+  const monthEnd = amsterdamCalendarDateToUtc(
+    nextMonthDate.getUTCFullYear(),
+    nextMonthDate.getUTCMonth() + 1,
+    1
+  );
+
+  const label = new Intl.DateTimeFormat("en-US", {
+    timeZone: "Europe/Amsterdam",
+    month: "long",
+    year: "numeric"
+  }).format(new Date());
+
+  return {
+    start: monthStart.toISOString(),
+    end: monthEnd.toISOString(),
+    label
+  };
+}
+
+function getAmsterdamOffsetMinutes(date) {
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: "Europe/Amsterdam",
+    timeZoneName: "longOffset",
+    hour: "2-digit"
+  }).formatToParts(date);
+
+  const offsetText =
+    parts.find((part) => {
+      return part.type === "timeZoneName";
+    })?.value || "GMT+00:00";
+
+  const match = offsetText.match(
+    /GMT([+-])(\d{2}):(\d{2})/
+  );
+
+  if (!match) {
+    return 0;
+  }
+
+  const direction = match[1] === "+" ? 1 : -1;
+  const hours = Number(match[2]);
+  const minutes = Number(match[3]);
+
+  return direction * ((hours * 60) + minutes);
+}
+
+function amsterdamCalendarDateToUtc(year, month, day) {
+  const middayProbe = new Date(
+    Date.UTC(year, month - 1, day, 12, 0, 0)
+  );
+
+  const offsetMinutes =
+    getAmsterdamOffsetMinutes(middayProbe);
+
+  return new Date(
+    Date.UTC(year, month - 1, day, 0, 0, 0) -
+    (offsetMinutes * 60 * 1000)
+  );
+}
+
+function getMonthlyMemberName(profile) {
+  const displayName = String(
+    profile?.display_name || ""
+  ).trim();
+
+  if (displayName) {
+    return displayName;
+  }
+
+  const userId = String(
+    profile?.user_id || ""
+  ).trim();
+
+  return userId || "Unknown Member";
+}
+
+function getMonthlyMemberIdentity(profile) {
+  const callsign = String(
+    profile?.callsign || ""
+  ).trim().toUpperCase();
+
+  const rank = String(
+    profile?.naval_rank || ""
+  ).trim();
+
+  const pieces = [];
+
+  if (callsign) {
+    pieces.push(callsign);
+  }
+
+  if (rank) {
+    pieces.push(rank);
+  }
+
+  return pieces.length
+    ? pieces.join(" // ")
+    : "No callsign or rank assigned";
+}
+
+function createMonthlyDetail(label, value) {
+  const row = document.createElement("div");
+  row.className = "monthly-highlight-detail";
+
+  const labelElement = document.createElement("span");
+  labelElement.className =
+    "monthly-highlight-detail-label";
+  labelElement.textContent = label;
+
+  const valueElement = document.createElement("span");
+  valueElement.className =
+    "monthly-highlight-detail-value";
+  valueElement.textContent = value;
+
+  row.append(labelElement, valueElement);
+
+  return row;
+}
+
+function buildMonthlyReason(member, category) {
+  const reasons = [];
+
+  if (category === "good") {
+    if (member.attendancePercent === 100) {
+      reasons.push(
+        "Attended every eligible session"
+      );
+    } else if (member.attendancePercent >= 90) {
+      reasons.push(
+        "Maintained attendance above 90%"
+      );
+    }
+
+    if (member.noShows === 0) {
+      reasons.push("No no-shows");
+    }
+
+    if (member.unexcusedAbsences === 0) {
+      reasons.push("No unexcused absences");
+    }
+
+    if (member.averageLateness === 0) {
+      reasons.push("No recorded lateness");
+    } else if (member.averageLateness <= 5) {
+      reasons.push("Minimal recorded lateness");
+    }
+
+    if (member.leftEarly === 0) {
+      reasons.push("No early departures");
+    }
+  } else {
+    if (member.attendancePercent < 75) {
+      reasons.push(
+        `Attendance is below 75% at ${member.attendancePercent}%`
+      );
+    }
+
+    if (member.noShows > 0) {
+      reasons.push(
+        `${member.noShows} no-show${
+          member.noShows === 1 ? "" : "s"
+        }`
+      );
+    }
+
+    if (member.unexcusedAbsences > 0) {
+      reasons.push(
+        `${member.unexcusedAbsences} unexcused absence${
+          member.unexcusedAbsences === 1 ? "" : "s"
+        }`
+      );
+    }
+
+    if (member.averageLateness >= 10) {
+      reasons.push(
+        `Average lateness is ${member.averageLateness} minutes`
+      );
+    }
+
+    if (member.leftEarly > 0) {
+      reasons.push(
+        `${member.leftEarly} early departure${
+          member.leftEarly === 1 ? "" : "s"
+        }`
+      );
+    }
+  }
+
+  return reasons.length
+    ? reasons.join(". ") + "."
+    : "Monthly record reviewed.";
+}
+
+function createMonthlyHighlightEntry(member, category) {
+  const item = document.createElement("li");
+  item.className = "monthly-highlight-entry";
+
+  const person = document.createElement("div");
+  person.className = "monthly-highlight-person";
+
+  const name = document.createElement("div");
+  name.className = "monthly-highlight-name";
+  name.textContent = getMonthlyMemberName(
+    member.profile
+  );
+
+  const identity = document.createElement("span");
+  identity.className = "monthly-highlight-identity";
+  identity.textContent = getMonthlyMemberIdentity(
+    member.profile
+  );
+
+  name.appendChild(identity);
+
+  const score = document.createElement("div");
+  score.className = "monthly-highlight-score";
+  score.textContent = `${member.attendancePercent}%`;
+
+  person.append(name, score);
+
+  const details = document.createElement("div");
+  details.className = "monthly-highlight-details";
+
+  details.append(
+    createMonthlyDetail(
+      "Eligible sessions",
+      String(member.eligibleSessions)
+    ),
+    createMonthlyDetail(
+      "Attended",
+      String(member.attendedSessions)
+    ),
+    createMonthlyDetail(
+      "Late arrivals",
+      String(member.lateArrivals)
+    ),
+    createMonthlyDetail(
+      "Average lateness",
+      `${member.averageLateness} min`
+    ),
+    createMonthlyDetail(
+      "No-shows",
+      String(member.noShows)
+    ),
+    createMonthlyDetail(
+      "Unexcused absences",
+      String(member.unexcusedAbsences)
+    ),
+    createMonthlyDetail(
+      "Excused / LOA",
+      String(member.excludedSessions)
+    ),
+    createMonthlyDetail(
+      "Left early",
+      String(member.leftEarly)
+    )
+  );
+
+  const reason = document.createElement("div");
+  reason.className = "monthly-highlight-reason";
+  reason.textContent = buildMonthlyReason(
+    member,
+    category
+  );
+
+  item.append(person, details, reason);
+
+  return item;
+}
+
+function renderMonthlyHighlightList(
+  listId,
+  countId,
+  members,
+  category
+) {
+  const list = document.getElementById(listId);
+  const count = document.getElementById(countId);
+
+  if (!list || !count) {
+    return;
+  }
+
+  count.textContent = String(members.length);
+  list.replaceChildren();
+
+  if (!members.length) {
+    const empty = document.createElement("li");
+
+    empty.className = "monthly-highlight-empty";
+    empty.textContent =
+      category === "good"
+        ? "No members currently meet the strong-performance criteria."
+        : "No members currently meet the needs-attention criteria.";
+
+    list.appendChild(empty);
+    return;
+  }
+
+  for (const member of members) {
+    list.appendChild(
+      createMonthlyHighlightEntry(member, category)
+    );
+  }
+}
+
+function renderMonthlyHighlightsError(message) {
+  const section = document.getElementById(
+    "monthly-highlights"
+  );
+
+  const goodList = document.getElementById(
+    "monthly-good-list"
+  );
+
+  const concernList = document.getElementById(
+    "monthly-concern-list"
+  );
+
+  if (section) {
+    section.classList.add("visible");
+    section.setAttribute("aria-hidden", "false");
+  }
+
+  for (const list of [goodList, concernList]) {
+    if (!list) {
+      continue;
+    }
+
+    list.replaceChildren();
+
+    const error = document.createElement("li");
+    error.className =
+      "monthly-highlight-empty monthly-highlight-error";
+    error.textContent = message;
+
+    list.appendChild(error);
+  }
+}
+
+function calculateMonthlyMemberStats(
+  profile,
+  attendanceRows
+) {
+  const excludedStatuses = new Set([
+    "EXCUSED",
+    "LOA"
+  ]);
+
+  const attendedStatuses = new Set([
+    "PRESENT",
+    "LATE",
+    "LEFT_EARLY",
+    "PARTIAL"
+  ]);
+
+  const rowsWithStatus = attendanceRows.filter((row) => {
+    return Boolean(
+      String(row.actual_status || "").trim()
+    );
+  });
+
+  const excludedRows = rowsWithStatus.filter((row) => {
+    return excludedStatuses.has(
+      String(row.actual_status).toUpperCase()
+    );
+  });
+
+  const eligibleRows = rowsWithStatus.filter((row) => {
+    return !excludedStatuses.has(
+      String(row.actual_status).toUpperCase()
+    );
+  });
+
+  const attendedRows = eligibleRows.filter((row) => {
+    return attendedStatuses.has(
+      String(row.actual_status).toUpperCase()
+    );
+  });
+
+  const noShows = eligibleRows.filter((row) => {
+    return String(row.actual_status).toUpperCase() ===
+      "NO_SHOW";
+  }).length;
+
+  const unexcusedAbsences = eligibleRows.filter((row) => {
+    return String(row.actual_status).toUpperCase() ===
+      "ABSENT";
+  }).length;
+
+  const lateRows = eligibleRows.filter((row) => {
+    const status = String(
+      row.actual_status || ""
+    ).toUpperCase();
+
+    return (
+      status === "LATE" ||
+      Number(row.minutes_late || 0) > 0
+    );
+  });
+
+  const totalLateMinutes = lateRows.reduce(
+    (total, row) => {
+      return total + Number(row.minutes_late || 0);
+    },
+    0
+  );
+
+  const averageLateness = lateRows.length
+    ? Math.round(totalLateMinutes / lateRows.length)
+    : 0;
+
+  const leftEarly = eligibleRows.filter((row) => {
+    return (
+      String(row.actual_status).toUpperCase() ===
+        "LEFT_EARLY" ||
+      Number(row.minutes_left_early || 0) > 0
+    );
+  }).length;
+
+  const attendancePercent = eligibleRows.length
+    ? Math.round(
+        (attendedRows.length / eligibleRows.length) *
+          100
+      )
+    : 0;
+
+  return {
+    profile,
+    eligibleSessions: eligibleRows.length,
+    attendedSessions: attendedRows.length,
+    excludedSessions: excludedRows.length,
+    attendancePercent,
+    noShows,
+    unexcusedAbsences,
+    lateArrivals: lateRows.length,
+    averageLateness,
+    leftEarly
+  };
+}
+
+function qualifiesForStrongPerformance(member) {
+  return (
+    member.eligibleSessions >= 2 &&
+    member.attendancePercent >= 90 &&
+    member.noShows === 0 &&
+    member.unexcusedAbsences === 0 &&
+    member.averageLateness <= 5
+  );
+}
+
+function qualifiesForNeedsAttention(member) {
+  return (
+    member.eligibleSessions >= 2 &&
+    (
+      member.attendancePercent < 75 ||
+      member.noShows >= 1 ||
+      member.unexcusedAbsences >= 2 ||
+      member.averageLateness >= 10
+    )
+  );
+}
+
+async function loadMonthlyMemberHighlights() {
+  const section = document.getElementById(
+    "monthly-highlights"
+  );
+
+  if (!section) {
+    return;
+  }
+
+  section.classList.add("visible");
+  section.setAttribute("aria-hidden", "false");
+
+  const month = getAmsterdamMonthRange();
+
+  setText(
+    "monthly-highlights-period",
+    month.label
+  );
+
+  const [
+    profilesResult,
+    sessionsResult
+  ] = await Promise.all([
+    supabase
+      .from("profiles")
+      .select(
+        "id, user_id, display_name, callsign, naval_rank, status"
+      )
+      .eq("status", "ACTIVE"),
+
+    supabase
+      .from("training_sessions")
+      .select(
+        "id, title, start_at, status, counts_towards_attendance"
+      )
+      .gte("start_at", month.start)
+      .lt("start_at", month.end)
+      .eq("counts_towards_attendance", true)
+  ]);
+
+  if (profilesResult.error) {
+    throw profilesResult.error;
+  }
+
+  if (sessionsResult.error) {
+    throw sessionsResult.error;
+  }
+
+  const profiles = profilesResult.data || [];
+
+  const sessionIds = (sessionsResult.data || [])
+    .filter((session) => {
+      const status = String(
+        session.status || ""
+      ).toUpperCase();
+
+      return [
+        "COMPLETED",
+        "SCHEDULED",
+        "POSTPONED"
+      ].includes(status);
+    })
+    .map((session) => session.id);
+
+  if (!sessionIds.length) {
+    renderMonthlyHighlightList(
+      "monthly-good-list",
+      "monthly-good-count",
+      [],
+      "good"
+    );
+
+    renderMonthlyHighlightList(
+      "monthly-concern-list",
+      "monthly-concern-count",
+      [],
+      "concern"
+    );
+
+    return;
+  }
+
+  const attendanceResult = await supabase
+    .from("training_attendance")
+    .select(
+      "session_id, user_id, actual_status, minutes_late, minutes_left_early, excused"
+    )
+    .in("session_id", sessionIds);
+
+  if (attendanceResult.error) {
+    throw attendanceResult.error;
+  }
+
+  const attendanceByMember = new Map();
+
+  for (const row of attendanceResult.data || []) {
+    const memberId = String(row.user_id || "");
+
+    if (!memberId) {
+      continue;
+    }
+
+    if (!attendanceByMember.has(memberId)) {
+      attendanceByMember.set(memberId, []);
+    }
+
+    attendanceByMember.get(memberId).push(row);
+  }
+
+  const memberStats = profiles.map((profile) => {
+    const rows =
+      attendanceByMember.get(String(profile.id)) || [];
+
+    return calculateMonthlyMemberStats(
+      profile,
+      rows
+    );
+  });
+
+  const strongMembers = memberStats
+    .filter(qualifiesForStrongPerformance)
+    .sort((a, b) => {
+      if (
+        b.attendancePercent !== a.attendancePercent
+      ) {
+        return (
+          b.attendancePercent -
+          a.attendancePercent
+        );
+      }
+
+      if (
+        a.averageLateness !== b.averageLateness
+      ) {
+        return (
+          a.averageLateness -
+          b.averageLateness
+        );
+      }
+
+      return (
+        b.eligibleSessions -
+        a.eligibleSessions
+      );
+    })
+    .slice(0, 6);
+
+  const concernMembers = memberStats
+    .filter(qualifiesForNeedsAttention)
+    .sort((a, b) => {
+      if (b.noShows !== a.noShows) {
+        return b.noShows - a.noShows;
+      }
+
+      if (
+        b.unexcusedAbsences !==
+        a.unexcusedAbsences
+      ) {
+        return (
+          b.unexcusedAbsences -
+          a.unexcusedAbsences
+        );
+      }
+
+      if (
+        a.attendancePercent !==
+        b.attendancePercent
+      ) {
+        return (
+          a.attendancePercent -
+          b.attendancePercent
+        );
+      }
+
+      return (
+        b.averageLateness -
+        a.averageLateness
+      );
+    })
+    .slice(0, 6);
+
+  renderMonthlyHighlightList(
+    "monthly-good-list",
+    "monthly-good-count",
+    strongMembers,
+    "good"
+  );
+
+  renderMonthlyHighlightList(
+    "monthly-concern-list",
+    "monthly-concern-count",
+    concernMembers,
+    "concern"
+  );
+}
+
+
     function showAdminLinksIfAllowed(email, role) {
   const allowed = hasAdminAccess(email, role);
 
@@ -2750,6 +3753,26 @@ async function loadAdminReadiness() {
         profile.role,
         "MEMBER"
       ).toUpperCase();
+
+      const mayViewMonthlyHighlights =
+  hasMonthlyHighlightsAccess(
+    email,
+    role,
+    profile.callsign
+  );
+
+if (mayViewMonthlyHighlights) {
+  loadMonthlyMemberHighlights().catch((error) => {
+    console.error(
+      "Monthly member highlights failed:",
+      error
+    );
+
+    renderMonthlyHighlightsError(
+      "Monthly highlights could not be loaded. Check the browser console and Supabase access policies."
+    );
+  });
+}
 
       const status = safeText(
         profile.status,
