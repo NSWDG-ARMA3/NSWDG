@@ -624,10 +624,34 @@
 
       .monthly-highlight-person {
         display: flex;
-        align-items: flex-start;
-        justify-content: space-between;
+        align-items: center;
         gap: 10px;
-        margin-bottom: 6px;
+        margin-bottom: 10px;
+      }
+
+      .monthly-highlight-avatar {
+        width: 54px;
+        height: 54px;
+        flex-shrink: 0;
+        object-fit: cover;
+        border: 1px solid #9da8b1;
+        background: #e8e8e8;
+      }
+
+      .monthly-highlight-person-info {
+        min-width: 0;
+        flex: 1;
+      }
+
+      .monthly-highlight-score {
+        flex-shrink: 0;
+        min-width: 72px;
+        padding: 6px 8px;
+        font-size: 12px;
+        font-weight: bold;
+        text-align: center;
+        border: 1px solid #aeb7be;
+        background: #f1f4f6;
       }
 
       .monthly-highlight-name {
@@ -2797,79 +2821,123 @@
       }
 
       function buildMonthlyReason(member, category) {
-        const reasons = [];
+        const parts = [];
 
         if (category === "good") {
-          if (member.attendancePercent === 100) {
-            reasons.push("Attended every eligible session");
-          } else if (member.attendancePercent >= 90) {
-            reasons.push("Maintained attendance above 90%");
+          parts.push(
+            `Highest overall monthly performance score: ${member.performanceScore}/100`,
+          );
+
+          parts.push(
+            `Attended ${member.attendedSessions} of ${member.totalSessions} total training sessions`,
+          );
+
+          if (member.loaSessions > 0) {
+            parts.push(
+              `${member.loaSessions} session${
+                member.loaSessions === 1 ? " was" : "s were"
+              } covered by approved LOA`,
+            );
+          }
+
+          if (member.excusedSessions > 0) {
+            parts.push(
+              `${member.excusedSessions} excused absence${
+                member.excusedSessions === 1 ? "" : "s"
+              }`,
+            );
+          }
+
+          if (member.missingResponses === 0) {
+            parts.push("No missing attendance responses");
           }
 
           if (member.noShows === 0) {
-            reasons.push("No no-shows");
+            parts.push("No no-shows");
           }
 
           if (member.unexcusedAbsences === 0) {
-            reasons.push("No unexcused absences");
-          }
-
-          if (member.averageLateness === 0) {
-            reasons.push("No recorded lateness");
-          } else if (member.averageLateness <= 5) {
-            reasons.push("Minimal recorded lateness");
-          }
-
-          if (member.leftEarly === 0) {
-            reasons.push("No early departures");
+            parts.push("No unexcused absences");
           }
         } else {
-          if (member.attendancePercent < 75) {
-            reasons.push(
-              `Attendance is below 75% at ${member.attendancePercent}%`,
+          parts.push(
+            `Lowest overall monthly performance score: ${member.performanceScore}/100`,
+          );
+
+          parts.push(
+            `Attended ${member.attendedSessions} of ${member.totalSessions} total training sessions`,
+          );
+
+          if (member.missingResponses > 0) {
+            parts.push(
+              `${member.missingResponses} training${
+                member.missingResponses === 1 ? "" : "s"
+              } had no attendance response`,
             );
           }
 
           if (member.noShows > 0) {
-            reasons.push(
+            parts.push(
               `${member.noShows} no-show${member.noShows === 1 ? "" : "s"}`,
             );
           }
 
           if (member.unexcusedAbsences > 0) {
-            reasons.push(
+            parts.push(
               `${member.unexcusedAbsences} unexcused absence${
                 member.unexcusedAbsences === 1 ? "" : "s"
               }`,
             );
           }
 
-          if (member.averageLateness >= 10) {
-            reasons.push(
-              `Average lateness is ${member.averageLateness} minutes`,
+          if (member.lateArrivals > 0) {
+            parts.push(
+              `${member.lateArrivals} late arrival${
+                member.lateArrivals === 1 ? "" : "s"
+              }, averaging ${member.averageLateness} minutes`,
             );
           }
 
           if (member.leftEarly > 0) {
-            reasons.push(
+            parts.push(
               `${member.leftEarly} early departure${
                 member.leftEarly === 1 ? "" : "s"
               }`,
             );
           }
+
+          if (member.loaSessions > 0) {
+            parts.push(
+              `${member.loaSessions} approved LOA session${
+                member.loaSessions === 1 ? "" : "s"
+              }`,
+            );
+          }
         }
 
-        return reasons.length
-          ? reasons.join(". ") + "."
-          : "Monthly record reviewed.";
+        return `${parts.join(". ")}.`;
       }
-
       function createMonthlyHighlightEntry(member, category) {
         const item = document.createElement("li");
         item.className = "monthly-highlight-entry";
 
         const person = document.createElement("div");
         person.className = "monthly-highlight-person";
+
+        const avatar = document.createElement("img");
+        avatar.className = "monthly-highlight-avatar";
+        avatar.alt = "";
+
+        avatar.src =
+          String(member.profile.avatar_url || "").trim() || "../nsw.png";
+
+        avatar.onerror = () => {
+          avatar.onerror = null;
+          avatar.src = "../nsw.png";
+        };
+
+        const personInfo = document.createElement("div");
+        personInfo.className = "monthly-highlight-person-info";
 
         const name = document.createElement("div");
         name.className = "monthly-highlight-name";
@@ -2880,34 +2948,42 @@
         identity.textContent = getMonthlyMemberIdentity(member.profile);
 
         name.appendChild(identity);
+        personInfo.appendChild(name);
 
         const score = document.createElement("div");
         score.className = "monthly-highlight-score";
-        score.textContent = `${member.score}/100`;
+        score.textContent = `${member.performanceScore}/100`;
 
-        person.append(name, score);
+        person.append(avatar, personInfo, score);
 
         const details = document.createElement("div");
         details.className = "monthly-highlight-details";
 
         details.append(
-          createMonthlyDetail(
-            "Eligible sessions",
-            String(member.eligibleSessions),
-          ),
+          createMonthlyDetail("Total trainings", String(member.totalSessions)),
           createMonthlyDetail("Attended", String(member.attendedSessions)),
-          createMonthlyDetail("Late arrivals", String(member.lateArrivals)),
           createMonthlyDetail(
-            "Average lateness",
-            `${member.averageLateness} min`,
+            "Attendance rate",
+            `${member.attendancePercent}%`,
           ),
+          createMonthlyDetail("Approved LOA", String(member.loaSessions)),
+          createMonthlyDetail("Excused", String(member.excusedSessions)),
+          createMonthlyDetail("No response", String(member.missingResponses)),
           createMonthlyDetail("No-shows", String(member.noShows)),
           createMonthlyDetail(
             "Unexcused absences",
             String(member.unexcusedAbsences),
           ),
-          createMonthlyDetail("Excused / LOA", String(member.excludedSessions)),
+          createMonthlyDetail("Late arrivals", String(member.lateArrivals)),
+          createMonthlyDetail(
+            "Average lateness",
+            `${member.averageLateness} min`,
+          ),
           createMonthlyDetail("Left early", String(member.leftEarly)),
+          createMonthlyDetail(
+            "Partial attendance",
+            String(member.partialSessions),
+          ),
         );
 
         const reason = document.createElement("div");
@@ -2975,261 +3051,473 @@
         }
       }
 
-      function calculateMonthlyMemberStats(profile, attendanceRows) {
-        const excludedStatuses = new Set(["EXCUSED", "LOA"]);
+      function calculateMonthlyMemberStats(
+        profile,
+        attendanceRows,
+        sessionIds,
+      ) {
+        const rowsBySession = new Map();
 
-        const attendedStatuses = new Set([
-          "PRESENT",
-          "LATE",
-          "LEFT_EARLY",
-          "PARTIAL",
-        ]);
+        for (const row of attendanceRows) {
+          rowsBySession.set(String(row.session_id), row);
+        }
 
-        const rowsWithStatus = attendanceRows.filter((row) => {
-          return Boolean(String(row.actual_status || "").trim());
-        });
+        let attendedSessions = 0;
+        let presentSessions = 0;
+        let lateArrivals = 0;
+        let totalLateMinutes = 0;
+        let leftEarly = 0;
+        let partialSessions = 0;
+        let noShows = 0;
+        let unexcusedAbsences = 0;
+        let loaSessions = 0;
+        let excusedSessions = 0;
+        let missingResponses = 0;
+        let markedNotAttending = 0;
 
-        const excludedRows = rowsWithStatus.filter((row) => {
-          return excludedStatuses.has(String(row.actual_status).toUpperCase());
-        });
+        let totalPoints = 0;
 
-        const eligibleRows = rowsWithStatus.filter((row) => {
-          return !excludedStatuses.has(String(row.actual_status).toUpperCase());
-        });
+        for (const sessionId of sessionIds) {
+          const row = rowsBySession.get(String(sessionId));
 
-        const attendedRows = eligibleRows.filter((row) => {
-          return attendedStatuses.has(String(row.actual_status).toUpperCase());
-        });
+          /*
+           * No training_attendance row means the member never marked
+           * Attending or Not Attending for this training.
+           */
+          if (!row) {
+            missingResponses += 1;
+            totalPoints += 0;
+            continue;
+          }
 
-        const noShows = eligibleRows.filter((row) => {
-          return String(row.actual_status).toUpperCase() === "NO_SHOW";
-        }).length;
+          const actualStatus = String(row.actual_status || "").toUpperCase();
 
-        const unexcusedAbsences = eligibleRows.filter((row) => {
-          return String(row.actual_status).toUpperCase() === "ABSENT";
-        }).length;
+          const response = String(row.attendance || "").toUpperCase();
 
-        const lateRows = eligibleRows.filter((row) => {
-          const status = String(row.actual_status || "").toUpperCase();
+          /*
+           * A completed training has an RSVP row, but leadership has not
+           * finalized the member's actual attendance.
+           */
+          if (!actualStatus) {
+            if (response === "NOT_ATTENDING") {
+              markedNotAttending += 1;
+              unexcusedAbsences += 1;
+              totalPoints += 10;
+            } else {
+              missingResponses += 1;
+              totalPoints += 0;
+            }
 
-          return status === "LATE" || Number(row.minutes_late || 0) > 0;
-        });
+            continue;
+          }
 
-        const totalLateMinutes = lateRows.reduce((total, row) => {
-          return total + Number(row.minutes_late || 0);
-        }, 0);
+          switch (actualStatus) {
+            case "PRESENT":
+              attendedSessions += 1;
+              presentSessions += 1;
+              totalPoints += 100;
+              break;
 
-        const averageLateness = lateRows.length
-          ? Math.round(totalLateMinutes / lateRows.length)
+            case "LATE": {
+              attendedSessions += 1;
+              lateArrivals += 1;
+
+              const minutesLate = Math.max(0, Number(row.minutes_late || 0));
+
+              totalLateMinutes += minutesLate;
+
+              totalPoints += Math.max(55, 95 - Math.min(minutesLate, 40));
+
+              break;
+            }
+
+            case "LEFT_EARLY": {
+              attendedSessions += 1;
+              leftEarly += 1;
+
+              const minutesEarly = Math.max(
+                0,
+                Number(row.minutes_left_early || 0),
+              );
+
+              totalPoints += Math.max(55, 90 - Math.min(minutesEarly, 35));
+
+              break;
+            }
+
+            case "PARTIAL":
+              attendedSessions += 1;
+              partialSessions += 1;
+              totalPoints += 60;
+              break;
+
+            case "LOA":
+              loaSessions += 1;
+
+              /*
+               * Approved LOA is not misconduct, but it also should not
+               * outrank someone who physically attended.
+               */
+              totalPoints += 70;
+              break;
+
+            case "EXCUSED":
+              excusedSessions += 1;
+              totalPoints += 65;
+              break;
+
+            case "ABSENT":
+              unexcusedAbsences += 1;
+              totalPoints += 5;
+              break;
+
+            case "NO_SHOW":
+              noShows += 1;
+              totalPoints += 0;
+              break;
+
+            default:
+              missingResponses += 1;
+              totalPoints += 0;
+              break;
+          }
+        }
+
+        const totalSessions = sessionIds.length;
+
+        const attendancePercent = totalSessions
+          ? Math.round((attendedSessions / totalSessions) * 100)
           : 0;
 
-        const leftEarly = eligibleRows.filter((row) => {
-          return (
-            String(row.actual_status).toUpperCase() === "LEFT_EARLY" ||
-            Number(row.minutes_left_early || 0) > 0
-          );
-        }).length;
+        const averageLateness = lateArrivals
+          ? Math.round(totalLateMinutes / lateArrivals)
+          : 0;
 
-        const attendancePercent = eligibleRows.length
-          ? Math.round((attendedRows.length / eligibleRows.length) * 100)
+        const performanceScore = totalSessions
+          ? Math.round(totalPoints / totalSessions)
           : 0;
 
         return {
           profile,
-          eligibleSessions: eligibleRows.length,
-          attendedSessions: attendedRows.length,
-          excludedSessions: excludedRows.length,
+          totalSessions,
+          attendedSessions,
+          presentSessions,
           attendancePercent,
-          noShows,
-          unexcusedAbsences,
-          lateArrivals: lateRows.length,
+          performanceScore,
+          lateArrivals,
           averageLateness,
           leftEarly,
+          partialSessions,
+          noShows,
+          unexcusedAbsences,
+          loaSessions,
+          excusedSessions,
+          missingResponses,
+          markedNotAttending,
+
+          // Kept so older display code does not break.
+          eligibleSessions: totalSessions - loaSessions - excusedSessions,
+
+          excludedSessions: loaSessions + excusedSessions,
         };
       }
 
       async function loadMonthlyMemberHighlights() {
-        const section = document.getElementById("monthly-highlights");
+  const section = document.getElementById(
+    "monthly-highlights",
+  );
 
-        if (!section) {
-          return;
-        }
+  if (!section) {
+    return;
+  }
 
-        section.classList.add("visible");
-        section.setAttribute("aria-hidden", "false");
+  section.classList.add("visible");
+  section.setAttribute("aria-hidden", "false");
 
-        const month = getAmsterdamMonthRange();
+  const month = getAmsterdamMonthRange();
 
-        setText("monthly-highlights-period", month.label);
+  setText(
+    "monthly-highlights-period",
+    month.label,
+  );
 
-        const [profilesResult, sessionsResult] = await Promise.all([
-          supabase
-            .from("profiles")
-            .select("id, user_id, display_name, callsign, naval_rank, status")
-            .eq("status", "ACTIVE"),
-
-          supabase
-            .from("training_sessions")
-            .select("id, title, start_at, status, counts_towards_attendance")
-            .gte("start_at", month.start)
-            .lt("start_at", month.end)
-            .eq("counts_towards_attendance", true),
-        ]);
-
-        if (profilesResult.error) {
-          throw profilesResult.error;
-        }
-
-        if (sessionsResult.error) {
-          throw sessionsResult.error;
-        }
-
-        const profiles = profilesResult.data || [];
-
-        const sessionIds = (sessionsResult.data || [])
-          .filter((session) => {
-            const status = String(session.status || "").toUpperCase();
-
-            return ["COMPLETED", "SCHEDULED", "POSTPONED"].includes(status);
-          })
-          .map((session) => session.id);
-
-        if (!sessionIds.length) {
-          renderMonthlyHighlightList(
-            "monthly-good-list",
-            "monthly-good-count",
-            [],
-            "good",
-          );
-
-          renderMonthlyHighlightList(
-            "monthly-concern-list",
-            "monthly-concern-count",
-            [],
-            "concern",
-          );
-
-          return;
-        }
-
-        const attendanceResult = await supabase
-          .from("training_attendance")
-          .select(
-            "session_id, user_id, actual_status, minutes_late, minutes_left_early, excused",
-          )
-          .in("session_id", sessionIds);
-
-        if (attendanceResult.error) {
-          throw attendanceResult.error;
-        }
-
-        const attendanceByMember = new Map();
-
-        for (const row of attendanceResult.data || []) {
-          const memberId = String(row.user_id || "");
-
-          if (!memberId) {
-            continue;
-          }
-
-          if (!attendanceByMember.has(memberId)) {
-            attendanceByMember.set(memberId, []);
-          }
-
-          attendanceByMember.get(memberId).push(row);
-        }
-
-        const memberStats = profiles.map((profile) => {
-          const rows =
-            attendanceByMember.get(String(profile.user_id)) ||
-            attendanceByMember.get(String(profile.id)) ||
-            [];
-
-          return calculateMonthlyMemberStats(profile, rows);
-        });
-
-        const strongMembers = [...memberStats]
-  .filter((member) => {
-    return (
-      member.eligibleSessions >= 2 &&
-      member.attendancePercent >= 90 &&
-      member.noShows === 0 &&
-      member.unexcusedAbsences === 0
-    );
-  })
-  .sort((a, b) => {
-    if (b.attendancePercent !== a.attendancePercent) {
-      return b.attendancePercent - a.attendancePercent;
-    }
-
-    if (a.lateArrivals !== b.lateArrivals) {
-      return a.lateArrivals - b.lateArrivals;
-    }
-
-    if (a.averageLateness !== b.averageLateness) {
-      return a.averageLateness - b.averageLateness;
-    }
-
-    if (a.leftEarly !== b.leftEarly) {
-      return a.leftEarly - b.leftEarly;
-    }
-
-    return b.eligibleSessions - a.eligibleSessions;
-  })
-  .slice(0, 1);
-
-const concernMembers = [...memberStats]
-  .filter((member) => {
-    return (
-      member.eligibleSessions >= 1 &&
-      (
-        member.attendancePercent < 75 ||
-        member.noShows >= 1 ||
-        member.unexcusedAbsences >= 1 ||
-        member.averageLateness >= 10 ||
-        member.leftEarly >= 2
+  const [
+    profilesResult,
+    sessionsResult,
+  ] = await Promise.all([
+    supabase
+      .from("profiles")
+      .select(
+        `
+          id,
+          user_id,
+          display_name,
+          callsign,
+          naval_rank,
+          status,
+          avatar_url
+        `,
       )
+      .eq("status", "ACTIVE"),
+
+    supabase
+      .from("training_sessions")
+      .select(
+        `
+          id,
+          title,
+          start_at,
+          status,
+          counts_towards_attendance
+        `,
+      )
+      .gte("start_at", month.start)
+      .lt("start_at", month.end)
+      .eq("counts_towards_attendance", true)
+      .eq("status", "COMPLETED"),
+  ]);
+
+  if (profilesResult.error) {
+    throw profilesResult.error;
+  }
+
+  if (sessionsResult.error) {
+    throw sessionsResult.error;
+  }
+
+  const profiles = profilesResult.data || [];
+  const sessions = sessionsResult.data || [];
+  const sessionIds = sessions.map((session) => session.id);
+
+  if (!profiles.length || !sessionIds.length) {
+    renderMonthlyHighlightList(
+      "monthly-good-list",
+      "monthly-good-count",
+      [],
+      "good",
     );
-  })
-  .sort((a, b) => {
-    if (b.noShows !== a.noShows) {
-      return b.noShows - a.noShows;
+
+    renderMonthlyHighlightList(
+      "monthly-concern-list",
+      "monthly-concern-count",
+      [],
+      "concern",
+    );
+
+    return;
+  }
+
+  const attendanceResult = await supabase
+    .from("training_attendance")
+    .select(
+      `
+        session_id,
+        user_id,
+        attendance,
+        actual_status,
+        minutes_late,
+        minutes_left_early,
+        excused,
+        locked_by_loa_id
+      `,
+    )
+    .in("session_id", sessionIds);
+
+  if (attendanceResult.error) {
+    throw attendanceResult.error;
+  }
+
+  const attendanceByMember = new Map();
+
+  for (const row of attendanceResult.data || []) {
+    const memberId = String(row.user_id || "");
+
+    if (!memberId) {
+      continue;
     }
 
-    if (b.unexcusedAbsences !== a.unexcusedAbsences) {
-      return b.unexcusedAbsences - a.unexcusedAbsences;
+    if (!attendanceByMember.has(memberId)) {
+      attendanceByMember.set(memberId, []);
     }
 
-    if (a.attendancePercent !== b.attendancePercent) {
-      return a.attendancePercent - b.attendancePercent;
+    attendanceByMember.get(memberId).push(row);
+  }
+
+  const memberStats = profiles.map((profile) => {
+    const profileIds = [
+      String(profile.id || ""),
+      String(profile.user_id || ""),
+    ].filter(Boolean);
+
+    let rows = [];
+
+    for (const profileId of profileIds) {
+      const matchingRows =
+        attendanceByMember.get(profileId);
+
+      if (matchingRows) {
+        rows = matchingRows;
+        break;
+      }
     }
 
-    if (b.averageLateness !== a.averageLateness) {
-      return b.averageLateness - a.averageLateness;
-    }
+    return calculateMonthlyMemberStats(
+      profile,
+      rows,
+      sessionIds,
+    );
+  });
 
-    if (b.leftEarly !== a.leftEarly) {
-      return b.leftEarly - a.leftEarly;
-    }
-
-    return b.eligibleSessions - a.eligibleSessions;
-  })
-  .slice(0, 1);
-
-        renderMonthlyHighlightList(
-          "monthly-good-list",
-          "monthly-good-count",
-          strongMembers,
-          "good",
-        );
-
-        renderMonthlyHighlightList(
-          "monthly-concern-list",
-          "monthly-concern-count",
-          concernMembers,
-          "concern",
+  /*
+   * Highest monthly score always becomes Strong Performance.
+   * Ties favor:
+   * 1. More actual attendances
+   * 2. Fewer missing responses
+   * 3. Fewer no-shows
+   * 4. Fewer unexcused absences
+   * 5. Fewer LOA sessions
+   */
+  const rankedBest = [...memberStats].sort(
+    (a, b) => {
+      if (
+        b.performanceScore !== a.performanceScore
+      ) {
+        return (
+          b.performanceScore -
+          a.performanceScore
         );
       }
+
+      if (
+        b.attendedSessions !== a.attendedSessions
+      ) {
+        return (
+          b.attendedSessions -
+          a.attendedSessions
+        );
+      }
+
+      if (
+        a.missingResponses !== b.missingResponses
+      ) {
+        return (
+          a.missingResponses -
+          b.missingResponses
+        );
+      }
+
+      if (a.noShows !== b.noShows) {
+        return a.noShows - b.noShows;
+      }
+
+      if (
+        a.unexcusedAbsences !==
+        b.unexcusedAbsences
+      ) {
+        return (
+          a.unexcusedAbsences -
+          b.unexcusedAbsences
+        );
+      }
+
+      return a.loaSessions - b.loaSessions;
+    },
+  );
+
+  /*
+   * Lowest monthly score always becomes Needs Attention.
+   * Ties prioritize:
+   * 1. More no-shows
+   * 2. More missing responses
+   * 3. More unexcused absences
+   * 4. Fewer actual attendances
+   * 5. More lateness
+   */
+  const rankedWorst = [...memberStats].sort(
+    (a, b) => {
+      if (
+        a.performanceScore !== b.performanceScore
+      ) {
+        return (
+          a.performanceScore -
+          b.performanceScore
+        );
+      }
+
+      if (b.noShows !== a.noShows) {
+        return b.noShows - a.noShows;
+      }
+
+      if (
+        b.missingResponses !== a.missingResponses
+      ) {
+        return (
+          b.missingResponses -
+          a.missingResponses
+        );
+      }
+
+      if (
+        b.unexcusedAbsences !==
+        a.unexcusedAbsences
+      ) {
+        return (
+          b.unexcusedAbsences -
+          a.unexcusedAbsences
+        );
+      }
+
+      if (
+        a.attendedSessions !== b.attendedSessions
+      ) {
+        return (
+          a.attendedSessions -
+          b.attendedSessions
+        );
+      }
+
+      return b.averageLateness - a.averageLateness;
+    },
+  );
+
+  const strongestMember = rankedBest[0] || null;
+
+  let concernMember = rankedWorst[0] || null;
+
+  /*
+   * Do not show the same person on both sides when
+   * there are at least two active members.
+   */
+  if (
+    concernMember &&
+    strongestMember &&
+    memberStats.length > 1 &&
+    String(concernMember.profile.id) ===
+      String(strongestMember.profile.id)
+  ) {
+    concernMember =
+      rankedWorst.find((member) => {
+        return (
+          String(member.profile.id) !==
+          String(strongestMember.profile.id)
+        );
+      }) || null;
+  }
+
+  renderMonthlyHighlightList(
+    "monthly-good-list",
+    "monthly-good-count",
+    strongestMember ? [strongestMember] : [],
+    "good",
+  );
+
+  renderMonthlyHighlightList(
+    "monthly-concern-list",
+    "monthly-concern-count",
+    concernMember ? [concernMember] : [],
+    "concern",
+  );
+}
 
       function showAdminLinksIfAllowed(email, role) {
         const allowed = hasAdminAccess(email, role);
