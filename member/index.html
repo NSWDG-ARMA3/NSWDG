@@ -3290,7 +3290,7 @@ function calculateMonthlyMemberStats(
 
 function qualifiesForStrongPerformance(member) {
   return (
-    member.eligibleSessions >= 2 &&
+    member.eligibleSessions >= 1 &&
     member.attendancePercent >= 90 &&
     member.noShows === 0 &&
     member.unexcusedAbsences === 0 &&
@@ -3420,12 +3420,9 @@ async function loadMonthlyMemberHighlights() {
   }
 
 const memberStats = profiles.map((profile) => {
-  const profileId = String(profile.id || "");
-  const authUserId = String(profile.user_id || "");
-
   const rows =
-    attendanceByMember.get(authUserId) ||
-    attendanceByMember.get(profileId) ||
+    attendanceByMember.get(String(profile.user_id)) ||
+    attendanceByMember.get(String(profile.id)) ||
     [];
 
   return calculateMonthlyMemberStats(
