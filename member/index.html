@@ -96,7 +96,7 @@
       background: #1d3f5e;
       display: flex;
       align-items: stretch;
-      border-bottom: 2px solid #c8a800;
+      border-bottom: 1px solid #1d3f5e;
       flex-shrink: 0;
     }
 
@@ -120,7 +120,7 @@
       background: #1d3f5e;
       color: #fff;
       font-weight: bold;
-      border-bottom: 2px solid #c8a800;
+      border-bottom: 1px solid #1d3f5e;
     }
 
     .nav-right {
@@ -391,6 +391,147 @@
       Dashboard-specific styling begins here.
       Existing portal styling above remains unchanged.
     */
+    .admin-readiness {
+  display: none;
+  margin-bottom: 14px;
+  border: 1px solid #8f9dac;
+  background: #f7f9fb;
+}
+
+.admin-readiness.visible {
+  display: block;
+}
+
+.admin-readiness-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 10px;
+  color: #ffffff;
+  background: #243746;
+  border-bottom: 1px solid #1d3f5e;
+}
+
+.admin-readiness-title {
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+.admin-readiness-classification {
+  font-size: 9px;
+  color: #c8d4de;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.admin-readiness-body {
+  padding: 10px;
+}
+
+.admin-readiness-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 9px;
+  margin-bottom: 10px;
+}
+
+.admin-readiness-card {
+  min-width: 0;
+  background: #ffffff;
+  border: 1px solid #c1c8ce;
+}
+
+.admin-readiness-card h3 {
+  padding: 6px 8px;
+  font-size: 10px;
+  color: #243746;
+  background: #e8edf1;
+  border-bottom: 1px solid #c1c8ce;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.admin-metric-list {
+  padding: 5px 8px;
+}
+
+.admin-metric-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 5px 0;
+  font-size: 11px;
+  border-bottom: 1px solid #e3e6e8;
+}
+
+.admin-metric-row:last-child {
+  border-bottom: 0;
+}
+
+.admin-metric-label {
+  color: #555555;
+}
+
+.admin-metric-value {
+  color: #1d3f5e;
+  font-weight: bold;
+  text-align: right;
+}
+
+.admin-attention {
+  background: #fffdf1;
+  border: 1px solid #c7b35c;
+}
+
+.admin-attention-header {
+  padding: 6px 8px;
+  font-size: 10px;
+  font-weight: bold;
+  color: #5e5100;
+  border-bottom: 1px solid #d8c97f;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.admin-attention-list {
+  padding: 3px 8px;
+  list-style: none;
+}
+
+.admin-attention-list li {
+  padding: 6px 0;
+  font-size: 11px;
+  line-height: 1.4;
+  border-bottom: 1px solid #ece4b8;
+}
+
+.admin-attention-list li:last-child {
+  border-bottom: 0;
+}
+
+.admin-attention-empty {
+  color: #476247;
+}
+
+.admin-readiness-loading {
+  color: #6b747c;
+  font-style: italic;
+}
+
+@media (max-width: 800px) {
+  .admin-readiness-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-readiness-header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 3px;
+  }
+}
 
     .dashboard-welcome {
       display: flex;
@@ -893,6 +1034,158 @@
             </div>
           </div>
         </div>
+
+        <section
+  id="admin-readiness"
+  class="admin-readiness"
+  aria-hidden="true"
+>
+  <div class="admin-readiness-header">
+    <div class="admin-readiness-title">
+      Unit Readiness
+    </div>
+
+    <div class="admin-readiness-classification">
+      Leadership and Administration Only
+    </div>
+  </div>
+
+  <div class="admin-readiness-body">
+    <div class="admin-readiness-grid">
+      <section class="admin-readiness-card">
+        <h3>Personnel</h3>
+
+        <div class="admin-metric-list">
+          <div class="admin-metric-row">
+            <span class="admin-metric-label">Active</span>
+
+            <span
+              id="readiness-active"
+              class="admin-metric-value admin-readiness-loading"
+            >
+              Loading...
+            </span>
+          </div>
+
+          <div class="admin-metric-row">
+            <span class="admin-metric-label">On approved LOA</span>
+
+            <span
+              id="readiness-loa"
+              class="admin-metric-value admin-readiness-loading"
+            >
+              Loading...
+            </span>
+          </div>
+
+          <div class="admin-metric-row">
+            <span class="admin-metric-label">Inactive</span>
+
+            <span
+              id="readiness-inactive"
+              class="admin-metric-value admin-readiness-loading"
+            >
+              Loading...
+            </span>
+          </div>
+        </div>
+      </section>
+
+      <section class="admin-readiness-card">
+        <h3>Today's Availability</h3>
+
+        <div class="admin-metric-list">
+          <div class="admin-metric-row">
+            <span class="admin-metric-label">Available</span>
+
+            <span
+              id="readiness-available"
+              class="admin-metric-value admin-readiness-loading"
+            >
+              Loading...
+            </span>
+          </div>
+
+          <div class="admin-metric-row">
+            <span class="admin-metric-label">Maybe</span>
+
+            <span
+              id="readiness-maybe"
+              class="admin-metric-value admin-readiness-loading"
+            >
+              Loading...
+            </span>
+          </div>
+
+          <div class="admin-metric-row">
+            <span class="admin-metric-label">Unavailable</span>
+
+            <span
+              id="readiness-unavailable"
+              class="admin-metric-value admin-readiness-loading"
+            >
+              Loading...
+            </span>
+          </div>
+        </div>
+      </section>
+
+      <section class="admin-readiness-card">
+        <h3>Training This Month</h3>
+
+        <div class="admin-metric-list">
+          <div class="admin-metric-row">
+            <span class="admin-metric-label">Attendance</span>
+
+            <span
+              id="readiness-attendance"
+              class="admin-metric-value admin-readiness-loading"
+            >
+              Loading...
+            </span>
+          </div>
+
+          <div class="admin-metric-row">
+            <span class="admin-metric-label">No-shows</span>
+
+            <span
+              id="readiness-no-shows"
+              class="admin-metric-value admin-readiness-loading"
+            >
+              Loading...
+            </span>
+          </div>
+
+          <div class="admin-metric-row">
+            <span class="admin-metric-label">Average lateness</span>
+
+            <span
+              id="readiness-lateness"
+              class="admin-metric-value admin-readiness-loading"
+            >
+              Loading...
+            </span>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <section class="admin-attention">
+      <div class="admin-attention-header">
+        Needs Attention
+      </div>
+
+      <ul
+        id="admin-attention-list"
+        class="admin-attention-list"
+      >
+        <li class="admin-readiness-loading">
+          Reviewing current personnel and training records...
+        </li>
+      </ul>
+    </section>
+  </div>
+</section>
 
         <section class="dashboard-status-grid">
           <div class="dashboard-status-item">
@@ -1884,36 +2177,539 @@
       return "Assigned Personnel";
     }
 
-    function showAdminLinksIfAllowed(email, role) {
-      const normalizedEmail = String(email || "")
-        .trim()
-        .toLowerCase();
+    const READINESS_ADMIN_ROLES = new Set([
+  "ADMIN",
+  "SUPERADMIN",
+  "TROOP_HQ",
+  "HQ"
+]);
 
-      const normalizedRole = String(role || "")
-        .trim()
-        .toUpperCase();
+function hasAdminAccess(email, role) {
+  const normalizedEmail = String(email || "")
+    .trim()
+    .toLowerCase();
 
-      const authorizedRoles = new Set([
-        "ADMIN",
-        "SUPERADMIN",
-        "TROOP_HQ",
-        "HQ"
-      ]);
+  const normalizedRole = String(role || "")
+    .trim()
+    .toUpperCase();
 
-      const allowed =
-        SPECIAL_ACCESS_EMAILS.has(normalizedEmail) ||
-        authorizedRoles.has(normalizedRole);
+  return (
+    SPECIAL_ACCESS_EMAILS.has(normalizedEmail) ||
+    READINESS_ADMIN_ROLES.has(normalizedRole)
+  );
+}
 
-      if (!allowed) {
-        return;
-      }
+function setReadinessValue(id, value) {
+  const element = document.getElementById(id);
 
-      document
-        .querySelectorAll(".admin-only-link")
-        .forEach(link => {
-          link.style.display = "";
-        });
+  if (!element) {
+    return;
+  }
+
+  element.textContent = value;
+  element.classList.remove("admin-readiness-loading");
+}
+
+function getAmsterdamDateParts(date = new Date()) {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Europe/Amsterdam",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit"
+  }).formatToParts(date);
+
+  const values = {};
+
+  for (const part of parts) {
+    if (part.type !== "literal") {
+      values[part.type] = part.value;
     }
+  }
+
+  return values;
+}
+
+function getTimeZoneOffsetMinutes(date, timeZone) {
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone,
+    timeZoneName: "longOffset",
+    hour: "2-digit"
+  }).formatToParts(date);
+
+  const offsetText =
+    parts.find((part) => part.type === "timeZoneName")?.value ||
+    "GMT+00:00";
+
+  const match = offsetText.match(
+    /GMT([+-])(\d{2}):(\d{2})/
+  );
+
+  if (!match) {
+    return 0;
+  }
+
+  const direction = match[1] === "+" ? 1 : -1;
+  const hours = Number(match[2]);
+  const minutes = Number(match[3]);
+
+  return direction * ((hours * 60) + minutes);
+}
+
+function amsterdamDateToUtc(year, month, day) {
+  const utcProbe = new Date(
+    Date.UTC(year, month - 1, day, 12, 0, 0)
+  );
+
+  const offsetMinutes = getTimeZoneOffsetMinutes(
+    utcProbe,
+    "Europe/Amsterdam"
+  );
+
+  return new Date(
+    Date.UTC(year, month - 1, day) -
+    (offsetMinutes * 60 * 1000)
+  );
+}
+
+function getTodayUtcRange() {
+  const parts = getAmsterdamDateParts();
+
+  const year = Number(parts.year);
+  const month = Number(parts.month);
+  const day = Number(parts.day);
+
+  const start = amsterdamDateToUtc(year, month, day);
+  const nextDate = new Date(Date.UTC(year, month - 1, day + 1));
+
+  const end = amsterdamDateToUtc(
+    nextDate.getUTCFullYear(),
+    nextDate.getUTCMonth() + 1,
+    nextDate.getUTCDate()
+  );
+
+  return {
+    date: `${parts.year}-${parts.month}-${parts.day}`,
+    start: start.toISOString(),
+    end: end.toISOString()
+  };
+}
+
+function getCurrentMonthUtcRange() {
+  const parts = getAmsterdamDateParts();
+
+  const year = Number(parts.year);
+  const month = Number(parts.month);
+
+  const start = amsterdamDateToUtc(year, month, 1);
+
+  const nextMonth = new Date(
+    Date.UTC(year, month, 1)
+  );
+
+  const end = amsterdamDateToUtc(
+    nextMonth.getUTCFullYear(),
+    nextMonth.getUTCMonth() + 1,
+    1
+  );
+
+  return {
+    start: start.toISOString(),
+    end: end.toISOString()
+  };
+}
+
+function renderAttentionItems(items) {
+  const list = document.getElementById(
+    "admin-attention-list"
+  );
+
+  if (!list) {
+    return;
+  }
+
+  list.replaceChildren();
+
+  if (!items.length) {
+    const item = document.createElement("li");
+
+    item.className = "admin-attention-empty";
+    item.textContent =
+      "No immediate readiness issues detected from the available records.";
+
+    list.appendChild(item);
+    return;
+  }
+
+  for (const message of items.slice(0, 8)) {
+    const item = document.createElement("li");
+
+    item.textContent = message;
+    list.appendChild(item);
+  }
+}
+
+function getAvailabilitySummary(responses) {
+  const statusesByMember = new Map();
+
+  for (const response of responses) {
+    const userId = String(response.user_id || "");
+    const availability = String(
+      response.availability || ""
+    ).toLowerCase();
+
+    if (!userId || !availability) {
+      continue;
+    }
+
+    if (!statusesByMember.has(userId)) {
+      statusesByMember.set(userId, new Set());
+    }
+
+    statusesByMember.get(userId).add(availability);
+  }
+
+  let available = 0;
+  let maybe = 0;
+  let unavailable = 0;
+
+  for (const statuses of statusesByMember.values()) {
+    if (statuses.has("available")) {
+      available++;
+    } else if (statuses.has("maybe")) {
+      maybe++;
+    } else if (statuses.has("unavailable")) {
+      unavailable++;
+    }
+  }
+
+  return {
+    statusesByMember,
+    available,
+    maybe,
+    unavailable
+  };
+}
+
+async function loadAdminReadiness() {
+  const section = document.getElementById(
+    "admin-readiness"
+  );
+
+  if (!section) {
+    return;
+  }
+
+  const today = getTodayUtcRange();
+  const month = getCurrentMonthUtcRange();
+
+  const [
+    profilesResult,
+    loaResult,
+    availabilityResult,
+    sessionsResult
+  ] = await Promise.all([
+    supabase
+      .from("profiles")
+      .select(
+        "id, display_name, user_id, status, role, callsign"
+      ),
+
+    supabase
+      .from("loa_requests")
+      .select(
+        "id, requester_id, start_date, end_date, status"
+      )
+      .eq("status", "APPROVED")
+      .lte("start_date", today.date)
+      .gte("end_date", today.date),
+
+    supabase
+      .from("scheduling_responses")
+      .select(
+        "user_id, availability, slot_start"
+      )
+      .gte("slot_start", today.start)
+      .lt("slot_start", today.end),
+
+    supabase
+      .from("training_sessions")
+      .select(
+        "id, title, start_at, status"
+      )
+      .gte("start_at", month.start)
+      .lt("start_at", month.end)
+  ]);
+
+  const requiredQueryErrors = [
+    profilesResult.error,
+    loaResult.error,
+    availabilityResult.error,
+    sessionsResult.error
+  ].filter(Boolean);
+
+  if (requiredQueryErrors.length) {
+    console.error(
+      "Readiness dashboard query errors:",
+      requiredQueryErrors
+    );
+  }
+
+  const profiles = profilesResult.data || [];
+  const approvedLoas = loaResult.data || [];
+  const availabilityResponses =
+    availabilityResult.data || [];
+  const sessions = sessionsResult.data || [];
+
+  const activeProfiles = profiles.filter((profile) => {
+    return String(profile.status || "").toUpperCase() ===
+      "ACTIVE";
+  });
+
+  const inactiveProfiles = profiles.filter((profile) => {
+    return String(profile.status || "").toUpperCase() !==
+      "ACTIVE";
+  });
+
+  const approvedLoaMembers = new Set(
+    approvedLoas.map((loa) => String(loa.requester_id))
+  );
+
+  setReadinessValue(
+    "readiness-active",
+    activeProfiles.length
+  );
+
+  setReadinessValue(
+    "readiness-loa",
+    approvedLoaMembers.size
+  );
+
+  setReadinessValue(
+    "readiness-inactive",
+    inactiveProfiles.length
+  );
+
+  const availabilitySummary =
+    getAvailabilitySummary(availabilityResponses);
+
+  setReadinessValue(
+    "readiness-available",
+    availabilitySummary.available
+  );
+
+  setReadinessValue(
+    "readiness-maybe",
+    availabilitySummary.maybe
+  );
+
+  setReadinessValue(
+    "readiness-unavailable",
+    availabilitySummary.unavailable
+  );
+
+  const relevantSessionIds = sessions
+    .filter((session) => {
+      const status = String(
+        session.status || ""
+      ).toUpperCase();
+
+      return [
+        "COMPLETED",
+        "SCHEDULED",
+        "POSTPONED"
+      ].includes(status);
+    })
+    .map((session) => session.id);
+
+  let attendanceRows = [];
+  let attendanceError = null;
+
+  if (relevantSessionIds.length) {
+    const attendanceResult = await supabase
+      .from("training_attendance")
+      .select(
+        "session_id, user_id, actual_status, minutes_late"
+      )
+      .in("session_id", relevantSessionIds);
+
+    attendanceRows = attendanceResult.data || [];
+    attendanceError = attendanceResult.error;
+  }
+
+  if (attendanceError) {
+    console.error(
+      "Readiness attendance query failed:",
+      attendanceError
+    );
+  }
+
+  const finalizedAttendance = attendanceRows.filter(
+    (row) => Boolean(row.actual_status)
+  );
+
+  const presentStatuses = new Set([
+    "PRESENT",
+    "LATE",
+    "LEFT_EARLY",
+    "PARTIAL"
+  ]);
+
+  const presentCount = finalizedAttendance.filter(
+    (row) => {
+      return presentStatuses.has(
+        String(row.actual_status).toUpperCase()
+      );
+    }
+  ).length;
+
+  const attendancePercent = finalizedAttendance.length
+    ? Math.round(
+        (presentCount / finalizedAttendance.length) * 100
+      )
+    : null;
+
+  const noShowCount = finalizedAttendance.filter((row) => {
+    return String(row.actual_status).toUpperCase() ===
+      "NO_SHOW";
+  }).length;
+
+  const lateRows = finalizedAttendance.filter((row) => {
+    return Number(row.minutes_late || 0) > 0;
+  });
+
+  const averageLateness = lateRows.length
+    ? Math.round(
+        lateRows.reduce((total, row) => {
+          return total + Number(row.minutes_late || 0);
+        }, 0) / lateRows.length
+      )
+    : 0;
+
+  setReadinessValue(
+    "readiness-attendance",
+    attendancePercent === null
+      ? "No finalized data"
+      : `${attendancePercent}%`
+  );
+
+  setReadinessValue(
+    "readiness-no-shows",
+    noShowCount
+  );
+
+  setReadinessValue(
+    "readiness-lateness",
+    `${averageLateness} min`
+  );
+
+  const attentionItems = [];
+
+  const missingAvailability = activeProfiles.filter(
+    (profile) => {
+      return !availabilitySummary.statusesByMember.has(
+        String(profile.id)
+      );
+    }
+  );
+
+  if (missingAvailability.length) {
+    attentionItems.push(
+      `${missingAvailability.length} active ${
+        missingAvailability.length === 1
+          ? "member has"
+          : "members have"
+      } no availability recorded for today.`
+    );
+  }
+
+  if (inactiveProfiles.length) {
+    attentionItems.push(
+      `${inactiveProfiles.length} ${
+        inactiveProfiles.length === 1
+          ? "profile is"
+          : "profiles are"
+      } currently marked inactive or non-active.`
+    );
+  }
+
+  if (noShowCount) {
+    attentionItems.push(
+      `${noShowCount} no-show ${
+        noShowCount === 1 ? "record was" : "records were"
+      } logged this month.`
+    );
+  }
+
+  if (
+    attendancePercent !== null &&
+    attendancePercent < 80
+  ) {
+    attentionItems.push(
+      `Monthly recorded attendance is ${attendancePercent}%, below the 80% leadership threshold.`
+    );
+  }
+
+  if (averageLateness >= 10) {
+    attentionItems.push(
+      `Average lateness among late arrivals is ${averageLateness} minutes.`
+    );
+  }
+
+  const unassignedProfiles = activeProfiles.filter(
+    (profile) => {
+      return !String(profile.callsign || "").trim();
+    }
+  );
+
+  if (unassignedProfiles.length) {
+    attentionItems.push(
+      `${unassignedProfiles.length} active ${
+        unassignedProfiles.length === 1
+          ? "member is"
+          : "members are"
+      } currently unassigned in the ORBAT.`
+    );
+  }
+
+  if (
+    requiredQueryErrors.length ||
+    attendanceError
+  ) {
+    attentionItems.push(
+      "Some readiness figures could not be loaded because one or more database policies denied access."
+    );
+  }
+
+  renderAttentionItems(attentionItems);
+
+  section.classList.add("visible");
+  section.setAttribute("aria-hidden", "false");
+}
+
+    function showAdminLinksIfAllowed(email, role) {
+  const allowed = hasAdminAccess(email, role);
+
+  if (!allowed) {
+    return;
+  }
+
+  document
+    .querySelectorAll("[data-admin-link]")
+    .forEach((link) => {
+      link.style.display = "";
+    });
+
+  loadAdminReadiness().catch((error) => {
+    console.error(
+      "Admin readiness dashboard failed:",
+      error
+    );
+
+    renderAttentionItems([
+      "The readiness dashboard could not be loaded. Check the database access policies and browser console."
+    ]);
+  });
+}
 
     function calculateProfileCompletion(profile) {
       const fields = [
