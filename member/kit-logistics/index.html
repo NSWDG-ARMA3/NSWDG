@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>
+    NSW Operations Portal - Kit Logistics Request
+  </title>
+
+  <link
+    rel="shortcut icon"
+    href="../../nsw.png"
+    type="image/x-icon"
+  >
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: #f0f0f0;
+      color: #1a1a1a;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 12px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .gov-banner {
+      background: #1a1a1a;
+      color: #ccc;
+      font-size: 11px;
+      padding: 3px 12px;
+    }
+
+    .site-header {
+      background: #1d3f5e;
+      color: #fff;
+      padding: 10px 16px;
+      border-bottom: 3px solid #ededed;
+    }
+
+    .site-header h1 {
+      font-size: 16px;
+    }
+
+    .site-header p {
+      font-size: 11px;
+      color: #c5d8ec;
+      margin-top: 2px;
+    }
+
+    .screen {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+    }
+
+    .portal-nav {
+      background: #1d3f5e;
+      display: flex;
+      align-items: stretch;
+      border-bottom: 1px solid #1d3f5e;
+      flex-shrink: 0;
+    }
+
+    .portal-nav a {
+      color: #cde;
+      text-decoration: none;
+      font-size: 12px;
+      padding: 8px 12px;
+      display: block;
+      border-right: 1px solid #00284e;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .portal-nav a:hover,
+    .portal-nav a.active {
+      color: #fff;
+    }
+
+    .portal-nav a.active {
+      font-weight: bold;
+    }
+
+    .nav-right {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      font-size: 11px;
+      color: #7a9ab8;
+      gap: 10px;
+    }
+
+    .nav-right a {
+      border: none !important;
+      padding: 4px 0 !important;
+      font-size: 11px;
+      color: #7a9ab8;
+    }
+
+    .nav-avatar {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1px solid #7a9ab8;
+      background: #e8e8e8;
+    }
+
+    .portal-body {
+      display: flex;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .sidebar {
+      width: 180px;
+      background: #e8e8e8;
+      border-right: 1px solid #bbb;
+      flex-shrink: 0;
+      padding: 12px 0;
+    }
+
+    .sidebar-user-box {
+      padding: 7px 12px 10px;
+      border-bottom: 1px solid #ccc;
+      margin-bottom: 6px;
+      font-size: 11px;
+      color: #444;
+      line-height: 1.6;
+    }
+
+    .sidebar-user-box strong {
+      display: block;
+      font-size: 12px;
+      color: #1a1a1a;
+    }
+
+    .sidebar-section {
+      font-size: 10px;
+      font-weight: bold;
+      color: #777;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 8px 12px 4px;
+    }
+
+    .sidebar-link {
+      display: block;
+      padding: 5px 12px;
+      font-size: 12px;
+      color: #1d3f5e;
+      text-decoration: none;
+      border-left: 3px solid transparent;
+    }
+
+    .sidebar-link:hover {
+      background: #dde;
+      border-left-color: #1d3f5e;
+    }
+
+    .sidebar-link.active {
+      background: #d0dae8;
+      border-left-color: #1d3f5e;
+      font-weight: bold;
+    }
+
+    .portal-main {
+      flex: 1;
+      padding: 16px 18px;
+      background: #fff;
+      overflow-y: auto;
+    }
+
+    .page-title {
+      font-size: 15px;
+      font-weight: bold;
+      color: #1d3f5e;
+      border-bottom: 1px solid #ccc;
+      padding-bottom: 6px;
+      margin-bottom: 10px;
+    }
+
+    .panel {
+      border: 1px solid #bbb;
+      background: #fff;
+      margin-bottom: 12px;
+    }
+
+    .panel h3 {
+      background: #eef2f5;
+      color: #1d3f5e;
+      border-bottom: 1px solid #bbb;
+      font-size: 12px;
+      padding: 7px 9px;
+    }
+
+    .panel-body {
+      padding: 10px;
+    }
+
+    .notice-box {
+      border: 1px solid #bbb;
+      padding: 8px 10px;
+      margin-bottom: 10px;
+      line-height: 1.5;
+      background: #fafafa;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .form-group.full {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      font-weight: bold;
+      color: #333;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      border: 1px solid #999;
+      background: #fff;
+      padding: 6px;
+      font: inherit;
+    }
+
+    textarea {
+      min-height: 110px;
+      resize: vertical;
+    }
+
+    .btn {
+      border: 1px solid #7b8ea1;
+      background: #eef3f7;
+      color: #1d3f5e;
+      padding: 6px 10px;
+      font-size: 11px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .btn:hover {
+      background: #dde7ef;
+    }
+
+    .btn-primary {
+      background: #1d3f5e;
+      border-color: #1d3f5e;
+      color: #fff;
+    }
+
+    .btn-danger {
+      background: #8d1d1d;
+      border-color: #6d1111;
+      color: #fff;
+    }
+
+    .btn-success {
+      background: #315f3d;
+      border-color: #244b2f;
+      color: #fff;
+    }
+
+    .button-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+
+    .status-line {
+      margin-top: 8px;
+      font-size: 11px;
+      min-height: 16px;
+    }
+
+    .status-line.ok {
+      color: #22602c;
+    }
+
+    .status-line.err {
+      color: #8b1616;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      border-bottom: 1px solid #ddd;
+      padding: 7px 8px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: #eef2f5;
+      color: #1d3f5e;
+      font-size: 10px;
+      text-transform: uppercase;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    .badge {
+      display: inline-block;
+      border: 1px solid #9aa9b7;
+      background: #eef3f7;
+      color: #1d3f5e;
+      padding: 2px 5px;
+      font-size: 10px;
+      font-weight: bold;
+    }
+
+    .badge.pending {
+      background: #fff6ce;
+      border-color: #c2a641;
+      color: #6a5800;
+    }
+
+    .badge.progress {
+      background: #dceafa;
+      border-color: #7da1ca;
+      color: #234d75;
+    }
+
+    .badge.completed {
+      background: #dcefdc;
+      border-color: #79a879;
+      color: #225c22;
+    }
+
+    .badge.denied {
+      background: #f4dddd;
+      border-color: #bc7777;
+      color: #7b1c1c;
+    }
+
+    .muted {
+      color: #666;
+      font-size: 11px;
+    }
+
+    .request-actions {
+      display: flex;
+      gap: 5px;
+      flex-wrap: wrap;
+    }
+
+    .attachment-list {
+      display: flex;
+      gap: 5px;
+      flex-wrap: wrap;
+      margin-top: 5px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .page-footer {
+      background: #1a1a1a;
+      color: #888;
+      font-size: 11px;
+      text-align: center;
+      padding: 7px;
+    }
+
+    @media(max-width: 900px) {
+      .portal-body {
+        flex-direction: column;
+      }
+
+      .sidebar {
+        width: 100%;
+      }
+
+      .portal-nav {
+        overflow-x: auto;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="gov-banner">
+    U.S. Department of the Navy
+    &nbsp;|&nbsp;
+    Official Government System
+    &nbsp;|&nbsp;
+    Authorized Users Only
+  </div>
+
+  <div class="site-header">
+    <h1>
+      Naval Special Warfare Command - Operations Portal
+    </h1>
+
+    <p>
+      NSW-OPS //
+      UNCLASSIFIED //
+      FOR OFFICIAL USE ONLY
+    </p>
+  </div>
+
+  <div class="screen">
+
+    <div
+      id="portal-nav"
+      class="portal-nav"
+    ></div>
+
+    <div class="portal-body">
+
+      <div
+        id="portal-sidebar"
+        class="sidebar"
+      ></div>
+
+      <main class="portal-main">
+
+        <div class="page-title">
+          Kit Logistics Request
+        </div>
+
+        <div class="notice-box">
+          Submit helmet or vest setup requests to logistics.
+          You may attach reference images for pouch layout,
+          cable routing, markings, or other placement details.
+        </div>
+
+        <section class="panel">
+
+          <h3>
+            New Request
+          </h3>
+
+          <div class="panel-body">
+
+            <div class="form-grid">
+
+              <div class="form-group">
+
+                <label for="item-type">
+                  Item Type
+                </label>
+
+                <select id="item-type">
+                  <option value="HELMET">
+                    Helmet
+                  </option>
+
+                  <option value="VEST">
+                    Vest
+                  </option>
+                </select>
+
+              </div>
+
+              <div class="form-group">
+
+                <label for="item-model">
+                  Model
+                </label>
+
+                <select id="item-model"></select>
+
+              </div>
+
+              <div class="form-group full">
+
+                <label for="setup-description">
+                  Pouches / Placement / Setup Details
+                </label>
+
+                <textarea
+                  id="setup-description"
+                  placeholder="Describe pouch type, side, row/column, radio placement, hydration, cable routing, helmet accessories, markings, etc."
+                ></textarea>
+
+              </div>
+
+              <div class="form-group full">
+
+                <label for="reference-images">
+                  Reference Images
+                </label>
+
+                <input
+                  id="reference-images"
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/gif"
+                  multiple
+                >
+
+                <span class="muted">
+                  Up to 5 images, maximum 10 MB each.
+                </span>
+
+              </div>
+
+            </div>
+
+            <div class="button-row">
+
+              <button
+                id="submit-request"
+                class="btn btn-primary"
+                type="button"
+              >
+                Submit Request
+              </button>
+
+              <button
+                id="reset-request"
+                class="btn"
+                type="button"
+              >
+                Reset
+              </button>
+
+            </div>
+
+            <div
+              id="request-status"
+              class="status-line"
+            ></div>
+
+          </div>
+
+        </section>
+
+        <section
+          id="admin-panel"
+          class="panel hidden"
+        >
+
+          <h3>
+            Administrator Queue
+          </h3>
+
+          <div class="panel-body">
+
+            <div
+              class="button-row"
+              style="
+                margin-top:0;
+                margin-bottom:10px;
+              "
+            >
+
+              <select
+                id="admin-status-filter"
+                style="max-width:220px;"
+              >
+                <option value="">
+                  All Statuses
+                </option>
+
+                <option value="PENDING">
+                  Pending
+                </option>
+
+                <option value="IN_PROGRESS">
+                  In Progress
+                </option>
+
+                <option value="COMPLETED">
+                  Completed
+                </option>
+
+                <option value="DENIED">
+                  Denied
+                </option>
+              </select>
+
+              <button
+                id="refresh-admin"
+                class="btn"
+                type="button"
+              >
+                Refresh
+              </button>
+
+            </div>
+
+            <div id="admin-output"></div>
+
+          </div>
+
+        </section>
+
+        <section class="panel">
+
+          <h3>
+            My Requests
+          </h3>
+
+          <div class="panel-body">
+
+            <button
+              id="refresh-mine"
+              class="btn"
+              type="button"
+              style="margin-bottom:10px;"
+            >
+              Refresh
+            </button>
+
+            <div id="my-output"></div>
+
+          </div>
+
+        </section>
+
+      </main>
+
+    </div>
+
+    <div class="page-footer">
+      Naval Special Warfare Command -
+      Operations Portal |
+      UNCLASSIFIED // FOUO
+    </div>
+
+  </div>
+
+  <script
+    type="module"
+    src="./kit-logistics.js"
+  ></script>
+
+</body>
+</html>

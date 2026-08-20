@@ -652,21 +652,26 @@ async function loadAttendanceData() {
 
   const [detailsResult, historyResult] = await Promise.all([
     supabase
-      .from("member_training_history")
+      .from("member_training_history_class_safe")
       .select("*")
       .order("start_at", { ascending: false }),
 
     supabase
-      .from("member_training_history")
+      .from("member_training_history_class_safe")
       .select("*")
       .order("start_at", { ascending: false })
   ]);
 
   if (detailsResult.error) {
-    console.error("Attendance details failed:", detailsResult.error);
+    console.error(
+      "Attendance details failed:",
+      detailsResult.error
+    );
+
     attendanceDetailRows = [];
   } else {
-    attendanceDetailRows = detailsResult.data || [];
+    attendanceDetailRows =
+      detailsResult.data || [];
   }
 
   if (historyResult.error) {
@@ -678,13 +683,15 @@ async function loadAttendanceData() {
     trainingHistoryRows = [];
     attendanceSummaryRows = [];
   } else {
-    trainingHistoryRows = historyResult.data || [];
+    trainingHistoryRows =
+      historyResult.data || [];
 
     attendanceSummaryRows =
-      buildAttendanceSummaries(trainingHistoryRows);
+      buildAttendanceSummaries(
+        trainingHistoryRows
+      );
   }
 }
-
 function buildAttendanceSummaries(rows) {
   const grouped = new Map();
 

@@ -20,6 +20,7 @@ const state = {
   attendance: [],
   profiles: [],
   loaRequests: [],
+  sessionMembers: [],
   activeSessionId: null
 };
 
@@ -45,6 +46,10 @@ function cacheElements() {
   el.logoutButton = document.getElementById("logout-button");
 
   el.category = document.getElementById("training-category");
+  el.targetClass =
+  document.getElementById(
+    "training-target-class"
+  );
   el.status = document.getElementById("training-status");
   el.title = document.getElementById("training-title");
   el.start = document.getElementById("training-start");
@@ -123,7 +128,14 @@ async function loadSessionAndProfile() {
 }
 
 async function loadData() {
-  const [sessionsResult, attendanceResult, profilesResult, loaResult] = await Promise.all([
+
+  const [
+    sessionsResult,
+    attendanceResult,
+    profilesResult,
+    loaResult,
+    rosterResult
+  ] = await Promise.all([
     supabase
       .from("training_sessions")
       .select("*")
@@ -136,7 +148,9 @@ async function loadData() {
     supabase
       .from("profiles")
       .select(
-        "id,user_id,display_name,role,status,avatar_url,callsign,naval_rank,account_created_at"
+        .select(
+  "id,user_id,display_name,role,status,avatar_url,callsign,naval_rank,account_created_at,green_team_class"
+)
       )
       .eq("status", "ACTIVE")
       .order("display_name", { ascending: true }),
@@ -144,7 +158,15 @@ async function loadData() {
     supabase
       .from("loa_requests")
       .select("*")
-      .eq("status", "APPROVED")
+      .eq("status", "APPROVED"),
+
+supabase
+  .from(
+    "training_session_members"
+  )
+  .select(
+    "session_id,user_id"
+  )
   ]);
 
   if (sessionsResult.error) {
@@ -161,6 +183,13 @@ async function loadData() {
   state.attendance = attendanceResult.data || [];
   state.profiles = profilesResult.data || [];
   state.loaRequests = loaResult.data || [];
+  state.sessionMembers =
+  rosterResult.error
+    ? []
+    : (
+        rosterResult.data
+        || []
+      );
 
   renderSessions();
 
@@ -185,12 +214,32 @@ function isCandidate() {
   return String(state.profile?.naval_rank || "").trim() === "Candidate";
 }
 
-function canViewSession(session) {
-  if (!session) return false;
-  if (session.category !== "INNER_TEAM") return true;
+function canViewSession(
+  session
+) {
+
+  if (!session) {
+    return false;
+  }
+
+
+  if (
+    session.target_green_team_class
+  ) {
+    return true;
+  }
+
+
+  if (
+    session.category
+    !== "INNER_TEAM"
+  ) {
+    return true;
+  }
+
+
   return !isCandidate();
 }
-
 function isTeamLeader() {
   const callsign = String(state.profile?.callsign || "").trim().toUpperCase();
   return TEAM_LEADER_CALLSIGNS.includes(callsign);
@@ -280,8 +329,15 @@ async function saveTraining() {
       ? endDate.toISOString()
       : null,
     location: el.location.value.trim(),
-    status: el.status.value,
-    host_id: state.authUser.id,
+status:
+  el.status.value,
+
+target_green_team_class:
+  el.targetClass.value
+  || null,
+
+host_id:
+  state.authUser.id,
     updated_at: new Date().toISOString()
   };
 
@@ -550,6 +606,7 @@ function resetForm() {
   el.end.value = "";
   el.location.value = "";
   el.description.value = "";
+  el.targetClass.value = "";
   clearStatus();
 }
 
@@ -605,6 +662,7 @@ function renderSessions() {
               <td>${categoryBadge(session.category)}</td>
               <td>
                 <strong>${escapeHtml(session.title)}</strong><br>
+                
                 <span class="muted">${escapeHtml(session.location || "-")}</span>
               </td>
               <td>${renderSessionStatusControl(session)}</td>
@@ -981,6 +1039,7 @@ function renderViewer(session) {
     session,
     state.authUser.id
   );
+
   const canManage = canManageSession(session);
   const canAar = canAarSession(session);
   const admin = isAdmin();
@@ -989,284 +1048,789 @@ function renderViewer(session) {
 
   el.viewer.innerHTML = `
     <div class="training-v2-card">
+
       <div class="training-v2-header">
+
         <div>
-          <div class="training-eyebrow">Training Session</div>
-          <h2>${escapeHtml(session.title)}</h2>
+
+          <div class="training-eyebrow">
+            Training Session
+          </div>
+
+          <h2>
+            ${escapeHtml(session.title)}
+          </h2>
 
           <div class="training-badges">
             ${categoryBadge(session.category)}
             ${renderSessionStatusControl(session)}
+
+            ${
+              session.target_green_team_class
+                ? `
+                  <span class="badge badge-yellow">
+                    Green Team Class ${
+                      escapeHtml(
+                        session.target_green_team_class
+                      )
+                    }
+                  </span>
+                `
+                : ""
+            }
           </div>
+
         </div>
 
-<div class="training-v2-time">
-  <span>Start Time</span>
 
-  <strong>
-    ${escapeHtml(formatDateTime(session.start_at))}
-  </strong>
+        <div class="training-v2-time">
 
-  <small>
-    Eastern Time
-    <br>
-    (Your time: ${escapeHtml(formatViewerLocalTime(session.start_at))})
-  </small>
-</div>
-      </div>
+          <span>
+            Start Time
+          </span>
 
-      <div class="training-v2-meta">
-        <div>
-          <span>End</span>
-          <strong>${escapeHtml(session.end_at ? formatDateTime(session.end_at) : "-")}</strong>
-        </div>
-
-        <div>
-          <span>Location</span>
-          <strong>${escapeHtml(session.location || "-")}</strong>
-        </div>
-
-        <div>
-          <span>Host</span>
-          <strong>${escapeHtml(getProfileName(session.host_id))}</strong>
-        </div>
-
-        <div>
-          <span>Your Response</span>
           <strong>
             ${escapeHtml(
-              myApprovedLoa
-                ? "Approved LOA"
-                : myAttendance
-                  ? attendanceLabel(myAttendance.attendance)
-                  : "No Response"
+              formatDateTime(session.start_at)
             )}
           </strong>
+
+          <small>
+            Eastern Time
+            <br>
+            (Your time: ${
+              escapeHtml(
+                formatViewerLocalTime(
+                  session.start_at
+                )
+              )
+            })
+          </small>
+
         </div>
+
       </div>
 
-      ${admin ? renderAdminTrainingControls(session) : ""}
+
+      <div class="training-v2-meta">
+
+        <div>
+
+          <span>
+            End
+          </span>
+
+          <strong>
+            ${
+              escapeHtml(
+                session.end_at
+                  ? formatDateTime(
+                      session.end_at
+                    )
+                  : "-"
+              )
+            }
+          </strong>
+
+        </div>
+
+
+        <div>
+
+          <span>
+            Location
+          </span>
+
+          <strong>
+            ${
+              escapeHtml(
+                session.location || "-"
+              )
+            }
+          </strong>
+
+        </div>
+
+
+        <div>
+
+          <span>
+            Host
+          </span>
+
+          <strong>
+            ${
+              escapeHtml(
+                getProfileName(
+                  session.host_id
+                )
+              )
+            }
+          </strong>
+
+        </div>
+
+
+        <div>
+
+          <span>
+            Audience
+          </span>
+
+          <strong>
+            ${
+              escapeHtml(
+                session.target_green_team_class
+                  ? `Green Team Class ${session.target_green_team_class}`
+                  : "All Personnel"
+              )
+            }
+          </strong>
+
+        </div>
+
+
+        <div>
+
+          <span>
+            Your Response
+          </span>
+
+          <strong>
+            ${
+              escapeHtml(
+                myApprovedLoa
+                  ? "Approved LOA"
+                  : myAttendance
+                    ? attendanceLabel(
+                        myAttendance.attendance
+                      )
+                    : "No Response"
+              )
+            }
+          </strong>
+
+        </div>
+
+      </div>
+
+
+      ${
+        admin
+          ? renderAdminTrainingControls(session)
+          : ""
+      }
+
 
       <div class="training-v2-section">
+
         <div class="training-v2-section-head">
-          <h3>Quick Overview</h3>
+
+          <h3>
+            Quick Overview
+          </h3>
+
         </div>
+
 
         <div class="training-v2-stats">
+
           <div class="stat-card green">
-            <b>${showingUp.length}</b>
-            <span>Showing Up</span>
+
+            <b>
+              ${showingUp.length}
+            </b>
+
+            <span>
+              Showing Up
+            </span>
+
           </div>
+
 
           <div class="stat-card red">
-            <b>${notAttending.length}</b>
-            <span>Not Attending</span>
+
+            <b>
+              ${notAttending.length}
+            </b>
+
+            <span>
+              Not Attending
+            </span>
+
           </div>
+
 
           <div class="stat-card yellow">
-            <b>${noResponse.length}</b>
-            <span>No Response</span>
+
+            <b>
+              ${noResponse.length}
+            </b>
+
+            <span>
+              No Response
+            </span>
+
           </div>
+
 
           <div class="stat-card blue">
-            <b>${blockedByLoa.length}</b>
-            <span>Approved LOA</span>
+
+            <b>
+              ${blockedByLoa.length}
+            </b>
+
+            <span>
+              Approved LOA
+            </span>
+
           </div>
+
 
           <div class="stat-card dark">
-            <b>${eligibleProfiles.length}</b>
-            <span>Eligible Members</span>
+
+            <b>
+              ${eligibleProfiles.length}
+            </b>
+
+            <span>
+              Eligible Members
+            </span>
+
           </div>
+
         </div>
+
       </div>
+
 
       <div class="training-v2-section">
+
         <div class="training-v2-section-head">
-          <h3>Your Response</h3>
+
+          <h3>
+            Your Response
+          </h3>
+
         </div>
 
-        ${myApprovedLoa ? `
-          <div class="admin-attendance-note">
-            Your response is automatically set to
-            <strong>Not Attending</strong> because an approved LOA covers
-            this training. The response cannot be changed unless the LOA is
-            revoked or ended.
-          </div>
 
-          <div class="response-buttons">
-            <button
-              class="response-btn response-not-attending"
-              type="button"
-              disabled
-            >
-              ✕ Not Attending · Approved LOA
-            </button>
-          </div>
-        ` : `
-          <div class="response-buttons">
-            <button
-              class="response-btn response-attending"
-              type="button"
-              id="attending-button"
-            >
-              ✓ Attending
-            </button>
+        ${
+          myApprovedLoa
+            ? `
+              <div class="admin-attendance-note">
 
-            <button
-              class="response-btn response-not-attending"
-              type="button"
-              id="not-attending-button"
-            >
-              ✕ Not Attending
-            </button>
-          </div>
-        `}
+                Your response is automatically set to
+                <strong>
+                  Not Attending
+                </strong>
+                because an approved LOA covers this training.
+
+                The response cannot be changed unless
+                the LOA is revoked or ended.
+
+              </div>
+
+
+              <div class="response-buttons">
+
+                <button
+                  class="response-btn response-not-attending"
+                  type="button"
+                  disabled
+                >
+                  ✕ Not Attending · Approved LOA
+                </button>
+
+              </div>
+            `
+            : `
+              <div class="response-buttons">
+
+                <button
+                  class="response-btn response-attending"
+                  type="button"
+                  id="attending-button"
+                >
+                  ✓ Attending
+                </button>
+
+
+                <button
+                  class="response-btn response-not-attending"
+                  type="button"
+                  id="not-attending-button"
+                >
+                  ✕ Not Attending
+                </button>
+
+              </div>
+            `
+        }
+
       </div>
 
-      <details class="training-v2-details" open>
-        <summary>Attendance Roster</summary>
 
-        ${canManage ? `
-          <div class="admin-attendance-note">
-            Admin mode: drag members between columns to manually set their response.
-          </div>
-        ` : ""}
+      <details
+        class="training-v2-details"
+        open
+      >
 
-        <div class="training-roster-grid ${canManage ? "admin-attendance-board" : ""}">
-          <div class="roster-column green ${canManage ? "admin-drop-zone" : ""}" data-admin-attendance="ATTENDING">
+        <summary>
+          Attendance Roster
+        </summary>
+
+
+        ${
+          canManage
+            ? `
+              <div class="admin-attendance-note">
+                Admin mode: drag members between columns
+                to manually set their response.
+              </div>
+            `
+            : ""
+        }
+
+
+        <div
+          class="
+            training-roster-grid
+            ${
+              canManage
+                ? "admin-attendance-board"
+                : ""
+            }
+          "
+        >
+
+
+          <div
+            class="
+              roster-column
+              green
+              ${
+                canManage
+                  ? "admin-drop-zone"
+                  : ""
+              }
+            "
+            data-admin-attendance="ATTENDING"
+          >
+
             <div class="roster-column-head">
-              <strong>Showing Up</strong>
-              <span>${showingUp.length}</span>
+
+              <strong>
+                Showing Up
+              </strong>
+
+              <span>
+                ${showingUp.length}
+              </span>
+
             </div>
-            ${canManage ? renderDraggableAttendanceRows(showingUp, "ATTENDING") : renderNameList(showingUp)}
+
+            ${
+              canManage
+                ? renderDraggableAttendanceRows(
+                    showingUp,
+                    "ATTENDING"
+                  )
+                : renderNameList(
+                    showingUp
+                  )
+            }
+
           </div>
 
-          <div class="roster-column red ${canManage ? "admin-drop-zone" : ""}" data-admin-attendance="NOT_ATTENDING">
+
+          <div
+            class="
+              roster-column
+              red
+              ${
+                canManage
+                  ? "admin-drop-zone"
+                  : ""
+              }
+            "
+            data-admin-attendance="NOT_ATTENDING"
+          >
+
             <div class="roster-column-head">
-              <strong>Not Attending</strong>
-              <span>${notAttending.length}</span>
+
+              <strong>
+                Not Attending
+              </strong>
+
+              <span>
+                ${notAttending.length}
+              </span>
+
             </div>
-            ${canManage ? renderDraggableAttendanceRows(notAttending, "NOT_ATTENDING") : renderNameList(notAttending)}
+
+            ${
+              canManage
+                ? renderDraggableAttendanceRows(
+                    notAttending,
+                    "NOT_ATTENDING"
+                  )
+                : renderNameList(
+                    notAttending
+                  )
+            }
+
           </div>
 
-          <div class="roster-column yellow ${canManage ? "admin-drop-zone" : ""}" data-admin-attendance="">
+
+          <div
+            class="
+              roster-column
+              yellow
+              ${
+                canManage
+                  ? "admin-drop-zone"
+                  : ""
+              }
+            "
+            data-admin-attendance=""
+          >
+
             <div class="roster-column-head">
-              <strong>No Response</strong>
-              <span>${noResponse.length}</span>
+
+              <strong>
+                No Response
+              </strong>
+
+              <span>
+                ${noResponse.length}
+              </span>
+
             </div>
-            ${canManage ? renderDraggableProfiles(noResponse) : renderProfileList(noResponse)}
+
+            ${
+              canManage
+                ? renderDraggableProfiles(
+                    noResponse
+                  )
+                : renderProfileList(
+                    noResponse
+                  )
+            }
+
           </div>
+
         </div>
+
       </details>
 
-      ${canManage ? `
-        <details class="training-v2-details" open>
-          <summary>Admin Attendance Marking</summary>
 
-          <div class="admin-marking-panel">
-            ${renderAdminMarkingTable(session, attendanceRows)}
-          </div>
-        </details>
-      ` : ""}    
+      ${
+        canManage
+          ? `
+            <details
+              class="training-v2-details"
+              open
+            >
+
+              <summary>
+                Admin Attendance Marking
+              </summary>
+
+              <div class="admin-marking-panel">
+                ${
+                  renderAdminMarkingTable(
+                    session,
+                    attendanceRows
+                  )
+                }
+              </div>
+
+            </details>
+          `
+          : ""
+      }
+
 
       <details class="training-v2-details">
-        <summary>LOA Coverage</summary>
+
+        <summary>
+          LOA Coverage
+        </summary>
 
         <div class="training-v2-description">
-          ${blockedByLoa.length
-            ? renderProfileCards(blockedByLoa)
-            : `<span class="muted">No approved LOA found for this training date.</span>`
+
+          ${
+            blockedByLoa.length
+              ? renderProfileCards(
+                  blockedByLoa
+                )
+              : `
+                  <span class="muted">
+                    No approved LOA found
+                    for this training date.
+                  </span>
+                `
           }
+
         </div>
+
       </details>
 
-      <details class="training-v2-details" open>
-        <summary>Description</summary>
+
+      <details
+        class="training-v2-details"
+        open
+      >
+
+        <summary>
+          Description
+        </summary>
 
         <div class="training-v2-description">
-          ${escapeHtml(session.description || "-").replaceAll("\n", "<br>")}
+
+          ${
+            escapeHtml(
+              session.description || "-"
+            ).replaceAll(
+              "\n",
+              "<br>"
+            )
+          }
+
         </div>
+
       </details>
 
+
       <details class="training-v2-details">
-        <summary>After Action Review</summary>
+
+        <summary>
+          After Action Review
+        </summary>
 
         <div class="training-v2-aar">
 
-          ${renderAar(session, canAar)}
+          ${
+            renderAar(
+              session,
+              canAar
+            )
+          }
 
-          ${canAar ? `
-            <div class="button-row aar-actions">
-              <button class="btn btn-primary" type="button" id="save-aar-button">Save AAR</button>
-            </div>
-          ` : ""}
+
+          ${
+            canAar
+              ? `
+                <div class="button-row aar-actions">
+
+                  <button
+                    class="btn btn-primary"
+                    type="button"
+                    id="save-aar-button"
+                  >
+                    Save AAR
+                  </button>
+
+                </div>
+              `
+              : ""
+          }
 
         </div>
+
       </details>
 
-      ${canManage ? `
-        <details class="training-v2-details danger-details">
-          <summary>Danger Zone</summary>
 
-          <div class="danger-zone">
-            <div>
-              <strong>Delete Training</strong>
-              <span>This permanently deletes the training session.</span>
-            </div>
+      ${
+        canManage
+          ? `
+            <details
+              class="training-v2-details danger-details"
+            >
 
-            <button class="btn btn-danger" type="button" id="delete-training-button">Delete Training</button>
-          </div>
-        </details>
-      ` : ""}
+              <summary>
+                Danger Zone
+              </summary>
+
+              <div class="danger-zone">
+
+                <div>
+
+                  <strong>
+                    Delete Training
+                  </strong>
+
+                  <span>
+                    This permanently deletes
+                    the training session.
+                  </span>
+
+                </div>
+
+
+                <button
+                  class="btn btn-danger"
+                  type="button"
+                  id="delete-training-button"
+                >
+                  Delete Training
+                </button>
+
+              </div>
+
+            </details>
+          `
+          : ""
+      }
+
     </div>
   `;
-const attendingButton =
-  document.getElementById("attending-button");
 
-const notAttendingButton =
-  document.getElementById("not-attending-button");
 
-if (attendingButton) {
-  attendingButton.addEventListener("click", () => {
-    saveAttendance(session.id, "ATTENDING");
-  });
-}
-
-if (notAttendingButton) {
-  notAttendingButton.addEventListener("click", () => {
-    saveAttendance(session.id, "NOT_ATTENDING");
-  });
-}
-
-el.viewer.querySelectorAll("[data-session-status]").forEach(select => {
-  select.addEventListener("change", async () => {
-    const sessionId = Number(select.dataset.sessionStatus);
-    const newStatus = select.value;
-
-    await updateSessionStatusFromList(
-      sessionId,
-      newStatus,
-      select
+  const attendingButton =
+    document.getElementById(
+      "attending-button"
     );
-  });
-});
 
-if (admin) {
-  bindAdminTrainingControls(session);
-}
 
-  if (canManage) {
-    bindAdminAttendanceBoard(session.id);
-    bindAdminMarkingTable();
+  const notAttendingButton =
+    document.getElementById(
+      "not-attending-button"
+    );
 
-    const deleteButton = document.getElementById("delete-training-button");
-    if (deleteButton) {
-      deleteButton.addEventListener("click", () => deleteTraining(session.id));
-    }
+
+  if (attendingButton) {
+
+    attendingButton.addEventListener(
+      "click",
+      () => {
+
+        saveAttendance(
+          session.id,
+          "ATTENDING"
+        );
+
+      }
+    );
+
   }
 
+
+  if (notAttendingButton) {
+
+    notAttendingButton.addEventListener(
+      "click",
+      () => {
+
+        saveAttendance(
+          session.id,
+          "NOT_ATTENDING"
+        );
+
+      }
+    );
+
+  }
+
+
+  el.viewer
+    .querySelectorAll(
+      "[data-session-status]"
+    )
+    .forEach(
+      select => {
+
+        select.addEventListener(
+          "change",
+          async () => {
+
+            const sessionId =
+              Number(
+                select.dataset
+                  .sessionStatus
+              );
+
+            const newStatus =
+              select.value;
+
+
+            await updateSessionStatusFromList(
+              sessionId,
+              newStatus,
+              select
+            );
+
+          }
+        );
+
+      }
+    );
+
+
+  if (admin) {
+    bindAdminTrainingControls(
+      session
+    );
+  }
+
+
+  if (canManage) {
+
+    bindAdminAttendanceBoard(
+      session.id
+    );
+
+    bindAdminMarkingTable();
+
+
+    const deleteButton =
+      document.getElementById(
+        "delete-training-button"
+      );
+
+
+    if (deleteButton) {
+
+      deleteButton.addEventListener(
+        "click",
+        () => {
+
+          deleteTraining(
+            session.id
+          );
+
+        }
+      );
+
+    }
+
+  }
+
+
   if (canAar) {
-    document.getElementById("save-aar-button").addEventListener("click", () => saveAar(session.id));
+
+    const saveAarButton =
+      document.getElementById(
+        "save-aar-button"
+      );
+
+
+    if (saveAarButton) {
+
+      saveAarButton.addEventListener(
+        "click",
+        () => {
+
+          saveAar(
+            session.id
+          );
+
+        }
+      );
+
+    }
+
   }
 }
 
@@ -1302,9 +1866,62 @@ function accountExistedForSession(profile, session) {
   return sessionStartedAt >= accountCreatedAt;
 }
 
+function sessionRosterUserIds(session) {
+  if (!session) {
+    return new Set();
+  }
+
+  return new Set(
+    state.sessionMembers
+      .filter(row => {
+        return (
+          Number(row.session_id) ===
+          Number(session.id)
+        );
+      })
+      .map(row => {
+        return String(row.user_id);
+      })
+  );
+}
+
+
+function isProfileEligibleForSession(profile, session) {
+  if (!profile || !session) {
+    return false;
+  }
+
+  if (
+    !accountExistedForSession(
+      profile,
+      session
+    )
+  ) {
+    return false;
+  }
+
+  // Normal training applies to everybody
+  // who otherwise qualifies.
+  if (!session.target_green_team_class) {
+    return true;
+  }
+
+  // Class-specific training only applies
+  // to users snapshotted into its roster.
+  const rosterUserIds =
+    sessionRosterUserIds(session);
+
+  return rosterUserIds.has(
+    String(profile.id)
+  );
+}
+
 function getEligibleProfilesForSession(session) {
   return state.profiles.filter(profile => {
-    return accountExistedForSession(profile, session);
+    return isProfileEligibleForSession(
+      profile,
+      session
+    );
   });
 }
 
@@ -1903,10 +2520,18 @@ async function saveAttendance(sessionId, attendance) {
     return;
   }
 
-  if (!accountExistedForSession(state.profile, session)) {
+  if (
+    !isProfileEligibleForSession(
+      state.profile,
+      session
+    )
+  ) {
     alert(
-      "This training occurred before your account was created and does not apply to your attendance."
+      session.target_green_team_class
+        ? `Hey, this training is only for Green Team Class ${session.target_green_team_class}. It is not assigned to your class.`
+        : "This training is not assigned to you."
     );
+
     return;
   }
 

@@ -380,19 +380,84 @@ document
 export function renderPortalLayout(activePage = "") {
   _0x83fa();
 
-  const navMount = document.getElementById("portal-nav");
-  const sidebarMount = document.getElementById("portal-sidebar");
+  const navMount =
+    document.getElementById(
+      "portal-nav"
+    );
+
+  const sidebarMount =
+    document.getElementById(
+      "portal-sidebar"
+    );
+
 
   if (navMount) {
     navMount.innerHTML = `
-      <a class="${activePage === "home" ? "active" : ""}" href="/member/">Home</a>
-      <a class="${activePage === "scheduling" ? "active" : ""}" href="/member/scheduling/">Scheduling</a>
-      <a class="${activePage === "loa" ? "active" : ""}" href="/member/loa/">LOA</a>
-      <a class="${activePage === "documentation" ? "active" : ""}" href="/member/documentation/">Documentation</a>
-      <a class="${activePage === "operational" ? "active" : ""}" href="/member/operational/">Operational</a>
-      <a class="intelligence-only-link ${activePage === "intelligence" ? "active" : ""}" href="/member/intelligence/" style="display:none;">Intelligence</a>
-      <a class="${activePage === "training" ? "active" : ""}" href="/member/training/">Training</a>
-      <a class="orbat-only-link ${activePage === "orbat" ? "active" : ""}" href="/member/orbat/" style="display:none;">ORBAT</a>
+      <a
+        class="${activePage === "home" ? "active" : ""}"
+        href="/member/"
+      >
+        Home
+      </a>
+
+      <a
+        class="${activePage === "scheduling" ? "active" : ""}"
+        href="/member/scheduling/"
+      >
+        Scheduling
+      </a>
+
+      <a
+        class="${activePage === "loa" ? "active" : ""}"
+        href="/member/loa/"
+      >
+        LOA
+      </a>
+
+      <a
+        class="${activePage === "kit-logistics" ? "active" : ""}"
+        href="/member/kit-logistics/"
+      >
+        Kit Logistics Request
+      </a>
+
+      <a
+        class="${activePage === "documentation" ? "active" : ""}"
+        href="/member/documentation/"
+      >
+        Documentation
+      </a>
+
+      <a
+        class="${activePage === "operational" ? "active" : ""}"
+        href="/member/operational/"
+      >
+        Operational
+      </a>
+
+      <a
+        class="intelligence-only-link ${activePage === "intelligence" ? "active" : ""}"
+        href="/member/intelligence/"
+        style="display:none;"
+      >
+        Intelligence
+      </a>
+
+      <a
+        class="${activePage === "training" ? "active" : ""}"
+        href="/member/training/"
+      >
+        Training
+      </a>
+
+      <a
+        class="orbat-only-link ${activePage === "orbat" ? "active" : ""}"
+        href="/member/orbat/"
+        style="display:none;"
+      >
+        ORBAT
+      </a>
+
       <a
         class="${activePage === "profile" ? "active" : ""}"
         href="/member/profile/"
@@ -417,36 +482,144 @@ export function renderPortalLayout(activePage = "") {
       </a>
 
       <div class="nav-right">
-        <img id="nav-avatar" class="nav-avatar" src="/nsw.png" alt="Profile picture">
-        <span>Logged in as: <span id="session-label">Loading...</span></span>
-        <a id="logout-button" onclick="doLogout()" style="cursor:pointer">Log Out</a>
+        <img
+          id="nav-avatar"
+          class="nav-avatar"
+          src="/nsw.png"
+          alt="Profile picture"
+        >
+
+        <span>
+          Logged in as:
+          <span id="session-label">
+            Loading...
+          </span>
+        </span>
+
+        <a
+          id="logout-button"
+          onclick="doLogout()"
+          style="cursor:pointer"
+        >
+          Log Out
+        </a>
       </div>
     `;
   }
 
+
   if (sidebarMount) {
     sidebarMount.innerHTML = `
       <div class="sidebar-user-box">
-        <strong id="sidebar-name">Loading...</strong>
-        Role: <span id="sidebar-role">Loading...</span>
+        <strong id="sidebar-name">
+          Loading...
+        </strong>
+
+        Role:
+        <span id="sidebar-role">
+          Loading...
+        </span>
       </div>
 
-      <div class="sidebar-section">Portal</div>
-      <a class="sidebar-link ${activePage === "home" ? "active" : ""}" href="/member/">Home</a>
 
-      <div class="sidebar-section">Personnel</div>
-      <a class="sidebar-link ${activePage === "profile" ? "active" : ""}" href="/member/profile/">Profile</a>
-      <a class="sidebar-link ${activePage === "scheduling" ? "active" : ""}" href="/member/scheduling/">Scheduling</a>
-      <a class="sidebar-link ${activePage === "loa" ? "active" : ""}" href="/member/loa/">LOA</a>
-      <a class="sidebar-link ${activePage === "qualifications" ? "active" : ""}" href="/member/qualifications/">Qualifications</a>
+      <div class="sidebar-section">
+        Portal
+      </div>
 
-      <div class="sidebar-section">Operations & Training</div>
-      <a class="sidebar-link ${activePage === "operational" ? "active" : ""}" href="/member/operational/">Operational</a>
-      <a class="sidebar-link intelligence-only-link ${activePage === "intelligence" ? "active" : ""}" href="/member/intelligence/" style="display:none;">Intelligence</a>
-      <a class="sidebar-link ${activePage === "training" ? "active" : ""}" href="/member/training/">Training</a>
-      <div class="sidebar-section">Resources</div>
-      <a class="sidebar-link ${activePage === "documentation" ? "active" : ""}" href="/member/documentation/">Documentation</a>
-      <a class="sidebar-link orbat-only-link ${activePage === "orbat" ? "active" : ""}" href="/member/orbat/" style="display:none;">ORBAT</a>
+      <a
+        class="sidebar-link ${activePage === "home" ? "active" : ""}"
+        href="/member/"
+      >
+        Home
+      </a>
+
+
+      <div class="sidebar-section">
+        Personnel
+      </div>
+
+      <a
+        class="sidebar-link ${activePage === "profile" ? "active" : ""}"
+        href="/member/profile/"
+      >
+        Profile
+      </a>
+
+      <a
+        class="sidebar-link ${activePage === "scheduling" ? "active" : ""}"
+        href="/member/scheduling/"
+      >
+        Scheduling
+      </a>
+
+      <a
+        class="sidebar-link ${activePage === "loa" ? "active" : ""}"
+        href="/member/loa/"
+      >
+        LOA
+      </a>
+
+      <a
+        class="sidebar-link ${activePage === "kit-logistics" ? "active" : ""}"
+        href="/member/kit-logistics/"
+      >
+        Kit Logistics Request
+      </a>
+
+      <a
+        class="sidebar-link ${activePage === "qualifications" ? "active" : ""}"
+        href="/member/qualifications/"
+      >
+        Qualifications
+      </a>
+
+
+      <div class="sidebar-section">
+        Operations & Training
+      </div>
+
+      <a
+        class="sidebar-link ${activePage === "operational" ? "active" : ""}"
+        href="/member/operational/"
+      >
+        Operational
+      </a>
+
+      <a
+        class="sidebar-link intelligence-only-link ${activePage === "intelligence" ? "active" : ""}"
+        href="/member/intelligence/"
+        style="display:none;"
+      >
+        Intelligence
+      </a>
+
+      <a
+        class="sidebar-link ${activePage === "training" ? "active" : ""}"
+        href="/member/training/"
+      >
+        Training
+      </a>
+
+
+      <div class="sidebar-section">
+        Resources
+      </div>
+
+      <a
+        class="sidebar-link ${activePage === "documentation" ? "active" : ""}"
+        href="/member/documentation/"
+      >
+        Documentation
+      </a>
+
+      <a
+        class="sidebar-link orbat-only-link ${activePage === "orbat" ? "active" : ""}"
+        href="/member/orbat/"
+        style="display:none;"
+      >
+        ORBAT
+      </a>
+
 
       <div
         class="sidebar-section management-only-link"
@@ -473,7 +646,9 @@ export function renderPortalLayout(activePage = "") {
     `;
   }
 
+
   updateLayoutUserInfo();
+
   initializePortalTrainingAlerts();
 }
 

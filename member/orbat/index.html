@@ -485,6 +485,24 @@
 Order of Battle displaying Green Team, Troop Headquarters, Golf Team,
 Hotel Team, India Team, and attached specialist personnel. Green Team automatically displays all active Candidate-ranked personnel. Personnel are assigned automatically based on callsign designation.
           </div>
+          <div class="orbat-tabs">
+  <button
+    id="orbat-tab-button"
+    class="orbat-tab-button active"
+    type="button"
+  >
+    ORBAT
+  </button>
+
+  <button
+    id="class-tab-button"
+    class="orbat-tab-button hidden"
+    type="button"
+  >
+    Green Team Classes
+  </button>
+</div>
+<div id="orbat-tab-panel">
           <div class="toolbar">
             <input id="search-input" type="search" placeholder="Search name, rank, callsign, role">
             <button id="refresh-btn" class="btn" type="button">Refresh</button>
@@ -509,6 +527,49 @@ Hotel Team, India Team, and attached specialist personnel. Green Team automatica
             </div>
           </div>
           <div id="orbat-board" class="orbat-board"></div>
+          </div>
+          <div
+  id="class-tab-panel"
+  class="hidden"
+>
+  <div class="notice-box">
+    <h4>
+      Green Team Class Assignment
+    </h4>
+
+    Assign personnel to Green Team classes
+    031 through 040.
+
+    Changes are saved only when you press
+    <strong>
+      Apply &amp; Save
+    </strong>.
+
+    This panel is restricted to
+    ADMIN and SUPERADMIN profiles.
+  </div>
+
+  <div
+    id="class-assignment-output"
+  ></div>
+
+  <div class="class-assignment-actions">
+
+    <button
+      id="save-class-assignments"
+      class="btn"
+      type="button"
+    >
+      Apply &amp; Save
+    </button>
+
+    <span
+      id="class-assignment-status"
+      class="muted"
+    ></span>
+
+  </div>
+</div>
         </section>
       </main>
     </div>

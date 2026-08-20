@@ -883,6 +883,45 @@
                       Full Troop without Green Team
                     </option>
                     <option value="GREEN">Green Team</option>
+                    <option value="CLASS_031">
+                      Green Team Class 031
+                    </option>
+
+                    <option value="CLASS_032">
+                      Green Team Class 032
+                    </option>
+
+                    <option value="CLASS_033">
+                      Green Team Class 033
+                    </option>
+
+                    <option value="CLASS_034">
+                      Green Team Class 034
+                    </option>
+
+                    <option value="CLASS_035">
+                      Green Team Class 035
+                    </option>
+
+                    <option value="CLASS_036">
+                      Green Team Class 036
+                    </option>
+
+                    <option value="CLASS_037">
+                      Green Team Class 037
+                    </option>
+
+                    <option value="CLASS_038">
+                      Green Team Class 038
+                    </option>
+
+                    <option value="CLASS_039">
+                      Green Team Class 039
+                    </option>
+
+                    <option value="CLASS_040">
+                      Green Team Class 040
+                    </option>
                     <option value="GOLF">Golf Team</option>
                     <option value="HOTEL">Hotel Team</option>
                     <option value="INDIA">India Team</option>
@@ -1098,6 +1137,20 @@
 
       const SLOT_MINUTES = 60;
       const SLOTS_PER_DAY = 24;
+
+      const GREEN_TEAM_CLASSES =
+  new Set([
+    "031",
+    "032",
+    "033",
+    "034",
+    "035",
+    "036",
+    "037",
+    "038",
+    "039",
+    "040"
+  ]);
 
       const TEAM_FILTERS = {
         GREEN: ["Candidate"],
@@ -1491,11 +1544,64 @@
         return profilesById.get(userId)?.display_name || userId;
       }
 
+      function isGreenTeamClassFilter(
+  value
+) {
+  const normalized =
+    String(
+      value || ""
+    );
+
+  if (
+    !normalized.startsWith(
+      "CLASS_"
+    )
+  ) {
+    return false;
+  }
+
+  const classNumber =
+    normalized.slice(6);
+
+  return GREEN_TEAM_CLASSES.has(
+    classNumber
+  );
+}
+
       function selectedCallsigns() {
         return TEAM_FILTERS[teamFilter.value] || TEAM_FILTERS.FULL_WITH_GREEN;
       }
 
       function filteredMembers() {
+const filterValue =
+  teamFilter.value;
+
+
+if (
+  isGreenTeamClassFilter(
+    filterValue
+  )
+) {
+
+  const selectedClass =
+    filterValue.slice(6);
+
+
+  return members.filter(
+    member => {
+
+      return (
+        String(
+          member.green_team_class
+          || ""
+        )
+        === selectedClass
+      );
+
+    }
+  );
+}
+
         const allowed = new Set(selectedCallsigns());
 
         return members.filter((member) => {
@@ -2254,9 +2360,9 @@
       async function loadProfiles() {
         const { data, error } = await supabase
           .from("profiles")
-          .select(
-            "id,user_id,display_name,role,status,avatar_url,naval_rank,callsign,discord_name,steam_name",
-          )
+.select(
+  "id,user_id,display_name,role,status,avatar_url,naval_rank,callsign,discord_name,steam_name,green_team_class"
+)
           .eq("status", "ACTIVE")
           .order("display_name", { ascending: true });
 
@@ -2848,9 +2954,25 @@
         }
 
         const savedTeamFilter = localStorage.getItem("schedulingTeamFilter");
-        if (savedTeamFilter && TEAM_FILTERS[savedTeamFilter]) {
-          teamFilter.value = savedTeamFilter;
-        }
+if (
+  savedTeamFilter
+  &&
+  (
+    TEAM_FILTERS[
+      savedTeamFilter
+    ]
+
+    ||
+
+    isGreenTeamClassFilter(
+      savedTeamFilter
+    )
+  )
+) {
+
+  teamFilter.value =
+    savedTeamFilter;
+}
 
         includeLoaCheckbox.checked =
           localStorage.getItem("schedulingIncludeLoa") === "1";

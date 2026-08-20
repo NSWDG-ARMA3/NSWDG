@@ -1093,6 +1093,72 @@
         background: #fdf0f0;
       }
 
+      .orbat-tabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #bbb;
+  padding-bottom: 6px;
+}
+
+.orbat-tab-button {
+  border: 1px solid #9aa9b7;
+  background: #eef3f7;
+  color: #1d3f5e;
+  padding: 6px 10px;
+  font-size: 11px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.orbat-tab-button.active {
+  background: #1d3f5e;
+  color: #fff;
+  border-color: #1d3f5e;
+}
+
+.class-assignment-table-wrap {
+  overflow-x: auto;
+  border: 1px solid #bbb;
+  background: #fff;
+}
+
+.class-assignment-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.class-assignment-table th,
+.class-assignment-table td {
+  border-bottom: 1px solid #ddd;
+  padding: 7px 8px;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.class-assignment-table th {
+  background: #eef2f5;
+  color: #1d3f5e;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: .4px;
+}
+
+.class-assignment-table select {
+  min-width: 120px;
+  padding: 5px;
+  border: 1px solid #999;
+  background: #fff;
+  font-size: 11px;
+}
+
+.class-assignment-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
       .hidden {
         display: none !important;
       }
@@ -3055,6 +3121,7 @@
   profile,
   attendanceRows,
   sessions,
+  sessionMembershipBySession = new Map(),
 ) {
   const accountCreatedAt = profile.account_created_at
     ? new Date(profile.account_created_at)
@@ -3063,19 +3130,48 @@
   /*
    * Only evaluate sessions that occurred after the member's
    * account existed.
+   *
+   * For class-specific sessions, only evaluate the session
+   * when the member was part of that session's snapshotted
+   * class roster.
    */
   const applicableSessions = sessions.filter((session) => {
-    if (!accountCreatedAt) {
+    if (
+      accountCreatedAt &&
+      new Date(session.start_at) < accountCreatedAt
+    ) {
+      return false;
+    }
+
+    /*
+     * Normal training applies to everyone.
+     */
+    if (!session.target_green_team_class) {
       return true;
     }
 
-    return new Date(session.start_at) >= accountCreatedAt;
+    /*
+     * Class-specific training only applies to members
+     * snapshotted into the session roster.
+     */
+    const roster = sessionMembershipBySession.get(
+      String(session.id),
+    );
+
+    return Boolean(
+      roster?.has(
+        String(profile.id),
+      ),
+    );
   });
 
   const rowsBySession = new Map();
 
   for (const row of attendanceRows) {
-    rowsBySession.set(String(row.session_id), row);
+    rowsBySession.set(
+      String(row.session_id),
+      row,
+    );
   }
 
   let attendedSessions = 0;
@@ -3095,7 +3191,9 @@
   let accountableSessions = 0;
 
   for (const session of applicableSessions) {
-    const row = rowsBySession.get(String(session.id));
+    const row = rowsBySession.get(
+      String(session.id),
+    );
 
     /*
      * No attendance row means the member did not submit
@@ -3214,21 +3312,30 @@
     }
   }
 
-  const totalSessions = applicableSessions.length;
+  const totalSessions =
+    applicableSessions.length;
 
-  const attendancePercent = accountableSessions
-    ? Math.round(
-        (attendedSessions / accountableSessions) * 100,
-      )
-    : 0;
+  const attendancePercent =
+    accountableSessions
+      ? Math.round(
+          (attendedSessions / accountableSessions) *
+            100,
+        )
+      : 0;
 
-  const averageLateness = lateArrivals
-    ? Math.round(totalLateMinutes / lateArrivals)
-    : 0;
+  const averageLateness =
+    lateArrivals
+      ? Math.round(
+          totalLateMinutes / lateArrivals,
+        )
+      : 0;
 
-  const performanceScore = accountableSessions
-    ? Math.round(earnedPoints / accountableSessions)
-    : 0;
+  const performanceScore =
+    accountableSessions
+      ? Math.round(
+          earnedPoints / accountableSessions,
+        )
+      : 0;
 
   return {
     profile,
@@ -3254,7 +3361,9 @@
     loaSessions,
     excusedSessions,
 
-    eligibleSessions: accountableSessions,
+    eligibleSessions:
+      accountableSessions,
+
     excludedSessions:
       loaSessions + excusedSessions,
 
@@ -3262,65 +3371,91 @@
      * New members are not ranked until they have had at least
      * two accountable training opportunities.
      */
-    rankingEligible: accountableSessions >= 2,
+    rankingEligible:
+      accountableSessions >= 2,
   };
 }
 
       async function loadMonthlyMemberHighlights() {
-  const section = document.getElementById(
-    "monthly-highlights",
-  );
+  const section =
+    document.getElementById(
+      "monthly-highlights"
+    );
 
   if (!section) {
     return;
   }
 
-  section.classList.add("visible");
-  section.setAttribute("aria-hidden", "false");
+  section.classList.add(
+    "visible"
+  );
 
-  const month = getAmsterdamMonthRange();
+  section.setAttribute(
+    "aria-hidden",
+    "false"
+  );
+
+  const month =
+    getAmsterdamMonthRange();
 
   setText(
     "monthly-highlights-period",
-    month.label,
+    month.label
   );
+
 
   const [
     profilesResult,
-    sessionsResult,
+    sessionsResult
   ] = await Promise.all([
+
     supabase
       .from("profiles")
-.select(
-  `
-    id,
-    user_id,
-    display_name,
-    callsign,
-    naval_rank,
-    status,
-    avatar_url,
-    account_created_at
-  `,
-)
-      .eq("status", "ACTIVE"),
+      .select(`
+        id,
+        user_id,
+        display_name,
+        callsign,
+        naval_rank,
+        status,
+        avatar_url,
+        account_created_at
+      `)
+      .eq(
+        "status",
+        "ACTIVE"
+      ),
+
 
     supabase
       .from("training_sessions")
-      .select(
-        `
-          id,
-          title,
-          start_at,
-          status,
-          counts_towards_attendance
-        `,
+      .select(`
+        id,
+        title,
+        start_at,
+        status,
+        counts_towards_attendance,
+        target_green_team_class
+      `)
+      .gte(
+        "start_at",
+        month.start
       )
-      .gte("start_at", month.start)
-      .lt("start_at", month.end)
-      .eq("counts_towards_attendance", true)
-      .eq("status", "COMPLETED"),
+      .lt(
+        "start_at",
+        month.end
+      )
+      .eq(
+        "counts_towards_attendance",
+        true
+      )
+      .eq(
+        "status",
+        "COMPLETED"
+      )
+
   ]);
+
 
   if (profilesResult.error) {
     throw profilesResult.error;
@@ -3330,32 +3465,53 @@
     throw sessionsResult.error;
   }
 
-  const profiles = profilesResult.data || [];
-  const sessions = sessionsResult.data || [];
-const sessionIds = sessions.map((session) => session.id);
 
-  if (!profiles.length || !sessionIds.length) {
+  const profiles =
+    profilesResult.data || [];
+
+  const sessions =
+    sessionsResult.data || [];
+
+  const sessionIds =
+    sessions.map(
+      session => session.id
+    );
+
+
+  if (
+    !profiles.length
+    ||
+    !sessionIds.length
+  ) {
+
     renderMonthlyHighlightList(
       "monthly-good-list",
       "monthly-good-count",
       [],
-      "good",
+      "good"
     );
 
     renderMonthlyHighlightList(
       "monthly-concern-list",
       "monthly-concern-count",
       [],
-      "concern",
+      "concern"
     );
 
     return;
   }
 
-  const attendanceResult = await supabase
-    .from("training_attendance")
-    .select(
-      `
+
+  const [
+    attendanceResult,
+    rosterResult
+  ] = await Promise.all([
+
+    supabase
+      .from(
+        "training_attendance"
+      )
+      .select(`
         session_id,
         user_id,
         attendance,
@@ -3364,185 +3520,490 @@ const sessionIds = sessions.map((session) => session.id);
         minutes_left_early,
         excused,
         locked_by_loa_id
-      `,
-    )
-    .in("session_id", sessionIds);
+      `)
+      .in(
+        "session_id",
+        sessionIds
+      ),
+
+
+    supabase
+      .from(
+        "training_session_members"
+      )
+      .select(
+        "session_id,user_id"
+      )
+      .in(
+        "session_id",
+        sessionIds
+      )
+
+  ]);
+
 
   if (attendanceResult.error) {
     throw attendanceResult.error;
   }
 
-  const attendanceByMember = new Map();
+  if (rosterResult.error) {
+    throw rosterResult.error;
+  }
 
-  for (const row of attendanceResult.data || []) {
-    const memberId = String(row.user_id || "");
+
+  /*
+   * Build:
+   *
+   * session ID -> Set of users that were
+   * assigned to that class training
+   */
+  const sessionMembershipBySession =
+    new Map();
+
+
+  for (
+    const row
+    of rosterResult.data || []
+  ) {
+
+    const sessionId =
+      String(
+        row.session_id
+      );
+
+
+    if (
+      !sessionMembershipBySession.has(
+        sessionId
+      )
+    ) {
+
+      sessionMembershipBySession.set(
+        sessionId,
+        new Set()
+      );
+
+    }
+
+
+    sessionMembershipBySession
+      .get(
+        sessionId
+      )
+      .add(
+        String(
+          row.user_id
+        )
+      );
+
+  }
+
+
+  /*
+   * Build:
+   *
+   * member ID -> all attendance rows
+   */
+  const attendanceByMember =
+    new Map();
+
+
+  for (
+    const row
+    of attendanceResult.data || []
+  ) {
+
+    const memberId =
+      String(
+        row.user_id || ""
+      );
+
 
     if (!memberId) {
       continue;
     }
 
-    if (!attendanceByMember.has(memberId)) {
-      attendanceByMember.set(memberId, []);
+
+    if (
+      !attendanceByMember.has(
+        memberId
+      )
+    ) {
+
+      attendanceByMember.set(
+        memberId,
+        []
+      );
+
     }
 
-    attendanceByMember.get(memberId).push(row);
+
+    attendanceByMember
+      .get(
+        memberId
+      )
+      .push(
+        row
+      );
+
   }
 
-  const memberStats = profiles.map((profile) => {
-    const profileIds = [
-      String(profile.id || ""),
-      String(profile.user_id || ""),
-    ].filter(Boolean);
 
-    let rows = [];
+  const memberStats =
+    profiles.map(
+      profile => {
 
-    for (const profileId of profileIds) {
-      const matchingRows =
-        attendanceByMember.get(profileId);
+        /*
+         * Your profiles table contains both
+         * id and user_id.
+         *
+         * Attendance normally uses the auth
+         * UUID, which is profile.id, but this
+         * keeps compatibility with your existing
+         * data.
+         */
+        const profileIds = [
 
-      if (matchingRows) {
-        rows = matchingRows;
-        break;
-      }
-    }
+          String(
+            profile.id || ""
+          ),
 
-return calculateMonthlyMemberStats(
-  profile,
-  rows,
-  sessions,
-);
-  });
+          String(
+            profile.user_id || ""
+          )
 
-  /*
-   * Highest monthly score always becomes Strong Performance.
-   * Ties favor:
-   * 1. More actual attendances
-   * 2. Fewer missing responses
-   * 3. Fewer no-shows
-   * 4. Fewer unexcused absences
-   * 5. Fewer LOA sessions
-   */
-  const rankingPool = memberStats.filter((member) => {
-  return member.rankingEligible;
-});
-
-/*
- * Best member must have attended at least one training.
- * A member with only LOA, excused or missed sessions cannot win.
- */
-const bestPool = rankingPool.filter((member) => {
-  return member.attendedSessions > 0;
-});
-
-const rankedBest = [...bestPool].sort((a, b) => {
-  if (b.performanceScore !== a.performanceScore) {
-    return b.performanceScore - a.performanceScore;
-  }
-
-  if (b.attendedSessions !== a.attendedSessions) {
-    return b.attendedSessions - a.attendedSessions;
-  }
-
-  if (a.missingResponses !== b.missingResponses) {
-    return a.missingResponses - b.missingResponses;
-  }
-
-  if (a.noShows !== b.noShows) {
-    return a.noShows - b.noShows;
-  }
-
-  if (
-    a.unexcusedAbsences !==
-    b.unexcusedAbsences
-  ) {
-    return (
-      a.unexcusedAbsences -
-      b.unexcusedAbsences
-    );
-  }
-
-  if (a.lateArrivals !== b.lateArrivals) {
-    return a.lateArrivals - b.lateArrivals;
-  }
-
-  return a.leftEarly - b.leftEarly;
-});
-
-const rankedWorst = [...rankingPool].sort((a, b) => {
-  if (a.performanceScore !== b.performanceScore) {
-    return a.performanceScore - b.performanceScore;
-  }
-
-  if (b.noShows !== a.noShows) {
-    return b.noShows - a.noShows;
-  }
-
-  if (
-    b.unexcusedAbsences !==
-    a.unexcusedAbsences
-  ) {
-    return (
-      b.unexcusedAbsences -
-      a.unexcusedAbsences
-    );
-  }
-
-  if (
-    b.missingResponses !== a.missingResponses
-  ) {
-    return (
-      b.missingResponses -
-      a.missingResponses
-    );
-  }
-
-  if (a.attendedSessions !== b.attendedSessions) {
-    return a.attendedSessions - b.attendedSessions;
-  }
-
-  if (b.lateArrivals !== a.lateArrivals) {
-    return b.lateArrivals - a.lateArrivals;
-  }
-
-  return b.leftEarly - a.leftEarly;
-});
-
-const strongestMember = rankedBest[0] || null;
-
-let concernMember = rankedWorst[0] || null;
-
-  /*
-   * Do not show the same person on both sides when
-   * there are at least two active members.
-   */
-  if (
-    concernMember &&
-    strongestMember &&
-    memberStats.length > 1 &&
-    String(concernMember.profile.id) ===
-      String(strongestMember.profile.id)
-  ) {
-    concernMember =
-      rankedWorst.find((member) => {
-        return (
-          String(member.profile.id) !==
-          String(strongestMember.profile.id)
+        ].filter(
+          Boolean
         );
-      }) || null;
+
+
+        let rows = [];
+
+
+        for (
+          const profileId
+          of profileIds
+        ) {
+
+          const matchingRows =
+            attendanceByMember.get(
+              profileId
+            );
+
+
+          if (matchingRows) {
+
+            rows =
+              matchingRows;
+
+            break;
+          }
+
+        }
+
+
+        return calculateMonthlyMemberStats(
+          profile,
+          rows,
+          sessions,
+          sessionMembershipBySession
+        );
+
+      }
+    );
+
+
+  /*
+   * Only rank members who have enough
+   * accountable training history.
+   */
+  const rankingPool =
+    memberStats.filter(
+      member => {
+        return member.rankingEligible;
+      }
+    );
+
+
+  /*
+   * Strong Performance:
+   *
+   * Member must have actually attended
+   * at least one applicable session.
+   */
+  const bestPool =
+    rankingPool.filter(
+      member => {
+        return (
+          member.attendedSessions
+          >
+          0
+        );
+      }
+    );
+
+
+  const rankedBest =
+    [...bestPool].sort(
+      (a, b) => {
+
+        if (
+          b.performanceScore
+          !==
+          a.performanceScore
+        ) {
+
+          return (
+            b.performanceScore
+            -
+            a.performanceScore
+          );
+        }
+
+
+        if (
+          b.attendedSessions
+          !==
+          a.attendedSessions
+        ) {
+
+          return (
+            b.attendedSessions
+            -
+            a.attendedSessions
+          );
+        }
+
+
+        if (
+          a.missingResponses
+          !==
+          b.missingResponses
+        ) {
+
+          return (
+            a.missingResponses
+            -
+            b.missingResponses
+          );
+        }
+
+
+        if (
+          a.noShows
+          !==
+          b.noShows
+        ) {
+
+          return (
+            a.noShows
+            -
+            b.noShows
+          );
+        }
+
+
+        if (
+          a.unexcusedAbsences
+          !==
+          b.unexcusedAbsences
+        ) {
+
+          return (
+            a.unexcusedAbsences
+            -
+            b.unexcusedAbsences
+          );
+        }
+
+
+        if (
+          a.lateArrivals
+          !==
+          b.lateArrivals
+        ) {
+
+          return (
+            a.lateArrivals
+            -
+            b.lateArrivals
+          );
+        }
+
+
+        return (
+          a.leftEarly
+          -
+          b.leftEarly
+        );
+      }
+    );
+
+
+  const rankedWorst =
+    [...rankingPool].sort(
+      (a, b) => {
+
+        if (
+          a.performanceScore
+          !==
+          b.performanceScore
+        ) {
+
+          return (
+            a.performanceScore
+            -
+            b.performanceScore
+          );
+        }
+
+
+        if (
+          b.noShows
+          !==
+          a.noShows
+        ) {
+
+          return (
+            b.noShows
+            -
+            a.noShows
+          );
+        }
+
+
+        if (
+          b.unexcusedAbsences
+          !==
+          a.unexcusedAbsences
+        ) {
+
+          return (
+            b.unexcusedAbsences
+            -
+            a.unexcusedAbsences
+          );
+        }
+
+
+        if (
+          b.missingResponses
+          !==
+          a.missingResponses
+        ) {
+
+          return (
+            b.missingResponses
+            -
+            a.missingResponses
+          );
+        }
+
+
+        if (
+          a.attendedSessions
+          !==
+          b.attendedSessions
+        ) {
+
+          return (
+            a.attendedSessions
+            -
+            b.attendedSessions
+          );
+        }
+
+
+        if (
+          b.lateArrivals
+          !==
+          a.lateArrivals
+        ) {
+
+          return (
+            b.lateArrivals
+            -
+            a.lateArrivals
+          );
+        }
+
+
+        return (
+          b.leftEarly
+          -
+          a.leftEarly
+        );
+      }
+    );
+
+
+  const strongestMember =
+    rankedBest[0] || null;
+
+
+  let concernMember =
+    rankedWorst[0] || null;
+
+
+  /*
+   * Don't show the same member in both
+   * Strong Performance and Needs Attention
+   * when another ranked member exists.
+   */
+  if (
+    concernMember
+    &&
+    strongestMember
+    &&
+    memberStats.length > 1
+    &&
+    String(
+      concernMember.profile.id
+    )
+    ===
+    String(
+      strongestMember.profile.id
+    )
+  ) {
+
+    concernMember =
+      rankedWorst.find(
+        member => {
+
+          return (
+            String(
+              member.profile.id
+            )
+            !==
+            String(
+              strongestMember.profile.id
+            )
+          );
+
+        }
+      )
+      || null;
+
   }
+
 
   renderMonthlyHighlightList(
     "monthly-good-list",
     "monthly-good-count",
-    strongestMember ? [strongestMember] : [],
-    "good",
+    strongestMember
+      ? [strongestMember]
+      : [],
+    "good"
   );
+
 
   renderMonthlyHighlightList(
     "monthly-concern-list",
     "monthly-concern-count",
-    concernMember ? [concernMember] : [],
-    "concern",
+    concernMember
+      ? [concernMember]
+      : [],
+    "concern"
   );
 }
 

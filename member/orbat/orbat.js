@@ -14,6 +14,19 @@ const GREEN_TEAM_EDITOR_ROLES = new Set([
   "HQ"
 ]);
 
+const GREEN_TEAM_CLASSES = [
+  "031",
+  "032",
+  "033",
+  "034",
+  "035",
+  "036",
+  "037",
+  "038",
+  "039",
+  "040"
+];
+
 const SPECIALIST_ROLES = {
   EX1: "Master-at-Arms (Military Working Dog Handler/MWDH)",
   EN1: "Explosive Ordnance Disposal Technician (EOD)",
@@ -102,13 +115,95 @@ const statGroups = document.getElementById("stat-groups");
 const statOfficers = document.getElementById("stat-officers");
 const statEnlisted = document.getElementById("stat-enlisted");
 
+const orbatTabButton =
+  document.getElementById(
+    "orbat-tab-button"
+  );
+
+const classTabButton =
+  document.getElementById(
+    "class-tab-button"
+  );
+
+const orbatTabPanel =
+  document.getElementById(
+    "orbat-tab-panel"
+  );
+
+const classTabPanel =
+  document.getElementById(
+    "class-tab-panel"
+  );
+
+const classAssignmentOutput =
+  document.getElementById(
+    "class-assignment-output"
+  );
+
+const saveClassAssignmentsBtn =
+  document.getElementById(
+    "save-class-assignments"
+  );
+
+const classAssignmentStatus =
+  document.getElementById(
+    "class-assignment-status"
+  );
+
 function canViewOrbat(user, profile) {
-const email = String(user?.email || "").trim().toLowerCase();
-const callsign = String(profile?.callsign || "").trim();
-const rank = String(profile?.naval_rank || "").trim().toLowerCase();
-if (SPECIAL_ACCESS_EMAILS.includes(email)) return true;
-if (rank === "candidate") return false;
-return callsign.length > 0;
+  const email =
+    String(
+      user?.email || ""
+    )
+      .trim()
+      .toLowerCase();
+
+  const callsign =
+    String(
+      profile?.callsign || ""
+    )
+      .trim();
+
+  const rank =
+    String(
+      profile?.naval_rank || ""
+    )
+      .trim()
+      .toLowerCase();
+
+  const role =
+    String(
+      profile?.role || ""
+    )
+      .trim()
+      .toUpperCase();
+
+
+  if (
+    SPECIAL_ACCESS_EMAILS.includes(
+      email
+    )
+  ) {
+    return true;
+  }
+
+
+  if (
+    role === "ADMIN"
+    || role === "SUPERADMIN"
+  ) {
+    return true;
+  }
+
+
+  if (
+    rank === "candidate"
+  ) {
+    return false;
+  }
+
+
+  return callsign.length > 0;
 }
 
 function isOrbatMember(profile) {
@@ -147,6 +242,360 @@ function canEditGreenTeam() {
     .toUpperCase();
 
   return GREEN_TEAM_EDITOR_ROLES.has(role);
+}
+
+function isClassAssignmentAdmin() {
+  const role =
+    String(
+      currentProfile?.role || ""
+    )
+      .trim()
+      .toUpperCase();
+
+  return (
+    role === "ADMIN"
+    || role === "SUPERADMIN"
+  );
+}
+
+
+function setOrbatTab(tab) {
+  const showClasses =
+    tab === "classes";
+
+
+  if (
+    showClasses
+    && !isClassAssignmentAdmin()
+  ) {
+    return;
+  }
+
+
+  orbatTabPanel.classList.toggle(
+    "hidden",
+    showClasses
+  );
+
+  classTabPanel.classList.toggle(
+    "hidden",
+    !showClasses
+  );
+
+
+  orbatTabButton.classList.toggle(
+    "active",
+    !showClasses
+  );
+
+  classTabButton.classList.toggle(
+    "active",
+    showClasses
+  );
+
+
+  if (showClasses) {
+    renderClassAssignments();
+  }
+}
+
+
+function classOptions(
+  selectedValue
+) {
+  const selected =
+    String(
+      selectedValue || ""
+    );
+
+  return [
+    `
+      <option
+        value=""
+        ${
+          selected === ""
+            ? "selected"
+            : ""
+        }
+      >
+        Unassigned
+      </option>
+    `,
+
+    ...GREEN_TEAM_CLASSES.map(
+      value => `
+        <option
+          value="${value}"
+          ${
+            selected === value
+              ? "selected"
+              : ""
+          }
+        >
+          Class ${value}
+        </option>
+      `
+    )
+  ].join("");
+}
+
+
+function renderClassAssignments() {
+
+  if (
+    !isClassAssignmentAdmin()
+  ) {
+
+    classAssignmentOutput.innerHTML = `
+      <div class="notice-box error">
+        Only administrators can manage
+        Green Team classes.
+      </div>
+    `;
+
+    return;
+  }
+
+
+  const rows =
+    members
+
+      .filter(member => {
+        return (
+          String(
+            member.status || "ACTIVE"
+          )
+            .toUpperCase()
+          === "ACTIVE"
+        );
+      })
+
+      .sort((a, b) => {
+
+        const aClass =
+          String(
+            a.green_team_class
+            || "999"
+          );
+
+        const bClass =
+          String(
+            b.green_team_class
+            || "999"
+          );
+
+
+        return (
+          aClass.localeCompare(
+            bClass
+          )
+
+          ||
+
+          String(
+            a.display_name || ""
+          ).localeCompare(
+            String(
+              b.display_name || ""
+            )
+          )
+        );
+      });
+
+
+  if (!rows.length) {
+
+    classAssignmentOutput.innerHTML = `
+      <div class="notice-box">
+        No active personnel found.
+      </div>
+    `;
+
+    return;
+  }
+
+
+  classAssignmentOutput.innerHTML = `
+    <div class="class-assignment-table-wrap">
+
+      <table class="class-assignment-table">
+
+        <thead>
+          <tr>
+            <th>Member</th>
+            <th>Rank</th>
+            <th>Callsign</th>
+            <th>Green Team Class</th>
+          </tr>
+        </thead>
+
+        <tbody>
+
+          ${rows.map(
+            member => `
+              <tr>
+
+                <td>
+                  <strong>
+                    ${
+                      escapeHtml(
+                        member.display_name
+                        || member.user_id
+                        || member.id
+                      )
+                    }
+                  </strong>
+                </td>
+
+                <td>
+                  ${
+                    escapeHtml(
+                      member.naval_rank
+                      || ""
+                    )
+                  }
+                </td>
+
+                <td>
+                  ${
+                    escapeHtml(
+                      member.callsign
+                      || "Green Team"
+                    )
+                  }
+                </td>
+
+                <td>
+
+                  <select
+                    data-green-team-class-profile="${
+                      escapeHtml(
+                        member.id
+                      )
+                    }"
+                    data-original-class="${
+                      escapeHtml(
+                        member.green_team_class
+                        || ""
+                      )
+                    }"
+                  >
+
+                    ${
+                      classOptions(
+                        member.green_team_class
+                      )
+                    }
+
+                  </select>
+
+                </td>
+
+              </tr>
+            `
+          ).join("")}
+
+        </tbody>
+
+      </table>
+
+    </div>
+  `;
+}
+
+
+async function saveClassAssignments() {
+
+  if (
+    !isClassAssignmentAdmin()
+  ) {
+
+    alert(
+      "Only administrators can change Green Team class assignments."
+    );
+
+    return;
+  }
+
+
+  const selects =
+    Array.from(
+      classAssignmentOutput
+        .querySelectorAll(
+          "[data-green-team-class-profile]"
+        )
+    );
+
+
+  const assignments =
+    selects
+
+      .filter(select => {
+        return (
+          select.value
+          !==
+          select.dataset.originalClass
+        );
+      })
+
+      .map(select => ({
+        profile_id:
+          select.dataset
+            .greenTeamClassProfile,
+
+        green_team_class:
+          select.value || null
+      }));
+
+
+  if (!assignments.length) {
+
+    classAssignmentStatus.textContent =
+      "No changes to save.";
+
+    return;
+  }
+
+
+  saveClassAssignmentsBtn.disabled =
+    true;
+
+  classAssignmentStatus.textContent =
+    "Saving class assignments...";
+
+
+  const { error } =
+    await supabase.rpc(
+      "admin_set_green_team_classes",
+      {
+        p_assignments:
+          assignments
+      }
+    );
+
+
+  saveClassAssignmentsBtn.disabled =
+    false;
+
+
+  if (error) {
+
+    classAssignmentStatus.textContent =
+      `Save failed: ${error.message}`;
+
+    return;
+  }
+
+
+  classAssignmentStatus.textContent =
+    "Class assignments saved.";
+
+
+  await loadMembers();
+
+  renderClassAssignments();
+
+  renderBoard();
 }
 
 function isGreenTeamMember(member) {
@@ -392,7 +841,8 @@ const { data, error } = await supabase
   callsign,
   steam_name,
   discord_name,
-  green_team_order
+  green_team_order,
+  green_team_class
 `)
 .order("callsign", { ascending: true });
 
@@ -713,6 +1163,13 @@ return;
 }
 
 content.classList.remove("hidden");
+if (
+  isClassAssignmentAdmin()
+) {
+  classTabButton.classList.remove(
+    "hidden"
+  );
+}
 await loadMembers();
 renderBoard();
 } catch (error) {
@@ -724,6 +1181,31 @@ setStatus("Failed to load ORBAT.");
 }
 }
 
+orbatTabButton.addEventListener(
+  "click",
+  () => {
+    setOrbatTab(
+      "orbat"
+    );
+  }
+);
+
+
+classTabButton.addEventListener(
+  "click",
+  () => {
+    setOrbatTab(
+      "classes"
+    );
+  }
+);
+
+
+saveClassAssignmentsBtn
+  .addEventListener(
+    "click",
+    saveClassAssignments
+  );
 searchInput.addEventListener("input", renderBoard);
 refreshBtn.addEventListener("click", async () => {
 try {
