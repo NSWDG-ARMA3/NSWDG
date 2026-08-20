@@ -128,7 +128,6 @@ async function loadSessionAndProfile() {
 }
 
 async function loadData() {
-
   const [
     sessionsResult,
     attendanceResult,
@@ -139,7 +138,12 @@ async function loadData() {
     supabase
       .from("training_sessions")
       .select("*")
-      .order("start_at", { ascending: true }),
+      .order(
+        "start_at",
+        {
+          ascending: true
+        }
+      ),
 
     supabase
       .from("training_attendance")
@@ -148,54 +152,138 @@ async function loadData() {
     supabase
       .from("profiles")
       .select(
-        .select(
-  "id,user_id,display_name,role,status,avatar_url,callsign,naval_rank,account_created_at,green_team_class"
-)
+        "id,user_id,display_name,role,status,avatar_url,callsign,naval_rank,account_created_at,green_team_class"
       )
-      .eq("status", "ACTIVE")
-      .order("display_name", { ascending: true }),
+      .eq(
+        "status",
+        "ACTIVE"
+      )
+      .order(
+        "display_name",
+        {
+          ascending: true
+        }
+      ),
 
     supabase
       .from("loa_requests")
       .select("*")
-      .eq("status", "APPROVED"),
+      .eq(
+        "status",
+        "APPROVED"
+      ),
 
-supabase
-  .from(
-    "training_session_members"
-  )
-  .select(
-    "session_id,user_id"
-  )
+    supabase
+      .from(
+        "training_session_members"
+      )
+      .select(
+        "session_id,user_id"
+      )
   ]);
 
   if (sessionsResult.error) {
-    el.output.innerHTML = `<div class="empty-state">Failed to load training: ${escapeHtml(sessionsResult.error.message)}</div>`;
+    el.output.innerHTML = `
+      <div class="empty-state">
+        Failed to load training:
+        ${escapeHtml(
+          sessionsResult.error.message
+        )}
+      </div>
+    `;
+
     return;
   }
 
   if (attendanceResult.error) {
-    el.output.innerHTML = `<div class="empty-state">Failed to load attendance: ${escapeHtml(attendanceResult.error.message)}</div>`;
+    el.output.innerHTML = `
+      <div class="empty-state">
+        Failed to load attendance:
+        ${escapeHtml(
+          attendanceResult.error.message
+        )}
+      </div>
+    `;
+
     return;
   }
 
-  state.sessions = (sessionsResult.data || []).filter(canViewSession);
-  state.attendance = attendanceResult.data || [];
-  state.profiles = profilesResult.data || [];
-  state.loaRequests = loaResult.data || [];
-  state.sessionMembers =
-  rosterResult.error
-    ? []
-    : (
-        rosterResult.data
-        || []
+  if (profilesResult.error) {
+    el.output.innerHTML = `
+      <div class="empty-state">
+        Failed to load profiles:
+        ${escapeHtml(
+          profilesResult.error.message
+        )}
+      </div>
+    `;
+
+    return;
+  }
+
+  if (loaResult.error) {
+    el.output.innerHTML = `
+      <div class="empty-state">
+        Failed to load LOA data:
+        ${escapeHtml(
+          loaResult.error.message
+        )}
+      </div>
+    `;
+
+    return;
+  }
+
+  if (rosterResult.error) {
+    el.output.innerHTML = `
+      <div class="empty-state">
+        Failed to load training class roster:
+        ${escapeHtml(
+          rosterResult.error.message
+        )}
+      </div>
+    `;
+
+    return;
+  }
+
+  state.sessions =
+    (sessionsResult.data || [])
+      .filter(
+        canViewSession
       );
+
+  state.attendance =
+    attendanceResult.data || [];
+
+  state.profiles =
+    profilesResult.data || [];
+
+  state.loaRequests =
+    loaResult.data || [];
+
+  state.sessionMembers =
+    rosterResult.data || [];
 
   renderSessions();
 
-  if (state.activeSessionId) {
-    const active = state.sessions.find(s => Number(s.id) === Number(state.activeSessionId));
-    if (active) renderViewer(active);
+  if (
+    state.activeSessionId
+  ) {
+    const active =
+      state.sessions.find(
+        session =>
+          Number(session.id) ===
+          Number(
+            state.activeSessionId
+          )
+      );
+
+    if (active) {
+      renderViewer(
+        active
+      );
+    }
   }
 }
 
