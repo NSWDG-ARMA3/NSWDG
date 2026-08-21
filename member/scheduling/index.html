@@ -939,6 +939,10 @@
                     <input type="checkbox" id="include-blanks" />
                     Include blank responses in totals
                   </label>
+                  <label>
+  <input type="checkbox" id="include-enablers" checked />
+  Include enablers in heatmap
+</label>
                 </div>
 
                 <button class="btn btn-primary" id="save-btn" type="button">
@@ -1313,6 +1317,7 @@
       const teamFilter = $("team-filter");
       const includeLoaCheckbox = $("include-loa");
       const includeBlanksCheckbox = $("include-blanks");
+      const includeEnablersCheckbox = $("include-enablers");
 
       function scheduleTimezone() {
         return timezoneSelect.value || "UTC";
@@ -1592,42 +1597,61 @@ async function shiftWeek(days) {
       }
 
       function filteredMembers() {
-const filterValue =
-  teamFilter.value;
+  const filterValue = teamFilter.value;
 
+  let filtered;
 
-if (
-  isGreenTeamClassFilter(
-    filterValue
-  )
-) {
+  if (
+    isGreenTeamClassFilter(
+      filterValue
+    )
+  ) {
+    const selectedClass =
+      filterValue.slice(6);
 
-  const selectedClass =
-    filterValue.slice(6);
-
-
-  return members.filter(
-    member => {
-
-      return (
-        String(
-          member.green_team_class
-          || ""
-        )
-        === selectedClass
+    filtered = members.filter(
+      (member) => {
+        return (
+          String(
+            member.green_team_class || ""
+          ) === selectedClass
+        );
+      }
+    );
+  } else {
+    const allowed =
+      new Set(
+        selectedCallsigns()
       );
 
-    }
-  );
-}
-
-        const allowed = new Set(selectedCallsigns());
-
-        return members.filter((member) => {
-          const code = callsign(member);
-          return allowed.has(code);
-        });
+    filtered = members.filter(
+      (member) => {
+        const code = callsign(member);
+        return allowed.has(code);
       }
+    );
+  }
+
+  if (
+    !includeEnablersCheckbox.checked &&
+    filterValue !== "ENABLERS"
+  ) {
+    const enablerCallsigns =
+      new Set(
+        TEAM_FILTERS.ENABLERS
+      );
+
+    filtered = filtered.filter(
+      (member) => {
+        return !enablerCallsigns.has(
+          callsign(member)
+        );
+      }
+    );
+  }
+
+  return filtered;
+}
 
       function slotLocalDateIso(slotStart) {
         const parts = fmt(scheduleTimezone(), {
@@ -2178,6 +2202,28 @@ if (
         );
         rebuildFilteredViews();
       };
+
+      teamFilter.onchange = () => {
+  localStorage.setItem("schedulingTeamFilter", teamFilter.value);
+  rebuildFilteredViews();
+};
+
+includeLoaCheckbox.onchange = () => {
+  localStorage.setItem(
+    "schedulingIncludeLoa",
+    includeLoaCheckbox.checked ? "1" : "0",
+  );
+  rebuildFilteredViews();
+};
+
+includeEnablersCheckbox.onchange = () => {
+  localStorage.setItem(
+    "schedulingIncludeEnablers",
+    includeEnablersCheckbox.checked ? "1" : "0",
+  );
+
+  rebuildFilteredViews();
+};
 
       includeBlanksCheckbox.onchange = () => {
         localStorage.setItem(
@@ -3187,14 +3233,18 @@ if (
     savedTeamFilter;
 }
 
-        includeLoaCheckbox.checked =
-          localStorage.getItem("schedulingIncludeLoa") === "1";
-        includeBlanksCheckbox.checked =
-          localStorage.getItem("schedulingIncludeBlanks") !== "0";
+includeLoaCheckbox.checked =
+  localStorage.getItem("schedulingIncludeLoa") === "1";
 
-        await loadProfiles();
-        await loadResponses();
-        setupRealtime();
+includeBlanksCheckbox.checked =
+  localStorage.getItem("schedulingIncludeBlanks") !== "0";
+
+includeEnablersCheckbox.checked =
+  localStorage.getItem("schedulingIncludeEnablers") !== "0";
+
+await loadProfiles();
+await loadResponses();
+setupRealtime();
       })();
     </script>
   </body>
