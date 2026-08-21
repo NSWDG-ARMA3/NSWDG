@@ -2681,23 +2681,56 @@ if (
         const changedRows = [];
         const clearedKeys = [];
 
-        for (const [key, value] of dirtySlots.entries()) {
-          if (!keySet.has(key)) {
-            continue;
-          }
+let ignoredDirtySlots = 0;
 
-          if (value) {
-            changedRows.push({
-              user_id: profile.id,
-              slot_start: key,
-              availability: value,
-              note: null,
-              updated_at: new Date().toISOString(),
-            });
-          } else {
-            clearedKeys.push(key);
-          }
-        }
+for (const [key, value] of dirtySlots.entries()) {
+  if (!keySet.has(key)) {
+    ignoredDirtySlots++;
+    continue;
+  }
+
+  if (value) {
+    changedRows.push({
+      user_id: authUser.id,
+      slot_start: key,
+      availability: value,
+      note: null,
+      updated_at: new Date().toISOString(),
+    });
+  } else {
+    clearedKeys.push(key);
+  }
+}
+
+if (ignoredDirtySlots > 0) {
+  isSaving = false;
+  saveBtn.disabled = false;
+  saveBtn.textContent = "Save";
+
+  setStatus(
+    `Save blocked: ${ignoredDirtySlots} unsaved slot(s) belong to a different week. Return to that week and save them first.`,
+    false,
+  );
+
+  return;
+}
+
+if (
+  dirtySlots.size > 0 &&
+  changedRows.length === 0 &&
+  clearedKeys.length === 0
+) {
+  isSaving = false;
+  saveBtn.disabled = false;
+  saveBtn.textContent = "Save";
+
+  setStatus(
+    "Save blocked because the edited availability does not belong to the currently displayed week.",
+    false,
+  );
+
+  return;
+}
 
         try {
           if (clearedKeys.length) {
