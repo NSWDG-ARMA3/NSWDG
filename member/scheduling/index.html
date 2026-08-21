@@ -2607,7 +2607,7 @@ if (
             for (const response of allResponses) {
               const key = new Date(response.slot_start).toISOString();
 
-              if (response.user_id === authUser.id && visibleSet.has(key)) {
+              if (response.user_id === profile.id && visibleSet.has(key)) {
                 mySlots.set(key, response.availability);
               }
             }
@@ -2616,7 +2616,7 @@ if (
               const key = new Date(response.slot_start).toISOString();
 
               if (
-                response.user_id === authUser.id &&
+                response.user_id === profile.id &&
                 visibleSet.has(key) &&
                 !dirtySlots.has(key)
               ) {
@@ -2669,7 +2669,7 @@ if (
 
           if (value) {
             changedRows.push({
-              user_id: authUser.id,
+              user_id: profile.id,
               slot_start: key,
               availability: value,
               note: null,
@@ -2686,7 +2686,7 @@ if (
               const { error } = await supabase
                 .from("scheduling_responses")
                 .delete()
-                .eq("user_id", authUser.id)
+                .eq("user_id", profile.id)
                 .in("slot_start", keyChunk);
 
               if (error) {
@@ -2773,7 +2773,7 @@ if (
             const { error: deleteError } = await supabase
               .from("scheduling_responses")
               .delete()
-              .eq("user_id", authUser.id)
+              .eq("user_id", profile.id)
               .in("slot_start", keyChunk);
 
             if (deleteError) {
@@ -2793,7 +2793,7 @@ if (
             }
 
             rows.push({
-              user_id: authUser.id,
+              user_id: profile.id,
               slot_start: targetKeys[index],
               availability: value,
               note: null,
@@ -2841,7 +2841,7 @@ if (
         const { error } = await supabase
           .from("scheduling_responses")
           .delete()
-          .eq("user_id", authUser.id)
+          .eq("user_id", profile.id)
           .in("slot_start", keys);
 
         if (error) {

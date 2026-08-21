@@ -35,7 +35,8 @@ function isAdminProfile(profile) {
 }
 
 export async function bootPortalChrome() {
-  const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+  const { data: sessionData, error: sessionError } =
+    await supabase.auth.getSession();
 
   if (sessionError || !sessionData.session) {
     window.location.href = "/login/";
@@ -44,57 +45,120 @@ export async function bootPortalChrome() {
 
   const user = sessionData.session.user;
 
-  let profile = {
-    id: user.id,
-    user_id: fallbackUserId(user.email),
-    display_name: fallbackUserId(user.email),
-    role: "MEMBER",
-    status: "ACTIVE",
-    avatar_url: null,
-    avatar_path: null,
-    naval_rank: "Candidate",
-    callsign: null,
-    discord_name: null,
-    discord: null,
-    steam_name: null,
-    steam: null
-  };
+  /*
+   * Resolve the canonical profile ID.
+   *
+   * Normally this is exactly the same UUID as user.id.
+   *
+   * For an account which was recreated and has a compatibility
+   * mapping in profile_auth_aliases, this returns the original
+   * canonical profiles.id instead.
+   */
+  const {
+    data: canonicalProfileId,
+    error: canonicalProfileError
+  } = await supabase.rpc("current_profile_id");
 
-  const { data: profileData } = await supabase
+  if (canonicalProfileError) {
+    console.error(
+      "Failed to resolve canonical profile ID:",
+      canonicalProfileError
+    );
+
+    return null;
+  }
+
+  if (!canonicalProfileId) {
+    console.error(
+      "Authenticated account has no matching member profile.",
+      {
+        authUserId: user.id,
+        email: user.email
+      }
+    );
+
+    await supabase.auth.signOut();
+    window.location.href = "/login/?error=missing_profile";
+    return null;
+  }
+
+  const {
+    data: profileData,
+    error: profileError
+  } = await supabase
     .from("profiles")
     .select("*")
-    .eq("id", user.id)
-    .single();
+    .eq("id", canonicalProfileId)
+    .maybeSingle();
 
-  if (profileData) {
-    profile = {
-      ...profile,
-      ...profileData,
-      avatar_path: profileData.avatar_url,
-      discord: profileData.discord_name,
-      steam: profileData.steam_name
-    };
+  if (profileError) {
+    console.error(
+      "Failed to load member profile:",
+      profileError
+    );
+
+    return null;
   }
+
+  if (!profileData) {
+    console.error(
+      "Canonical member profile does not exist.",
+      {
+        authUserId: user.id,
+        canonicalProfileId,
+        email: user.email
+      }
+    );
+
+    await supabase.auth.signOut();
+    window.location.href = "/login/?error=missing_profile";
+    return null;
+  }
+
+  const profile = {
+    ...profileData,
+    avatar_path: profileData.avatar_url,
+    discord: profileData.discord_name,
+    steam: profileData.steam_name
+  };
 
   const sessionLabel = document.getElementById("session-label");
-  if (sessionLabel) sessionLabel.textContent = profile.display_name;
 
-  const sidebarName = document.getElementById("sidebar-name");
-  if (sidebarName) sidebarName.textContent = profile.display_name;
-
-  const sidebarRole = document.getElementById("sidebar-role");
-  if (sidebarRole) sidebarRole.textContent = profile.role;
-
-  const navAvatar = document.getElementById("nav-avatar");
-  if (navAvatar) navAvatar.src = avatarUrl(profile.avatar_url) || "/nsw.png";
-
-  if (isAdminProfile(profile)) {
-    document.querySelectorAll(".admin-only-link").forEach(link => {
-      link.style.display = "";
-    });
+  if (sessionLabel) {
+    sessionLabel.textContent = profile.display_name;
   }
 
-  const email = String(user.email || "").trim().toLowerCase();
+  const sidebarName = document.getElementById("sidebar-name");
+
+  if (sidebarName) {
+    sidebarName.textContent = profile.display_name;
+  }
+
+  const sidebarRole = document.getElementById("sidebar-role");
+
+  if (sidebarRole) {
+    sidebarRole.textContent = profile.role;
+  }
+
+  const navAvatar = document.getElementById("nav-avatar");
+
+  if (navAvatar) {
+    navAvatar.src =
+      avatarUrl(profile.avatar_url) || "/nsw.png";
+  }
+
+  if (isAdminProfile(profile)) {
+    document
+      .querySelectorAll(".admin-only-link")
+      .forEach((link) => {
+        link.style.display = "";
+      });
+  }
+
+  const email =
+    String(user.email || "")
+      .trim()
+      .toLowerCase();
 
   const canViewOrbat =
     (
@@ -116,5 +180,8 @@ export async function bootPortalChrome() {
     window.location.href = "/login/";
   };
 
-  return { user, profile };
+  return {
+    user,
+    profile
+  };
 }
