@@ -2765,11 +2765,53 @@ if (
             }
           }
 
-          dirtySlots.clear();
-          isDirty = false;
-          setStatus("Availability saved successfully.", true);
+const verificationKeys = changedRows.map(
+  (row) => row.slot_start
+);
 
-          await loadResponses({ force: true });
+if (verificationKeys.length) {
+  const { data: verifiedRows, error: verifyError } =
+    await supabase
+      .from("scheduling_responses")
+      .select("slot_start, availability")
+      .eq("user_id", authUser.id)
+      .in("slot_start", verificationKeys);
+
+  if (verifyError) {
+    throw new Error(
+      `Availability was sent, but verification failed: ${verifyError.message}`
+    );
+  }
+
+  const verifiedMap = new Map(
+    (verifiedRows || []).map((row) => [
+      new Date(row.slot_start).toISOString(),
+      row.availability,
+    ])
+  );
+
+  const missingRows = changedRows.filter((row) => {
+    const key = new Date(row.slot_start).toISOString();
+
+    return verifiedMap.get(key) !== row.availability;
+  });
+
+  if (missingRows.length > 0) {
+    throw new Error(
+      `Save verification failed. ${missingRows.length} availability slot(s) were not confirmed by the database. Your unsaved changes have been kept.`
+    );
+  }
+}
+
+dirtySlots.clear();
+isDirty = false;
+
+setStatus(
+  "Availability saved and verified successfully.",
+  true
+);
+
+await loadResponses({ force: true });
 
           if (pendingRealtimeReload) {
             pendingRealtimeReload = false;
@@ -2785,6 +2827,19 @@ if (
       }
 
       async function copyWeekForward() {
+
+        if (isSaving) {
+  setStatus("Please wait for availability to finish saving.", false);
+  return;
+}
+
+if (isDirty) {
+  setStatus(
+    "Save your current availability before using Copy Forward.",
+    false,
+  );
+  return;
+}
         const weekCount = Number.parseInt(copyWeeksCountInput.value, 10);
 
         if (!Number.isInteger(weekCount) || weekCount < 1 || weekCount > 12) {
@@ -2880,6 +2935,18 @@ if (
       }
 
       async function clearWeek() {
+        if (isSaving) {
+  setStatus("Please wait for availability to finish saving.", false);
+  return;
+}
+
+if (isDirty) {
+  setStatus(
+    "Save or discard your current unsaved availability before clearing the week.",
+    false,
+  );
+  return;
+}
         const confirmed = confirm(
           "Clear all of your availability for this selected week in the selected timezone?",
         );
@@ -2937,11 +3004,28 @@ if (
           )
           .subscribe();
       }
+window.doLogout = async () => {
+  if (isSaving) {
+    setStatus("Please wait for availability to finish saving.", false);
+    return;
+  }
 
-      window.doLogout = async () => {
-        await supabase.auth.signOut();
-        location.href = "/login/";
-      };
+  if (isDirty) {
+    const shouldLogout = window.confirm(
+      "You have unsaved availability changes. Logging out will discard those changes.\n\nPress Cancel and save your availability first."
+    );
+
+    if (!shouldLogout) {
+      return;
+    }
+
+    dirtySlots.clear();
+    isDirty = false;
+  }
+
+  await supabase.auth.signOut();
+  location.href = "/login/";
+};
 
       saveBtn.onclick = saveAvailability;
       refreshBtn.onclick = loadResponses;
@@ -2968,12 +3052,57 @@ if (
       document.addEventListener("mouseup", finishDrag);
       window.addEventListener("blur", finishDrag);
 
-      timezoneSelect.onchange = async () => {
-        localStorage.setItem("schedulingTimezone", scheduleTimezone());
+      window.addEventListener("beforeunload", (event) => {
+        if (!isDirty || isSaving) {
+          return;
+        }
 
-        // The new load sequence makes every older in-progress request stale.
-        await loadResponses();
-      };
+        event.preventDefault();
+
+        // Required for browsers that still use returnValue
+        event.returnValue = "";
+      });
+
+let previousTimezoneValue = timezoneSelect.value;
+
+timezoneSelect.onfocus = () => {
+  previousTimezoneValue = timezoneSelect.value;
+};
+
+timezoneSelect.onchange = async () => {
+  if (isSaving) {
+    timezoneSelect.value = previousTimezoneValue;
+    setStatus("Please wait for availability to finish saving.", false);
+    return;
+  }
+
+  if (isDirty) {
+    const requestedTimezone = timezoneSelect.value;
+
+    const shouldChangeTimezone = window.confirm(
+      "You have unsaved availability changes. Changing timezone will reload the scheduling view and discard those changes.\n\nPress Cancel and save your availability first."
+    );
+
+    if (!shouldChangeTimezone) {
+      timezoneSelect.value = previousTimezoneValue;
+      return;
+    }
+
+    dirtySlots.clear();
+    isDirty = false;
+
+    timezoneSelect.value = requestedTimezone;
+  }
+
+  previousTimezoneValue = timezoneSelect.value;
+
+  localStorage.setItem(
+    "schedulingTimezone",
+    scheduleTimezone()
+  );
+
+  await loadResponses({ force: true });
+};
 
 let previousWeekValue = weekInput.value;
 
