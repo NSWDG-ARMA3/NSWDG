@@ -1340,10 +1340,29 @@
         return isoDate(date);
       }
 
-      function shiftWeek(days) {
-        weekInput.value = addDays(weekInput.value, days);
-        loadResponses();
-      }
+async function shiftWeek(days) {
+  if (isSaving) {
+    setStatus("Please wait for availability to finish saving.", false);
+    return;
+  }
+
+  if (isDirty) {
+    const shouldLeave = window.confirm(
+      "You have unsaved availability changes. If you change weeks now, those changes will be lost.\n\nPress Cancel and save your availability first."
+    );
+
+    if (!shouldLeave) {
+      return;
+    }
+
+    dirtySlots.clear();
+    isDirty = false;
+  }
+
+  weekInput.value = addDays(weekInput.value, days);
+
+  await loadResponses({ force: true });
+}
 
       function fmt(timezone, options) {
         return new Intl.DateTimeFormat("en-GB", {
@@ -2923,9 +2942,41 @@ if (
         await loadResponses();
       };
 
-      weekInput.onchange = async () => {
-        await loadResponses();
-      };
+let previousWeekValue = weekInput.value;
+
+weekInput.onfocus = () => {
+  previousWeekValue = weekInput.value;
+};
+
+weekInput.onchange = async () => {
+  if (isSaving) {
+    weekInput.value = previousWeekValue;
+    setStatus("Please wait for availability to finish saving.", false);
+    return;
+  }
+
+  if (isDirty) {
+    const requestedWeek = weekInput.value;
+
+    const shouldLeave = window.confirm(
+      "You have unsaved availability changes. If you change weeks now, those changes will be lost.\n\nPress Cancel and save your availability first."
+    );
+
+    if (!shouldLeave) {
+      weekInput.value = previousWeekValue;
+      return;
+    }
+
+    dirtySlots.clear();
+    isDirty = false;
+
+    weekInput.value = requestedWeek;
+  }
+
+  previousWeekValue = weekInput.value;
+
+  await loadResponses({ force: true });
+};
 
       (async function init() {
         weekInput.value = getNextMonday();
