@@ -66,6 +66,16 @@
       border-bottom: 1px solid #1d3f5e;
     }
 
+    .branch-control {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 6px;
+}
+
+.branch-control .btn {
+  white-space: nowrap;
+}
+
     .portal-nav a {
       color: #cde;
       text-decoration: none;
@@ -522,13 +532,23 @@
               </div>
 
               <div class="form-group">
-                <label for="selected-email">Account Email</label>
-                <input
-                  id="selected-email"
-                  type="email"
-                  readonly
-                  aria-readonly="true"
-                >
+                <label for="service-branch">Service Branch</label>
+
+                <div class="branch-control">
+                  <select id="service-branch">
+                    <option value="NAVY">Navy</option>
+                    <option value="ARMY">Army</option>
+                    <option value="AIR_FORCE">Air Force</option>
+                  </select>
+
+                  <button
+                    class="btn btn-primary"
+                    id="change-service-branch-btn"
+                    type="button"
+                  >
+                    Change Branch
+                  </button>
+                </div>
               </div>
 
               <div class="form-group">
@@ -568,7 +588,6 @@
                   <option>E32</option>
                   <option>EX1</option>
                   <option>EN1</option>
-                  <option>ER1</option>
                   <option>EY1</option>
                   <option>EY2</option>
                   <option>EY3</option>

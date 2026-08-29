@@ -195,6 +195,13 @@ const roleInput = document.getElementById("role");
 const statusInput = document.getElementById("status");
 const navalRankInput = document.getElementById("naval-rank");
 const selectedEmailInput = document.getElementById("selected-email");
+const serviceBranchInput =
+  document.getElementById("service-branch");
+
+const changeServiceBranchBtn =
+  document.getElementById(
+    "change-service-branch-btn"
+  );
 const callsignInput = document.getElementById("callsign");
 const steamNameInput = document.getElementById("steam-name");
 const steamIdInput = document.getElementById("steam-id");
@@ -546,6 +553,17 @@ function selectProfile(profile) {
 
   const selectedEmail = normalizeEmail(profile.email);
   const branchLabel = getBranchLabel(selectedEmail);
+
+  const selectedBranch =
+  getBranchFromEmail(selectedEmail);
+
+if (
+  serviceBranchInput &&
+  selectedBranch !== "UNKNOWN"
+) {
+  serviceBranchInput.value =
+    selectedBranch;
+}
 
   profileIdInput.value = profile.id;
   displayNameInput.value = profile.display_name || "";
@@ -1192,6 +1210,119 @@ async function saveSelectedProfile(event) {
   setStatus("Profile updated.", "ok");
 }
 
+async function changeSelectedServiceBranch() {
+  clearStatus();
+
+  if (!selectedProfile) {
+    setStatus(
+      "Select a member first.",
+      "err"
+    );
+    return;
+  }
+
+  const branch =
+    serviceBranchInput?.value;
+
+  if (!branch) {
+    setStatus(
+      "Select a service branch.",
+      "err"
+    );
+    return;
+  }
+
+  const currentEmail =
+    normalizeEmail(
+      selectedProfile.email
+    );
+
+  const currentBranch =
+    getBranchFromEmail(currentEmail);
+
+  if (currentBranch === branch) {
+    setStatus(
+      "Member is already in that branch.",
+      "ok"
+    );
+    return;
+  }
+
+  const labels = {
+    NAVY: "Navy",
+    ARMY: "Army",
+    AIR_FORCE: "Air Force"
+  };
+
+  const destination =
+    labels[branch] || branch;
+
+  const confirmed =
+    window.confirm(
+      `Change ${currentEmail} to ${destination}?`
+    );
+
+  if (!confirmed) {
+    return;
+  }
+
+  const originalText =
+    changeServiceBranchBtn.textContent;
+
+  changeServiceBranchBtn.disabled = true;
+  changeServiceBranchBtn.textContent =
+    "Changing...";
+
+  try {
+    const {
+      data,
+      error
+    } =
+      await supabase.functions.invoke(
+        "admin-change-branch",
+        {
+          body: {
+            target_profile_id:
+              selectedProfile.id,
+
+            branch
+          }
+        }
+      );
+
+    if (error) {
+      throw error;
+    }
+
+    if (!data?.ok) {
+      throw new Error(
+        data?.error ||
+        "Branch change failed."
+      );
+    }
+
+    await loadMembers();
+
+    setStatus(
+      `Branch changed. Account email is now ${data.email}.`,
+      "ok"
+    );
+  } catch (error) {
+    console.error(error);
+
+    setStatus(
+      error?.message ||
+      "Failed to change service branch.",
+      "err"
+    );
+  } finally {
+    changeServiceBranchBtn.disabled = false;
+
+    changeServiceBranchBtn.textContent =
+      originalText;
+  }
+}
+
 async function deleteSelectedProfile() {
   clearStatus();
   if (!selectedProfile) {
@@ -1258,6 +1389,11 @@ refreshAttendanceBtn?.addEventListener("click", async () => {
   renderMemberList();
   renderAttendancePanel();
 });
+
+changeServiceBranchBtn?.addEventListener(
+  "click",
+  changeSelectedServiceBranch
+);
 attendanceSessionFilter?.addEventListener("change", renderAttendanceDetails);
 attendanceStatusFilter?.addEventListener("change", renderAttendanceDetails);
 
