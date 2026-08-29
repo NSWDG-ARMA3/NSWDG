@@ -934,7 +934,7 @@ function renderBoard() {
   const sections = [
     {
       title: "Troop Headquarters",
-      subtitle: "Red Squadron • 3 Troop",
+      subtitle: "Red Squadron, 3 Troop",
       slots: ["E31", "E32"]
     },
     {
