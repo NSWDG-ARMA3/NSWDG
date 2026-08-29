@@ -10,8 +10,8 @@ const SCHEDULE_TIMEZONE = "UTC";
 
 const ORBAT = [
   { title: "Green Team", slots: ["Candidate"] },
-  { title: "Red Squadron, 3 Troop, Golf, Assault", slots: ["EG1", "EG2", "EG3", "EG4", "EG5", "EG6"] },
-  { title: "Red Squadron, 3 Troop, Hotel, Assault", slots: ["EH1", "EH2", "EH3", "EH4", "EH5", "EH6"] },
+  { title: "Red Squadron, 3 Troop, Golf, Assault", slots: ["EG1", "EG2", "EG3", "EG4", "EG5", "EG6", "EG7", "EG8"] },
+  { title: "Red Squadron, 3 Troop, Hotel, Assault", slots: ["EH1", "EH2", "EH3", "EH4", "EH5", "EH6", "EH7", "EH8"] },
   { title: "Red Squadron, 3 Troop, India, Recce", slots: ["EI1", "EI2", "EI3", "EI4", "EI5", "EI6"] },
   { title: "Red Squadron, 3 Troop, Troop Headquarters", slots: ["E31", "E32"] },
   {

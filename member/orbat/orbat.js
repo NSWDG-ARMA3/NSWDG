@@ -61,6 +61,8 @@ return [
 "Golf Team Assaulter",
 "Golf Team Assaulter",
 "Golf Team Assaulter",
+"Golf Team Assaulter",
+"Golf Team Assaulter",
 "Golf Team Assaulter"
 ][slot];
 }
@@ -70,6 +72,8 @@ return [
 "",
 "Hotel Team Leader",
 "Hotel Assistant Team Leader",
+"Hotel Team Assaulter",
+"Hotel Team Assaulter",
 "Hotel Team Assaulter",
 "Hotel Team Assaulter",
 "Hotel Team Assaulter",
@@ -937,12 +941,12 @@ function renderBoard() {
     {
       title: "3 Troop, Golf Team",
       subtitle: "Assault",
-      slots: ["EG1", "EG2", "EG3", "EG4", "EG5", "EG6"]
+      slots: ["EG1", "EG2", "EG3", "EG4", "EG5", "EG6", "EG7", "EG8"]
     },
     {
       title: "3 Troop, Hotel Team",
       subtitle: "Assault",
-      slots: ["EH1", "EH2", "EH3", "EH4", "EH5", "EH6"]
+      slots: ["EH1", "EH2", "EH3", "EH4", "EH5", "EH6", "EH7", "EH8"]
     },
     {
       title: "3 Troop, India Team",
