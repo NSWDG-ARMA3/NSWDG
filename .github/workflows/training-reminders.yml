@@ -34,6 +34,7 @@ jobs:
           SUPABASE_ANON_KEY: "sb_publishable_NpY_RXqnMC9UwNmkxCiK-Q_zNX6g6CH"
           DISCORD_WEBHOOK_URL: "https://discord.com/api/webhooks/1530732785390850099/VL4qWIFgveFl7JBwkAg7k8zvjLLFRmoRAM9P7GH_aPe8zl4OiSlPmX8X2pOqBPMTvvZ0"
           PORTAL_URL: "https://www.rsqdn.com/member/training/"
+          SCHEDULING_URL: "https://www.rsqdn.com/member/scheduling/"
         run: node .github/scripts/training-reminder.mjs
 
       - name: Commit reminder state

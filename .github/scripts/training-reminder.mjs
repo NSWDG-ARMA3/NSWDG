@@ -5,7 +5,8 @@ const {
   SUPABASE_URL,
   SUPABASE_ANON_KEY,
   DISCORD_WEBHOOK_URL,
-  PORTAL_URL
+  PORTAL_URL,
+  SCHEDULING_URL
 } = process.env;
 
 if (!SUPABASE_URL) {
@@ -32,6 +33,15 @@ const statePath = path.resolve(
 
 const state = loadState();
 const now = new Date();
+
+const AVAILABILITY_TIMEZONE = "Europe/Amsterdam";
+const AVAILABILITY_REMINDER_HOUR = 18;
+
+const AVAILABILITY_REMINDER_DAYS = new Set([
+  "Mon",
+  "Wed",
+  "Fri"
+]);
 
 /*
  * The Action runs every five minutes.
@@ -122,6 +132,10 @@ console.log(
 
 let changed = false;
 
+if (await maybeSendAvailabilityReminder()) {
+  changed = true;
+}
+
 for (const session of sessions) {
   const reminderKey =
     buildReminderKey(session);
@@ -159,6 +173,221 @@ if (changed) {
 } else {
   console.log(
     "No reminder state changes were required."
+  );
+}
+
+async function maybeSendAvailabilityReminder() {
+  const local = getLocalDateParts(
+    now,
+    AVAILABILITY_TIMEZONE
+  );
+
+  if (!AVAILABILITY_REMINDER_DAYS.has(local.weekday)) {
+    return false;
+  }
+
+  /*
+   * The GitHub Action runs every five minutes.
+   *
+   * On Monday, Wednesday and Friday, the first run
+   * at or after 18:00 Amsterdam time sends the reminder.
+   */
+  if (local.hour < AVAILABILITY_REMINDER_HOUR) {
+    return false;
+  }
+
+  const dateKey = [
+    local.year,
+    String(local.month).padStart(2, "0"),
+    String(local.day).padStart(2, "0")
+  ].join("-");
+
+  const reminderKey =
+    `availability:${dateKey}`;
+
+  /*
+   * Prevent the reminder from being sent every five minutes.
+   */
+  if (state.sent[reminderKey]) {
+    console.log(
+      `Availability reminder already sent for ${dateKey}.`
+    );
+
+    return false;
+  }
+
+  const nextWeek =
+    getNextWeekRange(local);
+
+  const webhookResponse = await fetch(
+    addWaitParameter(
+      DISCORD_WEBHOOK_URL
+    ),
+    {
+      method: "POST",
+
+      headers: {
+        "Content-Type": "application/json"
+      },
+
+      body: JSON.stringify({
+        content:
+          `@everyone Availability reminder: Please submit your availability for next week ` +
+          `(${formatCalendarDate(nextWeek.monday)} - ${formatCalendarDate(nextWeek.sunday)}).\n` +
+          (SCHEDULING_URL ||
+            "https://www.rsqdn.com/member/scheduling/"),
+
+        allowed_mentions: {
+          parse: ["everyone"]
+        },
+
+        username: "NAVADMIN",
+
+        avatar_url:
+          "https://www.rsqdn.com/nsw.png"
+      })
+    }
+  );
+
+  if (!webhookResponse.ok) {
+    const responseBody =
+      await webhookResponse.text();
+
+    throw new Error(
+      `Discord returned ${webhookResponse.status}: ` +
+      responseBody
+    );
+  }
+
+  state.sent[reminderKey] = {
+    type: "availability",
+    targetWeek: nextWeek.monday.iso,
+    sentAt: new Date().toISOString()
+  };
+
+  console.log(
+    `Availability reminder sent for week of ${nextWeek.monday.iso}.`
+  );
+
+  return true;
+}
+
+
+function getLocalDateParts(
+  date,
+  timeZone
+) {
+  const parts =
+    new Intl.DateTimeFormat(
+      "en-GB",
+      {
+        timeZone,
+        weekday: "short",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        hourCycle: "h23"
+      }
+    ).formatToParts(date);
+
+  const values = {};
+
+  for (const part of parts) {
+    if (part.type !== "literal") {
+      values[part.type] =
+        part.value;
+    }
+  }
+
+  return {
+    weekday: values.weekday,
+    year: Number(values.year),
+    month: Number(values.month),
+    day: Number(values.day),
+    hour: Number(values.hour)
+  };
+}
+
+
+function getNextWeekRange(local) {
+  /*
+   * Treat the Amsterdam calendar date as a plain
+   * calendar date. We only care about Monday-Sunday,
+   * not the UTC offset here.
+   */
+  const currentDate = new Date(
+    Date.UTC(
+      local.year,
+      local.month - 1,
+      local.day
+    )
+  );
+
+  const currentWeekday =
+    currentDate.getUTCDay();
+
+  /*
+   * Always select NEXT Monday.
+   *
+   * Monday -> +7 days
+   * Wednesday -> +5 days
+   * Friday -> +3 days
+   */
+  const daysUntilNextMonday =
+    currentWeekday === 0
+      ? 1
+      : 8 - currentWeekday;
+
+  const mondayDate =
+    new Date(currentDate);
+
+  mondayDate.setUTCDate(
+    mondayDate.getUTCDate() +
+    daysUntilNextMonday
+  );
+
+  const sundayDate =
+    new Date(mondayDate);
+
+  sundayDate.setUTCDate(
+    sundayDate.getUTCDate() + 6
+  );
+
+  return {
+    monday: calendarDate(mondayDate),
+    sunday: calendarDate(sundayDate)
+  };
+}
+
+
+function calendarDate(date) {
+  return {
+    year: date.getUTCFullYear(),
+    month: date.getUTCMonth() + 1,
+    day: date.getUTCDate(),
+    iso:
+      date.toISOString().slice(0, 10)
+  };
+}
+
+
+function formatCalendarDate(value) {
+  return new Intl.DateTimeFormat(
+    "en-GB",
+    {
+      day: "numeric",
+      month: "short",
+      timeZone: "UTC"
+    }
+  ).format(
+    new Date(
+      Date.UTC(
+        value.year,
+        value.month - 1,
+        value.day
+      )
+    )
   );
 }
 
