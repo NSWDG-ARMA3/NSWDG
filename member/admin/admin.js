@@ -384,7 +384,9 @@ function renderMemberList() {
           <span class="muted">
             ${escapeHtml(member.email || "No account email")}
             |
-            ${escapeHtml(getBranchLabel(member.email))}
+            ${escapeHtml(
+  getBranchLabel(member.user_id || member.email)
+)}
           </span><br>
 
           <span class="muted">
@@ -551,11 +553,17 @@ function renderHistoryPill(row) {
 function selectProfile(profile) {
   selectedProfile = profile;
 
-  const selectedEmail = normalizeEmail(profile.email);
-  const branchLabel = getBranchLabel(selectedEmail);
+const selectedEmail = normalizeEmail(profile.email);
 
-  const selectedBranch =
-  getBranchFromEmail(selectedEmail);
+const serviceEmail =
+  normalizeEmail(profile.user_id) ||
+  selectedEmail;
+
+const branchLabel =
+  getBranchLabel(serviceEmail);
+
+const selectedBranch =
+  getBranchFromEmail(serviceEmail);
 
 if (
   serviceBranchInput &&
@@ -575,10 +583,10 @@ if (
     selectedEmailInput.title = branchLabel;
   }
 
-  renderRankOptions(
-    selectedEmail,
-    profile.naval_rank || "Candidate"
-  );
+renderRankOptions(
+  serviceEmail,
+  profile.naval_rank || "Candidate"
+);
 
   callsignInput.value = profile.callsign || "";
   steamNameInput.value = profile.steam_name || "";
@@ -1214,53 +1222,55 @@ async function changeSelectedServiceBranch() {
   clearStatus();
 
   if (!selectedProfile) {
-    setStatus(
-      "Select a member first.",
-      "err"
-    );
+    setStatus("Select a member first.", "err");
     return;
   }
 
-  const branch =
-    serviceBranchInput?.value;
+  const branch = serviceBranchInput?.value;
 
-  if (!branch) {
-    setStatus(
-      "Select a service branch.",
-      "err"
-    );
-    return;
-  }
-
-  const currentEmail =
-    normalizeEmail(
-      selectedProfile.email
-    );
-
-  const currentBranch =
-    getBranchFromEmail(currentEmail);
-
-  if (currentBranch === branch) {
-    setStatus(
-      "Member is already in that branch.",
-      "ok"
-    );
-    return;
-  }
-
-  const labels = {
-    NAVY: "Navy",
-    ARMY: "Army",
-    AIR_FORCE: "Air Force"
+  const domains = {
+    NAVY: "navy.mil",
+    ARMY: "army.mil",
+    AIR_FORCE: "us.af.mil"
   };
 
-  const destination =
-    labels[branch] || branch;
+  const domain = domains[branch];
 
-  const confirmed =
-    window.confirm(
-      `Change ${currentEmail} to ${destination}?`
-    );
+  if (!domain) {
+    setStatus("Invalid service branch.", "err");
+    return;
+  }
+
+  const currentServiceEmail =
+    String(selectedProfile.user_id || "")
+      .trim()
+      .toLowerCase();
+
+  let username = "";
+
+  if (currentServiceEmail.includes("@")) {
+    username = currentServiceEmail.split("@")[0];
+  } else {
+    username =
+      String(selectedProfile.email || "")
+        .trim()
+        .toLowerCase()
+        .split("@")[0];
+  }
+
+  if (!username) {
+    setStatus("Could not determine member username.", "err");
+    return;
+  }
+
+  const newServiceEmail =
+    `${username}@${domain}`;
+
+  const confirmed = window.confirm(
+    `Change service branch to ${branch.replace("_", " ")}?\n\n` +
+    `Service address: ${newServiceEmail}\n` +
+    `Login email will NOT change.`
+  );
 
   if (!confirmed) {
     return;
@@ -1270,56 +1280,37 @@ async function changeSelectedServiceBranch() {
     changeServiceBranchBtn.textContent;
 
   changeServiceBranchBtn.disabled = true;
-  changeServiceBranchBtn.textContent =
-    "Changing...";
+  changeServiceBranchBtn.textContent = "Changing...";
 
   try {
-    const {
-      data,
-      error
-    } =
-      await supabase.functions.invoke(
-        "admin-change-branch",
-        {
-          body: {
-            target_profile_id:
-              selectedProfile.id,
-
-            branch
-          }
-        }
-      );
+    const { error } = await supabase.rpc(
+      "admin_change_profile_email",
+      {
+        target_profile_id: selectedProfile.id,
+        new_email: newServiceEmail
+      }
+    );
 
     if (error) {
       throw error;
     }
 
-    if (!data?.ok) {
-      throw new Error(
-        data?.error ||
-        "Branch change failed."
-      );
-    }
-
     await loadMembers();
 
     setStatus(
-      `Branch changed. Account email is now ${data.email}.`,
+      `Service branch changed to ${newServiceEmail}. Login email unchanged.`,
       "ok"
     );
   } catch (error) {
     console.error(error);
 
     setStatus(
-      error?.message ||
-      "Failed to change service branch.",
+      error?.message || "Failed to change service branch.",
       "err"
     );
   } finally {
     changeServiceBranchBtn.disabled = false;
-
-    changeServiceBranchBtn.textContent =
-      originalText;
+    changeServiceBranchBtn.textContent = originalText;
   }
 }
 

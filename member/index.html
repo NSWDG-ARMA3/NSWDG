@@ -4051,7 +4051,12 @@
 
       function renderDashboard(profile, user) {
         const email = String(user?.email || "").trim();
-        const branch = getServiceBranch(email);
+
+        const serviceEmail =
+          String(profile?.user_id || email).trim();
+
+        const branch =
+          getServiceBranch(serviceEmail);
         const callsign = safeText(profile.callsign, "Unassigned");
 
         const billet = getBillet(profile.callsign);
@@ -4085,7 +4090,8 @@
           getFallbackUserId(email),
         );
 
-        const avatarUrl = getDefaultAvatar(profile, email);
+       const avatarUrl =
+  getDefaultAvatar(profile, serviceEmail);
 
         const dashboardAvatar = document.getElementById("dashboard-avatar");
 
