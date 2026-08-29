@@ -19,7 +19,6 @@ const ORBAT = [
     slots: [
       "EX1",
       "EN1",
-      "ER1",
       "EY1",
       "EY2",
       "EY3",

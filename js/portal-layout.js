@@ -22,7 +22,6 @@ const intelligenceCallsigns = [
   "EG1",
   "EH1",
   "EI1",
-  "ER1",
   "EY1",
   "EY2",
   "EY3",

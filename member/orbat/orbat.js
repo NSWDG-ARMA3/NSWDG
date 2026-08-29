@@ -30,7 +30,6 @@ const GREEN_TEAM_CLASSES = [
 const SPECIALIST_ROLES = {
   EX1: "Master-at-Arms (Military Working Dog Handler/MWDH)",
   EN1: "Explosive Ordnance Disposal Technician (EOD)",
-  ER1: "Information Systems Technician (IST)",
   EY1: "Cryptologic Technician (CT)",
   EY2: "Cryptologic Technician (CT)",
   EY3: "Cryptologic Technician (CT)",
