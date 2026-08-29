@@ -958,7 +958,6 @@ function renderBoard() {
       slots: [
         "EX1",
         "EN1",
-        "ER1",
         "EY1",
         "EY2",
         "EY3",
@@ -982,7 +981,9 @@ function renderBoard() {
           ${escapeHtml(section.subtitle)}
         </div>
 
-        ${section.slots.map(callsign => {
+        ${section.slots
+          .filter(callsign => callsign !== "ER1")
+          .map(callsign => {
           const member = slotMap.get(callsign);
 
           if (!member) {
