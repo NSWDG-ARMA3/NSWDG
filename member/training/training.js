@@ -56,6 +56,7 @@ function cacheElements() {
   el.end = document.getElementById("training-end");
   el.location = document.getElementById("training-location");
   el.description = document.getElementById("training-description");
+  el.discordPing = document.getElementById("training-discord-ping");
 
   el.saveButton = document.getElementById("save-training-button");
   el.resetButton = document.getElementById("reset-training-button");
@@ -380,12 +381,16 @@ async function saveTraining() {
   }
 
   const startDate = new Date(el.start.value);
+
   const endDate = el.end.value
     ? new Date(el.end.value)
     : null;
 
   if (Number.isNaN(startDate.getTime())) {
-    showStatus("The selected start time is invalid.", false);
+    showStatus(
+      "The selected start time is invalid.",
+      false
+    );
     return;
   }
 
@@ -393,7 +398,10 @@ async function saveTraining() {
     endDate &&
     Number.isNaN(endDate.getTime())
   ) {
-    showStatus("The selected end time is invalid.", false);
+    showStatus(
+      "The selected end time is invalid.",
+      false
+    );
     return;
   }
 
@@ -408,25 +416,48 @@ async function saveTraining() {
     return;
   }
 
+  /*
+   * Read this BEFORE resetForm() is called.
+   *
+   * true:
+   * Discord message is posted and the training role is pinged.
+   *
+   * false:
+   * Discord message is still posted, but nobody is pinged.
+   */
+  const pingDiscordMembers =
+    el.discordPing?.checked !== false;
+
   const payload = {
     category: el.category.value,
+
     title,
-    description: el.description.value.trim(),
-    start_at: startDate.toISOString(),
-    end_at: endDate
-      ? endDate.toISOString()
-      : null,
-    location: el.location.value.trim(),
-status:
-  el.status.value,
 
-target_green_team_class:
-  el.targetClass.value
-  || null,
+    description:
+      el.description.value.trim(),
 
-host_id:
-  state.authUser.id,
-    updated_at: new Date().toISOString()
+    start_at:
+      startDate.toISOString(),
+
+    end_at:
+      endDate
+        ? endDate.toISOString()
+        : null,
+
+    location:
+      el.location.value.trim(),
+
+    status:
+      el.status.value,
+
+    target_green_team_class:
+      el.targetClass.value || null,
+
+    host_id:
+      state.authUser.id,
+
+    updated_at:
+      new Date().toISOString()
   };
 
   setButtonLoading(
@@ -453,18 +484,24 @@ host_id:
         result.error.message,
       false
     );
+
     return;
   }
 
   const createdSession = result.data;
 
+  /*
+   * Only scheduled/postponed trainings send
+   * the creation notification.
+   */
   if (
     createdSession.status === "SCHEDULED" ||
     createdSession.status === "POSTPONED"
   ) {
     try {
       await sendTrainingScheduledWebhook(
-        createdSession
+        createdSession,
+        pingDiscordMembers
       );
     } catch (error) {
       console.error(
@@ -489,7 +526,8 @@ host_id:
 }
 
 async function sendTrainingScheduledWebhook(
-  session
+  session,
+  pingMembers = true
 ) {
   if (
     !TRAINING_DISCORD_WEBHOOK ||
@@ -500,21 +538,24 @@ async function sendTrainingScheduledWebhook(
     console.warn(
       "Training Discord webhook is not configured."
     );
+
     return;
   }
 
   const startTimestamp = Math.floor(
-    new Date(session.start_at).getTime() /
-      1000
+    new Date(
+      session.start_at
+    ).getTime() / 1000
   );
 
-  const endTimestamp = session.end_at
-    ? Math.floor(
-        new Date(
-          session.end_at
-        ).getTime() / 1000
-      )
-    : null;
+  const endTimestamp =
+    session.end_at
+      ? Math.floor(
+          new Date(
+            session.end_at
+          ).getTime() / 1000
+        )
+      : null;
 
   const category =
     formatWebhookCategory(
@@ -528,87 +569,154 @@ async function sendTrainingScheduledWebhook(
     "Portal Staff";
 
   const description =
-    String(session.description || "").trim() ||
+    String(
+      session.description || ""
+    ).trim() ||
     "No additional instructions were issued.";
 
   const location =
-    String(session.location || "").trim() ||
+    String(
+      session.location || ""
+    ).trim() ||
     "To be confirmed";
 
   const fields = [
     {
       name: "Start",
+
       value:
         `<t:${startTimestamp}:F>\n` +
         `<t:${startTimestamp}:R>`,
+
       inline: true
     },
+
     {
       name: "Location",
       value: location,
       inline: true
     },
+
     {
       name: "Category",
       value: category,
       inline: true
     },
+
     {
       name: "Host",
       value: hostName,
       inline: true
     },
+
     {
       name: "Attendance",
-      value: session.mandatory === false
-        ? "Optional"
-        : "Required",
+
+      value:
+        session.mandatory === false
+          ? "Optional"
+          : "Required",
+
       inline: true
     }
   ];
 
   if (endTimestamp) {
-    fields.splice(1, 0, {
-      name: "End",
-      value: `<t:${endTimestamp}:t>`,
-      inline: true
-    });
+    fields.splice(
+      1,
+      0,
+      {
+        name: "End",
+        value: `<t:${endTimestamp}:t>`,
+        inline: true
+      }
+    );
   }
+
+  /*
+   * This is your existing Discord training
+   * notification role.
+   *
+   * ON:
+   * content contains the role mention.
+   *
+   * OFF:
+   * content is empty.
+   */
+  const TRAINING_ROLE_ID =
+    "1424715895015739516";
+
+  const discordContent =
+    pingMembers
+      ? `<@&${TRAINING_ROLE_ID}>`
+      : "";
+
+  /*
+   * allowed_mentions is important.
+   *
+   * We explicitly allow the training role
+   * when the checkbox is enabled.
+   *
+   * When disabled, Discord is instructed
+   * to parse zero mentions.
+   */
+  const allowedMentions =
+    pingMembers
+      ? {
+          parse: [],
+          roles: [
+            TRAINING_ROLE_ID
+          ]
+        }
+      : {
+          parse: []
+        };
 
   const response = await fetch(
     `${TRAINING_DISCORD_WEBHOOK}?wait=true`,
     {
       method: "POST",
+
       headers: {
         "Content-Type":
           "application/json"
       },
+
       body: JSON.stringify({
-        content: "<@&1424715895015739516>",
+        content:
+          discordContent,
 
-        allowed_mentions: {
-          parse: [],
-          roles: ["1424715895015739516"]
-        },
+        allowed_mentions:
+          allowedMentions,
 
-        username: "NSWDG Training Portal",
-        avatar_url: `${PORTAL_BASE_URL}/nsw.png`,
+        username:
+          "NSWDG Training Portal",
+
+        avatar_url:
+          `${PORTAL_BASE_URL}/nsw.png`,
 
         embeds: [
           {
             title:
               "TRAINING NOTICE",
+
             description:
               `**${session.title}**\n\n` +
               description,
+
             url:
               `${PORTAL_BASE_URL}/member/training/`,
-            color: 1207352,
+
+            color:
+              1207352,
+
             fields,
+
             footer: {
               text:
                 "NAVADMIN, Naval Administrative Message"
             },
+
             timestamp:
               new Date().toISOString()
           }
@@ -687,14 +795,38 @@ function publishLocalTrainingNotice(
 }
 
 function resetForm() {
-  el.category.value = "PRO_DEVELOPMENT";
-  el.status.value = "SCHEDULED";
-  el.title.value = "";
-  el.start.value = "";
-  el.end.value = "";
-  el.location.value = "";
-  el.description.value = "";
-  el.targetClass.value = "";
+  el.category.value =
+    "PRO_DEVELOPMENT";
+
+  el.status.value =
+    "SCHEDULED";
+
+  el.title.value =
+    "";
+
+  el.start.value =
+    "";
+
+  el.end.value =
+    "";
+
+  el.location.value =
+    "";
+
+  el.description.value =
+    "";
+
+  el.targetClass.value =
+    "";
+
+  /*
+   * Default the Discord ping option
+   * back to ON for the next training.
+   */
+  if (el.discordPing) {
+    el.discordPing.checked = true;
+  }
+
   clearStatus();
 }
 
