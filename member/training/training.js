@@ -2266,6 +2266,19 @@ function isProfileEligibleForSession(profile, session) {
   );
 }
 
+function getEligibleProfilesForSession(session) {
+  if (!session) {
+    return [];
+  }
+
+  return state.profiles.filter(profile =>
+    isProfileEligibleForSession(
+      profile,
+      session
+    )
+  );
+}
+
 function renderAdminTrainingControls(session) {
   return `
     <details class="training-v2-details" open>
