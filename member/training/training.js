@@ -982,7 +982,6 @@ function bindSessionStatusControls() {
     });
 }
 
-function renderSessionTable(rows, emptyMessage) {
 
 function renderSessionTable(rows, emptyMessage) {
   if (!rows.length) {
