@@ -959,6 +959,31 @@ function renderSessions() {
   bindSessionStatusControls();
 }
 
+function bindSessionStatusControls() {
+  el.output
+    .querySelectorAll("[data-session-status]")
+    .forEach(select => {
+      select.addEventListener(
+        "change",
+        async () => {
+          const sessionId = Number(
+            select.dataset.sessionStatus
+          );
+
+          const newStatus = select.value;
+
+          await updateSessionStatusFromList(
+            sessionId,
+            newStatus,
+            select
+          );
+        }
+      );
+    });
+}
+
+function renderSessionTable(rows, emptyMessage) {
+
 function renderSessionTable(rows, emptyMessage) {
   if (!rows.length) {
     return `
