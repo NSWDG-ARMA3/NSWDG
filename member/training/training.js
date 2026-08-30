@@ -4,6 +4,9 @@ import { renderPortalLayout } from "/js/portal-layout.js";
 const TRAINING_DISCORD_WEBHOOK =
   "https://discord.com/api/webhooks/1530732785390850099/VL4qWIFgveFl7JBwkAg7k8zvjLLFRmoRAM9P7GH_aPe8zl4OiSlPmX8X2pOqBPMTvvZ0";
 
+  const INNER_TEAM_DISCORD_WEBHOOK =
+  "https://discordapp.com/api/webhooks/1543740021511819315/KV5iMJwoe6lyQxj2IwusGSNsyyqfFdMBapNkdVAom5wn436Xc6T89d6iGGgIdq4O4RXw";
+
 const PORTAL_BASE_URL = "https://www.rsqdn.com";
 
 renderPortalLayout("training");
@@ -92,6 +95,19 @@ function updateAudienceField() {
 
   if (isInnerTeam) {
     el.targetClass.value = "";
+  }
+
+  if (el.discordPing) {
+    el.discordPing.checked = true;
+    el.discordPing.disabled = isInnerTeam;
+
+    const pingContainer =
+      el.discordPing.closest(".form-group");
+
+    if (pingContainer) {
+      pingContainer.style.display =
+        isInnerTeam ? "none" : "";
+    }
   }
 }
 
@@ -500,25 +516,32 @@ async function saveTraining() {
    * the creation notification.
    */
   if (
-    createdSession.status === "SCHEDULED" ||
-    createdSession.status === "POSTPONED"
-  ) {
-    try {
+  createdSession.status === "SCHEDULED" ||
+  createdSession.status === "POSTPONED"
+) {
+  try {
+    if (
+      createdSession.category ===
+      "INNER_TEAM"
+    ) {
+      await sendInnerTeamScheduledWebhook();
+    } else {
       await sendTrainingScheduledWebhook(
         createdSession,
         pingDiscordMembers
       );
-    } catch (error) {
-      console.error(
-        "Training webhook failed:",
-        error
-      );
     }
-
-    publishLocalTrainingNotice(
-      createdSession
+  } catch (error) {
+    console.error(
+      "Training webhook failed:",
+      error
     );
   }
+
+  publishLocalTrainingNotice(
+    createdSession
+  );
+}
 
   resetForm();
 
@@ -528,6 +551,52 @@ async function saveTraining() {
   );
 
   await loadData();
+}
+
+async function sendInnerTeamScheduledWebhook() {
+  if (!INNER_TEAM_DISCORD_WEBHOOK) {
+    console.warn(
+      "Inner Team Discord webhook is not configured."
+    );
+    return;
+  }
+
+  const response = await fetch(
+    `${INNER_TEAM_DISCORD_WEBHOOK}?wait=true`,
+    {
+      method: "POST",
+
+      headers: {
+        "Content-Type": "application/json"
+      },
+
+      body: JSON.stringify({
+        content:
+          "@everyone\nA session has been scheduled. Please visit the website to mark attendance.",
+
+        allowed_mentions: {
+          parse: ["everyone"]
+        },
+
+        username:
+          "NSWDG Training Portal",
+
+        avatar_url:
+          `${PORTAL_BASE_URL}/nsw.png`
+      })
+    }
+  );
+
+  if (!response.ok) {
+    const responseText =
+      await response.text();
+
+    throw new Error(
+      `Inner Team Discord returned ${response.status}: ${responseText}`
+    );
+  }
+
+  return response.json();
 }
 
 async function sendTrainingScheduledWebhook(
