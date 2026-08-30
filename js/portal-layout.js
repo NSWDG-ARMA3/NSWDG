@@ -15,6 +15,7 @@ const PORTAL_ALERT_SETTINGS = {
 let portalAlertTimer = null;
 let portalAlertChannel = null;
 let portalAudioContext = null;
+let portalCurrentCallsign = "";
 
 const intelligenceCallsigns = [
   "E31",
@@ -212,11 +213,14 @@ async function updateLayoutUserInfo() {
       .trim()
       .toLowerCase();
 
-    const normalizedCallsign = String(
-      profile.callsign || ""
-    )
-      .trim()
-      .toUpperCase();
+const normalizedCallsign = String(
+  profile.callsign || ""
+)
+  .trim()
+  .toUpperCase();
+
+  portalCurrentCallsign =
+    normalizedCallsign;
 
     const normalizedRole = String(
       profile.role ||
@@ -657,6 +661,18 @@ export function showOrbatLinks() {
   });
 }
 
+function canCurrentUserSeeTraining(session) {
+  if (!session) {
+    return false;
+  }
+
+  if (session.category === "INNER_TEAM") {
+    return portalCurrentCallsign !== "";
+  }
+
+  return true;
+}
+
 function initializePortalTrainingAlerts() {
   injectPortalAlertStyles();
   createPortalAlertContainer();
@@ -670,7 +686,10 @@ function initializePortalTrainingAlerts() {
     event => {
       const session = event.detail?.session;
 
-      if (session) {
+      if (
+        session &&
+        canCurrentUserSeeTraining(session)
+      ) {
         showTrainingCreatedAlert(session);
       }
     }
@@ -679,7 +698,7 @@ function initializePortalTrainingAlerts() {
   /*
    * This catches notifications created in another open tab.
    */
-  window.addEventListener(
+    window.addEventListener(
     "storage",
     event => {
       if (
@@ -693,8 +712,15 @@ function initializePortalTrainingAlerts() {
       try {
         const notice = JSON.parse(event.newValue);
 
-        if (notice?.session) {
-          showTrainingCreatedAlert(notice.session);
+        if (
+          notice?.session &&
+          canCurrentUserSeeTraining(
+            notice.session
+          )
+        ) {
+          showTrainingCreatedAlert(
+            notice.session
+          );
         }
       } catch (error) {
         console.error(
@@ -717,8 +743,15 @@ function initializePortalTrainingAlerts() {
     portalAlertChannel.addEventListener(
       "message",
       event => {
-        if (event.data?.session) {
-          showTrainingCreatedAlert(event.data.session);
+        if (
+          event.data?.session &&
+          canCurrentUserSeeTraining(
+            event.data.session
+          )
+        ) {
+          showTrainingCreatedAlert(
+            event.data.session
+          );
         }
       }
     );
@@ -794,6 +827,12 @@ async function checkRecentlyCreatedTraining() {
     }
 
     for (const session of sessions || []) {
+      if (
+        !canCurrentUserSeeTraining(session)
+      ) {
+        continue;
+      }
+
       showTrainingCreatedAlert(session);
     }
   } catch (error) {
@@ -852,6 +891,12 @@ async function checkUpcomingTrainingAlerts() {
     }
 
     for (const session of sessions || []) {
+      if (
+        !canCurrentUserSeeTraining(session)
+      ) {
+        continue;
+      }
+
       processUpcomingSession(session);
     }
   } catch (error) {
@@ -886,6 +931,12 @@ function processUpcomingSession(session) {
 }
 
 function showThirtyMinuteAlert(session) {
+  if (
+    !canCurrentUserSeeTraining(session)
+  ) {
+    return;
+  }
+
   const alertKey = buildTrainingAlertKey(
     "thirty-minute",
     session
@@ -915,7 +966,8 @@ function showThirtyMinuteAlert(session) {
 function showTrainingCreatedAlert(session) {
   if (
     !session ||
-    !session.start_at
+    !session.start_at ||
+    !canCurrentUserSeeTraining(session)
   ) {
     return;
   }

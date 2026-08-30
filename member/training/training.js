@@ -31,6 +31,7 @@ document.addEventListener("DOMContentLoaded", initialize);
 async function initialize() {
   cacheElements();
   bindEvents();
+  updateAudienceField();
 
   const ok = await loadSessionAndProfile();
   if (!ok) return;
@@ -70,7 +71,6 @@ function cacheElements() {
   el.output = document.getElementById("training-output");
   el.viewer = document.getElementById("training-viewer");
 }
-
 function bindEvents() {
   el.logoutButton?.addEventListener("click", doLogout);
   el.saveButton.addEventListener("click", saveTraining);
@@ -80,6 +80,19 @@ function bindEvents() {
   el.search.addEventListener("input", renderSessions);
   el.categoryFilter.addEventListener("change", renderSessions);
   el.statusFilter.addEventListener("change", renderSessions);
+
+  el.category.addEventListener("change", updateAudienceField);
+}
+
+function updateAudienceField() {
+  const isInnerTeam =
+    el.category.value === "INNER_TEAM";
+
+  el.targetClass.disabled = isInnerTeam;
+
+  if (isInnerTeam) {
+    el.targetClass.value = "";
+  }
 }
 
 async function loadSessionAndProfile() {
@@ -303,32 +316,22 @@ function isCandidate() {
   return String(state.profile?.naval_rank || "").trim() === "Candidate";
 }
 
-function canViewSession(
-  session
-) {
+function hasAssignedCallsign() {
+  return String(state.profile?.callsign || "").trim() !== "";
+}
 
+function canViewSession(session) {
   if (!session) {
     return false;
   }
 
-
-  if (
-    session.target_green_team_class
-  ) {
-    return true;
+  if (session.category === "INNER_TEAM") {
+    return hasAssignedCallsign();
   }
 
-
-  if (
-    session.category
-    !== "INNER_TEAM"
-  ) {
-    return true;
-  }
-
-
-  return !isCandidate();
+  return true;
 }
+
 function isTeamLeader() {
   const callsign = String(state.profile?.callsign || "").trim().toUpperCase();
   return TEAM_LEADER_CALLSIGNS.includes(callsign);
@@ -451,7 +454,9 @@ async function saveTraining() {
       el.status.value,
 
     target_green_team_class:
-      el.targetClass.value || null,
+      el.category.value === "INNER_TEAM"
+        ? null
+        : el.targetClass.value || null,
 
     host_id:
       state.authUser.id,
@@ -827,6 +832,7 @@ function resetForm() {
     el.discordPing.checked = true;
   }
 
+  updateAudienceField();
   clearStatus();
 }
 
@@ -838,22 +844,131 @@ function renderSessions() {
   let rows = [...state.sessions];
 
   if (search) {
-    rows = rows.filter(s =>
-      String(s.title || "").toLowerCase().includes(search)
-      || String(s.description || "").toLowerCase().includes(search)
-      || String(s.location || "").toLowerCase().includes(search)
+    rows = rows.filter(session => {
+      return (
+        String(session.title || "")
+          .toLowerCase()
+          .includes(search) ||
+        String(session.description || "")
+          .toLowerCase()
+          .includes(search) ||
+        String(session.location || "")
+          .toLowerCase()
+          .includes(search)
+      );
+    });
+  }
+
+  if (category) {
+    rows = rows.filter(
+      session => session.category === category
     );
   }
 
-  if (category) rows = rows.filter(s => s.category === category);
-  if (status) rows = rows.filter(s => s.status === status);
-
-  if (!rows.length) {
-    el.output.innerHTML = `<div class="empty-state">No training sessions found.</div>`;
-    return;
+  if (status) {
+    rows = rows.filter(
+      session => session.status === status
+    );
   }
 
+  const normalSessions = rows.filter(
+    session => session.category !== "INNER_TEAM"
+  );
+
+  const innerTeamSessions = rows.filter(
+    session => session.category === "INNER_TEAM"
+  );
+
+  const showInnerTeam = hasAssignedCallsign();
+
+  el.output.classList.toggle(
+    "has-inner-team",
+    showInnerTeam
+  );
+
+  const normalHtml = renderSessionTable(
+    normalSessions,
+    "No training sessions found."
+  );
+
+  const innerTeamHtml = renderSessionTable(
+    innerTeamSessions,
+    "No Inner Team sessions found."
+  );
+
   el.output.innerHTML = `
+    <div class="training-session-column">
+      <h4>Training</h4>
+      ${normalHtml}
+    </div>
+
+    ${
+      showInnerTeam
+        ? `
+          <div class="training-session-column">
+            <h4>Inner Team</h4>
+            ${innerTeamHtml}
+          </div>
+        `
+        : ""
+    }
+  `;
+
+  el.output
+    .querySelectorAll("[data-open-session]")
+    .forEach(button => {
+      button.addEventListener("click", () => {
+        const sessionId = Number(
+          button.dataset.openSession
+        );
+
+        if (
+          Number(state.activeSessionId) ===
+          sessionId
+        ) {
+          state.activeSessionId = null;
+
+          el.viewer.className =
+            "empty-state";
+
+          el.viewer.textContent =
+            "Select a training session to view attendance and AAR.";
+
+          renderSessions();
+          return;
+        }
+
+        const session = state.sessions.find(
+          item =>
+            Number(item.id) ===
+            sessionId
+        );
+
+        if (!session) {
+          return;
+        }
+
+        state.activeSessionId =
+          sessionId;
+
+        renderViewer(session);
+        renderSessions();
+      });
+    });
+
+  bindSessionStatusControls();
+}
+
+function renderSessionTable(rows, emptyMessage) {
+  if (!rows.length) {
+    return `
+      <div class="empty-state">
+        ${escapeHtml(emptyMessage)}
+      </div>
+    `;
+  }
+
+  return `
     <table>
       <thead>
         <tr>
@@ -866,87 +981,108 @@ function renderSessions() {
           <th>Action</th>
         </tr>
       </thead>
-      <tbody>
-        ${rows.map(session => {
-          const counts = getAttendanceCounts(session);
 
-          return `
-            <tr>
-              <td>
-  ${escapeHtml(formatDateTime(session.start_at))}
-  <br>
-  <span class="muted">
-    (Your time: ${escapeHtml(formatViewerLocalTime(session.start_at))})
-  </span>
-</td>
-              <td>${categoryBadge(session.category)}</td>
-              <td>
-                <strong>${escapeHtml(session.title)}</strong><br>
-                
-                <span class="muted">${escapeHtml(session.location || "-")}</span>
-              </td>
-              <td>${renderSessionStatusControl(session)}</td>
+      <tbody>
+        ${rows
+          .map(session => {
+            const counts =
+              getAttendanceCounts(session);
+
+            return `
+              <tr>
                 <td>
-                  <span class="badge badge-green">${counts.attending} Attending</span>
-                  <span class="badge badge-red">${counts.notAttending} Not Attending</span>
-                  <span class="badge badge-yellow">${counts.loaAbsent} LOA Absent</span>
+                  ${escapeHtml(
+                    formatDateTime(
+                      session.start_at
+                    )
+                  )}
+                  <br>
+
+                  <span class="muted">
+                    (Your time:
+                    ${escapeHtml(
+                      formatViewerLocalTime(
+                        session.start_at
+                      )
+                    )})
+                  </span>
                 </td>
-              <td>${escapeHtml(getProfileName(session.host_id))}</td>
-              <td>
-                <button
-  class="btn btn-secondary"
-  type="button"
-  data-open-session="${session.id}"
->
-  ${Number(state.activeSessionId) === Number(session.id) ? "Close" : "Open"}
-</button>
-              </td>
-            </tr>
-          `;
-        }).join("")}
+
+                <td>
+                  ${categoryBadge(
+                    session.category
+                  )}
+                </td>
+
+                <td>
+                  <strong>
+                    ${escapeHtml(
+                      session.title
+                    )}
+                  </strong>
+                  <br>
+
+                  <span class="muted">
+                    ${escapeHtml(
+                      session.location || "-"
+                    )}
+                  </span>
+                </td>
+
+                <td>
+                  ${renderSessionStatusControl(
+                    session
+                  )}
+                </td>
+
+                <td>
+                  <span class="badge badge-green">
+                    ${counts.attending}
+                    Attending
+                  </span>
+
+                  <span class="badge badge-red">
+                    ${counts.notAttending}
+                    Not Attending
+                  </span>
+
+                  <span class="badge badge-yellow">
+                    ${counts.loaAbsent}
+                    LOA Absent
+                  </span>
+                </td>
+
+                <td>
+                  ${escapeHtml(
+                    getProfileName(
+                      session.host_id
+                    )
+                  )}
+                </td>
+
+                <td>
+                  <button
+                    class="btn btn-secondary"
+                    type="button"
+                    data-open-session="${session.id}"
+                  >
+                    ${
+                      Number(
+                        state.activeSessionId
+                      ) ===
+                      Number(session.id)
+                        ? "Close"
+                        : "Open"
+                    }
+                  </button>
+                </td>
+              </tr>
+            `;
+          })
+          .join("")}
       </tbody>
     </table>
   `;
-
-  el.output.querySelectorAll("[data-open-session]").forEach(button => {
-  button.addEventListener("click", () => {
-    const sessionId = Number(button.dataset.openSession);
-
-    if (Number(state.activeSessionId) === sessionId) {
-      state.activeSessionId = null;
-
-      el.viewer.className = "empty-state";
-      el.viewer.textContent =
-        "Select a training session to view attendance and AAR.";
-
-      renderSessions();
-      return;
-    }
-
-    const session = state.sessions.find(
-      item => Number(item.id) === sessionId
-    );
-
-    if (!session) return;
-
-    state.activeSessionId = session.id;
-    renderViewer(session);
-    renderSessions();
-  });
-});
-
-  el.output.querySelectorAll("[data-session-status]").forEach(select => {
-    select.addEventListener("change", async () => {
-      const sessionId = Number(select.dataset.sessionStatus);
-      const newStatus = select.value;
-
-      await updateSessionStatusFromList(
-        sessionId,
-        newStatus,
-        select
-      );
-    });
-  });
 }
 
 function renderAdminMarkingTable(session, attendanceRows) {
@@ -2111,38 +2247,23 @@ function isProfileEligibleForSession(profile, session) {
     return false;
   }
 
-  if (
-    !accountExistedForSession(
-      profile,
-      session
-    )
-  ) {
+  if (!accountExistedForSession(profile, session)) {
     return false;
   }
 
-  // Normal training applies to everybody
-  // who otherwise qualifies.
+  if (session.category === "INNER_TEAM") {
+    return String(profile.callsign || "").trim() !== "";
+  }
+
   if (!session.target_green_team_class) {
     return true;
   }
 
-  // Class-specific training only applies
-  // to users snapshotted into its roster.
-  const rosterUserIds =
-    sessionRosterUserIds(session);
+  const rosterUserIds = sessionRosterUserIds(session);
 
   return rosterUserIds.has(
     String(profile.id)
   );
-}
-
-function getEligibleProfilesForSession(session) {
-  return state.profiles.filter(profile => {
-    return isProfileEligibleForSession(
-      profile,
-      session
-    );
-  });
 }
 
 function renderAdminTrainingControls(session) {

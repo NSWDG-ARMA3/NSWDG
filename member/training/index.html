@@ -132,6 +132,40 @@
       align-items: start;
     }
 
+    .training-session-columns {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+.training-session-columns.has-inner-team {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.training-session-column {
+  min-width: 0;
+}
+
+.training-session-column h4 {
+  margin: 0 0 10px;
+  padding-bottom: 7px;
+  border-bottom: 1px solid #cfd7e1;
+  color: #1d3f5e;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.training-session-column table {
+  width: 100%;
+}
+
+@media (max-width: 1400px) {
+  .training-session-columns.has-inner-team {
+    grid-template-columns: 1fr;
+  }
+}
+
     .panel {
       border: 1px solid #ccc;
       background: #fafafa;
@@ -912,7 +946,7 @@
     <div id="portal-sidebar" class="sidebar"></div>
 
     <main class="portal-main">
-      <div class="page-title">Training - Pro Development / Unit Wide Training / AAR</div>
+      <div class="page-title">Training - Pro Development / Unit Wide / Inner Team / AAR</div>
 
       <div class="notice-box">
         <strong>Permissions:</strong> Pro Development sessions can be hosted by any member.
@@ -1050,7 +1084,7 @@
 
         <div>
           <div class="panel">
-            <h3>Training Sessions</h3>
+            <h3>Scheduled Training</h3>
 
             <div class="filters">
               <input id="training-search" type="text" placeholder="Search training...">
@@ -1070,7 +1104,10 @@
               <button id="refresh-training-button" class="btn btn-secondary" type="button">Refresh</button>
             </div>
 
-            <div id="training-output"></div>
+            <div
+              id="training-output"
+              class="training-session-columns"
+            ></div>
           </div>
 
           <div class="panel">
