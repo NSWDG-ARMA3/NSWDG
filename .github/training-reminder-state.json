@@ -1,4 +1,10 @@
 {
   "version": 1,
-  "sent": {}
+  "sent": {
+    "availability:2026-08-31": {
+      "type": "availability",
+      "targetWeek": "2026-09-07",
+      "sentAt": "2026-08-31T20:56:34.640Z"
+    }
+  }
 }
