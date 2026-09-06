@@ -733,12 +733,12 @@ async function sendTrainingScheduledWebhook(session, pingMembers = true) {
    */
   const allowedMentions = pingMembers
     ? {
-        parse: [],
-        roles: [TRAINING_ROLE_ID],
-      }
+      parse: [],
+      roles: [TRAINING_ROLE_ID],
+    }
     : {
-        parse: [],
-      };
+      parse: [],
+    };
 
   const response = await fetch(`${TRAINING_DISCORD_WEBHOOK}?wait=true`, {
     method: "POST",
@@ -914,17 +914,16 @@ function renderSessions() {
     );
 
   if (el.sessionCount) {
-    el.sessionCount.textContent = `${rows.length} ${
-      rows.length === 1 ? "SESSION" : "SESSIONS"
-    }`;
+    el.sessionCount.textContent = `${rows.length} ${rows.length === 1 ? "SESSION" : "SESSIONS"
+      }`;
   }
 
   el.output.innerHTML = `
     ${renderTrainingGroup(
-      "UPCOMING",
-      upcoming,
-      "No upcoming training sessions.",
-    )}
+    "UPCOMING",
+    upcoming,
+    "No upcoming training sessions.",
+  )}
 
     ${renderTrainingGroup("HISTORY", history, "No previous training sessions.")}
   `;
@@ -1002,21 +1001,20 @@ function renderTrainingGroup(label, rows, emptyMessage) {
 
       </div>
 
-      ${
-        rows.length
-          ? `
+      ${rows.length
+      ? `
             <div class="training-records">
 
               ${rows.map((session) => renderTrainingRecord(session)).join("")}
 
             </div>
           `
-          : `
+      : `
             <div class="training-group-empty">
               ${escapeHtml(emptyMessage)}
             </div>
           `
-      }
+    }
 
     </section>
   `;
@@ -1037,18 +1035,11 @@ function renderTrainingRecord(session) {
     day: "2-digit",
   });
 
-const localTime =
-  formatTrainingListLocalTime(
-    session.start_at
-  );
+  const localTime = formatTrainingListLocalTime(session.start_at);
 
-const easternTime =
-  formatTrainingListEasternTime(
-    session.start_at
-  );
+  const easternTime = formatTrainingListEasternTime(session.start_at);
 
-const localZone =
-  getLocalTimeZoneLabel();
+  const localZone = getLocalTimeZoneLabel();
   const selected = Number(state.activeSessionId) === Number(session.id);
 
   return `
@@ -1056,8 +1047,8 @@ const localZone =
       class="
         training-record
         training-record-${String(session.category || "")
-          .toLowerCase()
-          .replaceAll("_", "-")}
+      .toLowerCase()
+      .replaceAll("_", "-")}
         ${selected ? "active" : ""}
       "
     >
@@ -1075,27 +1066,55 @@ const localZone =
       </div>
 
 
-      <div class="training-record-main">
+<div class="training-record-main">
 
-        <div class="training-record-topline">
+  <div class="training-record-heading">
 
-          ${categoryBadge(session.category)}
+    <div class="training-record-heading-left">
 
-          <span class="training-record-location">
-            ${escapeHtml(session.location || "-")}
-          </span>
+      <div class="training-record-topline">
 
-        </div>
+        ${categoryBadge(
+          session.category
+        )}
+
+        <span class="training-record-location">
+          ${escapeHtml(
+            session.location || "-"
+          )}
+        </span>
+
+      </div>
+
+      <h3>
+        ${escapeHtml(
+          session.title
+        )}
+      </h3>
+
+    </div>
 
 
-        <h3>
-          ${escapeHtml(session.title)}
-        </h3>
+    <div class="training-record-host">
+
+      <span>
+        HOST
+      </span>
+
+      <strong>
+        ${escapeHtml(
+          getProfileName(
+            session.host_id
+          )
+        )}
+      </strong>
+
+    </div>
+
+  </div>
 
 
-<div class="training-record-meta">
-
-  <div class="training-record-times">
+  <div class="training-record-timebar">
 
     <div class="training-record-time local">
 
@@ -1138,26 +1157,7 @@ const localZone =
 
   </div>
 
-
-  <div class="training-record-host">
-
-    <span>
-      HOST
-    </span>
-
-    <strong>
-      ${escapeHtml(
-        getProfileName(
-          session.host_id
-        )
-      )}
-    </strong>
-
-  </div>
-
 </div>
-
-      </div>
 
 
       <div class="training-record-attendance">
@@ -1269,14 +1269,14 @@ function renderAdminMarkingTable(session, attendanceRows) {
 
       <div class="final-marking-list">
         ${rows
-          .map((profile) => {
-            const row = attendanceRows.find(
-              (attendanceRow) => attendanceRow.user_id === profile.id,
-            );
+      .map((profile) => {
+        const row = attendanceRows.find(
+          (attendanceRow) => attendanceRow.user_id === profile.id,
+        );
 
-            return renderAdminMarkingRow(session, profile, row);
-          })
-          .join("")}
+        return renderAdminMarkingRow(session, profile, row);
+      })
+      .join("")}
       </div>
 
     </div>
@@ -1574,39 +1574,22 @@ async function saveAdminMarkingRow(button) {
 }
 
 function bindTrainingViewerTabs() {
-  const tabs =
-    el.viewer.querySelectorAll(
-      "[data-viewer-tab]"
-    );
+  const tabs = el.viewer.querySelectorAll("[data-viewer-tab]");
 
-  const panels =
-    el.viewer.querySelectorAll(
-      "[data-viewer-panel]"
-    );
+  const panels = el.viewer.querySelectorAll("[data-viewer-panel]");
 
-  tabs.forEach(tab => {
-    tab.addEventListener(
-      "click",
-      () => {
-        const target =
-          tab.dataset.viewerTab;
+  tabs.forEach((tab) => {
+    tab.addEventListener("click", () => {
+      const target = tab.dataset.viewerTab;
 
-        tabs.forEach(item => {
-          item.classList.toggle(
-            "active",
-            item === tab
-          );
-        });
+      tabs.forEach((item) => {
+        item.classList.toggle("active", item === tab);
+      });
 
-        panels.forEach(panel => {
-          panel.classList.toggle(
-            "active",
-            panel.dataset.viewerPanel ===
-              target
-          );
-        });
-      }
-    );
+      panels.forEach((panel) => {
+        panel.classList.toggle("active", panel.dataset.viewerPanel === target);
+      });
+    });
   });
 }
 
@@ -1692,18 +1675,15 @@ function renderViewer(session) {
           ${categoryBadge(session.category)}
           ${renderSessionStatusControl(session)}
 
-          ${
-            session.target_green_team_class
-              ? `
+          ${session.target_green_team_class
+      ? `
                 <span class="badge badge-yellow">
                   GREEN TEAM CLASS
-                  ${escapeHtml(
-                    session.target_green_team_class
-                  )}
+                  ${escapeHtml(session.target_green_team_class)}
                 </span>
               `
-              : ""
-          }
+      : ""
+    }
         </div>
 
       </div>
@@ -1716,9 +1696,7 @@ function renderViewer(session) {
         </span>
 
         <strong>
-          ${escapeHtml(
-            formatDateTime(session.start_at)
-          )}
+          ${escapeHtml(formatDateTime(session.start_at))}
         </strong>
 
         <small>
@@ -1728,11 +1706,7 @@ function renderViewer(session) {
         <div class="session-v3-local-time">
           YOUR TIME
           <b>
-            ${escapeHtml(
-              formatViewerLocalTime(
-                session.start_at
-              )
-            )}
+            ${escapeHtml(formatViewerLocalTime(session.start_at))}
           </b>
         </div>
 
@@ -1762,9 +1736,8 @@ function renderViewer(session) {
         </span>
       </button>
 
-      ${
-        canManage
-          ? `
+      ${canManage
+      ? `
             <button
               type="button"
               class="session-v3-tab"
@@ -1773,12 +1746,11 @@ function renderViewer(session) {
               Final Marking
             </button>
           `
-          : ""
-      }
+      : ""
+    }
 
-      ${
-        admin
-          ? `
+      ${admin
+      ? `
             <button
               type="button"
               class="session-v3-tab"
@@ -1787,8 +1759,8 @@ function renderViewer(session) {
               Administration
             </button>
           `
-          : ""
-      }
+      : ""
+    }
 
       <button
         type="button"
@@ -1841,11 +1813,7 @@ function renderViewer(session) {
                   <span>Start</span>
 
                   <strong>
-                    ${escapeHtml(
-                      formatDateTime(
-                        session.start_at
-                      )
-                    )}
+                    ${escapeHtml(formatDateTime(session.start_at))}
                   </strong>
                 </div>
 
@@ -1855,12 +1823,8 @@ function renderViewer(session) {
 
                   <strong>
                     ${escapeHtml(
-                      session.end_at
-                        ? formatDateTime(
-                            session.end_at
-                          )
-                        : "-"
-                    )}
+      session.end_at ? formatDateTime(session.end_at) : "-",
+    )}
                   </strong>
                 </div>
 
@@ -1869,9 +1833,7 @@ function renderViewer(session) {
                   <span>Location</span>
 
                   <strong>
-                    ${escapeHtml(
-                      session.location || "-"
-                    )}
+                    ${escapeHtml(session.location || "-")}
                   </strong>
                 </div>
 
@@ -1880,11 +1842,7 @@ function renderViewer(session) {
                   <span>Host</span>
 
                   <strong>
-                    ${escapeHtml(
-                      getProfileName(
-                        session.host_id
-                      )
-                    )}
+                    ${escapeHtml(getProfileName(session.host_id))}
                   </strong>
                 </div>
 
@@ -1894,10 +1852,10 @@ function renderViewer(session) {
 
                   <strong>
                     ${escapeHtml(
-                      session.target_green_team_class
-                        ? `Green Team Class ${session.target_green_team_class}`
-                        : "All Personnel"
-                    )}
+      session.target_green_team_class
+        ? `Green Team Class ${session.target_green_team_class}`
+        : "All Personnel",
+    )}
                   </strong>
                 </div>
 
@@ -1907,14 +1865,12 @@ function renderViewer(session) {
 
                   <strong>
                     ${escapeHtml(
-                      myApprovedLoa
-                        ? "Approved LOA"
-                        : myAttendance
-                          ? attendanceLabel(
-                              myAttendance.attendance
-                            )
-                          : "No Response"
-                    )}
+      myApprovedLoa
+        ? "Approved LOA"
+        : myAttendance
+          ? attendanceLabel(myAttendance.attendance)
+          : "No Response",
+    )}
                   </strong>
                 </div>
 
@@ -1942,14 +1898,10 @@ function renderViewer(session) {
 
               <div class="session-v3-description">
 
-                ${
-                  escapeHtml(
-                    session.description || "-"
-                  ).replaceAll(
-                    "\\n",
-                    "<br>"
-                  )
-                }
+                ${escapeHtml(session.description || "-").replaceAll(
+      "\\n",
+      "<br>",
+    )}
 
               </div>
 
@@ -1985,25 +1937,20 @@ function renderViewer(session) {
                 </span>
 
                 <strong>
-                  ${
-                    escapeHtml(
-                      myApprovedLoa
-                        ? "APPROVED LOA"
-                        : myAttendance
-                          ? attendanceLabel(
-                              myAttendance.attendance
-                            )
-                          : "NO RESPONSE"
-                    )
-                  }
+                  ${escapeHtml(
+      myApprovedLoa
+        ? "APPROVED LOA"
+        : myAttendance
+          ? attendanceLabel(myAttendance.attendance)
+          : "NO RESPONSE",
+    )}
                 </strong>
 
               </div>
 
 
-              ${
-                myApprovedLoa
-                  ? `
+              ${myApprovedLoa
+      ? `
                     <div class="response-console-loa">
                       Approved LOA covers this session.
                       Your attendance response is locked.
@@ -2020,7 +1967,7 @@ function renderViewer(session) {
                       NOT ATTENDING / LOA
                     </button>
                   `
-                  : `
+      : `
                     <div class="session-response-actions">
 
                       <button
@@ -2060,7 +2007,7 @@ function renderViewer(session) {
 
                     </div>
                   `
-              }
+    }
 
             </section>
 
@@ -2172,27 +2119,22 @@ function renderViewer(session) {
           </div>
 
 
-          ${
-            canManage
-              ? `
+          ${canManage
+      ? `
                 <div class="attendance-admin-instruction">
                   ADMIN RESPONSE MODE /
                   Drag personnel between response
                   categories to modify their RSVP.
                 </div>
               `
-              : ""
-          }
+      : ""
+    }
 
 
           <div
             class="
               training-roster-grid
-              ${
-                canManage
-                  ? "admin-attendance-board"
-                  : ""
-              }
+              ${canManage ? "admin-attendance-board" : ""}
             "
           >
 
@@ -2201,11 +2143,7 @@ function renderViewer(session) {
               class="
                 roster-column
                 green
-                ${
-                  canManage
-                    ? "admin-drop-zone"
-                    : ""
-                }
+                ${canManage ? "admin-drop-zone" : ""}
               "
               data-admin-attendance="ATTENDING"
             >
@@ -2230,16 +2168,10 @@ function renderViewer(session) {
 
               <div class="roster-column-body">
 
-                ${
-                  canManage
-                    ? renderDraggableAttendanceRows(
-                        showingUp,
-                        "ATTENDING"
-                      )
-                    : renderNameList(
-                        showingUp
-                      )
-                }
+                ${canManage
+      ? renderDraggableAttendanceRows(showingUp, "ATTENDING")
+      : renderNameList(showingUp)
+    }
 
               </div>
 
@@ -2250,11 +2182,7 @@ function renderViewer(session) {
               class="
                 roster-column
                 red
-                ${
-                  canManage
-                    ? "admin-drop-zone"
-                    : ""
-                }
+                ${canManage ? "admin-drop-zone" : ""}
               "
               data-admin-attendance="NOT_ATTENDING"
             >
@@ -2279,16 +2207,13 @@ function renderViewer(session) {
 
               <div class="roster-column-body">
 
-                ${
-                  canManage
-                    ? renderDraggableAttendanceRows(
-                        notAttending,
-                        "NOT_ATTENDING"
-                      )
-                    : renderNameList(
-                        notAttending
-                      )
-                }
+                ${canManage
+      ? renderDraggableAttendanceRows(
+        notAttending,
+        "NOT_ATTENDING",
+      )
+      : renderNameList(notAttending)
+    }
 
               </div>
 
@@ -2299,11 +2224,7 @@ function renderViewer(session) {
               class="
                 roster-column
                 yellow
-                ${
-                  canManage
-                    ? "admin-drop-zone"
-                    : ""
-                }
+                ${canManage ? "admin-drop-zone" : ""}
               "
               data-admin-attendance=""
             >
@@ -2328,15 +2249,10 @@ function renderViewer(session) {
 
               <div class="roster-column-body">
 
-                ${
-                  canManage
-                    ? renderDraggableProfiles(
-                        noResponse
-                      )
-                    : renderProfileList(
-                        noResponse
-                      )
-                }
+                ${canManage
+      ? renderDraggableProfiles(noResponse)
+      : renderProfileList(noResponse)
+    }
 
               </div>
 
@@ -2361,18 +2277,15 @@ function renderViewer(session) {
 
             <div class="attendance-loa-body">
 
-              ${
-                blockedByLoa.length
-                  ? renderProfileCards(
-                      blockedByLoa
-                    )
-                  : `
+              ${blockedByLoa.length
+      ? renderProfileCards(blockedByLoa)
+      : `
                     <span class="muted">
                       No approved LOA applies to
                       this training session.
                     </span>
                   `
-              }
+    }
 
             </div>
 
@@ -2388,25 +2301,19 @@ function renderViewer(session) {
            FINAL ATTENDANCE MARKING
            =============================================== -->
 
-      ${
-        canManage
-          ? `
+      ${canManage
+      ? `
             <section
               class="session-v3-tab-panel"
               data-viewer-panel="marking"
             >
 
-              ${
-                renderAdminMarkingTable(
-                  session,
-                  attendanceRows
-                )
-              }
+              ${renderAdminMarkingTable(session, attendanceRows)}
 
             </section>
           `
-          : ""
-      }
+      : ""
+    }
 
 
 
@@ -2414,9 +2321,8 @@ function renderViewer(session) {
            ADMIN
            =============================================== -->
 
-      ${
-        admin
-          ? `
+      ${admin
+      ? `
             <section
               class="session-v3-tab-panel"
               data-viewer-panel="admin"
@@ -2443,16 +2349,11 @@ function renderViewer(session) {
                 </div>
 
 
-                ${
-                  renderAdminTrainingControls(
-                    session
-                  )
-                }
+                ${renderAdminTrainingControls(session)}
 
 
-                ${
-                  canManage
-                    ? `
+                ${canManage
+        ? `
                       <section class="admin-danger-register">
 
                         <div>
@@ -2480,15 +2381,15 @@ function renderViewer(session) {
 
                       </section>
                     `
-                    : ""
-                }
+        : ""
+      }
 
               </div>
 
             </section>
           `
-          : ""
-      }
+      : ""
+    }
 
 
 
@@ -2524,17 +2425,11 @@ function renderViewer(session) {
 
           <div class="training-v2-aar">
 
-            ${
-              renderAar(
-                session,
-                canAar
-              )
-            }
+            ${renderAar(session, canAar)}
 
 
-            ${
-              canAar
-                ? `
+            ${canAar
+      ? `
                   <div class="aar-command-bar">
 
                     <span>
@@ -2552,8 +2447,8 @@ function renderViewer(session) {
 
                   </div>
                 `
-                : ""
-            }
+      : ""
+    }
 
           </div>
 
@@ -2567,7 +2462,7 @@ function renderViewer(session) {
   </div>
 `;
 
-bindTrainingViewerTabs();
+  bindTrainingViewerTabs();
 
   const attendingButton = document.getElementById("attending-button");
 
@@ -3016,8 +2911,8 @@ async function postponeAdminTraining(sessionId) {
 
   const confirmed = confirm(
     `Postpone "${session.title}" by ${amountLabel}?\n\n` +
-      `Current start: ${currentStart}\n\n` +
-      "The start and end times will both be moved.",
+    `Current start: ${currentStart}\n\n` +
+    "The start and end times will both be moved.",
   );
 
   if (!confirmed) return;
@@ -3067,7 +2962,7 @@ async function cancelAdminTraining(sessionId) {
 
   const confirmed = confirm(
     `Cancel "${session.title}"?\n\n` +
-      "The session will remain in the database and its attendance records will not be deleted.",
+    "The session will remain in the database and its attendance records will not be deleted.",
   );
 
   if (!confirmed) return;
@@ -3670,95 +3565,56 @@ function formatViewerLocalTime(value) {
 function formatTrainingListLocalTime(value) {
   if (!value) return "-";
 
-  const date =
-    new Date(value);
+  const date = new Date(value);
 
-  if (
-    Number.isNaN(
-      date.getTime()
-    )
-  ) {
+  if (Number.isNaN(date.getTime())) {
     return "-";
   }
 
-  return new Intl.DateTimeFormat(
-    undefined,
-    {
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: false
-    }
-  ).format(date);
+  return new Intl.DateTimeFormat(undefined, {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  }).format(date);
 }
-
 
 function formatTrainingListEasternTime(value) {
   if (!value) return "-";
 
-  const date =
-    new Date(value);
+  const date = new Date(value);
 
-  if (
-    Number.isNaN(
-      date.getTime()
-    )
-  ) {
+  if (Number.isNaN(date.getTime())) {
     return "-";
   }
 
-  return new Intl.DateTimeFormat(
-    "en-US",
-    {
-      timeZone:
-        "America/New_York",
+  return new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/New_York",
 
-      hour:
-        "2-digit",
+    hour: "2-digit",
 
-      minute:
-        "2-digit",
+    minute: "2-digit",
 
-      hour12:
-        false
-    }
-  ).format(date);
+    hour12: false,
+  }).format(date);
 }
-
 
 function getLocalTimeZoneLabel() {
   try {
-    const timeZone =
-      Intl.DateTimeFormat()
-        .resolvedOptions()
-        .timeZone;
+    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
     if (!timeZone) {
       return "LOCAL";
     }
 
-    const now =
-      new Date();
+    const now = new Date();
 
-    const shortName =
-      new Intl.DateTimeFormat(
-        undefined,
-        {
-          timeZoneName:
-            "short"
-        }
-      )
-        .formatToParts(now)
-        .find(
-          part =>
-            part.type ===
-            "timeZoneName"
-        )
-        ?.value;
+    const shortName = new Intl.DateTimeFormat(undefined, {
+      timeZoneName: "short",
+    })
+      .formatToParts(now)
+      .find((part) => part.type === "timeZoneName")?.value;
 
-    return (
-      shortName ||
-      timeZone
-    );
+    return shortName || timeZone;
   } catch {
     return "LOCAL";
   }
