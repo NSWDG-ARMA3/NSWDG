@@ -24,7 +24,8 @@ const state = {
   profiles: [],
   loaRequests: [],
   sessionMembers: [],
-  activeSessionId: null
+  activeSessionId: null,
+  hasNswMedicQualification: false
 };
 
 const el = {};
@@ -132,27 +133,92 @@ async function loadSessionAndProfile() {
     naval_rank: null
   };
 
-  const profileResult = await supabase
-    .from("profiles")
-    .select(
-      "id,user_id,display_name,role,status,avatar_url,callsign,naval_rank,account_created_at"
-    )
-    .eq("id", state.authUser.id)
-    .single();
+  const [profileResult, qualificationResult] = await Promise.all([
+    supabase
+      .from("profiles")
+      .select(
+        "id,user_id,display_name,role,status,avatar_url,callsign,naval_rank,account_created_at"
+      )
+      .eq("id", state.authUser.id)
+      .single(),
+
+    supabase
+      .from("user_qualifications")
+      .select(`
+        qualification_id,
+        qualifications!inner (
+          qualification_code,
+          qualification_name
+        )
+      `)
+      .eq("user_id", state.authUser.id)
+  ]);
 
   if (profileResult.data) {
-    state.profile = { ...state.profile, ...profileResult.data };
+    state.profile = {
+      ...state.profile,
+      ...profileResult.data
+    };
   }
 
-  if (el.sessionLabel) el.sessionLabel.textContent = state.profile.display_name;
-  if (el.sidebarName) el.sidebarName.textContent = state.profile.display_name;
-  if (el.sidebarRole) el.sidebarRole.textContent = state.profile.role;
+  if (qualificationResult.error) {
+    console.error(
+      "Failed to load user qualifications:",
+      qualificationResult.error
+    );
 
-  if (el.navAvatar && state.profile.avatar_url) {
-    el.navAvatar.src = state.profile.avatar_url;
+    state.hasNswMedicQualification = false;
+  } else {
+    state.hasNswMedicQualification = (
+      qualificationResult.data || []
+    ).some(row => {
+      const qualification = row.qualifications;
+
+      const name = String(
+        qualification?.qualification_name || ""
+      )
+        .trim()
+        .toUpperCase();
+
+      const code = String(
+        qualification?.qualification_code || ""
+      )
+        .trim()
+        .toUpperCase();
+
+      return (
+        name === "NSW MEDIC" ||
+        code === "NSW MEDIC"
+      );
+    });
   }
 
-  showAdminLinksIfAllowed(state.authUser.email);
+  if (el.sessionLabel) {
+    el.sessionLabel.textContent =
+      state.profile.display_name;
+  }
+
+  if (el.sidebarName) {
+    el.sidebarName.textContent =
+      state.profile.display_name;
+  }
+
+  if (el.sidebarRole) {
+    el.sidebarRole.textContent =
+      state.profile.role;
+  }
+
+  if (
+    el.navAvatar &&
+    state.profile.avatar_url
+  ) {
+    el.navAvatar.src =
+      state.profile.avatar_url;
+  }
+
+  showAdminLinksIfAllowed(
+    state.authUser.email
+  );
 
   return true;
 }
@@ -358,12 +424,36 @@ function isEvans() {
 }
 
 function canHostUnitWide() {
-  return isTroopHq() || isTeamLeader() || isEvans();
+  return (
+    isTroopHq() ||
+    isTeamLeader() ||
+    isEvans()
+  );
+}
+
+function canHostInnerTeam() {
+  return (
+    canHostUnitWide() ||
+    state.hasNswMedicQualification
+  );
 }
 
 function canCreateSelectedCategory() {
-  if (el.category.value === "PRO_DEVELOPMENT") return true;
-  return canHostUnitWide();
+  const category = el.category.value;
+
+  if (category === "PRO_DEVELOPMENT") {
+    return true;
+  }
+
+  if (category === "UNIT_WIDE") {
+    return canHostUnitWide();
+  }
+
+  if (category === "INNER_TEAM") {
+    return canHostInnerTeam();
+  }
+
+  return false;
 }
 
 function canManageSession(session) {
@@ -381,6 +471,19 @@ async function saveTraining() {
 
   const title = el.title.value.trim();
 
+  const allowedLocations = [
+    "Dam Neck Annex",
+    "Mid-South Institute"
+  ];
+
+  if (!allowedLocations.includes(el.location.value)) {
+    showStatus(
+      "Please select a valid training location.",
+      false
+    );
+    return;
+  }
+
   if (!title) {
     showStatus("Title is required.", false);
     return;
@@ -392,10 +495,23 @@ async function saveTraining() {
   }
 
   if (!canCreateSelectedCategory()) {
-    showStatus(
-      "You do not have permission to host Unit Wide Training.",
-      false
-    );
+    if (el.category.value === "INNER_TEAM") {
+      showStatus(
+        "You do not have permission to host Inner Team Training. An NSW Medic qualification or authorized leadership position is required.",
+        false
+      );
+    } else if (el.category.value === "UNIT_WIDE") {
+      showStatus(
+        "You do not have permission to host Unit Wide Training.",
+        false
+      );
+    } else {
+      showStatus(
+        "You do not have permission to create this training.",
+        false
+      );
+    }
+
     return;
   }
 
@@ -885,7 +1001,7 @@ function resetForm() {
     "";
 
   el.location.value =
-    "";
+    "Dam Neck Annex";
 
   el.description.value =
     "";
@@ -893,10 +1009,6 @@ function resetForm() {
   el.targetClass.value =
     "";
 
-  /*
-   * Default the Discord ping option
-   * back to ON for the next training.
-   */
   if (el.discordPing) {
     el.discordPing.checked = true;
   }
@@ -2443,12 +2555,22 @@ function renderAdminTrainingControls(session) {
 
             <div class="form-group full">
               <label for="admin-edit-location">Location</label>
-              <input
-                id="admin-edit-location"
-                type="text"
-                maxlength="500"
-                value="${escapeHtml(session.location || "")}"
-              >
+
+              <select id="admin-edit-location">
+                <option
+                  value="Dam Neck Annex"
+                  ${session.location === "Dam Neck Annex" ? "selected" : ""}
+                >
+                  Dam Neck Annex
+                </option>
+
+                <option
+                  value="Mid-South Institute"
+                  ${session.location === "Mid-South Institute" ? "selected" : ""}
+                >
+                  Mid-South Institute
+                </option>
+              </select>
             </div>
 
             <div class="form-group full">
@@ -2570,6 +2692,19 @@ async function saveAdminTrainingEdit(sessionId) {
   const title = titleInput.value.trim();
   const startValue = startInput.value;
   const endValue = endInput.value;
+
+  const allowedLocations = [
+    "Dam Neck Annex",
+    "Mid-South Institute"
+  ];
+
+  if (!allowedLocations.includes(locationInput.value)) {
+    showAdminActionStatus(
+      "Please select a valid training location.",
+      false
+    );
+    return;
+  }
 
   if (!title) {
     showAdminActionStatus("Training title is required.", false);
