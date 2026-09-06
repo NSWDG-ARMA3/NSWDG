@@ -4239,18 +4239,26 @@ summary {
 /* ==========================================================
    OUTER RECORD
    ========================================================== */
-
 .training-record {
+  display: block;
+
   width: 100%;
+
+  min-height: 0;
 
   padding: 0;
 
   border-bottom: 1px solid #adb5ba;
 
   background: #e5e8e9;
+
+
 }
 
 
+.training-record-layout {
+  margin: 0;
+}
 .training-record:last-child {
   border-bottom: 0;
 }
