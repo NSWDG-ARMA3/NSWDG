@@ -5287,3 +5287,192 @@ summary {
     margin-top: 10px;
   }
 }
+
+/* ==========================================================
+   TRAINING LIST TIME DISPLAY
+   ========================================================== */
+
+.training-record-meta {
+  display: flex;
+
+  align-items: flex-end;
+  justify-content: space-between;
+
+  gap: 14px;
+
+  margin-top: 7px;
+}
+
+
+.training-record-times {
+  display: flex;
+
+  align-items: stretch;
+
+  gap: 1px;
+
+  border: 1px solid #aeb5ba;
+
+  background: #aeb5ba;
+}
+
+
+.training-record-time {
+  display: flex;
+
+  flex-direction: column;
+
+  justify-content: center;
+
+  min-width: 92px;
+  min-height: 43px;
+
+  padding: 5px 8px;
+
+  background: #f2f3f2;
+}
+
+
+.training-record-time span {
+  display: block;
+
+  margin: 0 0 2px;
+
+  color: #737e85;
+
+  font-size: 6px;
+  font-weight: bold;
+
+  line-height: 1;
+
+  text-transform: uppercase;
+  letter-spacing: 0.65px;
+}
+
+
+.training-record-time strong {
+  display: block;
+
+  color: #17364f;
+
+  font-size: 14px;
+  font-weight: bold;
+
+  line-height: 1.05;
+
+  letter-spacing: 0.15px;
+}
+
+
+.training-record-time small {
+  display: block;
+
+  margin-top: 2px;
+
+  color: #7b858b;
+
+  font-size: 6.5px;
+  font-weight: normal;
+
+  line-height: 1;
+}
+
+
+.training-record-time.local {
+  background: #edf2f5;
+}
+
+
+.training-record-time.local strong {
+  color: #173f5b;
+}
+
+
+.training-record-time.eastern {
+  background: #f4f4f2;
+}
+
+
+.training-record-time.eastern strong {
+  color: #4d5961;
+}
+
+
+/* Host now has its own small information block */
+
+.training-record-host {
+  min-width: 90px;
+
+  text-align: right;
+}
+
+
+.training-record-host span {
+  display: block;
+
+  margin-bottom: 2px;
+
+  color: #7c858a;
+
+  font-size: 6px;
+  font-weight: bold;
+
+  text-transform: uppercase;
+  letter-spacing: 0.55px;
+}
+
+
+.training-record-host strong {
+  display: block;
+
+  overflow: hidden;
+
+  color: #4d5a62;
+
+  font-size: 8px;
+  font-weight: bold;
+
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+
+/* Make the user's own time visually dominant */
+
+.training-record-time.local {
+  border-left: 3px solid #1d3f5e;
+}
+
+
+/* ==========================================================
+   MOBILE
+   ========================================================== */
+
+@media (max-width: 600px) {
+
+  .training-record-meta {
+    display: block;
+  }
+
+
+  .training-record-times {
+    width: 100%;
+
+    margin-bottom: 7px;
+  }
+
+
+  .training-record-time {
+    flex: 1;
+
+    min-width: 0;
+  }
+
+
+  .training-record-host {
+    width: 100%;
+
+    text-align: left;
+  }
+
+}

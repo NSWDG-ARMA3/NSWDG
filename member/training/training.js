@@ -1037,8 +1037,18 @@ function renderTrainingRecord(session) {
     day: "2-digit",
   });
 
-  const localTime = formatViewerLocalTime(session.start_at);
+const localTime =
+  formatTrainingListLocalTime(
+    session.start_at
+  );
 
+const easternTime =
+  formatTrainingListEasternTime(
+    session.start_at
+  );
+
+const localZone =
+  getLocalTimeZoneLabel();
   const selected = Number(state.activeSessionId) === Number(session.id);
 
   return `
@@ -1083,20 +1093,69 @@ function renderTrainingRecord(session) {
         </h3>
 
 
-        <div class="training-record-meta">
+<div class="training-record-meta">
 
-          <span>
-            ${escapeHtml(localTime)}
-          </span>
+  <div class="training-record-times">
 
-          <span>
-            Host:
-            <strong>
-              ${escapeHtml(getProfileName(session.host_id))}
-            </strong>
-          </span>
+    <div class="training-record-time local">
 
-        </div>
+      <span>
+        YOUR TIME
+      </span>
+
+      <strong>
+        ${escapeHtml(
+          localTime
+        )}
+      </strong>
+
+      <small>
+        ${escapeHtml(
+          localZone
+        )}
+      </small>
+
+    </div>
+
+
+    <div class="training-record-time eastern">
+
+      <span>
+        EASTERN TIME
+      </span>
+
+      <strong>
+        ${escapeHtml(
+          easternTime
+        )}
+      </strong>
+
+      <small>
+        ET
+      </small>
+
+    </div>
+
+  </div>
+
+
+  <div class="training-record-host">
+
+    <span>
+      HOST
+    </span>
+
+    <strong>
+      ${escapeHtml(
+        getProfileName(
+          session.host_id
+        )
+      )}
+    </strong>
+
+  </div>
+
+</div>
 
       </div>
 
@@ -3606,6 +3665,103 @@ function formatViewerLocalTime(value) {
     minute: "2-digit",
     timeZoneName: "short",
   }).format(date);
+}
+
+function formatTrainingListLocalTime(value) {
+  if (!value) return "-";
+
+  const date =
+    new Date(value);
+
+  if (
+    Number.isNaN(
+      date.getTime()
+    )
+  ) {
+    return "-";
+  }
+
+  return new Intl.DateTimeFormat(
+    undefined,
+    {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false
+    }
+  ).format(date);
+}
+
+
+function formatTrainingListEasternTime(value) {
+  if (!value) return "-";
+
+  const date =
+    new Date(value);
+
+  if (
+    Number.isNaN(
+      date.getTime()
+    )
+  ) {
+    return "-";
+  }
+
+  return new Intl.DateTimeFormat(
+    "en-US",
+    {
+      timeZone:
+        "America/New_York",
+
+      hour:
+        "2-digit",
+
+      minute:
+        "2-digit",
+
+      hour12:
+        false
+    }
+  ).format(date);
+}
+
+
+function getLocalTimeZoneLabel() {
+  try {
+    const timeZone =
+      Intl.DateTimeFormat()
+        .resolvedOptions()
+        .timeZone;
+
+    if (!timeZone) {
+      return "LOCAL";
+    }
+
+    const now =
+      new Date();
+
+    const shortName =
+      new Intl.DateTimeFormat(
+        undefined,
+        {
+          timeZoneName:
+            "short"
+        }
+      )
+        .formatToParts(now)
+        .find(
+          part =>
+            part.type ===
+            "timeZoneName"
+        )
+        ?.value;
+
+    return (
+      shortName ||
+      timeZone
+    );
+  } catch {
+    return "LOCAL";
+  }
 }
 
 function showStatus(message, ok) {
