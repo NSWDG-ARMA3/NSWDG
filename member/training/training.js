@@ -72,20 +72,136 @@ function cacheElements() {
   el.statusFilter = document.getElementById("training-status-filter");
   el.refreshButton = document.getElementById("refresh-training-button");
 
-  el.output = document.getElementById("training-output");
-  el.viewer = document.getElementById("training-viewer");
+  el.search =
+  document.getElementById(
+    "training-search"
+  );
+
+el.categoryFilter =
+  document.getElementById(
+    "training-category-filter"
+  );
+
+el.statusFilter =
+  document.getElementById(
+    "training-status-filter"
+  );
+
+el.refreshButton =
+  document.getElementById(
+    "refresh-training-button"
+  );
+
+el.output =
+  document.getElementById(
+    "training-output"
+  );
+
+el.viewer =
+  document.getElementById(
+    "training-viewer"
+  );
+
+el.composeToggle =
+  document.getElementById(
+    "training-compose-toggle"
+  );
+
+el.composeClose =
+  document.getElementById(
+    "training-compose-close"
+  );
+
+el.composer =
+  document.getElementById(
+    "training-composer"
+  );
+
+el.sessionCount =
+  document.getElementById(
+    "training-session-count"
+  );
 }
+
 function bindEvents() {
   el.logoutButton?.addEventListener("click", doLogout);
-  el.saveButton.addEventListener("click", saveTraining);
-  el.resetButton.addEventListener("click", resetForm);
-  el.refreshButton.addEventListener("click", loadData);
 
-  el.search.addEventListener("input", renderSessions);
-  el.categoryFilter.addEventListener("change", renderSessions);
-  el.statusFilter.addEventListener("change", renderSessions);
+  el.saveButton?.addEventListener(
+    "click",
+    saveTraining
+  );
 
-  el.category.addEventListener("change", updateAudienceField);
+  el.resetButton?.addEventListener(
+    "click",
+    resetForm
+  );
+
+  el.refreshButton?.addEventListener(
+    "click",
+    loadData
+  );
+
+  el.search?.addEventListener(
+    "input",
+    renderSessions
+  );
+
+  el.categoryFilter?.addEventListener(
+    "change",
+    renderSessions
+  );
+
+  el.statusFilter?.addEventListener(
+    "change",
+    renderSessions
+  );
+
+  el.category?.addEventListener(
+    "change",
+    updateAudienceField
+  );
+
+  bindTrainingComposer();
+}
+
+function bindTrainingComposer() {
+  if (
+    !el.composeToggle ||
+    !el.composeClose ||
+    !el.composer
+  ) {
+    return;
+  }
+
+  el.composeToggle.addEventListener(
+    "click",
+    () => {
+      el.composer.classList.remove(
+        "hidden"
+      );
+
+      el.composeToggle.classList.add(
+        "active"
+      );
+
+      if (el.title) {
+        el.title.focus();
+      }
+    }
+  );
+
+  el.composeClose.addEventListener(
+    "click",
+    () => {
+      el.composer.classList.add(
+        "hidden"
+      );
+
+      el.composeToggle.classList.remove(
+        "active"
+      );
+    }
+  );
 }
 
 function updateAudienceField() {
@@ -661,6 +777,18 @@ async function saveTraining() {
 
   resetForm();
 
+  if (el.composer) {
+  el.composer.classList.add(
+    "hidden"
+  );
+}
+
+if (el.composeToggle) {
+  el.composeToggle.classList.remove(
+    "active"
+  );
+}
+
   showStatus(
     "Training session created.",
     true
@@ -997,14 +1125,14 @@ function resetForm() {
   el.start.value =
     "";
 
-  el.end.value =
-    "";
+    el.end.value =
+      "";
 
-  el.location.value =
-    "Dam Neck Annex";
+    el.location.value =
+      "Dam Neck Annex";
 
-  el.description.value =
-    "";
+    el.description.value =
+      "";
 
   el.targetClass.value =
     "";
@@ -1018,124 +1146,225 @@ function resetForm() {
 }
 
 function renderSessions() {
-  const search = el.search.value.trim().toLowerCase();
-  const category = el.categoryFilter.value;
-  const status = el.statusFilter.value;
+  const search = el.search
+    ? el.search.value
+        .trim()
+        .toLowerCase()
+    : "";
 
-  let rows = [...state.sessions];
+  const category =
+    el.categoryFilter
+      ? el.categoryFilter.value
+      : "";
+
+  const status =
+    el.statusFilter
+      ? el.statusFilter.value
+      : "";
+
+  let rows = [
+    ...state.sessions
+  ];
 
   if (search) {
-    rows = rows.filter(session => {
-      return (
-        String(session.title || "")
-          .toLowerCase()
-          .includes(search) ||
-        String(session.description || "")
-          .toLowerCase()
-          .includes(search) ||
-        String(session.location || "")
-          .toLowerCase()
-          .includes(search)
-      );
-    });
+    rows = rows.filter(
+      session => {
+        return (
+          String(
+            session.title || ""
+          )
+            .toLowerCase()
+            .includes(search) ||
+
+          String(
+            session.description || ""
+          )
+            .toLowerCase()
+            .includes(search) ||
+
+          String(
+            session.location || ""
+          )
+            .toLowerCase()
+            .includes(search)
+        );
+      }
+    );
   }
 
   if (category) {
     rows = rows.filter(
-      session => session.category === category
+      session =>
+        session.category ===
+        category
     );
   }
 
   if (status) {
     rows = rows.filter(
-      session => session.status === status
+      session =>
+        session.status ===
+        status
     );
   }
 
-  const normalSessions = rows.filter(
-    session => session.category !== "INNER_TEAM"
+  if (!hasAssignedCallsign()) {
+    rows = rows.filter(
+      session =>
+        session.category !==
+        "INNER_TEAM"
+    );
+  }
+
+  rows.sort(
+    (a, b) =>
+      new Date(
+        a.start_at
+      ).getTime() -
+      new Date(
+        b.start_at
+      ).getTime()
   );
 
-  const innerTeamSessions = rows.filter(
-    session => session.category === "INNER_TEAM"
-  );
+  const now =
+    Date.now();
 
-  const showInnerTeam = hasAssignedCallsign();
+  const upcoming =
+    rows.filter(
+      session => {
+        const sessionTime =
+          new Date(
+            session.start_at
+          ).getTime();
 
-  el.output.classList.toggle(
-    "has-inner-team",
-    showInnerTeam
-  );
+        return (
+          sessionTime >= now &&
+          session.status !==
+            "COMPLETED" &&
+          session.status !==
+            "CANCELLED"
+        );
+      }
+    );
 
-  const normalHtml = renderSessionTable(
-    normalSessions,
-    "No training sessions found."
-  );
+  const history =
+    rows
+      .filter(
+        session =>
+          !upcoming.includes(
+            session
+          )
+      )
+      .sort(
+        (a, b) =>
+          new Date(
+            b.start_at
+          ).getTime() -
+          new Date(
+            a.start_at
+          ).getTime()
+      );
 
-  const innerTeamHtml = renderSessionTable(
-    innerTeamSessions,
-    "No Inner Team sessions found."
-  );
+  if (el.sessionCount) {
+    el.sessionCount.textContent =
+      `${rows.length} ${
+        rows.length === 1
+          ? "SESSION"
+          : "SESSIONS"
+      }`;
+  }
 
   el.output.innerHTML = `
-    <div class="training-session-column">
-      <h4>Training</h4>
-      ${normalHtml}
-    </div>
+    ${renderTrainingGroup(
+      "UPCOMING",
+      upcoming,
+      "No upcoming training sessions."
+    )}
 
-    ${
-      showInnerTeam
-        ? `
-          <div class="training-session-column">
-            <h4>Inner Team</h4>
-            ${innerTeamHtml}
-          </div>
-        `
-        : ""
-    }
+    ${renderTrainingGroup(
+      "HISTORY",
+      history,
+      "No previous training sessions."
+    )}
   `;
 
   el.output
-    .querySelectorAll("[data-open-session]")
-    .forEach(button => {
-      button.addEventListener("click", () => {
-        const sessionId = Number(
-          button.dataset.openSession
+    .querySelectorAll(
+      "[data-open-session]"
+    )
+    .forEach(
+      button => {
+        button.addEventListener(
+          "click",
+          () => {
+            const sessionId =
+              Number(
+                button.dataset
+                  .openSession
+              );
+
+            if (
+              Number(
+                state.activeSessionId
+              ) ===
+              sessionId
+            ) {
+              state.activeSessionId =
+                null;
+
+              el.viewer.className =
+                "empty-state";
+
+              el.viewer.textContent =
+                "Select a training session to view attendance and AAR.";
+
+              renderSessions();
+
+              return;
+            }
+
+            const session =
+              state.sessions.find(
+                item =>
+                  Number(
+                    item.id
+                  ) ===
+                  sessionId
+              );
+
+            if (!session) {
+              return;
+            }
+
+            state.activeSessionId =
+              sessionId;
+
+            renderViewer(
+              session
+            );
+
+            renderSessions();
+
+            const viewerSection =
+              document.getElementById(
+                "training-viewer-section"
+              );
+
+            if (
+              viewerSection
+            ) {
+              viewerSection
+                .scrollIntoView({
+                  behavior:
+                    "smooth",
+                  block:
+                    "start"
+                });
+            }
+          }
         );
-
-        if (
-          Number(state.activeSessionId) ===
-          sessionId
-        ) {
-          state.activeSessionId = null;
-
-          el.viewer.className =
-            "empty-state";
-
-          el.viewer.textContent =
-            "Select a training session to view attendance and AAR.";
-
-          renderSessions();
-          return;
-        }
-
-        const session = state.sessions.find(
-          item =>
-            Number(item.id) ===
-            sessionId
-        );
-
-        if (!session) {
-          return;
-        }
-
-        state.activeSessionId =
-          sessionId;
-
-        renderViewer(session);
-        renderSessions();
-      });
-    });
+      }
+    );
 
   bindSessionStatusControls();
 }
@@ -1164,129 +1393,257 @@ function bindSessionStatusControls() {
 }
 
 
-function renderSessionTable(rows, emptyMessage) {
-  if (!rows.length) {
-    return `
-      <div class="empty-state">
-        ${escapeHtml(emptyMessage)}
+function renderTrainingGroup(
+  label,
+  rows,
+  emptyMessage
+) {
+  return `
+    <section class="training-group">
+
+      <div class="training-group-heading">
+
+        <span>
+          ${escapeHtml(
+            label
+          )}
+        </span>
+
+        <strong>
+          ${rows.length}
+        </strong>
+
       </div>
-    `;
-  }
+
+      ${
+        rows.length
+          ? `
+            <div class="training-records">
+
+              ${rows
+                .map(
+                  session =>
+                    renderTrainingRecord(
+                      session
+                    )
+                )
+                .join("")}
+
+            </div>
+          `
+          : `
+            <div class="training-group-empty">
+              ${escapeHtml(
+                emptyMessage
+              )}
+            </div>
+          `
+      }
+
+    </section>
+  `;
+}
+
+function renderTrainingRecord(
+  session
+) {
+  const counts =
+    getAttendanceCounts(
+      session
+    );
+
+  const sessionDate =
+    new Date(
+      session.start_at
+    );
+
+  const month =
+    sessionDate
+      .toLocaleDateString(
+        "en-US",
+        {
+          month: "short"
+        }
+      )
+      .toUpperCase();
+
+  const day =
+    sessionDate
+      .toLocaleDateString(
+        "en-US",
+        {
+          day: "2-digit"
+        }
+      );
+
+  const localTime =
+    formatViewerLocalTime(
+      session.start_at
+    );
+
+  const selected =
+    Number(
+      state.activeSessionId
+    ) ===
+    Number(
+      session.id
+    );
 
   return `
-    <table>
-      <thead>
-        <tr>
-          <th>Start</th>
-          <th>Category</th>
-          <th>Title</th>
-          <th>Status</th>
-          <th>Attendance</th>
-          <th>Host</th>
-          <th>Action</th>
-        </tr>
-      </thead>
+    <article
+      class="
+        training-record
+        training-record-${String(
+          session.category || ""
+        )
+          .toLowerCase()
+          .replaceAll(
+            "_",
+            "-"
+          )}
+        ${
+          selected
+            ? "active"
+            : ""
+        }
+      "
+    >
 
-      <tbody>
-        ${rows
-          .map(session => {
-            const counts =
-              getAttendanceCounts(session);
+      <div class="training-record-date">
 
-            return `
-              <tr>
-                <td>
-                  ${escapeHtml(
-                    formatDateTime(
-                      session.start_at
-                    )
-                  )}
-                  <br>
+        <span>
+          ${escapeHtml(
+            month
+          )}
+        </span>
 
-                  <span class="muted">
-                    (Your time:
-                    ${escapeHtml(
-                      formatViewerLocalTime(
-                        session.start_at
-                      )
-                    )})
-                  </span>
-                </td>
+        <strong>
+          ${escapeHtml(
+            day
+          )}
+        </strong>
 
-                <td>
-                  ${categoryBadge(
-                    session.category
-                  )}
-                </td>
+      </div>
 
-                <td>
-                  <strong>
-                    ${escapeHtml(
-                      session.title
-                    )}
-                  </strong>
-                  <br>
 
-                  <span class="muted">
-                    ${escapeHtml(
-                      session.location || "-"
-                    )}
-                  </span>
-                </td>
+      <div class="training-record-main">
 
-                <td>
-                  ${renderSessionStatusControl(
-                    session
-                  )}
-                </td>
+        <div class="training-record-topline">
 
-                <td>
-                  <span class="badge badge-green">
-                    ${counts.attending}
-                    Attending
-                  </span>
+          ${categoryBadge(
+            session.category
+          )}
 
-                  <span class="badge badge-red">
-                    ${counts.notAttending}
-                    Not Attending
-                  </span>
+          <span class="training-record-location">
+            ${escapeHtml(
+              session.location ||
+                "-"
+            )}
+          </span>
 
-                  <span class="badge badge-yellow">
-                    ${counts.loaAbsent}
-                    LOA Absent
-                  </span>
-                </td>
+        </div>
 
-                <td>
-                  ${escapeHtml(
-                    getProfileName(
-                      session.host_id
-                    )
-                  )}
-                </td>
 
-                <td>
-                  <button
-                    class="btn btn-secondary"
-                    type="button"
-                    data-open-session="${session.id}"
-                  >
-                    ${
-                      Number(
-                        state.activeSessionId
-                      ) ===
-                      Number(session.id)
-                        ? "Close"
-                        : "Open"
-                    }
-                  </button>
-                </td>
-              </tr>
-            `;
-          })
-          .join("")}
-      </tbody>
-    </table>
+        <h3>
+          ${escapeHtml(
+            session.title
+          )}
+        </h3>
+
+
+        <div class="training-record-meta">
+
+          <span>
+            ${escapeHtml(
+              localTime
+            )}
+          </span>
+
+          <span>
+            Host:
+            <strong>
+              ${escapeHtml(
+                getProfileName(
+                  session.host_id
+                )
+              )}
+            </strong>
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <div class="training-record-attendance">
+
+        <div class="training-attendance-value attending">
+
+          <strong>
+            ${counts.attending}
+          </strong>
+
+          <span>
+            Attending
+          </span>
+
+        </div>
+
+
+        <div class="training-attendance-value declined">
+
+          <strong>
+            ${counts.notAttending}
+          </strong>
+
+          <span>
+            Declined
+          </span>
+
+        </div>
+
+
+        <div class="training-attendance-value loa">
+
+          <strong>
+            ${counts.loaAbsent}
+          </strong>
+
+          <span>
+            LOA
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <div class="training-record-status">
+
+        ${renderSessionStatusControl(
+          session
+        )}
+
+      </div>
+
+
+      <div class="training-record-action">
+
+        <button
+          type="button"
+          class="training-open-button"
+          data-open-session="${session.id}"
+        >
+          ${
+            selected
+              ? "Close"
+              : "Open"
+          }
+        </button>
+
+      </div>
+
+    </article>
   `;
 }
 
