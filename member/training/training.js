@@ -4,7 +4,7 @@ import { renderPortalLayout } from "/js/portal-layout.js";
 const TRAINING_DISCORD_WEBHOOK =
   "https://discord.com/api/webhooks/1530732785390850099/VL4qWIFgveFl7JBwkAg7k8zvjLLFRmoRAM9P7GH_aPe8zl4OiSlPmX8X2pOqBPMTvvZ0";
 
-  const INNER_TEAM_DISCORD_WEBHOOK =
+const INNER_TEAM_DISCORD_WEBHOOK =
   "https://discordapp.com/api/webhooks/1543740021511819315/KV5iMJwoe6lyQxj2IwusGSNsyyqfFdMBapNkdVAom5wn436Xc6T89d6iGGgIdq4O4RXw";
 
 const PORTAL_BASE_URL = "https://www.rsqdn.com";
@@ -25,7 +25,7 @@ const state = {
   loaRequests: [],
   sessionMembers: [],
   activeSessionId: null,
-  hasNswMedicQualification: false
+  hasNswMedicQualification: false,
 };
 
 const el = {};
@@ -51,10 +51,7 @@ function cacheElements() {
   el.logoutButton = document.getElementById("logout-button");
 
   el.category = document.getElementById("training-category");
-  el.targetClass =
-  document.getElementById(
-    "training-target-class"
-  );
+  el.targetClass = document.getElementById("training-target-class");
   el.status = document.getElementById("training-status");
   el.title = document.getElementById("training-title");
   el.start = document.getElementById("training-start");
@@ -72,141 +69,71 @@ function cacheElements() {
   el.statusFilter = document.getElementById("training-status-filter");
   el.refreshButton = document.getElementById("refresh-training-button");
 
-  el.search =
-  document.getElementById(
-    "training-search"
-  );
+  el.search = document.getElementById("training-search");
 
-el.categoryFilter =
-  document.getElementById(
-    "training-category-filter"
-  );
+  el.categoryFilter = document.getElementById("training-category-filter");
 
-el.statusFilter =
-  document.getElementById(
-    "training-status-filter"
-  );
+  el.statusFilter = document.getElementById("training-status-filter");
 
-el.refreshButton =
-  document.getElementById(
-    "refresh-training-button"
-  );
+  el.refreshButton = document.getElementById("refresh-training-button");
 
-el.output =
-  document.getElementById(
-    "training-output"
-  );
+  el.output = document.getElementById("training-output");
 
-el.viewer =
-  document.getElementById(
-    "training-viewer"
-  );
+  el.viewer = document.getElementById("training-viewer");
 
-el.composeToggle =
-  document.getElementById(
-    "training-compose-toggle"
-  );
+  el.composeToggle = document.getElementById("training-compose-toggle");
 
-el.composeClose =
-  document.getElementById(
-    "training-compose-close"
-  );
+  el.composeClose = document.getElementById("training-compose-close");
 
-el.composer =
-  document.getElementById(
-    "training-composer"
-  );
+  el.composer = document.getElementById("training-composer");
 
-el.sessionCount =
-  document.getElementById(
-    "training-session-count"
-  );
+  el.sessionCount = document.getElementById("training-session-count");
 }
 
 function bindEvents() {
   el.logoutButton?.addEventListener("click", doLogout);
 
-  el.saveButton?.addEventListener(
-    "click",
-    saveTraining
-  );
+  el.saveButton?.addEventListener("click", saveTraining);
 
-  el.resetButton?.addEventListener(
-    "click",
-    resetForm
-  );
+  el.resetButton?.addEventListener("click", resetForm);
 
-  el.refreshButton?.addEventListener(
-    "click",
-    loadData
-  );
+  el.refreshButton?.addEventListener("click", loadData);
 
-  el.search?.addEventListener(
-    "input",
-    renderSessions
-  );
+  el.search?.addEventListener("input", renderSessions);
 
-  el.categoryFilter?.addEventListener(
-    "change",
-    renderSessions
-  );
+  el.categoryFilter?.addEventListener("change", renderSessions);
 
-  el.statusFilter?.addEventListener(
-    "change",
-    renderSessions
-  );
+  el.statusFilter?.addEventListener("change", renderSessions);
 
-  el.category?.addEventListener(
-    "change",
-    updateAudienceField
-  );
+  el.category?.addEventListener("change", updateAudienceField);
 
   bindTrainingComposer();
 }
 
 function bindTrainingComposer() {
-  if (
-    !el.composeToggle ||
-    !el.composeClose ||
-    !el.composer
-  ) {
+  if (!el.composeToggle || !el.composeClose || !el.composer) {
     return;
   }
 
-  el.composeToggle.addEventListener(
-    "click",
-    () => {
-      el.composer.classList.remove(
-        "hidden"
-      );
+  el.composeToggle.addEventListener("click", () => {
+    el.composer.classList.remove("hidden");
 
-      el.composeToggle.classList.add(
-        "active"
-      );
+    el.composeToggle.classList.add("active");
 
-      if (el.title) {
-        el.title.focus();
-      }
+    if (el.title) {
+      el.title.focus();
     }
-  );
+  });
 
-  el.composeClose.addEventListener(
-    "click",
-    () => {
-      el.composer.classList.add(
-        "hidden"
-      );
+  el.composeClose.addEventListener("click", () => {
+    el.composer.classList.add("hidden");
 
-      el.composeToggle.classList.remove(
-        "active"
-      );
-    }
-  );
+    el.composeToggle.classList.remove("active");
+  });
 }
 
 function updateAudienceField() {
-  const isInnerTeam =
-    el.category.value === "INNER_TEAM";
+  const isInnerTeam = el.category.value === "INNER_TEAM";
 
   el.targetClass.disabled = isInnerTeam;
 
@@ -218,12 +145,10 @@ function updateAudienceField() {
     el.discordPing.checked = true;
     el.discordPing.disabled = isInnerTeam;
 
-    const pingContainer =
-      el.discordPing.closest(".form-group");
+    const pingContainer = el.discordPing.closest(".form-group");
 
     if (pingContainer) {
-      pingContainer.style.display =
-        isInnerTeam ? "none" : "";
+      pingContainer.style.display = isInnerTeam ? "none" : "";
     }
   }
 }
@@ -246,95 +171,81 @@ async function loadSessionAndProfile() {
     status: "ACTIVE",
     avatar_url: null,
     callsign: null,
-    naval_rank: null
+    naval_rank: null,
   };
 
   const [profileResult, qualificationResult] = await Promise.all([
     supabase
       .from("profiles")
       .select(
-        "id,user_id,display_name,role,status,avatar_url,callsign,naval_rank,account_created_at"
+        "id,user_id,display_name,role,status,avatar_url,callsign,naval_rank,account_created_at",
       )
       .eq("id", state.authUser.id)
       .single(),
 
     supabase
       .from("user_qualifications")
-      .select(`
+      .select(
+        `
         qualification_id,
         qualifications!inner (
           qualification_code,
           qualification_name
         )
-      `)
-      .eq("user_id", state.authUser.id)
+      `,
+      )
+      .eq("user_id", state.authUser.id),
   ]);
 
   if (profileResult.data) {
     state.profile = {
       ...state.profile,
-      ...profileResult.data
+      ...profileResult.data,
     };
   }
 
   if (qualificationResult.error) {
     console.error(
       "Failed to load user qualifications:",
-      qualificationResult.error
+      qualificationResult.error,
     );
 
     state.hasNswMedicQualification = false;
   } else {
-    state.hasNswMedicQualification = (
-      qualificationResult.data || []
-    ).some(row => {
-      const qualification = row.qualifications;
+    state.hasNswMedicQualification = (qualificationResult.data || []).some(
+      (row) => {
+        const qualification = row.qualifications;
 
-      const name = String(
-        qualification?.qualification_name || ""
-      )
-        .trim()
-        .toUpperCase();
+        const name = String(qualification?.qualification_name || "")
+          .trim()
+          .toUpperCase();
 
-      const code = String(
-        qualification?.qualification_code || ""
-      )
-        .trim()
-        .toUpperCase();
+        const code = String(qualification?.qualification_code || "")
+          .trim()
+          .toUpperCase();
 
-      return (
-        name === "NSW MEDIC" ||
-        code === "NSW MEDIC"
-      );
-    });
+        return name === "NSW MEDIC" || code === "NSW MEDIC";
+      },
+    );
   }
 
   if (el.sessionLabel) {
-    el.sessionLabel.textContent =
-      state.profile.display_name;
+    el.sessionLabel.textContent = state.profile.display_name;
   }
 
   if (el.sidebarName) {
-    el.sidebarName.textContent =
-      state.profile.display_name;
+    el.sidebarName.textContent = state.profile.display_name;
   }
 
   if (el.sidebarRole) {
-    el.sidebarRole.textContent =
-      state.profile.role;
+    el.sidebarRole.textContent = state.profile.role;
   }
 
-  if (
-    el.navAvatar &&
-    state.profile.avatar_url
-  ) {
-    el.navAvatar.src =
-      state.profile.avatar_url;
+  if (el.navAvatar && state.profile.avatar_url) {
+    el.navAvatar.src = state.profile.avatar_url;
   }
 
-  showAdminLinksIfAllowed(
-    state.authUser.email
-  );
+  showAdminLinksIfAllowed(state.authUser.email);
 
   return true;
 }
@@ -345,62 +256,34 @@ async function loadData() {
     attendanceResult,
     profilesResult,
     loaResult,
-    rosterResult
+    rosterResult,
   ] = await Promise.all([
-    supabase
-      .from("training_sessions")
-      .select("*")
-      .order(
-        "start_at",
-        {
-          ascending: false
-        }
-      ),
+    supabase.from("training_sessions").select("*").order("start_at", {
+      ascending: false,
+    }),
 
-    supabase
-      .from("training_attendance")
-      .select("*"),
+    supabase.from("training_attendance").select("*"),
 
     supabase
       .from("profiles")
       .select(
-        "id,user_id,display_name,role,status,avatar_url,callsign,naval_rank,account_created_at,green_team_class"
+        "id,user_id,display_name,role,status,avatar_url,callsign,naval_rank,account_created_at,green_team_class",
       )
-      .eq(
-        "status",
-        "ACTIVE"
-      )
-      .order(
-        "display_name",
-        {
-          ascending: true
-        }
-      ),
+      .eq("status", "ACTIVE")
+      .order("display_name", {
+        ascending: true,
+      }),
 
-    supabase
-      .from("loa_requests")
-      .select("*")
-      .eq(
-        "status",
-        "APPROVED"
-      ),
+    supabase.from("loa_requests").select("*").eq("status", "APPROVED"),
 
-    supabase
-      .from(
-        "training_session_members"
-      )
-      .select(
-        "session_id,user_id"
-      )
+    supabase.from("training_session_members").select("session_id,user_id"),
   ]);
 
   if (sessionsResult.error) {
     el.output.innerHTML = `
       <div class="empty-state">
         Failed to load training:
-        ${escapeHtml(
-          sessionsResult.error.message
-        )}
+        ${escapeHtml(sessionsResult.error.message)}
       </div>
     `;
 
@@ -411,9 +294,7 @@ async function loadData() {
     el.output.innerHTML = `
       <div class="empty-state">
         Failed to load attendance:
-        ${escapeHtml(
-          attendanceResult.error.message
-        )}
+        ${escapeHtml(attendanceResult.error.message)}
       </div>
     `;
 
@@ -424,9 +305,7 @@ async function loadData() {
     el.output.innerHTML = `
       <div class="empty-state">
         Failed to load profiles:
-        ${escapeHtml(
-          profilesResult.error.message
-        )}
+        ${escapeHtml(profilesResult.error.message)}
       </div>
     `;
 
@@ -437,9 +316,7 @@ async function loadData() {
     el.output.innerHTML = `
       <div class="empty-state">
         Failed to load LOA data:
-        ${escapeHtml(
-          loaResult.error.message
-        )}
+        ${escapeHtml(loaResult.error.message)}
       </div>
     `;
 
@@ -450,62 +327,51 @@ async function loadData() {
     el.output.innerHTML = `
       <div class="empty-state">
         Failed to load training class roster:
-        ${escapeHtml(
-          rosterResult.error.message
-        )}
+        ${escapeHtml(rosterResult.error.message)}
       </div>
     `;
 
     return;
   }
 
-  state.sessions =
-    (sessionsResult.data || [])
-      .filter(
-        canViewSession
-      );
+  state.sessions = (sessionsResult.data || []).filter(canViewSession);
 
-  state.attendance =
-    attendanceResult.data || [];
+  state.attendance = attendanceResult.data || [];
 
-  state.profiles =
-    profilesResult.data || [];
+  state.profiles = profilesResult.data || [];
 
-  state.loaRequests =
-    loaResult.data || [];
+  state.loaRequests = loaResult.data || [];
 
-  state.sessionMembers =
-    rosterResult.data || [];
+  state.sessionMembers = rosterResult.data || [];
 
   renderSessions();
 
-  if (
-    state.activeSessionId
-  ) {
-    const active =
-      state.sessions.find(
-        session =>
-          Number(session.id) ===
-          Number(
-            state.activeSessionId
-          )
-      );
+  if (state.activeSessionId) {
+    const active = state.sessions.find(
+      (session) => Number(session.id) === Number(state.activeSessionId),
+    );
 
     if (active) {
-      renderViewer(
-        active
-      );
+      renderViewer(active);
     }
   }
 }
 
 function isAdmin() {
-  return String(state.profile?.role || "").trim().toUpperCase() === "ADMIN";
+  return (
+    String(state.profile?.role || "")
+      .trim()
+      .toUpperCase() === "ADMIN"
+  );
 }
 
 function isTroopHq() {
-  const role = String(state.profile?.role || "").trim().toUpperCase();
-  const callsign = String(state.profile?.callsign || "").trim().toUpperCase();
+  const role = String(state.profile?.role || "")
+    .trim()
+    .toUpperCase();
+  const callsign = String(state.profile?.callsign || "")
+    .trim()
+    .toUpperCase();
 
   return HQ_ROLES.includes(role) || TROOP_HQ_CALLSIGNS.includes(callsign);
 }
@@ -531,27 +397,26 @@ function canViewSession(session) {
 }
 
 function isTeamLeader() {
-  const callsign = String(state.profile?.callsign || "").trim().toUpperCase();
+  const callsign = String(state.profile?.callsign || "")
+    .trim()
+    .toUpperCase();
   return TEAM_LEADER_CALLSIGNS.includes(callsign);
 }
 
 function isEvans() {
-  return String(state.authUser?.email || "").trim().toLowerCase() === "evans@navy.mil";
+  return (
+    String(state.authUser?.email || "")
+      .trim()
+      .toLowerCase() === "evans@navy.mil"
+  );
 }
 
 function canHostUnitWide() {
-  return (
-    isTroopHq() ||
-    isTeamLeader() ||
-    isEvans()
-  );
+  return isTroopHq() || isTeamLeader() || isEvans();
 }
 
 function canHostInnerTeam() {
-  return (
-    canHostUnitWide() ||
-    state.hasNswMedicQualification
-  );
+  return canHostUnitWide() || state.hasNswMedicQualification;
 }
 
 function canCreateSelectedCategory() {
@@ -587,16 +452,10 @@ async function saveTraining() {
 
   const title = el.title.value.trim();
 
-  const allowedLocations = [
-    "Dam Neck Annex",
-    "Mid-South Institute"
-  ];
+  const allowedLocations = ["Dam Neck Annex", "Mid-South Institute"];
 
   if (!allowedLocations.includes(el.location.value)) {
-    showStatus(
-      "Please select a valid training location.",
-      false
-    );
+    showStatus("Please select a valid training location.", false);
     return;
   }
 
@@ -614,18 +473,15 @@ async function saveTraining() {
     if (el.category.value === "INNER_TEAM") {
       showStatus(
         "You do not have permission to host Inner Team Training. An NSW Medic qualification or authorized leadership position is required.",
-        false
+        false,
       );
     } else if (el.category.value === "UNIT_WIDE") {
       showStatus(
         "You do not have permission to host Unit Wide Training.",
-        false
+        false,
       );
     } else {
-      showStatus(
-        "You do not have permission to create this training.",
-        false
-      );
+      showStatus("You do not have permission to create this training.", false);
     }
 
     return;
@@ -633,37 +489,20 @@ async function saveTraining() {
 
   const startDate = new Date(el.start.value);
 
-  const endDate = el.end.value
-    ? new Date(el.end.value)
-    : null;
+  const endDate = el.end.value ? new Date(el.end.value) : null;
 
   if (Number.isNaN(startDate.getTime())) {
-    showStatus(
-      "The selected start time is invalid.",
-      false
-    );
+    showStatus("The selected start time is invalid.", false);
     return;
   }
 
-  if (
-    endDate &&
-    Number.isNaN(endDate.getTime())
-  ) {
-    showStatus(
-      "The selected end time is invalid.",
-      false
-    );
+  if (endDate && Number.isNaN(endDate.getTime())) {
+    showStatus("The selected end time is invalid.", false);
     return;
   }
 
-  if (
-    endDate &&
-    endDate.getTime() <= startDate.getTime()
-  ) {
-    showStatus(
-      "The end time must be after the start time.",
-      false
-    );
+  if (endDate && endDate.getTime() <= startDate.getTime()) {
+    showStatus("The end time must be after the start time.", false);
     return;
   }
 
@@ -676,48 +515,32 @@ async function saveTraining() {
    * false:
    * Discord message is still posted, but nobody is pinged.
    */
-  const pingDiscordMembers =
-    el.discordPing?.checked !== false;
+  const pingDiscordMembers = el.discordPing?.checked !== false;
 
   const payload = {
     category: el.category.value,
 
     title,
 
-    description:
-      el.description.value.trim(),
+    description: el.description.value.trim(),
 
-    start_at:
-      startDate.toISOString(),
+    start_at: startDate.toISOString(),
 
-    end_at:
-      endDate
-        ? endDate.toISOString()
-        : null,
+    end_at: endDate ? endDate.toISOString() : null,
 
-    location:
-      el.location.value.trim(),
+    location: el.location.value.trim(),
 
-    status:
-      el.status.value,
+    status: el.status.value,
 
     target_green_team_class:
-      el.category.value === "INNER_TEAM"
-        ? null
-        : el.targetClass.value || null,
+      el.category.value === "INNER_TEAM" ? null : el.targetClass.value || null,
 
-    host_id:
-      state.authUser.id,
+    host_id: state.authUser.id,
 
-    updated_at:
-      new Date().toISOString()
+    updated_at: new Date().toISOString(),
   };
 
-  setButtonLoading(
-    el.saveButton,
-    true,
-    "Saving..."
-  );
+  setButtonLoading(el.saveButton, true, "Saving...");
 
   const result = await supabase
     .from("training_sessions")
@@ -725,18 +548,10 @@ async function saveTraining() {
     .select("*")
     .single();
 
-  setButtonLoading(
-    el.saveButton,
-    false,
-    "Create Training"
-  );
+  setButtonLoading(el.saveButton, false, "Create Training");
 
   if (result.error) {
-    showStatus(
-      "Database save failed: " +
-        result.error.message,
-      false
-    );
+    showStatus("Database save failed: " + result.error.message, false);
 
     return;
   }
@@ -748,137 +563,94 @@ async function saveTraining() {
    * the creation notification.
    */
   if (
-  createdSession.status === "SCHEDULED" ||
-  createdSession.status === "POSTPONED"
-) {
-  try {
-    if (
-      createdSession.category ===
-      "INNER_TEAM"
-    ) {
-      await sendInnerTeamScheduledWebhook();
-    } else {
-      await sendTrainingScheduledWebhook(
-        createdSession,
-        pingDiscordMembers
-      );
+    createdSession.status === "SCHEDULED" ||
+    createdSession.status === "POSTPONED"
+  ) {
+    try {
+      if (createdSession.category === "INNER_TEAM") {
+        await sendInnerTeamScheduledWebhook();
+      } else {
+        await sendTrainingScheduledWebhook(createdSession, pingDiscordMembers);
+      }
+    } catch (error) {
+      console.error("Training webhook failed:", error);
     }
-  } catch (error) {
-    console.error(
-      "Training webhook failed:",
-      error
-    );
-  }
 
-  publishLocalTrainingNotice(
-    createdSession
-  );
-}
+    publishLocalTrainingNotice(createdSession);
+  }
 
   resetForm();
 
   if (el.composer) {
-  el.composer.classList.add(
-    "hidden"
-  );
-}
+    el.composer.classList.add("hidden");
+  }
 
-if (el.composeToggle) {
-  el.composeToggle.classList.remove(
-    "active"
-  );
-}
+  if (el.composeToggle) {
+    el.composeToggle.classList.remove("active");
+  }
 
-  showStatus(
-    "Training session created.",
-    true
-  );
+  showStatus("Training session created.", true);
 
   await loadData();
 }
 
 async function sendInnerTeamScheduledWebhook() {
   if (!INNER_TEAM_DISCORD_WEBHOOK) {
-    console.warn(
-      "Inner Team Discord webhook is not configured."
-    );
+    console.warn("Inner Team Discord webhook is not configured.");
     return;
   }
 
-  const response = await fetch(
-    `${INNER_TEAM_DISCORD_WEBHOOK}?wait=true`,
-    {
-      method: "POST",
+  const response = await fetch(`${INNER_TEAM_DISCORD_WEBHOOK}?wait=true`, {
+    method: "POST",
 
-      headers: {
-        "Content-Type": "application/json"
+    headers: {
+      "Content-Type": "application/json",
+    },
+
+    body: JSON.stringify({
+      content:
+        "@everyone\nA session has been scheduled. Please visit the website to mark attendance.",
+
+      allowed_mentions: {
+        parse: ["everyone"],
       },
 
-      body: JSON.stringify({
-        content:
-          "@everyone\nA session has been scheduled. Please visit the website to mark attendance.",
+      username: "NSWDG Training Portal",
 
-        allowed_mentions: {
-          parse: ["everyone"]
-        },
-
-        username:
-          "NSWDG Training Portal",
-
-        avatar_url:
-          `${PORTAL_BASE_URL}/nsw.png`
-      })
-    }
-  );
+      avatar_url: `${PORTAL_BASE_URL}/nsw.png`,
+    }),
+  });
 
   if (!response.ok) {
-    const responseText =
-      await response.text();
+    const responseText = await response.text();
 
     throw new Error(
-      `Inner Team Discord returned ${response.status}: ${responseText}`
+      `Inner Team Discord returned ${response.status}: ${responseText}`,
     );
   }
 
   return response.json();
 }
 
-async function sendTrainingScheduledWebhook(
-  session,
-  pingMembers = true
-) {
+async function sendTrainingScheduledWebhook(session, pingMembers = true) {
   if (
     !TRAINING_DISCORD_WEBHOOK ||
-    TRAINING_DISCORD_WEBHOOK.includes(
-      "PASTE_YOUR"
-    )
+    TRAINING_DISCORD_WEBHOOK.includes("PASTE_YOUR")
   ) {
-    console.warn(
-      "Training Discord webhook is not configured."
-    );
+    console.warn("Training Discord webhook is not configured.");
 
     return;
   }
 
   const startTimestamp = Math.floor(
-    new Date(
-      session.start_at
-    ).getTime() / 1000
+    new Date(session.start_at).getTime() / 1000,
   );
 
-  const endTimestamp =
-    session.end_at
-      ? Math.floor(
-          new Date(
-            session.end_at
-          ).getTime() / 1000
-        )
-      : null;
+  const endTimestamp = session.end_at
+    ? Math.floor(new Date(session.end_at).getTime() / 1000)
+    : null;
 
-  const category =
-    formatWebhookCategory(
-      session.category
-    );
+  const category = formatWebhookCategory(session.category);
 
   const hostName =
     state.profile?.callsign ||
@@ -887,68 +659,53 @@ async function sendTrainingScheduledWebhook(
     "Portal Staff";
 
   const description =
-    String(
-      session.description || ""
-    ).trim() ||
+    String(session.description || "").trim() ||
     "No additional instructions were issued.";
 
-  const location =
-    String(
-      session.location || ""
-    ).trim() ||
-    "To be confirmed";
+  const location = String(session.location || "").trim() || "To be confirmed";
 
   const fields = [
     {
       name: "Start",
 
-      value:
-        `<t:${startTimestamp}:F>\n` +
-        `<t:${startTimestamp}:R>`,
+      value: `<t:${startTimestamp}:F>\n` + `<t:${startTimestamp}:R>`,
 
-      inline: true
+      inline: true,
     },
 
     {
       name: "Location",
       value: location,
-      inline: true
+      inline: true,
     },
 
     {
       name: "Category",
       value: category,
-      inline: true
+      inline: true,
     },
 
     {
       name: "Host",
       value: hostName,
-      inline: true
+      inline: true,
     },
 
     {
       name: "Attendance",
 
-      value:
-        session.mandatory === false
-          ? "Optional"
-          : "Required",
+      value: session.mandatory === false ? "Optional" : "Required",
 
-      inline: true
-    }
+      inline: true,
+    },
   ];
 
   if (endTimestamp) {
-    fields.splice(
-      1,
-      0,
-      {
-        name: "End",
-        value: `<t:${endTimestamp}:t>`,
-        inline: true
-      }
-    );
+    fields.splice(1, 0, {
+      name: "End",
+      value: `<t:${endTimestamp}:t>`,
+      inline: true,
+    });
   }
 
   /*
@@ -961,13 +718,9 @@ async function sendTrainingScheduledWebhook(
    * OFF:
    * content is empty.
    */
-  const TRAINING_ROLE_ID =
-    "1424715895015739516";
+  const TRAINING_ROLE_ID = "1424715895015739516";
 
-  const discordContent =
-    pingMembers
-      ? `<@&${TRAINING_ROLE_ID}>`
-      : "";
+  const discordContent = pingMembers ? `<@&${TRAINING_ROLE_ID}>` : "";
 
   /*
    * allowed_mentions is important.
@@ -978,86 +731,63 @@ async function sendTrainingScheduledWebhook(
    * When disabled, Discord is instructed
    * to parse zero mentions.
    */
-  const allowedMentions =
-    pingMembers
-      ? {
-          parse: [],
-          roles: [
-            TRAINING_ROLE_ID
-          ]
-        }
-      : {
-          parse: []
-        };
+  const allowedMentions = pingMembers
+    ? {
+        parse: [],
+        roles: [TRAINING_ROLE_ID],
+      }
+    : {
+        parse: [],
+      };
 
-  const response = await fetch(
-    `${TRAINING_DISCORD_WEBHOOK}?wait=true`,
-    {
-      method: "POST",
+  const response = await fetch(`${TRAINING_DISCORD_WEBHOOK}?wait=true`, {
+    method: "POST",
 
-      headers: {
-        "Content-Type":
-          "application/json"
-      },
+    headers: {
+      "Content-Type": "application/json",
+    },
 
-      body: JSON.stringify({
-        content:
-          discordContent,
+    body: JSON.stringify({
+      content: discordContent,
 
-        allowed_mentions:
-          allowedMentions,
+      allowed_mentions: allowedMentions,
 
-        username:
-          "NSWDG Training Portal",
+      username: "NSWDG Training Portal",
 
-        avatar_url:
-          `${PORTAL_BASE_URL}/nsw.png`,
+      avatar_url: `${PORTAL_BASE_URL}/nsw.png`,
 
-        embeds: [
-          {
-            title:
-              "TRAINING NOTICE",
+      embeds: [
+        {
+          title: "TRAINING NOTICE",
 
-            description:
-              `**${session.title}**\n\n` +
-              description,
+          description: `**${session.title}**\n\n` + description,
 
-            url:
-              `${PORTAL_BASE_URL}/member/training/`,
+          url: `${PORTAL_BASE_URL}/member/training/`,
 
-            color:
-              1207352,
+          color: 1207352,
 
-            fields,
+          fields,
 
-            footer: {
-              text:
-                "NAVADMIN, Naval Administrative Message"
-            },
+          footer: {
+            text: "NAVADMIN, Naval Administrative Message",
+          },
 
-            timestamp:
-              new Date().toISOString()
-          }
-        ]
-      })
-    }
-  );
+          timestamp: new Date().toISOString(),
+        },
+      ],
+    }),
+  });
 
   if (!response.ok) {
-    const responseText =
-      await response.text();
+    const responseText = await response.text();
 
-    throw new Error(
-      `Discord returned ${response.status}: ${responseText}`
-    );
+    throw new Error(`Discord returned ${response.status}: ${responseText}`);
   }
 
   return response.json();
 }
 
-function formatWebhookCategory(
-  category
-) {
+function formatWebhookCategory(category) {
   switch (category) {
     case "PRO_DEVELOPMENT":
       return "Professional Development";
@@ -1069,40 +799,27 @@ function formatWebhookCategory(
       return "Inner Team";
 
     default:
-      return String(category || "Training")
-        .replaceAll("_", " ");
+      return String(category || "Training").replaceAll("_", " ");
   }
 }
 
-function publishLocalTrainingNotice(
-  session
-) {
+function publishLocalTrainingNotice(session) {
   const payload = {
     type: "TRAINING_CREATED",
     session,
-    createdAt:
-      new Date().toISOString()
+    createdAt: new Date().toISOString(),
   };
 
-  localStorage.setItem(
-    "nswdg_latest_training_notice",
-    JSON.stringify(payload)
-  );
+  localStorage.setItem("nswdg_latest_training_notice", JSON.stringify(payload));
 
   window.dispatchEvent(
-    new CustomEvent(
-      "nswdg-training-notice",
-      {
-        detail: payload
-      }
-    )
+    new CustomEvent("nswdg-training-notice", {
+      detail: payload,
+    }),
   );
 
   try {
-    const channel =
-      new BroadcastChannel(
-        "nswdg-portal-notifications"
-      );
+    const channel = new BroadcastChannel("nswdg-portal-notifications");
 
     channel.postMessage(payload);
     channel.close();
@@ -1113,29 +830,21 @@ function publishLocalTrainingNotice(
 }
 
 function resetForm() {
-  el.category.value =
-    "PRO_DEVELOPMENT";
+  el.category.value = "PRO_DEVELOPMENT";
 
-  el.status.value =
-    "SCHEDULED";
+  el.status.value = "SCHEDULED";
 
-  el.title.value =
-    "";
+  el.title.value = "";
 
-  el.start.value =
-    "";
+  el.start.value = "";
 
-    el.end.value =
-      "";
+  el.end.value = "";
 
-    el.location.value =
-      "Dam Neck Annex";
+  el.location.value = "Dam Neck Annex";
 
-    el.description.value =
-      "";
+  el.description.value = "";
 
-  el.targetClass.value =
-    "";
+  el.targetClass.value = "";
 
   if (el.discordPing) {
     el.discordPing.checked = true;
@@ -1146,267 +855,145 @@ function resetForm() {
 }
 
 function renderSessions() {
-  const search = el.search
-    ? el.search.value
-        .trim()
-        .toLowerCase()
-    : "";
+  const search = el.search ? el.search.value.trim().toLowerCase() : "";
 
-  const category =
-    el.categoryFilter
-      ? el.categoryFilter.value
-      : "";
+  const category = el.categoryFilter ? el.categoryFilter.value : "";
 
-  const status =
-    el.statusFilter
-      ? el.statusFilter.value
-      : "";
+  const status = el.statusFilter ? el.statusFilter.value : "";
 
-  let rows = [
-    ...state.sessions
-  ];
+  let rows = [...state.sessions];
 
   if (search) {
-    rows = rows.filter(
-      session => {
-        return (
-          String(
-            session.title || ""
-          )
-            .toLowerCase()
-            .includes(search) ||
-
-          String(
-            session.description || ""
-          )
-            .toLowerCase()
-            .includes(search) ||
-
-          String(
-            session.location || ""
-          )
-            .toLowerCase()
-            .includes(search)
-        );
-      }
-    );
+    rows = rows.filter((session) => {
+      return (
+        String(session.title || "")
+          .toLowerCase()
+          .includes(search) ||
+        String(session.description || "")
+          .toLowerCase()
+          .includes(search) ||
+        String(session.location || "")
+          .toLowerCase()
+          .includes(search)
+      );
+    });
   }
 
   if (category) {
-    rows = rows.filter(
-      session =>
-        session.category ===
-        category
-    );
+    rows = rows.filter((session) => session.category === category);
   }
 
   if (status) {
-    rows = rows.filter(
-      session =>
-        session.status ===
-        status
-    );
+    rows = rows.filter((session) => session.status === status);
   }
 
   if (!hasAssignedCallsign()) {
-    rows = rows.filter(
-      session =>
-        session.category !==
-        "INNER_TEAM"
-    );
+    rows = rows.filter((session) => session.category !== "INNER_TEAM");
   }
 
   rows.sort(
-    (a, b) =>
-      new Date(
-        a.start_at
-      ).getTime() -
-      new Date(
-        b.start_at
-      ).getTime()
+    (a, b) => new Date(a.start_at).getTime() - new Date(b.start_at).getTime(),
   );
 
-  const now =
-    Date.now();
+  const now = Date.now();
 
-  const upcoming =
-    rows.filter(
-      session => {
-        const sessionTime =
-          new Date(
-            session.start_at
-          ).getTime();
+  const upcoming = rows.filter((session) => {
+    const sessionTime = new Date(session.start_at).getTime();
 
-        return (
-          sessionTime >= now &&
-          session.status !==
-            "COMPLETED" &&
-          session.status !==
-            "CANCELLED"
-        );
-      }
+    return (
+      sessionTime >= now &&
+      session.status !== "COMPLETED" &&
+      session.status !== "CANCELLED"
+    );
+  });
+
+  const history = rows
+    .filter((session) => !upcoming.includes(session))
+    .sort(
+      (a, b) => new Date(b.start_at).getTime() - new Date(a.start_at).getTime(),
     );
 
-  const history =
-    rows
-      .filter(
-        session =>
-          !upcoming.includes(
-            session
-          )
-      )
-      .sort(
-        (a, b) =>
-          new Date(
-            b.start_at
-          ).getTime() -
-          new Date(
-            a.start_at
-          ).getTime()
-      );
-
   if (el.sessionCount) {
-    el.sessionCount.textContent =
-      `${rows.length} ${
-        rows.length === 1
-          ? "SESSION"
-          : "SESSIONS"
-      }`;
+    el.sessionCount.textContent = `${rows.length} ${
+      rows.length === 1 ? "SESSION" : "SESSIONS"
+    }`;
   }
 
   el.output.innerHTML = `
     ${renderTrainingGroup(
       "UPCOMING",
       upcoming,
-      "No upcoming training sessions."
+      "No upcoming training sessions.",
     )}
 
-    ${renderTrainingGroup(
-      "HISTORY",
-      history,
-      "No previous training sessions."
-    )}
+    ${renderTrainingGroup("HISTORY", history, "No previous training sessions.")}
   `;
 
-  el.output
-    .querySelectorAll(
-      "[data-open-session]"
-    )
-    .forEach(
-      button => {
-        button.addEventListener(
-          "click",
-          () => {
-            const sessionId =
-              Number(
-                button.dataset
-                  .openSession
-              );
+  el.output.querySelectorAll("[data-open-session]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const sessionId = Number(button.dataset.openSession);
 
-            if (
-              Number(
-                state.activeSessionId
-              ) ===
-              sessionId
-            ) {
-              state.activeSessionId =
-                null;
+      if (Number(state.activeSessionId) === sessionId) {
+        state.activeSessionId = null;
 
-              el.viewer.className =
-                "empty-state";
+        el.viewer.className = "empty-state";
 
-              el.viewer.textContent =
-                "Select a training session to view attendance and AAR.";
+        el.viewer.textContent =
+          "Select a training session to view attendance and AAR.";
 
-              renderSessions();
+        renderSessions();
 
-              return;
-            }
-
-            const session =
-              state.sessions.find(
-                item =>
-                  Number(
-                    item.id
-                  ) ===
-                  sessionId
-              );
-
-            if (!session) {
-              return;
-            }
-
-            state.activeSessionId =
-              sessionId;
-
-            renderViewer(
-              session
-            );
-
-            renderSessions();
-
-            const viewerSection =
-              document.getElementById(
-                "training-viewer-section"
-              );
-
-            if (
-              viewerSection
-            ) {
-              viewerSection
-                .scrollIntoView({
-                  behavior:
-                    "smooth",
-                  block:
-                    "start"
-                });
-            }
-          }
-        );
+        return;
       }
-    );
+
+      const session = state.sessions.find(
+        (item) => Number(item.id) === sessionId,
+      );
+
+      if (!session) {
+        return;
+      }
+
+      state.activeSessionId = sessionId;
+
+      renderViewer(session);
+
+      renderSessions();
+
+      const viewerSection = document.getElementById("training-viewer-section");
+
+      if (viewerSection) {
+        viewerSection.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }
+    });
+  });
 
   bindSessionStatusControls();
 }
 
 function bindSessionStatusControls() {
-  el.output
-    .querySelectorAll("[data-session-status]")
-    .forEach(select => {
-      select.addEventListener(
-        "change",
-        async () => {
-          const sessionId = Number(
-            select.dataset.sessionStatus
-          );
+  el.output.querySelectorAll("[data-session-status]").forEach((select) => {
+    select.addEventListener("change", async () => {
+      const sessionId = Number(select.dataset.sessionStatus);
 
-          const newStatus = select.value;
+      const newStatus = select.value;
 
-          await updateSessionStatusFromList(
-            sessionId,
-            newStatus,
-            select
-          );
-        }
-      );
+      await updateSessionStatusFromList(sessionId, newStatus, select);
     });
+  });
 }
 
-
-function renderTrainingGroup(
-  label,
-  rows,
-  emptyMessage
-) {
+function renderTrainingGroup(label, rows, emptyMessage) {
   return `
     <section class="training-group">
 
       <div class="training-group-heading">
 
         <span>
-          ${escapeHtml(
-            label
-          )}
+          ${escapeHtml(label)}
         </span>
 
         <strong>
@@ -1420,22 +1007,13 @@ function renderTrainingGroup(
           ? `
             <div class="training-records">
 
-              ${rows
-                .map(
-                  session =>
-                    renderTrainingRecord(
-                      session
-                    )
-                )
-                .join("")}
+              ${rows.map((session) => renderTrainingRecord(session)).join("")}
 
             </div>
           `
           : `
             <div class="training-group-empty">
-              ${escapeHtml(
-                emptyMessage
-              )}
+              ${escapeHtml(emptyMessage)}
             </div>
           `
       }
@@ -1444,83 +1022,44 @@ function renderTrainingGroup(
   `;
 }
 
-function renderTrainingRecord(
-  session
-) {
-  const counts =
-    getAttendanceCounts(
-      session
-    );
+function renderTrainingRecord(session) {
+  const counts = getAttendanceCounts(session);
 
-  const sessionDate =
-    new Date(
-      session.start_at
-    );
+  const sessionDate = new Date(session.start_at);
 
-  const month =
-    sessionDate
-      .toLocaleDateString(
-        "en-US",
-        {
-          month: "short"
-        }
-      )
-      .toUpperCase();
+  const month = sessionDate
+    .toLocaleDateString("en-US", {
+      month: "short",
+    })
+    .toUpperCase();
 
-  const day =
-    sessionDate
-      .toLocaleDateString(
-        "en-US",
-        {
-          day: "2-digit"
-        }
-      );
+  const day = sessionDate.toLocaleDateString("en-US", {
+    day: "2-digit",
+  });
 
-  const localTime =
-    formatViewerLocalTime(
-      session.start_at
-    );
+  const localTime = formatViewerLocalTime(session.start_at);
 
-  const selected =
-    Number(
-      state.activeSessionId
-    ) ===
-    Number(
-      session.id
-    );
+  const selected = Number(state.activeSessionId) === Number(session.id);
 
   return `
     <article
       class="
         training-record
-        training-record-${String(
-          session.category || ""
-        )
+        training-record-${String(session.category || "")
           .toLowerCase()
-          .replaceAll(
-            "_",
-            "-"
-          )}
-        ${
-          selected
-            ? "active"
-            : ""
-        }
+          .replaceAll("_", "-")}
+        ${selected ? "active" : ""}
       "
     >
 
       <div class="training-record-date">
 
         <span>
-          ${escapeHtml(
-            month
-          )}
+          ${escapeHtml(month)}
         </span>
 
         <strong>
-          ${escapeHtml(
-            day
-          )}
+          ${escapeHtml(day)}
         </strong>
 
       </div>
@@ -1530,43 +1069,30 @@ function renderTrainingRecord(
 
         <div class="training-record-topline">
 
-          ${categoryBadge(
-            session.category
-          )}
+          ${categoryBadge(session.category)}
 
           <span class="training-record-location">
-            ${escapeHtml(
-              session.location ||
-                "-"
-            )}
+            ${escapeHtml(session.location || "-")}
           </span>
 
         </div>
 
 
         <h3>
-          ${escapeHtml(
-            session.title
-          )}
+          ${escapeHtml(session.title)}
         </h3>
 
 
         <div class="training-record-meta">
 
           <span>
-            ${escapeHtml(
-              localTime
-            )}
+            ${escapeHtml(localTime)}
           </span>
 
           <span>
             Host:
             <strong>
-              ${escapeHtml(
-                getProfileName(
-                  session.host_id
-                )
-              )}
+              ${escapeHtml(getProfileName(session.host_id))}
             </strong>
           </span>
 
@@ -1620,9 +1146,7 @@ function renderTrainingRecord(
 
       <div class="training-record-status">
 
-        ${renderSessionStatusControl(
-          session
-        )}
+        ${renderSessionStatusControl(session)}
 
       </div>
 
@@ -1634,11 +1158,7 @@ function renderTrainingRecord(
           class="training-open-button"
           data-open-session="${session.id}"
         >
-          ${
-            selected
-              ? "Close"
-              : "Open"
-          }
+          ${selected ? "Close" : "Open"}
         </button>
 
       </div>
@@ -1651,146 +1171,215 @@ function renderAdminMarkingTable(session, attendanceRows) {
   const rows = getEligibleProfilesForSession(session)
     .slice()
     .sort((a, b) =>
-      String(a.display_name || "").localeCompare(
-        String(b.display_name || "")
-      )
+      String(a.display_name || "").localeCompare(String(b.display_name || "")),
     );
 
   return `
-    <div class="admin-marking-note">
-      Mark final attendance for this training. Members covered by an approved
-      LOA are locked until the LOA is revoked or ended.
-    </div>
+    <div class="final-marking-console">
 
-    <div class="admin-marking-table-wrap">
-      <table class="admin-marking-table">
-        <thead>
-          <tr>
-            <th>Member</th>
-            <th>RSVP</th>
-            <th>Final Status</th>
-            <th>Late Min</th>
-            <th>Left Early Min</th>
-            <th>Note</th>
-            <th>Save</th>
-          </tr>
-        </thead>
+      <div class="final-marking-command">
+        <div>
+          <span class="session-v3-kicker">
+            FINAL ATTENDANCE
+          </span>
 
-        <tbody>
-          ${rows.map(profile => {
+          <strong>
+            Personnel Attendance Ledger
+          </strong>
+        </div>
+
+        <div class="final-marking-total">
+          ${rows.length} PERSONNEL
+        </div>
+      </div>
+
+      <div class="final-marking-notice">
+        Record final attendance after the training has concluded.
+        RSVP is shown for reference only. Personnel covered by an
+        approved LOA remain locked.
+      </div>
+
+      <div class="final-marking-head">
+        <span>Member</span>
+        <span>RSVP</span>
+        <span>Final Status</span>
+        <span>Timing</span>
+        <span>Administrative Note</span>
+        <span>Action</span>
+      </div>
+
+      <div class="final-marking-list">
+        ${rows
+          .map((profile) => {
             const row = attendanceRows.find(
-              attendanceRow => attendanceRow.user_id === profile.id
+              (attendanceRow) => attendanceRow.user_id === profile.id,
             );
 
-            return renderAdminMarkingRow(
-              session,
-              profile,
-              row
-            );
-          }).join("")}
-        </tbody>
-      </table>
+            return renderAdminMarkingRow(session, profile, row);
+          })
+          .join("")}
+      </div>
+
     </div>
   `;
 }
 
 function renderAdminMarkingRow(session, profile, row) {
-  const approvedLoa = getApprovedLoaForUserSession(
-    session,
-    profile.id
-  );
+  const approvedLoa = getApprovedLoaForUserSession(session, profile.id);
 
-  const lockedByLoa =
-    Boolean(approvedLoa) ||
-    Boolean(row?.locked_by_loa_id);
+  const lockedByLoa = Boolean(approvedLoa) || Boolean(row?.locked_by_loa_id);
 
-  const rsvp = lockedByLoa
-    ? "NOT_ATTENDING"
-    : row?.attendance || "NO_RESPONSE";
+  const rsvp = lockedByLoa ? "NOT_ATTENDING" : row?.attendance || "NO_RESPONSE";
 
   const actual = lockedByLoa
     ? "LOA"
     : row?.actual_status || guessActualStatusFromRsvp(rsvp);
 
+  const displayName = profile.display_name || profile.user_id || profile.id;
+
+  const personnelMeta = [
+    profile.naval_rank || "Candidate",
+    profile.callsign || null,
+  ]
+    .filter(Boolean)
+    .join(" / ");
+
   if (lockedByLoa) {
     return `
-      <tr
+      <div
+        class="
+          final-marking-record
+          final-marking-record-locked
+        "
         data-admin-mark-row="${escapeHtml(profile.id)}"
-        class="loa-locked-attendance-row"
       >
-        <td>
+
+        <div class="final-personnel">
+
           <strong>
-            ${escapeHtml(
-              profile.display_name ||
-              profile.user_id ||
-              profile.id
-            )}
+            ${escapeHtml(displayName)}
           </strong>
-          <br>
 
-          <span class="muted">
-            ${escapeHtml(profile.naval_rank || "Candidate")}
-            ${profile.callsign
-              ? ` | ${escapeHtml(profile.callsign)}`
-              : ""
-            }
+          <span>
+            ${escapeHtml(personnelMeta)}
           </span>
-        </td>
 
-        <td>NOT_ATTENDING</td>
+        </div>
 
-        <td>
-          <strong>LOA</strong>
-          <br>
-          <span class="muted">Approved LOA</span>
-        </td>
 
-        <td>0</td>
-        <td>0</td>
+        <div class="final-rsvp">
 
-        <td>
-          <span class="muted">
-            Locked until the LOA is revoked or ended.
+          <span class="final-rsvp-label">
+            RSVP
           </span>
-        </td>
 
-        <td>
+          <strong>
+            NOT ATTENDING
+          </strong>
+
+        </div>
+
+
+        <div class="final-status locked">
+
+          <span class="final-field-label">
+            Final Status
+          </span>
+
+          <strong>
+            LOA
+          </strong>
+
+          <small>
+            Approved Leave
+          </small>
+
+        </div>
+
+
+        <div class="final-timing locked">
+
+          <span>
+            LATE
+            <strong>0</strong>
+          </span>
+
+          <span>
+            EARLY
+            <strong>0</strong>
+          </span>
+
+        </div>
+
+
+        <div class="final-note locked">
+
+          <span class="final-field-label">
+            Administrative Note
+          </span>
+
+          <span>
+            Locked until approved LOA is revoked
+            or ended.
+          </span>
+
+        </div>
+
+
+        <div class="final-action">
+
           <button
-            class="btn btn-secondary btn-small"
+            class="final-save-button locked"
             type="button"
             disabled
           >
-            Locked
+            LOCKED
           </button>
-        </td>
-      </tr>
+
+        </div>
+
+      </div>
     `;
   }
 
   return `
-    <tr data-admin-mark-row="${escapeHtml(profile.id)}">
-      <td>
+    <div
+      class="final-marking-record"
+      data-admin-mark-row="${escapeHtml(profile.id)}"
+    >
+
+      <div class="final-personnel">
+
         <strong>
-          ${escapeHtml(
-            profile.display_name ||
-            profile.user_id ||
-            profile.id
-          )}
+          ${escapeHtml(displayName)}
         </strong>
-        <br>
 
-        <span class="muted">
-          ${escapeHtml(profile.naval_rank || "Candidate")}
-          ${profile.callsign
-            ? ` | ${escapeHtml(profile.callsign)}`
-            : ""
-          }
+        <span>
+          ${escapeHtml(personnelMeta)}
         </span>
-      </td>
 
-      <td>${escapeHtml(rsvp)}</td>
+      </div>
 
-      <td>
+
+      <div class="final-rsvp">
+
+        <span class="final-rsvp-label">
+          RSVP
+        </span>
+
+        <strong>
+          ${escapeHtml(rsvp.replaceAll("_", " "))}
+        </strong>
+
+      </div>
+
+
+      <div class="final-status">
+
+        <label>
+          Final Status
+        </label>
+
         <select data-field="actual_status">
           ${adminStatusOption("PRESENT", actual)}
           ${adminStatusOption("LATE", actual)}
@@ -1801,9 +1390,17 @@ function renderAdminMarkingRow(session, profile, row) {
           ${adminStatusOption("ABSENT", actual)}
           ${adminStatusOption("NO_SHOW", actual)}
         </select>
-      </td>
 
-      <td>
+      </div>
+
+
+      <div class="final-timing">
+
+        <label>
+          Late
+          <span>MIN</span>
+        </label>
+
         <input
           data-field="minutes_late"
           type="number"
@@ -1811,9 +1408,13 @@ function renderAdminMarkingRow(session, profile, row) {
           step="1"
           value="${escapeHtml(row?.minutes_late || 0)}"
         >
-      </td>
 
-      <td>
+
+        <label>
+          Left Early
+          <span>MIN</span>
+        </label>
+
         <input
           data-field="minutes_left_early"
           type="number"
@@ -1821,32 +1422,44 @@ function renderAdminMarkingRow(session, profile, row) {
           step="1"
           value="${escapeHtml(row?.minutes_left_early || 0)}"
         >
-      </td>
 
-      <td>
+      </div>
+
+
+      <div class="final-note">
+
+        <label>
+          Administrative Note
+        </label>
+
         <input
           data-field="admin_note"
           type="text"
           maxlength="1000"
+          placeholder="Optional note"
           value="${escapeHtml(row?.admin_note || "")}"
         >
-      </td>
 
-      <td>
+      </div>
+
+
+      <div class="final-action">
+
         <button
-          class="btn btn-primary btn-small"
+          class="final-save-button"
           type="button"
           data-admin-save-mark
           data-session-id="${escapeHtml(session.id)}"
           data-user-id="${escapeHtml(profile.id)}"
         >
-          Save
+          SAVE
         </button>
-      </td>
-    </tr>
+
+      </div>
+
+    </div>
   `;
 }
-
 function guessActualStatusFromRsvp(rsvp) {
   if (rsvp === "ATTENDING") return "PRESENT";
   if (rsvp === "NOT_ATTENDING") return "ABSENT";
@@ -1858,7 +1471,7 @@ function adminStatusOption(value, selected) {
 }
 
 function bindAdminMarkingTable() {
-  document.querySelectorAll("[data-admin-save-mark]").forEach(button => {
+  document.querySelectorAll("[data-admin-save-mark]").forEach((button) => {
     button.addEventListener("click", () => saveAdminMarkingRow(button));
   });
 }
@@ -1868,8 +1481,12 @@ async function saveAdminMarkingRow(button) {
   if (!row) return;
 
   const actualStatus = row.querySelector('[data-field="actual_status"]').value;
-  const minutesLate = Number(row.querySelector('[data-field="minutes_late"]').value || 0);
-  const minutesLeftEarly = Number(row.querySelector('[data-field="minutes_left_early"]').value || 0);
+  const minutesLate = Number(
+    row.querySelector('[data-field="minutes_late"]').value || 0,
+  );
+  const minutesLeftEarly = Number(
+    row.querySelector('[data-field="minutes_left_early"]').value || 0,
+  );
   const adminNote = row.querySelector('[data-field="admin_note"]').value.trim();
 
   button.disabled = true;
@@ -1880,9 +1497,10 @@ async function saveAdminMarkingRow(button) {
     target_profile_id: button.dataset.userId,
     new_actual_status: actualStatus,
     new_minutes_late: actualStatus === "LATE" ? minutesLate : 0,
-    new_minutes_left_early: actualStatus === "LEFT_EARLY" ? minutesLeftEarly : 0,
+    new_minutes_left_early:
+      actualStatus === "LEFT_EARLY" ? minutesLeftEarly : 0,
     new_excused: actualStatus === "EXCUSED" || actualStatus === "LOA",
-    new_admin_note: adminNote
+    new_admin_note: adminNote,
   });
 
   button.disabled = false;
@@ -1896,66 +1514,92 @@ async function saveAdminMarkingRow(button) {
   await loadData();
 }
 
+function bindTrainingViewerTabs() {
+  const tabs =
+    el.viewer.querySelectorAll(
+      "[data-viewer-tab]"
+    );
+
+  const panels =
+    el.viewer.querySelectorAll(
+      "[data-viewer-panel]"
+    );
+
+  tabs.forEach(tab => {
+    tab.addEventListener(
+      "click",
+      () => {
+        const target =
+          tab.dataset.viewerTab;
+
+        tabs.forEach(item => {
+          item.classList.toggle(
+            "active",
+            item === tab
+          );
+        });
+
+        panels.forEach(panel => {
+          panel.classList.toggle(
+            "active",
+            panel.dataset.viewerPanel ===
+              target
+          );
+        });
+      }
+    );
+  });
+}
+
 function renderViewer(session) {
-  const eligibleProfiles =
-    getEligibleProfilesForSession(session);
+  const eligibleProfiles = getEligibleProfilesForSession(session);
 
   const eligibleProfileIds = new Set(
-    eligibleProfiles.map(profile => profile.id)
+    eligibleProfiles.map((profile) => profile.id),
   );
 
-  const attendanceRows = state.attendance.filter(row => {
+  const attendanceRows = state.attendance.filter((row) => {
     return (
       Number(row.session_id) === Number(session.id) &&
       eligibleProfileIds.has(row.user_id)
     );
   });
 
-  const loaRows = getLoaForSession(session).filter(loa => {
+  const loaRows = getLoaForSession(session).filter((loa) => {
     return eligibleProfileIds.has(loa.requester_id);
   });
 
-  const loaUserIds = new Set(
-    loaRows.map(loa => loa.requester_id)
-  );
+  const loaUserIds = new Set(loaRows.map((loa) => loa.requester_id));
 
-  const blockedByLoa = eligibleProfiles.filter(profile => {
+  const blockedByLoa = eligibleProfiles.filter((profile) => {
     return loaUserIds.has(profile.id);
   });
 
-  const attending = attendanceRows.filter(row => {
-    return (
-      row.attendance === "ATTENDING" &&
-      !loaUserIds.has(row.user_id)
-    );
+  const attending = attendanceRows.filter((row) => {
+    return row.attendance === "ATTENDING" && !loaUserIds.has(row.user_id);
   });
 
-  const notAttending = attendanceRows.filter(row => {
-    return (
-      row.attendance === "NOT_ATTENDING" &&
-      !loaUserIds.has(row.user_id)
-    );
+  const notAttending = attendanceRows.filter((row) => {
+    return row.attendance === "NOT_ATTENDING" && !loaUserIds.has(row.user_id);
   });
 
-  const noResponse = eligibleProfiles.filter(profile => {
+  const noResponse = eligibleProfiles.filter((profile) => {
     if (loaUserIds.has(profile.id)) {
       return false;
     }
 
-    return !attendanceRows.some(
-      row => row.user_id === profile.id
-    );
+    return !attendanceRows.some((row) => row.user_id === profile.id);
   });
 
   const showingUp = attending;
 
   const myAttendance = attendanceRows.find(
-    row => row.user_id === state.authUser.id
+    (row) => row.user_id === state.authUser.id,
   );
 
   const myApprovedLoa = getApprovedLoaForUserSession(
     session,
-    state.authUser.id
+    state.authUser.id,
   );
 
   const canManage = canManageSession(session);
@@ -1965,790 +1609,959 @@ function renderViewer(session) {
   el.viewer.className = "viewer";
 
   el.viewer.innerHTML = `
-    <div class="training-v2-card">
+  <div class="session-v3">
 
-      <div class="training-v2-header">
+    <header class="session-v3-header">
 
-        <div>
+      <div class="session-v3-identity">
 
-          <div class="training-eyebrow">
-            Training Session
-          </div>
-
-          <h2>
-            ${escapeHtml(session.title)}
-          </h2>
-
-          <div class="training-badges">
-            ${categoryBadge(session.category)}
-            ${renderSessionStatusControl(session)}
-
-            ${
-              session.target_green_team_class
-                ? `
-                  <span class="badge badge-yellow">
-                    Green Team Class ${
-                      escapeHtml(
-                        session.target_green_team_class
-                      )
-                    }
-                  </span>
-                `
-                : ""
-            }
-          </div>
-
-        </div>
-
-
-        <div class="training-v2-time">
-
+        <div class="session-v3-document-line">
           <span>
-            Start Time
+            NSW-TRNG / TRAINING SESSION RECORD
           </span>
 
-          <strong>
+          <span>
+            SESSION ${escapeHtml(String(session.id))}
+          </span>
+        </div>
+
+        <h2>
+          ${escapeHtml(session.title)}
+        </h2>
+
+        <div class="session-v3-badges">
+          ${categoryBadge(session.category)}
+          ${renderSessionStatusControl(session)}
+
+          ${
+            session.target_green_team_class
+              ? `
+                <span class="badge badge-yellow">
+                  GREEN TEAM CLASS
+                  ${escapeHtml(
+                    session.target_green_team_class
+                  )}
+                </span>
+              `
+              : ""
+          }
+        </div>
+
+      </div>
+
+
+      <div class="session-v3-clock">
+
+        <span>
+          START
+        </span>
+
+        <strong>
+          ${escapeHtml(
+            formatDateTime(session.start_at)
+          )}
+        </strong>
+
+        <small>
+          Eastern Time
+        </small>
+
+        <div class="session-v3-local-time">
+          YOUR TIME
+          <b>
             ${escapeHtml(
-              formatDateTime(session.start_at)
+              formatViewerLocalTime(
+                session.start_at
+              )
             )}
-          </strong>
-
-          <small>
-            Eastern Time
-            <br>
-            (Your time: ${
-              escapeHtml(
-                formatViewerLocalTime(
-                  session.start_at
-                )
-              )
-            })
-          </small>
-
+          </b>
         </div>
 
       </div>
 
+    </header>
 
-      <div class="training-v2-meta">
 
-        <div>
+    <nav class="session-v3-tabs">
 
-          <span>
-            End
-          </span>
-
-          <strong>
-            ${
-              escapeHtml(
-                session.end_at
-                  ? formatDateTime(
-                      session.end_at
-                    )
-                  : "-"
-              )
-            }
-          </strong>
-
-        </div>
-
-
-        <div>
-
-          <span>
-            Location
-          </span>
-
-          <strong>
-            ${
-              escapeHtml(
-                session.location || "-"
-              )
-            }
-          </strong>
-
-        </div>
-
-
-        <div>
-
-          <span>
-            Host
-          </span>
-
-          <strong>
-            ${
-              escapeHtml(
-                getProfileName(
-                  session.host_id
-                )
-              )
-            }
-          </strong>
-
-        </div>
-
-
-        <div>
-
-          <span>
-            Audience
-          </span>
-
-          <strong>
-            ${
-              escapeHtml(
-                session.target_green_team_class
-                  ? `Green Team Class ${session.target_green_team_class}`
-                  : "All Personnel"
-              )
-            }
-          </strong>
-
-        </div>
-
-
-        <div>
-
-          <span>
-            Your Response
-          </span>
-
-          <strong>
-            ${
-              escapeHtml(
-                myApprovedLoa
-                  ? "Approved LOA"
-                  : myAttendance
-                    ? attendanceLabel(
-                        myAttendance.attendance
-                      )
-                    : "No Response"
-              )
-            }
-          </strong>
-
-        </div>
-
-      </div>
-
-
-      ${
-        admin
-          ? renderAdminTrainingControls(session)
-          : ""
-      }
-
-
-      <div class="training-v2-section">
-
-        <div class="training-v2-section-head">
-
-          <h3>
-            Quick Overview
-          </h3>
-
-        </div>
-
-
-        <div class="training-v2-stats">
-
-          <div class="stat-card green">
-
-            <b>
-              ${showingUp.length}
-            </b>
-
-            <span>
-              Showing Up
-            </span>
-
-          </div>
-
-
-          <div class="stat-card red">
-
-            <b>
-              ${notAttending.length}
-            </b>
-
-            <span>
-              Not Attending
-            </span>
-
-          </div>
-
-
-          <div class="stat-card yellow">
-
-            <b>
-              ${noResponse.length}
-            </b>
-
-            <span>
-              No Response
-            </span>
-
-          </div>
-
-
-          <div class="stat-card blue">
-
-            <b>
-              ${blockedByLoa.length}
-            </b>
-
-            <span>
-              Approved LOA
-            </span>
-
-          </div>
-
-
-          <div class="stat-card dark">
-
-            <b>
-              ${eligibleProfiles.length}
-            </b>
-
-            <span>
-              Eligible Members
-            </span>
-
-          </div>
-
-        </div>
-
-      </div>
-
-
-      <div class="training-v2-section">
-
-        <div class="training-v2-section-head">
-
-          <h3>
-            Your Response
-          </h3>
-
-        </div>
-
-
-        ${
-          myApprovedLoa
-            ? `
-              <div class="admin-attendance-note">
-
-                Your response is automatically set to
-                <strong>
-                  Not Attending
-                </strong>
-                because an approved LOA covers this training.
-
-                The response cannot be changed unless
-                the LOA is revoked or ended.
-
-              </div>
-
-
-              <div class="response-buttons">
-
-                <button
-                  class="response-btn response-not-attending"
-                  type="button"
-                  disabled
-                >
-                  ✕ Not Attending · Approved LOA
-                </button>
-
-              </div>
-            `
-            : `
-              <div class="response-buttons">
-
-                <button
-                  class="response-btn response-attending"
-                  type="button"
-                  id="attending-button"
-                >
-                  ✓ Attending
-                </button>
-
-
-                <button
-                  class="response-btn response-not-attending"
-                  type="button"
-                  id="not-attending-button"
-                >
-                  ✕ Not Attending
-                </button>
-
-              </div>
-            `
-        }
-
-      </div>
-
-
-      <details
-        class="training-v2-details"
-        open
+      <button
+        type="button"
+        class="session-v3-tab active"
+        data-viewer-tab="overview"
       >
+        Overview
+      </button>
 
-        <summary>
-          Attendance Roster
-        </summary>
-
-
-        ${
-          canManage
-            ? `
-              <div class="admin-attendance-note">
-                Admin mode: drag members between columns
-                to manually set their response.
-              </div>
-            `
-            : ""
-        }
-
-
-        <div
-          class="
-            training-roster-grid
-            ${
-              canManage
-                ? "admin-attendance-board"
-                : ""
-            }
-          "
-        >
-
-
-          <div
-            class="
-              roster-column
-              green
-              ${
-                canManage
-                  ? "admin-drop-zone"
-                  : ""
-              }
-            "
-            data-admin-attendance="ATTENDING"
-          >
-
-            <div class="roster-column-head">
-
-              <strong>
-                Showing Up
-              </strong>
-
-              <span>
-                ${showingUp.length}
-              </span>
-
-            </div>
-
-            ${
-              canManage
-                ? renderDraggableAttendanceRows(
-                    showingUp,
-                    "ATTENDING"
-                  )
-                : renderNameList(
-                    showingUp
-                  )
-            }
-
-          </div>
-
-
-          <div
-            class="
-              roster-column
-              red
-              ${
-                canManage
-                  ? "admin-drop-zone"
-                  : ""
-              }
-            "
-            data-admin-attendance="NOT_ATTENDING"
-          >
-
-            <div class="roster-column-head">
-
-              <strong>
-                Not Attending
-              </strong>
-
-              <span>
-                ${notAttending.length}
-              </span>
-
-            </div>
-
-            ${
-              canManage
-                ? renderDraggableAttendanceRows(
-                    notAttending,
-                    "NOT_ATTENDING"
-                  )
-                : renderNameList(
-                    notAttending
-                  )
-            }
-
-          </div>
-
-
-          <div
-            class="
-              roster-column
-              yellow
-              ${
-                canManage
-                  ? "admin-drop-zone"
-                  : ""
-              }
-            "
-            data-admin-attendance=""
-          >
-
-            <div class="roster-column-head">
-
-              <strong>
-                No Response
-              </strong>
-
-              <span>
-                ${noResponse.length}
-              </span>
-
-            </div>
-
-            ${
-              canManage
-                ? renderDraggableProfiles(
-                    noResponse
-                  )
-                : renderProfileList(
-                    noResponse
-                  )
-            }
-
-          </div>
-
-        </div>
-
-      </details>
-
+      <button
+        type="button"
+        class="session-v3-tab"
+        data-viewer-tab="attendance"
+      >
+        Attendance
+        <span>
+          ${eligibleProfiles.length}
+        </span>
+      </button>
 
       ${
         canManage
           ? `
-            <details
-              class="training-v2-details"
-              open
+            <button
+              type="button"
+              class="session-v3-tab"
+              data-viewer-tab="marking"
             >
-
-              <summary>
-                Admin Attendance Marking
-              </summary>
-
-              <div class="admin-marking-panel">
-                ${
-                  renderAdminMarkingTable(
-                    session,
-                    attendanceRows
-                  )
-                }
-              </div>
-
-            </details>
+              Final Marking
+            </button>
           `
           : ""
       }
 
+      ${
+        admin
+          ? `
+            <button
+              type="button"
+              class="session-v3-tab"
+              data-viewer-tab="admin"
+            >
+              Administration
+            </button>
+          `
+          : ""
+      }
 
-      <details class="training-v2-details">
+      <button
+        type="button"
+        class="session-v3-tab"
+        data-viewer-tab="aar"
+      >
+        AAR
+      </button>
 
-        <summary>
-          LOA Coverage
-        </summary>
-
-        <div class="training-v2-description">
-
-          ${
-            blockedByLoa.length
-              ? renderProfileCards(
-                  blockedByLoa
-                )
-              : `
-                  <span class="muted">
-                    No approved LOA found
-                    for this training date.
-                  </span>
-                `
-          }
-
-        </div>
-
-      </details>
+    </nav>
 
 
-      <details
-        class="training-v2-details"
-        open
+    <div class="session-v3-body">
+
+
+      <!-- ===============================================
+           OVERVIEW
+           =============================================== -->
+
+      <section
+        class="session-v3-tab-panel active"
+        data-viewer-panel="overview"
       >
 
-        <summary>
-          Description
-        </summary>
+        <div class="session-v3-overview">
 
-        <div class="training-v2-description">
+          <div class="session-v3-main-column">
 
-          ${
-            escapeHtml(
-              session.description || "-"
-            ).replaceAll(
-              "\n",
-              "<br>"
-            )
-          }
+
+            <section class="session-v3-block">
+
+              <div class="session-v3-block-head">
+
+                <div>
+                  <span class="session-v3-kicker">
+                    SESSION INFORMATION
+                  </span>
+
+                  <strong>
+                    Training Details
+                  </strong>
+                </div>
+
+              </div>
+
+
+              <div class="session-v3-information-grid">
+
+                <div>
+                  <span>Start</span>
+
+                  <strong>
+                    ${escapeHtml(
+                      formatDateTime(
+                        session.start_at
+                      )
+                    )}
+                  </strong>
+                </div>
+
+
+                <div>
+                  <span>End</span>
+
+                  <strong>
+                    ${escapeHtml(
+                      session.end_at
+                        ? formatDateTime(
+                            session.end_at
+                          )
+                        : "-"
+                    )}
+                  </strong>
+                </div>
+
+
+                <div>
+                  <span>Location</span>
+
+                  <strong>
+                    ${escapeHtml(
+                      session.location || "-"
+                    )}
+                  </strong>
+                </div>
+
+
+                <div>
+                  <span>Host</span>
+
+                  <strong>
+                    ${escapeHtml(
+                      getProfileName(
+                        session.host_id
+                      )
+                    )}
+                  </strong>
+                </div>
+
+
+                <div>
+                  <span>Audience</span>
+
+                  <strong>
+                    ${escapeHtml(
+                      session.target_green_team_class
+                        ? `Green Team Class ${session.target_green_team_class}`
+                        : "All Personnel"
+                    )}
+                  </strong>
+                </div>
+
+
+                <div>
+                  <span>Your Response</span>
+
+                  <strong>
+                    ${escapeHtml(
+                      myApprovedLoa
+                        ? "Approved LOA"
+                        : myAttendance
+                          ? attendanceLabel(
+                              myAttendance.attendance
+                            )
+                          : "No Response"
+                    )}
+                  </strong>
+                </div>
+
+              </div>
+
+            </section>
+
+
+            <section class="session-v3-block">
+
+              <div class="session-v3-block-head">
+
+                <div>
+                  <span class="session-v3-kicker">
+                    TRAINING ORDER
+                  </span>
+
+                  <strong>
+                    Description
+                  </strong>
+                </div>
+
+              </div>
+
+
+              <div class="session-v3-description">
+
+                ${
+                  escapeHtml(
+                    session.description || "-"
+                  ).replaceAll(
+                    "\\n",
+                    "<br>"
+                  )
+                }
+
+              </div>
+
+            </section>
+
+          </div>
+
+
+          <aside class="session-v3-side-column">
+
+
+            <section class="session-v3-block response-console">
+
+              <div class="session-v3-block-head">
+
+                <div>
+                  <span class="session-v3-kicker">
+                    PERSONNEL RESPONSE
+                  </span>
+
+                  <strong>
+                    Your Attendance
+                  </strong>
+                </div>
+
+              </div>
+
+
+              <div class="response-console-current">
+
+                <span>
+                  CURRENT RESPONSE
+                </span>
+
+                <strong>
+                  ${
+                    escapeHtml(
+                      myApprovedLoa
+                        ? "APPROVED LOA"
+                        : myAttendance
+                          ? attendanceLabel(
+                              myAttendance.attendance
+                            )
+                          : "NO RESPONSE"
+                    )
+                  }
+                </strong>
+
+              </div>
+
+
+              ${
+                myApprovedLoa
+                  ? `
+                    <div class="response-console-loa">
+                      Approved LOA covers this session.
+                      Your attendance response is locked.
+                    </div>
+
+                    <button
+                      class="
+                        session-response-command
+                        decline
+                      "
+                      type="button"
+                      disabled
+                    >
+                      NOT ATTENDING / LOA
+                    </button>
+                  `
+                  : `
+                    <div class="session-response-actions">
+
+                      <button
+                        class="
+                          session-response-command
+                          attend
+                        "
+                        type="button"
+                        id="attending-button"
+                      >
+                        <span>
+                          ATTENDING
+                        </span>
+
+                        <small>
+                          Confirm attendance
+                        </small>
+                      </button>
+
+
+                      <button
+                        class="
+                          session-response-command
+                          decline
+                        "
+                        type="button"
+                        id="not-attending-button"
+                      >
+                        <span>
+                          NOT ATTENDING
+                        </span>
+
+                        <small>
+                          Decline session
+                        </small>
+                      </button>
+
+                    </div>
+                  `
+              }
+
+            </section>
+
+
+            <section class="session-v3-block personnel-summary">
+
+              <div class="session-v3-block-head">
+
+                <div>
+                  <span class="session-v3-kicker">
+                    PERSONNEL STATUS
+                  </span>
+
+                  <strong>
+                    Attendance Summary
+                  </strong>
+                </div>
+
+              </div>
+
+
+              <div class="personnel-summary-list">
+
+                <div class="summary-line attending">
+                  <span>Showing Up</span>
+                  <strong>${showingUp.length}</strong>
+                </div>
+
+                <div class="summary-line declined">
+                  <span>Not Attending</span>
+                  <strong>${notAttending.length}</strong>
+                </div>
+
+                <div class="summary-line pending">
+                  <span>No Response</span>
+                  <strong>${noResponse.length}</strong>
+                </div>
+
+                <div class="summary-line loa">
+                  <span>Approved LOA</span>
+                  <strong>${blockedByLoa.length}</strong>
+                </div>
+
+                <div class="summary-line total">
+                  <span>Eligible Personnel</span>
+                  <strong>${eligibleProfiles.length}</strong>
+                </div>
+
+              </div>
+
+            </section>
+
+          </aside>
 
         </div>
 
-      </details>
+      </section>
 
 
-      <details class="training-v2-details">
 
-        <summary>
-          After Action Review
-        </summary>
+      <!-- ===============================================
+           ATTENDANCE
+           =============================================== -->
 
-        <div class="training-v2-aar">
+      <section
+        class="session-v3-tab-panel"
+        data-viewer-panel="attendance"
+      >
+
+        <div class="attendance-workspace">
+
+          <div class="attendance-workspace-head">
+
+            <div>
+              <span class="session-v3-kicker">
+                PERSONNEL RESPONSE BOARD
+              </span>
+
+              <h3>
+                Attendance Roster
+              </h3>
+            </div>
+
+
+            <div class="attendance-inline-counts">
+
+              <span class="green">
+                <b>${showingUp.length}</b>
+                ATTENDING
+              </span>
+
+              <span class="red">
+                <b>${notAttending.length}</b>
+                DECLINED
+              </span>
+
+              <span class="yellow">
+                <b>${noResponse.length}</b>
+                PENDING
+              </span>
+
+              <span class="blue">
+                <b>${blockedByLoa.length}</b>
+                LOA
+              </span>
+
+            </div>
+
+          </div>
+
 
           ${
-            renderAar(
-              session,
-              canAar
-            )
-          }
-
-
-          ${
-            canAar
+            canManage
               ? `
-                <div class="button-row aar-actions">
-
-                  <button
-                    class="btn btn-primary"
-                    type="button"
-                    id="save-aar-button"
-                  >
-                    Save AAR
-                  </button>
-
+                <div class="attendance-admin-instruction">
+                  ADMIN RESPONSE MODE /
+                  Drag personnel between response
+                  categories to modify their RSVP.
                 </div>
               `
               : ""
           }
 
+
+          <div
+            class="
+              training-roster-grid
+              ${
+                canManage
+                  ? "admin-attendance-board"
+                  : ""
+              }
+            "
+          >
+
+
+            <div
+              class="
+                roster-column
+                green
+                ${
+                  canManage
+                    ? "admin-drop-zone"
+                    : ""
+                }
+              "
+              data-admin-attendance="ATTENDING"
+            >
+
+              <div class="roster-column-head">
+
+                <div>
+                  <span>
+                    RESPONSE 01
+                  </span>
+
+                  <strong>
+                    Showing Up
+                  </strong>
+                </div>
+
+                <b>
+                  ${showingUp.length}
+                </b>
+
+              </div>
+
+              <div class="roster-column-body">
+
+                ${
+                  canManage
+                    ? renderDraggableAttendanceRows(
+                        showingUp,
+                        "ATTENDING"
+                      )
+                    : renderNameList(
+                        showingUp
+                      )
+                }
+
+              </div>
+
+            </div>
+
+
+            <div
+              class="
+                roster-column
+                red
+                ${
+                  canManage
+                    ? "admin-drop-zone"
+                    : ""
+                }
+              "
+              data-admin-attendance="NOT_ATTENDING"
+            >
+
+              <div class="roster-column-head">
+
+                <div>
+                  <span>
+                    RESPONSE 02
+                  </span>
+
+                  <strong>
+                    Not Attending
+                  </strong>
+                </div>
+
+                <b>
+                  ${notAttending.length}
+                </b>
+
+              </div>
+
+              <div class="roster-column-body">
+
+                ${
+                  canManage
+                    ? renderDraggableAttendanceRows(
+                        notAttending,
+                        "NOT_ATTENDING"
+                      )
+                    : renderNameList(
+                        notAttending
+                      )
+                }
+
+              </div>
+
+            </div>
+
+
+            <div
+              class="
+                roster-column
+                yellow
+                ${
+                  canManage
+                    ? "admin-drop-zone"
+                    : ""
+                }
+              "
+              data-admin-attendance=""
+            >
+
+              <div class="roster-column-head">
+
+                <div>
+                  <span>
+                    RESPONSE 03
+                  </span>
+
+                  <strong>
+                    No Response
+                  </strong>
+                </div>
+
+                <b>
+                  ${noResponse.length}
+                </b>
+
+              </div>
+
+              <div class="roster-column-body">
+
+                ${
+                  canManage
+                    ? renderDraggableProfiles(
+                        noResponse
+                      )
+                    : renderProfileList(
+                        noResponse
+                      )
+                }
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <section class="attendance-loa-register">
+
+            <div class="attendance-loa-head">
+
+              <span>
+                LOA REGISTER
+              </span>
+
+              <strong>
+                ${blockedByLoa.length}
+              </strong>
+
+            </div>
+
+            <div class="attendance-loa-body">
+
+              ${
+                blockedByLoa.length
+                  ? renderProfileCards(
+                      blockedByLoa
+                    )
+                  : `
+                    <span class="muted">
+                      No approved LOA applies to
+                      this training session.
+                    </span>
+                  `
+              }
+
+            </div>
+
+          </section>
+
         </div>
 
-      </details>
+      </section>
 
+
+
+      <!-- ===============================================
+           FINAL ATTENDANCE MARKING
+           =============================================== -->
 
       ${
         canManage
           ? `
-            <details
-              class="training-v2-details danger-details"
+            <section
+              class="session-v3-tab-panel"
+              data-viewer-panel="marking"
             >
 
-              <summary>
-                Danger Zone
-              </summary>
+              ${
+                renderAdminMarkingTable(
+                  session,
+                  attendanceRows
+                )
+              }
 
-              <div class="danger-zone">
+            </section>
+          `
+          : ""
+      }
 
-                <div>
 
-                  <strong>
-                    Delete Training
-                  </strong>
+
+      <!-- ===============================================
+           ADMIN
+           =============================================== -->
+
+      ${
+        admin
+          ? `
+            <section
+              class="session-v3-tab-panel"
+              data-viewer-panel="admin"
+            >
+
+              <div class="admin-workspace">
+
+                <div class="admin-workspace-banner">
+
+                  <div>
+                    <span class="session-v3-kicker">
+                      RESTRICTED CONTROLS
+                    </span>
+
+                    <strong>
+                      Session Administration
+                    </strong>
+                  </div>
 
                   <span>
-                    This permanently deletes
-                    the training session.
+                    ADMIN
                   </span>
 
                 </div>
 
 
-                <button
-                  class="btn btn-danger"
-                  type="button"
-                  id="delete-training-button"
-                >
-                  Delete Training
-                </button>
+                ${
+                  renderAdminTrainingControls(
+                    session
+                  )
+                }
+
+
+                ${
+                  canManage
+                    ? `
+                      <section class="admin-danger-register">
+
+                        <div>
+                          <span class="session-v3-kicker">
+                            PERMANENT ACTION
+                          </span>
+
+                          <strong>
+                            Delete Training Session
+                          </strong>
+
+                          <p>
+                            Permanently removes this session
+                            and associated training data.
+                          </p>
+                        </div>
+
+                        <button
+                          class="admin-delete-command"
+                          type="button"
+                          id="delete-training-button"
+                        >
+                          DELETE SESSION
+                        </button>
+
+                      </section>
+                    `
+                    : ""
+                }
 
               </div>
 
-            </details>
+            </section>
           `
           : ""
       }
 
+
+
+      <!-- ===============================================
+           AAR
+           =============================================== -->
+
+      <section
+        class="session-v3-tab-panel"
+        data-viewer-panel="aar"
+      >
+
+        <div class="aar-workspace">
+
+          <div class="aar-workspace-head">
+
+            <div>
+              <span class="session-v3-kicker">
+                AFTER ACTION REVIEW
+              </span>
+
+              <h3>
+                Session Review
+              </h3>
+            </div>
+
+            <span>
+              POST-TRAINING RECORD
+            </span>
+
+          </div>
+
+
+          <div class="training-v2-aar">
+
+            ${
+              renderAar(
+                session,
+                canAar
+              )
+            }
+
+
+            ${
+              canAar
+                ? `
+                  <div class="aar-command-bar">
+
+                    <span>
+                      Changes are stored against
+                      this training session.
+                    </span>
+
+                    <button
+                      class="aar-save-command"
+                      type="button"
+                      id="save-aar-button"
+                    >
+                      SAVE AAR
+                    </button>
+
+                  </div>
+                `
+                : ""
+            }
+
+          </div>
+
+        </div>
+
+      </section>
+
+
     </div>
-  `;
 
+  </div>
+`;
 
-  const attendingButton =
-    document.getElementById(
-      "attending-button"
-    );
+bindTrainingViewerTabs();
 
+  const attendingButton = document.getElementById("attending-button");
 
-  const notAttendingButton =
-    document.getElementById(
-      "not-attending-button"
-    );
-
+  const notAttendingButton = document.getElementById("not-attending-button");
 
   if (attendingButton) {
-
-    attendingButton.addEventListener(
-      "click",
-      () => {
-
-        saveAttendance(
-          session.id,
-          "ATTENDING"
-        );
-
-      }
-    );
-
+    attendingButton.addEventListener("click", () => {
+      saveAttendance(session.id, "ATTENDING");
+    });
   }
-
 
   if (notAttendingButton) {
-
-    notAttendingButton.addEventListener(
-      "click",
-      () => {
-
-        saveAttendance(
-          session.id,
-          "NOT_ATTENDING"
-        );
-
-      }
-    );
-
+    notAttendingButton.addEventListener("click", () => {
+      saveAttendance(session.id, "NOT_ATTENDING");
+    });
   }
 
+  el.viewer.querySelectorAll("[data-session-status]").forEach((select) => {
+    select.addEventListener("change", async () => {
+      const sessionId = Number(select.dataset.sessionStatus);
 
-  el.viewer
-    .querySelectorAll(
-      "[data-session-status]"
-    )
-    .forEach(
-      select => {
+      const newStatus = select.value;
 
-        select.addEventListener(
-          "change",
-          async () => {
-
-            const sessionId =
-              Number(
-                select.dataset
-                  .sessionStatus
-              );
-
-            const newStatus =
-              select.value;
-
-
-            await updateSessionStatusFromList(
-              sessionId,
-              newStatus,
-              select
-            );
-
-          }
-        );
-
-      }
-    );
-
+      await updateSessionStatusFromList(sessionId, newStatus, select);
+    });
+  });
 
   if (admin) {
-    bindAdminTrainingControls(
-      session
-    );
+    bindAdminTrainingControls(session);
   }
 
-
   if (canManage) {
-
-    bindAdminAttendanceBoard(
-      session.id
-    );
+    bindAdminAttendanceBoard(session.id);
 
     bindAdminMarkingTable();
 
-
-    const deleteButton =
-      document.getElementById(
-        "delete-training-button"
-      );
-
+    const deleteButton = document.getElementById("delete-training-button");
 
     if (deleteButton) {
-
-      deleteButton.addEventListener(
-        "click",
-        () => {
-
-          deleteTraining(
-            session.id
-          );
-
-        }
-      );
-
+      deleteButton.addEventListener("click", () => {
+        deleteTraining(session.id);
+      });
     }
-
   }
 
-
   if (canAar) {
-
-    const saveAarButton =
-      document.getElementById(
-        "save-aar-button"
-      );
-
+    const saveAarButton = document.getElementById("save-aar-button");
 
     if (saveAarButton) {
-
-      saveAarButton.addEventListener(
-        "click",
-        () => {
-
-          saveAar(
-            session.id
-          );
-
-        }
-      );
-
+      saveAarButton.addEventListener("click", () => {
+        saveAar(session.id);
+      });
     }
-
   }
 }
 
@@ -2766,13 +2579,9 @@ function accountExistedForSession(profile, session) {
     return true;
   }
 
-  const accountCreatedAt = new Date(
-    profile.account_created_at
-  ).getTime();
+  const accountCreatedAt = new Date(profile.account_created_at).getTime();
 
-  const sessionStartedAt = new Date(
-    session.start_at
-  ).getTime();
+  const sessionStartedAt = new Date(session.start_at).getTime();
 
   if (
     !Number.isFinite(accountCreatedAt) ||
@@ -2791,18 +2600,14 @@ function sessionRosterUserIds(session) {
 
   return new Set(
     state.sessionMembers
-      .filter(row => {
-        return (
-          Number(row.session_id) ===
-          Number(session.id)
-        );
+      .filter((row) => {
+        return Number(row.session_id) === Number(session.id);
       })
-      .map(row => {
+      .map((row) => {
         return String(row.user_id);
-      })
+      }),
   );
 }
-
 
 function isProfileEligibleForSession(profile, session) {
   if (!profile || !session) {
@@ -2823,9 +2628,7 @@ function isProfileEligibleForSession(profile, session) {
 
   const rosterUserIds = sessionRosterUserIds(session);
 
-  return rosterUserIds.has(
-    String(profile.id)
-  );
+  return rosterUserIds.has(String(profile.id));
 }
 
 function getEligibleProfilesForSession(session) {
@@ -2833,11 +2636,8 @@ function getEligibleProfilesForSession(session) {
     return [];
   }
 
-  return state.profiles.filter(profile =>
-    isProfileEligibleForSession(
-      profile,
-      session
-    )
+  return state.profiles.filter((profile) =>
+    isProfileEligibleForSession(profile, session),
   );
 }
 
@@ -3034,7 +2834,10 @@ function bindAdminTrainingControls(session) {
 
 async function saveAdminTrainingEdit(sessionId) {
   if (!isAdmin()) {
-    showAdminActionStatus("Only administrators may edit training sessions.", false);
+    showAdminActionStatus(
+      "Only administrators may edit training sessions.",
+      false,
+    );
     return;
   }
 
@@ -3050,16 +2853,10 @@ async function saveAdminTrainingEdit(sessionId) {
   const startValue = startInput.value;
   const endValue = endInput.value;
 
-  const allowedLocations = [
-    "Dam Neck Annex",
-    "Mid-South Institute"
-  ];
+  const allowedLocations = ["Dam Neck Annex", "Mid-South Institute"];
 
   if (!allowedLocations.includes(locationInput.value)) {
-    showAdminActionStatus(
-      "Please select a valid training location.",
-      false
-    );
+    showAdminActionStatus("Please select a valid training location.", false);
     return;
   }
 
@@ -3089,7 +2886,10 @@ async function saveAdminTrainingEdit(sessionId) {
   }
 
   if (endDate && endDate < startDate) {
-    showAdminActionStatus("The end time cannot be before the start time.", false);
+    showAdminActionStatus(
+      "The end time cannot be before the start time.",
+      false,
+    );
     return;
   }
 
@@ -3102,16 +2902,13 @@ async function saveAdminTrainingEdit(sessionId) {
     p_description: descriptionInput.value.trim(),
     p_start_at: startDate.toISOString(),
     p_end_at: endDate ? endDate.toISOString() : null,
-    p_location: locationInput.value.trim()
+    p_location: locationInput.value.trim(),
   });
 
   setButtonLoading(saveButton, false, "Save Training Changes");
 
   if (error) {
-    showAdminActionStatus(
-      "Training update failed: " + error.message,
-      false
-    );
+    showAdminActionStatus("Training update failed: " + error.message, false);
     return;
   }
 
@@ -3121,7 +2918,10 @@ async function saveAdminTrainingEdit(sessionId) {
 
 async function postponeAdminTraining(sessionId) {
   if (!isAdmin()) {
-    showAdminActionStatus("Only administrators may postpone training sessions.", false);
+    showAdminActionStatus(
+      "Only administrators may postpone training sessions.",
+      false,
+    );
     return;
   }
 
@@ -3133,24 +2933,18 @@ async function postponeAdminTraining(sessionId) {
   const unit = unitInput.value;
 
   if (!Number.isInteger(amount) || amount <= 0) {
-    showAdminActionStatus(
-      "Enter a whole number greater than zero.",
-      false
-    );
+    showAdminActionStatus("Enter a whole number greater than zero.", false);
     amountInput.focus();
     return;
   }
 
   if (unit !== "minutes" && unit !== "hours") {
-    showAdminActionStatus(
-      "Postponement unit must be minutes or hours.",
-      false
-    );
+    showAdminActionStatus("Postponement unit must be minutes or hours.", false);
     return;
   }
 
   const session = state.sessions.find(
-    item => Number(item.id) === Number(sessionId)
+    (item) => Number(item.id) === Number(sessionId),
   );
 
   if (!session) {
@@ -3162,50 +2956,44 @@ async function postponeAdminTraining(sessionId) {
   const currentStart = formatDateTime(session.start_at);
 
   const confirmed = confirm(
-    `Postpone "${session.title}" by ${amountLabel}?\n\n`
-    + `Current start: ${currentStart}\n\n`
-    + "The start and end times will both be moved."
+    `Postpone "${session.title}" by ${amountLabel}?\n\n` +
+      `Current start: ${currentStart}\n\n` +
+      "The start and end times will both be moved.",
   );
 
   if (!confirmed) return;
 
   setButtonLoading(postponeButton, true, "Postponing...");
 
-  const { error } = await supabase.rpc(
-    "admin_postpone_training_session",
-    {
-      p_session_id: Number(sessionId),
-      p_amount: amount,
-      p_unit: unit
-    }
-  );
+  const { error } = await supabase.rpc("admin_postpone_training_session", {
+    p_session_id: Number(sessionId),
+    p_amount: amount,
+    p_unit: unit,
+  });
 
   setButtonLoading(postponeButton, false, "Postpone");
 
   if (error) {
-    showAdminActionStatus(
-      "Postponement failed: " + error.message,
-      false
-    );
+    showAdminActionStatus("Postponement failed: " + error.message, false);
     return;
   }
 
-  showAdminActionStatus(
-    `Training postponed by ${amountLabel}.`,
-    true
-  );
+  showAdminActionStatus(`Training postponed by ${amountLabel}.`, true);
 
   await loadData();
 }
 
 async function cancelAdminTraining(sessionId) {
   if (!isAdmin()) {
-    showAdminActionStatus("Only administrators may cancel training sessions.", false);
+    showAdminActionStatus(
+      "Only administrators may cancel training sessions.",
+      false,
+    );
     return;
   }
 
   const session = state.sessions.find(
-    item => Number(item.id) === Number(sessionId)
+    (item) => Number(item.id) === Number(sessionId),
   );
 
   if (!session) {
@@ -3219,8 +3007,8 @@ async function cancelAdminTraining(sessionId) {
   }
 
   const confirmed = confirm(
-    `Cancel "${session.title}"?\n\n`
-    + "The session will remain in the database and its attendance records will not be deleted."
+    `Cancel "${session.title}"?\n\n` +
+      "The session will remain in the database and its attendance records will not be deleted.",
   );
 
   if (!confirmed) return;
@@ -3229,20 +3017,14 @@ async function cancelAdminTraining(sessionId) {
 
   setButtonLoading(cancelButton, true, "Cancelling...");
 
-  const { error } = await supabase.rpc(
-    "admin_cancel_training_session",
-    {
-      p_session_id: Number(sessionId)
-    }
-  );
+  const { error } = await supabase.rpc("admin_cancel_training_session", {
+    p_session_id: Number(sessionId),
+  });
 
   setButtonLoading(cancelButton, false, "Cancel Training");
 
   if (error) {
-    showAdminActionStatus(
-      "Cancellation failed: " + error.message,
-      false
-    );
+    showAdminActionStatus("Cancellation failed: " + error.message, false);
     return;
   }
 
@@ -3251,9 +3033,7 @@ async function cancelAdminTraining(sessionId) {
 }
 
 function showAdminActionStatus(message, ok) {
-  const statusElement = document.getElementById(
-    "admin-training-action-status"
-  );
+  const statusElement = document.getElementById("admin-training-action-status");
 
   if (!statusElement) {
     if (!ok) alert(message);
@@ -3271,7 +3051,7 @@ function toDateTimeLocalValue(value) {
 
   if (Number.isNaN(date.getTime())) return "";
 
-  const pad = number => String(number).padStart(2, "0");
+  const pad = (number) => String(number).padStart(2, "0");
 
   return [
     date.getFullYear(),
@@ -3282,7 +3062,7 @@ function toDateTimeLocalValue(value) {
     "T",
     pad(date.getHours()),
     ":",
-    pad(date.getMinutes())
+    pad(date.getMinutes()),
   ].join("");
 }
 
@@ -3294,7 +3074,7 @@ function formatStatusLabel(status) {
   return String(status || "")
     .toLowerCase()
     .replaceAll("_", " ")
-    .replace(/\b\w/g, character => character.toUpperCase());
+    .replace(/\b\w/g, (character) => character.toUpperCase());
 }
 
 function getLoaForSession(session) {
@@ -3302,7 +3082,7 @@ function getLoaForSession(session) {
 
   const sessionDate = new Date(session.start_at).toISOString().slice(0, 10);
 
-  return state.loaRequests.filter(loa => {
+  return state.loaRequests.filter((loa) => {
     return loa.start_date <= sessionDate && loa.end_date >= sessionDate;
   });
 }
@@ -3312,29 +3092,34 @@ function getApprovedLoaForUserSession(session, userId) {
     return null;
   }
 
-  return getLoaForSession(session).find(
-    loa => loa.requester_id === userId
-  ) || null;
+  return (
+    getLoaForSession(session).find((loa) => loa.requester_id === userId) || null
+  );
 }
 
 function renderProfileCards(profiles) {
   if (!profiles.length) return `<span class="muted">None</span>`;
 
-  return profiles.map(profile => `
+  return profiles
+    .map(
+      (profile) => `
     <div class="profile-mini-card">
       <strong>${escapeHtml(profile.display_name)}</strong>
       <span>${escapeHtml(profile.naval_rank || "No rank")}${profile.callsign ? ` [${escapeHtml(profile.callsign)}]` : ""}</span>
     </div>
-  `).join("");
+  `,
+    )
+    .join("");
 }
 
 function renderDraggableAttendanceRows(rows, attendance) {
   if (!rows.length) return `<span class="muted">None</span>`;
 
-  return rows.map(row => {
-    const profile = state.profiles.find(p => p.id === row.user_id);
+  return rows
+    .map((row) => {
+      const profile = state.profiles.find((p) => p.id === row.user_id);
 
-    return `
+      return `
       <div
         class="admin-attendance-user"
         draggable="true"
@@ -3344,13 +3129,16 @@ function renderDraggableAttendanceRows(rows, attendance) {
         ${escapeHtml(profileLabel(profile, row.user_id))}
       </div>
     `;
-  }).join("");
+    })
+    .join("");
 }
 
 function renderDraggableProfiles(profiles) {
   if (!profiles.length) return `<span class="muted">None</span>`;
 
-  return profiles.map(profile => `
+  return profiles
+    .map(
+      (profile) => `
     <div
       class="admin-attendance-user"
       draggable="true"
@@ -3359,19 +3147,21 @@ function renderDraggableProfiles(profiles) {
     >
       ${escapeHtml(profileLabel(profile, profile.id))}
     </div>
-  `).join("");
+  `,
+    )
+    .join("");
 }
 
 function bindAdminAttendanceBoard(sessionId) {
-  document.querySelectorAll(".admin-attendance-user").forEach(card => {
-    card.addEventListener("dragstart", event => {
+  document.querySelectorAll(".admin-attendance-user").forEach((card) => {
+    card.addEventListener("dragstart", (event) => {
       event.dataTransfer.setData("text/plain", card.dataset.userId);
       event.dataTransfer.effectAllowed = "move";
     });
   });
 
-  document.querySelectorAll(".admin-drop-zone").forEach(zone => {
-    zone.addEventListener("dragover", event => {
+  document.querySelectorAll(".admin-drop-zone").forEach((zone) => {
+    zone.addEventListener("dragover", (event) => {
       event.preventDefault();
       zone.classList.add("drag-over");
     });
@@ -3380,7 +3170,7 @@ function bindAdminAttendanceBoard(sessionId) {
       zone.classList.remove("drag-over");
     });
 
-    zone.addEventListener("drop", async event => {
+    zone.addEventListener("drop", async (event) => {
       event.preventDefault();
       zone.classList.remove("drag-over");
 
@@ -3398,7 +3188,7 @@ async function adminSetAttendance(sessionId, userId, attendance) {
   const result = await supabase.rpc("admin_set_training_response", {
     p_session_id: Number(sessionId),
     p_user_id: userId,
-    p_attendance: attendance
+    p_attendance: attendance,
   });
 
   if (result.error) {
@@ -3451,7 +3241,7 @@ function renderAar(session, canAar) {
 
 async function saveAttendance(sessionId, attendance) {
   const session = state.sessions.find(
-    item => Number(item.id) === Number(sessionId)
+    (item) => Number(item.id) === Number(sessionId),
   );
 
   if (!session) {
@@ -3459,46 +3249,32 @@ async function saveAttendance(sessionId, attendance) {
     return;
   }
 
-  if (
-    !isProfileEligibleForSession(
-      state.profile,
-      session
-    )
-  ) {
+  if (!isProfileEligibleForSession(state.profile, session)) {
     alert(
       session.target_green_team_class
         ? `Hey, this training is only for Green Team Class ${session.target_green_team_class}. It is not assigned to your class.`
-        : "This training is not assigned to you."
+        : "This training is not assigned to you.",
     );
 
     return;
   }
 
-  const approvedLoa = getApprovedLoaForUserSession(
-    session,
-    state.authUser.id
-  );
+  const approvedLoa = getApprovedLoaForUserSession(session, state.authUser.id);
 
   if (approvedLoa) {
     alert(
-      "Your response is locked because an approved LOA covers this training."
+      "Your response is locked because an approved LOA covers this training.",
     );
     return;
   }
 
-  const result = await supabase.rpc(
-    "set_my_training_response",
-    {
-      p_session_id: Number(sessionId),
-      p_attendance: attendance
-    }
-  );
+  const result = await supabase.rpc("set_my_training_response", {
+    p_session_id: Number(sessionId),
+    p_attendance: attendance,
+  });
 
   if (result.error) {
-    alert(
-      "Attendance save failed: " +
-      result.error.message
-    );
+    alert("Attendance save failed: " + result.error.message);
 
     return;
   }
@@ -3507,7 +3283,9 @@ async function saveAttendance(sessionId, attendance) {
 }
 
 async function saveAar(sessionId) {
-  const session = state.sessions.find(s => Number(s.id) === Number(sessionId));
+  const session = state.sessions.find(
+    (s) => Number(s.id) === Number(sessionId),
+  );
 
   if (!canAarSession(session)) {
     alert("You do not have permission to save this AAR.");
@@ -3521,7 +3299,7 @@ async function saveAar(sessionId) {
     aar_actions: document.getElementById("aar-actions").value.trim(),
     aar_submitted_at: new Date().toISOString(),
     status: "COMPLETED",
-    updated_at: new Date().toISOString()
+    updated_at: new Date().toISOString(),
   };
 
   const result = await supabase
@@ -3538,7 +3316,9 @@ async function saveAar(sessionId) {
 }
 
 async function deleteTraining(sessionId) {
-  const session = state.sessions.find(s => Number(s.id) === Number(sessionId));
+  const session = state.sessions.find(
+    (s) => Number(s.id) === Number(sessionId),
+  );
 
   if (!canManageSession(session)) {
     alert("You do not have permission to delete this training.");
@@ -3559,31 +3339,28 @@ async function deleteTraining(sessionId) {
 
   state.activeSessionId = null;
   el.viewer.className = "empty-state";
-  el.viewer.textContent = "Select a training session to view attendance and AAR.";
+  el.viewer.textContent =
+    "Select a training session to view attendance and AAR.";
 
   await loadData();
 }
 
 function getAttendanceCounts(session) {
-  const eligibleProfiles =
-    getEligibleProfilesForSession(session);
+  const eligibleProfiles = getEligibleProfilesForSession(session);
 
   const eligibleProfileIds = new Set(
-    eligibleProfiles.map(profile => profile.id)
+    eligibleProfiles.map((profile) => profile.id),
   );
 
   const loaUserIds = new Set(
     getLoaForSession(session)
-      .map(loa => loa.requester_id)
-      .filter(userId => {
-        return (
-          Boolean(userId) &&
-          eligibleProfileIds.has(userId)
-        );
-      })
+      .map((loa) => loa.requester_id)
+      .filter((userId) => {
+        return Boolean(userId) && eligibleProfileIds.has(userId);
+      }),
   );
 
-  const rows = state.attendance.filter(attendanceRow => {
+  const rows = state.attendance.filter((attendanceRow) => {
     return (
       Number(attendanceRow.session_id) === Number(session.id) &&
       eligibleProfileIds.has(attendanceRow.user_id)
@@ -3591,36 +3368,43 @@ function getAttendanceCounts(session) {
   });
 
   return {
-    attending: rows.filter(attendanceRow => {
+    attending: rows.filter((attendanceRow) => {
       return (
         attendanceRow.attendance === "ATTENDING" &&
         !loaUserIds.has(attendanceRow.user_id)
       );
     }).length,
 
-    notAttending: rows.filter(attendanceRow => {
+    notAttending: rows.filter((attendanceRow) => {
       return (
         attendanceRow.attendance === "NOT_ATTENDING" &&
         !loaUserIds.has(attendanceRow.user_id)
       );
     }).length,
 
-    loaAbsent: loaUserIds.size
+    loaAbsent: loaUserIds.size,
   };
 }
 
 function renderNameList(rows) {
   if (!rows.length) return `<span class="muted">None</span>`;
 
-  return rows.map(row => {
-    const profile = state.profiles.find(p => p.id === row.user_id);
-    return `<div>${escapeHtml(profileLabel(profile, row.user_id))}</div>`;
-  }).join("");
+  return rows
+    .map((row) => {
+      const profile = state.profiles.find((p) => p.id === row.user_id);
+      return `<div>${escapeHtml(profileLabel(profile, row.user_id))}</div>`;
+    })
+    .join("");
 }
 
 function renderProfileList(profiles) {
   if (!profiles.length) return `<span class="muted">None</span>`;
-  return profiles.map(profile => `<div>${escapeHtml(profileLabel(profile, profile.id))}</div>`).join("");
+  return profiles
+    .map(
+      (profile) =>
+        `<div>${escapeHtml(profileLabel(profile, profile.id))}</div>`,
+    )
+    .join("");
 }
 
 function profileLabel(profile, fallback) {
@@ -3633,7 +3417,7 @@ function profileLabel(profile, fallback) {
 }
 
 function getProfileName(userId) {
-  const profile = state.profiles.find(p => p.id === userId);
+  const profile = state.profiles.find((p) => p.id === userId);
   return profile ? profile.display_name : userId;
 }
 
@@ -3705,7 +3489,7 @@ function getStatusBadgeClass(status) {
 async function updateSessionStatusFromList(
   sessionId,
   newStatus,
-  selectElement
+  selectElement,
 ) {
   if (!isAdmin()) {
     alert("Only administrators may change training status.");
@@ -3713,12 +3497,7 @@ async function updateSessionStatusFromList(
     return;
   }
 
-  const allowedStatuses = [
-    "SCHEDULED",
-    "DRAFT",
-    "COMPLETED",
-    "CANCELLED"
-  ];
+  const allowedStatuses = ["SCHEDULED", "DRAFT", "COMPLETED", "CANCELLED"];
 
   if (!allowedStatuses.includes(newStatus)) {
     alert("Invalid training status.");
@@ -3727,7 +3506,7 @@ async function updateSessionStatusFromList(
   }
 
   const session = state.sessions.find(
-    item => Number(item.id) === Number(sessionId)
+    (item) => Number(item.id) === Number(sessionId),
   );
 
   if (!session) {
@@ -3744,7 +3523,7 @@ async function updateSessionStatusFromList(
     .from("training_sessions")
     .update({
       status: newStatus,
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
     })
     .eq("id", sessionId);
 
@@ -3752,9 +3531,7 @@ async function updateSessionStatusFromList(
     selectElement.value = previousStatus;
     selectElement.disabled = false;
 
-    alert(
-      "Training status update failed: " + error.message
-    );
+    alert("Training status update failed: " + error.message);
 
     return;
   }
@@ -3805,7 +3582,7 @@ function formatDateTime(value) {
     year: "numeric",
     hour: "2-digit",
     minute: "2-digit",
-    hour12: false
+    hour12: false,
   }).format(date);
 
   return `${formatted} ET`;
@@ -3827,7 +3604,7 @@ function formatViewerLocalTime(value) {
     year: "numeric",
     hour: "2-digit",
     minute: "2-digit",
-    timeZoneName: "short"
+    timeZoneName: "short",
   }).format(date);
 }
 
@@ -3847,13 +3624,15 @@ function setButtonLoading(button, loading, text) {
 }
 
 function showAdminLinksIfAllowed(email) {
-  const normalized = String(email || "").trim().toLowerCase();
+  const normalized = String(email || "")
+    .trim()
+    .toLowerCase();
 
   if (normalized !== "evans@navy.mil" && normalized !== "carver@navy.mil") {
     return;
   }
 
-  document.querySelectorAll(".admin-only-link").forEach(link => {
+  document.querySelectorAll(".admin-only-link").forEach((link) => {
     link.style.display = "";
   });
 }
