@@ -1,0 +1,822 @@
+/* ============================================================
+   NSW TRAINING PORTAL
+   Training page layout override
+   ============================================================ */
+
+
+/* ============================================================
+   PAGE WORKSPACE
+   Only affects the Training page content.
+   Header, navigation and sidebar remain untouched.
+   ============================================================ */
+
+.portal-main {
+  min-width: 0;
+}
+
+.two-column-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 14px;
+  align-items: start;
+}
+
+
+/* ============================================================
+   PANELS
+   ============================================================ */
+
+.two-column-layout > .panel,
+.two-column-layout > div > .panel {
+  border: 1px solid #b8c0c8;
+  background: #f8f9fa;
+  padding: 0;
+  margin-bottom: 14px;
+}
+
+.two-column-layout > .panel > h3,
+.two-column-layout > div > .panel > h3 {
+  margin: 0;
+  padding: 8px 10px;
+  border-bottom: 1px solid #b8c0c8;
+  background: #e8edf2;
+  color: #1d3f5e;
+  font-size: 11px;
+  line-height: 1.2;
+  text-transform: uppercase;
+  letter-spacing: 0.45px;
+}
+
+
+/* ============================================================
+   HOST TRAINING SESSION
+   ============================================================ */
+
+.two-column-layout > .panel:first-child {
+  background: #fff;
+}
+
+.two-column-layout > .panel:first-child .form-grid {
+  display: grid;
+  grid-template-columns:
+    minmax(150px, 0.8fr)
+    minmax(150px, 0.8fr)
+    minmax(170px, 1fr)
+    minmax(200px, 1.25fr);
+  gap: 0;
+  padding: 10px;
+  border-bottom: 1px solid #d4d9de;
+}
+
+.two-column-layout > .panel:first-child .form-group {
+  margin: 0;
+  padding: 6px 8px;
+  min-width: 0;
+}
+
+.two-column-layout > .panel:first-child .form-group.full {
+  grid-column: auto;
+}
+
+.two-column-layout > .panel:first-child .form-group:nth-child(4) {
+  grid-column: span 2;
+}
+
+.two-column-layout > .panel:first-child .form-group:nth-child(5),
+.two-column-layout > .panel:first-child .form-group:nth-child(6) {
+  grid-column: span 1;
+}
+
+.two-column-layout > .panel:first-child .form-group:nth-child(7) {
+  grid-column: span 2;
+}
+
+.two-column-layout > .panel:first-child .form-group:nth-child(8) {
+  grid-column: span 2;
+}
+
+.two-column-layout > .panel:first-child .form-group:nth-child(9) {
+  grid-column: span 2;
+}
+
+
+/* Form labels */
+
+.two-column-layout > .panel:first-child .form-group label {
+  display: block;
+  margin: 0 0 4px;
+  color: #344452;
+  font-size: 10px;
+  font-weight: bold;
+  line-height: 1.2;
+  text-transform: uppercase;
+  letter-spacing: 0.35px;
+}
+
+
+/* Inputs */
+
+.two-column-layout > .panel:first-child input:not([type="checkbox"]),
+.two-column-layout > .panel:first-child select,
+.two-column-layout > .panel:first-child textarea {
+  width: 100%;
+  min-width: 0;
+  height: 31px;
+  border: 1px solid #9ca6ae;
+  background: #fff;
+  color: #1a1a1a;
+  padding: 5px 7px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 11px;
+  border-radius: 0;
+  outline: none;
+}
+
+.two-column-layout > .panel:first-child textarea {
+  height: 60px;
+  min-height: 60px;
+  resize: vertical;
+  line-height: 1.45;
+}
+
+.two-column-layout > .panel:first-child input:not([type="checkbox"]):focus,
+.two-column-layout > .panel:first-child select:focus,
+.two-column-layout > .panel:first-child textarea:focus {
+  border-color: #1d3f5e;
+  box-shadow: inset 0 0 0 1px #1d3f5e;
+}
+
+
+/* Discord checkbox section */
+
+.two-column-layout > .panel:first-child input[type="checkbox"] {
+  width: 14px !important;
+  height: 14px;
+  margin: 0;
+  flex: 0 0 auto;
+}
+
+
+/* Form buttons */
+
+.two-column-layout > .panel:first-child > .button-row {
+  margin: 0;
+  padding: 9px 18px 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #f3f5f6;
+}
+
+.two-column-layout > .panel:first-child > .button-row .btn {
+  min-height: 30px;
+  padding: 5px 15px;
+}
+
+
+/* Status output */
+
+.two-column-layout > .panel:first-child > .status-line {
+  margin: 0 18px 10px;
+}
+
+
+/* ============================================================
+   SCHEDULED TRAINING
+   ============================================================ */
+
+.two-column-layout > div > .panel:first-child {
+  background: #fff;
+}
+
+
+/* Filters */
+
+.two-column-layout > div > .panel:first-child .filters {
+  display: grid;
+  grid-template-columns:
+    minmax(220px, 1fr)
+    minmax(140px, 180px)
+    minmax(130px, 160px)
+    auto;
+  gap: 6px;
+  padding: 9px 10px;
+  margin: 0;
+  border-bottom: 1px solid #d4d9de;
+  background: #f7f8f9;
+}
+
+.two-column-layout > div > .panel:first-child .filters input,
+.two-column-layout > div > .panel:first-child .filters select {
+  height: 29px;
+  padding: 4px 7px;
+  border: 1px solid #9ca6ae;
+  background: #fff;
+  font-size: 11px;
+}
+
+.two-column-layout > div > .panel:first-child .filters input:focus,
+.two-column-layout > div > .panel:first-child .filters select:focus {
+  outline: none;
+  border-color: #1d3f5e;
+  box-shadow: inset 0 0 0 1px #1d3f5e;
+}
+
+.two-column-layout > div > .panel:first-child .filters .btn {
+  height: 29px;
+  margin: 0;
+  padding: 4px 12px;
+}
+
+
+/* ============================================================
+   TRAINING / INNER TEAM COLUMNS
+   ============================================================ */
+
+.training-session-columns {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0;
+  padding: 10px;
+}
+
+.training-session-columns.has-inner-team {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(440px, 0.85fr);
+  gap: 12px;
+}
+
+.training-session-column {
+  min-width: 0;
+  border: 1px solid #c7cdd3;
+  background: #fff;
+}
+
+.training-session-column h4 {
+  margin: 0;
+  padding: 7px 8px;
+  border: 0;
+  border-bottom: 1px solid #c7cdd3;
+  background: #edf1f4;
+  color: #1d3f5e;
+  font-size: 10px;
+  font-weight: bold;
+  line-height: 1.2;
+  text-transform: uppercase;
+  letter-spacing: 0.55px;
+}
+
+
+/* ============================================================
+   TRAINING TABLES
+   ============================================================ */
+
+.training-session-column table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: auto;
+  background: #fff;
+  font-size: 10px;
+}
+
+.training-session-column thead {
+  border-bottom: 1px solid #aeb7bf;
+}
+
+.training-session-column th {
+  background: #1d3f5e;
+  color: #fff;
+  padding: 6px 7px;
+  border: 0;
+  text-align: left;
+  font-size: 9px;
+  font-weight: bold;
+  line-height: 1.15;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+
+.training-session-column td {
+  padding: 7px;
+  border: 0;
+  border-bottom: 1px solid #dce0e4;
+  vertical-align: middle;
+  line-height: 1.35;
+  background: #fff;
+}
+
+.training-session-column tbody tr:nth-child(even) td {
+  background: #f6f7f8;
+}
+
+.training-session-column tbody tr:hover td {
+  background: #eef3f7;
+}
+
+.training-session-column tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+
+/* Start */
+
+.training-session-column th:nth-child(1),
+.training-session-column td:nth-child(1) {
+  width: 150px;
+  min-width: 130px;
+}
+
+
+/* Category */
+
+.training-session-column th:nth-child(2),
+.training-session-column td:nth-child(2) {
+  width: 100px;
+}
+
+
+/* Title */
+
+.training-session-column th:nth-child(3),
+.training-session-column td:nth-child(3) {
+  min-width: 155px;
+}
+
+.training-session-column td:nth-child(3) strong {
+  display: block;
+  color: #162c40;
+  margin-bottom: 1px;
+  font-size: 10.5px;
+}
+
+
+/* Status */
+
+.training-session-column th:nth-child(4),
+.training-session-column td:nth-child(4) {
+  width: 105px;
+}
+
+
+/* Attendance */
+
+.training-session-column th:nth-child(5),
+.training-session-column td:nth-child(5) {
+  min-width: 210px;
+}
+
+
+/* Host */
+
+.training-session-column th:nth-child(6),
+.training-session-column td:nth-child(6) {
+  width: 105px;
+  white-space: nowrap;
+}
+
+
+/* Action */
+
+.training-session-column th:nth-child(7),
+.training-session-column td:nth-child(7) {
+  width: 58px;
+  text-align: right;
+}
+
+
+/* ============================================================
+   BADGES
+   ============================================================ */
+
+.training-session-column .badge {
+  display: inline-block;
+  margin: 1px 2px 1px 0;
+  padding: 2px 5px;
+  border-width: 1px;
+  font-size: 8.5px;
+  line-height: 1.2;
+  font-weight: bold;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.training-session-column .muted {
+  color: #6e7880;
+  font-size: 9px;
+  line-height: 1.25;
+}
+
+
+/* ============================================================
+   STATUS SELECT
+   ============================================================ */
+
+.training-session-column .session-status-select {
+  width: 100%;
+  min-width: 94px;
+  height: 24px;
+  padding: 2px 18px 2px 5px;
+  border-radius: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 8.5px;
+  font-weight: bold;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+
+/* ============================================================
+   OPEN BUTTON
+   ============================================================ */
+
+.training-session-column td:last-child .btn {
+  min-width: 48px;
+  padding: 4px 8px;
+  font-size: 9px;
+}
+
+
+/* ============================================================
+   EMPTY STATES
+   ============================================================ */
+
+.training-session-column .empty-state {
+  min-height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  border: 0;
+  background: #fafafa;
+  color: #737d85;
+  font-size: 10px;
+}
+
+
+/* ============================================================
+   TRAINING VIEWER PANEL
+   ============================================================ */
+
+.two-column-layout > div > .panel:last-child {
+  background: #fff;
+}
+
+#training-viewer.empty-state {
+  margin: 10px;
+  min-height: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px dashed #aeb7bf;
+  background: #f8f9fa;
+  color: #68737c;
+}
+
+
+/* ============================================================
+   VIEWER OVERRIDES
+   Keep existing viewer functionality, but tighten presentation.
+   ============================================================ */
+
+#training-viewer.viewer {
+  border: 0;
+  background: #fff;
+}
+
+#training-viewer .training-v2-card {
+  border: 0;
+}
+
+#training-viewer .training-v2-header {
+  padding: 14px 16px;
+}
+
+#training-viewer .training-v2-header h2 {
+  font-size: 18px;
+}
+
+#training-viewer .training-v2-time {
+  min-width: 190px;
+  padding: 9px;
+}
+
+#training-viewer .training-v2-meta div {
+  padding: 9px 10px;
+}
+
+#training-viewer .training-v2-section,
+#training-viewer .training-v2-aar,
+#training-viewer .admin-marking-panel,
+#training-viewer .admin-training-controls {
+  padding: 12px;
+}
+
+#training-viewer .training-roster-grid {
+  gap: 8px;
+  padding: 12px;
+}
+
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 1450px) {
+  .training-session-columns.has-inner-team {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+  }
+
+  .training-session-column {
+    overflow-x: auto;
+  }
+}
+
+
+@media (max-width: 1200px) {
+  .two-column-layout > .panel:first-child .form-grid {
+    grid-template-columns:
+      minmax(150px, 1fr)
+      minmax(150px, 1fr)
+      minmax(180px, 1fr);
+  }
+
+  .two-column-layout > .panel:first-child .form-group:nth-child(4) {
+    grid-column: span 2;
+  }
+
+  .two-column-layout > .panel:first-child .form-group:nth-child(7),
+  .two-column-layout > .panel:first-child .form-group:nth-child(8),
+  .two-column-layout > .panel:first-child .form-group:nth-child(9) {
+    grid-column: span 3;
+  }
+}
+
+
+@media (max-width: 900px) {
+  .two-column-layout > .panel:first-child .form-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .two-column-layout > .panel:first-child .form-group,
+  .two-column-layout > .panel:first-child .form-group:nth-child(4),
+  .two-column-layout > .panel:first-child .form-group:nth-child(7),
+  .two-column-layout > .panel:first-child .form-group:nth-child(8),
+  .two-column-layout > .panel:first-child .form-group:nth-child(9) {
+    grid-column: auto;
+  }
+
+  .two-column-layout > .panel:first-child .form-group:nth-child(4),
+  .two-column-layout > .panel:first-child .form-group:nth-child(7),
+  .two-column-layout > .panel:first-child .form-group:nth-child(8),
+  .two-column-layout > .panel:first-child .form-group:nth-child(9) {
+    grid-column: 1 / -1;
+  }
+
+  .two-column-layout > div > .panel:first-child .filters {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .two-column-layout > div > .panel:first-child .filters input {
+    grid-column: 1 / -1;
+  }
+
+  .two-column-layout > div > .panel:first-child .filters .btn {
+    width: 100%;
+  }
+
+  .training-session-column {
+    overflow-x: auto;
+  }
+
+  .training-session-column table {
+    min-width: 800px;
+  }
+}
+
+
+/* ============================================================
+   MOBILE TRAINING CARDS
+   Turns the generated table rows into readable stacked entries.
+   No JavaScript change required.
+   ============================================================ */
+
+@media (max-width: 650px) {
+  .portal-main {
+    min-width: 0;
+  }
+
+  .two-column-layout {
+    gap: 10px;
+  }
+
+  .two-column-layout > .panel,
+  .two-column-layout > div > .panel {
+    margin-bottom: 10px;
+  }
+
+
+  /* Creation form */
+
+  .two-column-layout > .panel:first-child .form-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    padding: 6px;
+  }
+
+  .two-column-layout > .panel:first-child .form-group,
+  .two-column-layout > .panel:first-child .form-group:nth-child(4),
+  .two-column-layout > .panel:first-child .form-group:nth-child(5),
+  .two-column-layout > .panel:first-child .form-group:nth-child(6),
+  .two-column-layout > .panel:first-child .form-group:nth-child(7),
+  .two-column-layout > .panel:first-child .form-group:nth-child(8),
+  .two-column-layout > .panel:first-child .form-group:nth-child(9) {
+    grid-column: 1;
+  }
+
+  .two-column-layout > .panel:first-child .form-group {
+    padding: 5px 6px;
+  }
+
+  .two-column-layout > .panel:first-child input:not([type="checkbox"]),
+  .two-column-layout > .panel:first-child select {
+    height: 35px;
+    font-size: 12px;
+  }
+
+  .two-column-layout > .panel:first-child textarea {
+    min-height: 75px;
+    font-size: 12px;
+  }
+
+  .two-column-layout > .panel:first-child > .button-row {
+    padding: 8px 12px 10px;
+  }
+
+  .two-column-layout > .panel:first-child > .button-row .btn {
+    flex: 1;
+    min-height: 34px;
+  }
+
+
+  /* Filters */
+
+  .two-column-layout > div > .panel:first-child .filters {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 6px;
+    padding: 8px;
+  }
+
+  .two-column-layout > div > .panel:first-child .filters input,
+  .two-column-layout > div > .panel:first-child .filters select,
+  .two-column-layout > div > .panel:first-child .filters .btn {
+    grid-column: 1;
+    width: 100%;
+    height: 35px;
+    font-size: 12px;
+  }
+
+
+  /* Columns */
+
+  .training-session-columns,
+  .training-session-columns.has-inner-team {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    padding: 8px;
+  }
+
+  .training-session-column {
+    width: 100%;
+    overflow: visible;
+  }
+
+
+  /* Table becomes cards */
+
+  .training-session-column table,
+  .training-session-column tbody,
+  .training-session-column tr,
+  .training-session-column td {
+    display: block;
+    width: 100%;
+  }
+
+  .training-session-column table {
+    min-width: 0;
+  }
+
+  .training-session-column thead {
+    display: none;
+  }
+
+  .training-session-column tbody {
+    display: grid;
+    gap: 7px;
+    padding: 7px;
+  }
+
+  .training-session-column tbody tr {
+    border: 1px solid #cbd1d6;
+    background: #fff;
+  }
+
+  .training-session-column tbody tr:nth-child(even) td,
+  .training-session-column tbody tr:hover td {
+    background: transparent;
+  }
+
+  .training-session-column td {
+    position: relative;
+    min-width: 0 !important;
+    width: 100% !important;
+    padding: 6px 8px 6px 92px;
+    border-bottom: 1px solid #e1e4e7;
+    background: #fff;
+    text-align: left !important;
+    white-space: normal !important;
+  }
+
+  .training-session-column td:last-child {
+    border-bottom: 0;
+  }
+
+  .training-session-column td::before {
+    position: absolute;
+    left: 8px;
+    top: 7px;
+    width: 76px;
+    color: #68737c;
+    font-size: 8.5px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+
+  .training-session-column td:nth-child(1)::before {
+    content: "Start";
+  }
+
+  .training-session-column td:nth-child(2)::before {
+    content: "Category";
+  }
+
+  .training-session-column td:nth-child(3)::before {
+    content: "Training";
+  }
+
+  .training-session-column td:nth-child(4)::before {
+    content: "Status";
+  }
+
+  .training-session-column td:nth-child(5)::before {
+    content: "Attendance";
+  }
+
+  .training-session-column td:nth-child(6)::before {
+    content: "Host";
+  }
+
+  .training-session-column td:nth-child(7)::before {
+    content: "Action";
+  }
+
+  .training-session-column .session-status-select {
+    width: auto;
+    min-width: 125px;
+    height: 27px;
+  }
+
+  .training-session-column td:last-child .btn {
+    width: 100%;
+    min-height: 30px;
+  }
+
+  .training-session-column .badge {
+    margin-bottom: 2px;
+    font-size: 9px;
+  }
+
+
+  /* Viewer */
+
+  #training-viewer.empty-state {
+    margin: 8px;
+  }
+
+  #training-viewer .training-v2-header {
+    padding: 12px;
+  }
+
+  #training-viewer .training-v2-header h2 {
+    font-size: 16px;
+  }
+
+  #training-viewer .training-v2-time {
+    min-width: 0;
+    width: 100%;
+  }
+}
