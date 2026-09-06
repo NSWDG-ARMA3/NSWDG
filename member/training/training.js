@@ -1021,204 +1021,256 @@ function renderTrainingGroup(label, rows, emptyMessage) {
 }
 
 function renderTrainingRecord(session) {
-  const counts = getAttendanceCounts(session);
+  const counts =
+    getAttendanceCounts(session);
 
-  const sessionDate = new Date(session.start_at);
+  const sessionDate =
+    new Date(session.start_at);
 
-  const month = sessionDate
-    .toLocaleDateString("en-US", {
-      month: "short",
-    })
-    .toUpperCase();
+  const month =
+    sessionDate
+      .toLocaleDateString(
+        "en-US",
+        {
+          month: "short"
+        }
+      )
+      .toUpperCase();
 
-  const day = sessionDate.toLocaleDateString("en-US", {
-    day: "2-digit",
-  });
+  const day =
+    sessionDate
+      .toLocaleDateString(
+        "en-US",
+        {
+          day: "2-digit"
+        }
+      );
 
-  const localTime = formatTrainingListLocalTime(session.start_at);
+  const localTime =
+    formatTrainingListLocalTime(
+      session.start_at
+    );
 
-  const easternTime = formatTrainingListEasternTime(session.start_at);
+  const easternTime =
+    formatTrainingListEasternTime(
+      session.start_at
+    );
 
-  const localZone = getLocalTimeZoneLabel();
-  const selected = Number(state.activeSessionId) === Number(session.id);
+  const localZone =
+    getLocalTimeZoneLabel();
+
+  const selected =
+    Number(
+      state.activeSessionId
+    ) ===
+    Number(
+      session.id
+    );
 
   return `
     <article
       class="
         training-record
-        training-record-${String(session.category || "")
-      .toLowerCase()
-      .replaceAll("_", "-")}
-        ${selected ? "active" : ""}
+        training-record-${String(
+          session.category || ""
+        )
+          .toLowerCase()
+          .replaceAll("_", "-")}
+        ${
+          selected
+            ? "active"
+            : ""
+        }
       "
     >
 
-      <div class="training-record-date">
-
-        <span>
-          ${escapeHtml(month)}
-        </span>
-
-        <strong>
-          ${escapeHtml(day)}
-        </strong>
-
-      </div>
+      <div class="training-record-layout">
 
 
-<div class="training-record-main">
-
-  <div class="training-record-heading">
-
-    <div class="training-record-heading-left">
-
-      <div class="training-record-topline">
-
-        ${categoryBadge(
-          session.category
-        )}
-
-        <span class="training-record-location">
-          ${escapeHtml(
-            session.location || "-"
-          )}
-        </span>
-
-      </div>
-
-      <h3>
-        ${escapeHtml(
-          session.title
-        )}
-      </h3>
-
-    </div>
-
-
-    <div class="training-record-host">
-
-      <span>
-        HOST
-      </span>
-
-      <strong>
-        ${escapeHtml(
-          getProfileName(
-            session.host_id
-          )
-        )}
-      </strong>
-
-    </div>
-
-  </div>
-
-
-  <div class="training-record-timebar">
-
-    <div class="training-record-time local">
-
-      <span>
-        YOUR TIME
-      </span>
-
-      <strong>
-        ${escapeHtml(
-          localTime
-        )}
-      </strong>
-
-      <small>
-        ${escapeHtml(
-          localZone
-        )}
-      </small>
-
-    </div>
-
-
-    <div class="training-record-time eastern">
-
-      <span>
-        EASTERN TIME
-      </span>
-
-      <strong>
-        ${escapeHtml(
-          easternTime
-        )}
-      </strong>
-
-      <small>
-        ET
-      </small>
-
-    </div>
-
-  </div>
-
-</div>
-
-
-      <div class="training-record-attendance">
-
-        <div class="training-attendance-value attending">
-
-          <strong>
-            ${counts.attending}
-          </strong>
+        <div class="training-record-date">
 
           <span>
-            Attending
+            ${escapeHtml(month)}
           </span>
+
+          <strong>
+            ${escapeHtml(day)}
+          </strong>
 
         </div>
 
 
-        <div class="training-attendance-value declined">
+        <div class="training-record-info">
 
-          <strong>
-            ${counts.notAttending}
-          </strong>
+          <div class="training-record-topline">
 
-          <span>
-            Declined
-          </span>
+            ${categoryBadge(
+              session.category
+            )}
+
+            <span class="training-record-location">
+              ${escapeHtml(
+                session.location || "-"
+              )}
+            </span>
+
+          </div>
+
+
+          <h3>
+            ${escapeHtml(
+              session.title
+            )}
+          </h3>
+
+
+          <div class="training-record-hostline">
+
+            <span>
+              HOST
+            </span>
+
+            <strong>
+              ${escapeHtml(
+                getProfileName(
+                  session.host_id
+                )
+              )}
+            </strong>
+
+          </div>
 
         </div>
 
 
-        <div class="training-attendance-value loa">
+        <div class="training-record-times">
 
-          <strong>
-            ${counts.loaAbsent}
-          </strong>
+          <div class="training-time-heading">
+            TIME REFERENCE
+          </div>
 
-          <span>
-            LOA
-          </span>
+
+          <div class="training-time-columns">
+
+            <div class="training-time-block local">
+
+              <span>
+                YOUR TIME
+              </span>
+
+              <strong>
+                ${escapeHtml(
+                  localTime
+                )}
+              </strong>
+
+              <small>
+                ${escapeHtml(
+                  localZone
+                )}
+              </small>
+
+            </div>
+
+
+            <div class="training-time-block eastern">
+
+              <span>
+                EASTERN TIME
+              </span>
+
+              <strong>
+                ${escapeHtml(
+                  easternTime
+                )}
+              </strong>
+
+              <small>
+                ET
+              </small>
+
+            </div>
+
+          </div>
 
         </div>
 
-      </div>
+
+        <div class="training-record-operations">
+
+          <div class="training-operations-heading">
+            ATTENDANCE
+          </div>
 
 
-      <div class="training-record-status">
+          <div class="training-record-attendance">
 
-        ${renderSessionStatusControl(session)}
+            <div class="training-attendance-value attending">
 
-      </div>
+              <strong>
+                ${counts.attending}
+              </strong>
+
+              <span>
+                Attending
+              </span>
+
+            </div>
 
 
-      <div class="training-record-action">
+            <div class="training-attendance-value declined">
 
-        <button
-          type="button"
-          class="training-open-button"
-          data-open-session="${session.id}"
-        >
-          ${selected ? "Close" : "Open"}
-        </button>
+              <strong>
+                ${counts.notAttending}
+              </strong>
+
+              <span>
+                Declined
+              </span>
+
+            </div>
+
+
+            <div class="training-attendance-value loa">
+
+              <strong>
+                ${counts.loaAbsent}
+              </strong>
+
+              <span>
+                LOA
+              </span>
+
+            </div>
+
+          </div>
+
+
+          <div class="training-record-controls">
+
+            <div class="training-record-status">
+              ${renderSessionStatusControl(
+                session
+              )}
+            </div>
+
+
+            <button
+              type="button"
+              class="training-open-button"
+              data-open-session="${session.id}"
+            >
+              ${
+                selected
+                  ? "CLOSE"
+                  : "OPEN"
+              }
+            </button>
+
+          </div>
+
+        </div>
+
 
       </div>
 
