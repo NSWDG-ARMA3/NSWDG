@@ -5473,3 +5473,408 @@ summary {
 
   cursor: pointer;
 }
+
+/* ==========================================================
+   V8 FINAL ALIGNMENT FIX
+   ========================================================== */
+
+
+/* LEFT SIDE */
+
+.training-record-primary {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  min-width: 0;
+
+  padding: 6px 12px 6px 14px;
+
+  border-right: 1px solid #d0d5d8;
+
+  background: #fff;
+}
+
+.training-record-topline {
+  display: flex;
+  align-items: center;
+
+  gap: 5px;
+
+  margin: 0 0 3px;
+}
+
+.training-record-primary h3 {
+  margin: 0 0 5px;
+
+  overflow: hidden;
+
+  color: #17364f;
+
+  font-size: 10px;
+  font-weight: bold;
+
+  line-height: 1.15;
+
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.training-record-hostline {
+  display: flex;
+  align-items: center;
+
+  gap: 4px;
+
+  width: fit-content;
+
+  margin: 0;
+  padding: 3px 0 0;
+
+  border-top: 1px solid #e0e4e6;
+}
+
+.training-record-hostline span {
+  color: #7c868d;
+
+  font-size: 5px;
+  font-weight: bold;
+
+  text-transform: uppercase;
+  letter-spacing: 0.45px;
+}
+
+.training-record-hostline strong {
+  color: #47565f;
+
+  font-size: 6px;
+  font-weight: bold;
+}
+
+
+/* ==========================================================
+   RIGHT UTILITY STRUCTURE
+   ========================================================== */
+
+.training-record-utility {
+  display: grid;
+
+  grid-template-columns:
+    200px
+    150px
+    125px;
+
+  min-width: 475px;
+
+  align-items: stretch;
+
+  background: #eef0f1;
+}
+
+
+/* ==========================================================
+   TIME BLOCKS
+   ========================================================== */
+
+.training-record-timepair {
+  display: grid;
+
+  grid-template-columns:
+    1fr
+    1fr;
+
+  min-width: 0;
+
+  border-right: 1px solid #c9cfd2;
+
+  background: #cbd1d4;
+}
+
+.training-record-timeitem {
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
+  min-width: 0;
+
+  padding: 4px 6px;
+
+  background: #f4f5f4;
+
+  text-align: center;
+}
+
+.training-record-timeitem + .training-record-timeitem {
+  border-left: 1px solid #cbd1d4;
+}
+
+.training-record-timeitem.local {
+  box-shadow:
+    inset 3px 0 0 #17364f;
+
+  background: #eaf0f3;
+}
+
+.training-record-timeitem span {
+  display: block;
+
+  width: 100%;
+
+  margin: 0 0 3px;
+
+  color: #737f86;
+
+  font-size: 5px;
+  font-weight: bold;
+
+  line-height: 1;
+
+  text-align: center;
+
+  text-transform: uppercase;
+  letter-spacing: 0.45px;
+}
+
+.training-record-timeitem strong {
+  display: block;
+
+  width: 100%;
+
+  margin: 0;
+
+  color: #17364f;
+
+  font-size: 13px;
+  font-weight: bold;
+
+  line-height: 1;
+
+  text-align: center;
+}
+
+.training-record-timeitem.eastern strong {
+  color: #4d5961;
+}
+
+.training-record-timeitem small {
+  display: block;
+
+  width: 100%;
+
+  margin-top: 2px;
+
+  color: #858e93;
+
+  font-size: 5px;
+  line-height: 1;
+
+  text-align: center;
+}
+
+
+/* ==========================================================
+   ATTENDANCE
+   ========================================================== */
+
+.training-record-attendance {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, 1fr);
+
+  min-width: 0;
+
+  border: 0;
+  border-right: 1px solid #c9cfd2;
+
+  background: #fff;
+}
+
+.training-attendance-value {
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
+  min-width: 0;
+
+  padding: 2px;
+
+  border-right: 1px solid #e0e3e5;
+
+  text-align: center;
+}
+
+.training-attendance-value:last-child {
+  border-right: 0;
+}
+
+.training-attendance-value strong {
+  margin: 0 0 2px;
+
+  font-size: 11px;
+  font-weight: bold;
+
+  line-height: 1;
+}
+
+.training-attendance-value span {
+  font-size: 5px;
+  font-weight: bold;
+
+  line-height: 1;
+
+  text-transform: uppercase;
+}
+
+
+/* ==========================================================
+   STATUS + OPEN
+   Fix the huge stretched control area
+   ========================================================== */
+
+.training-record-controls {
+  align-self: center;
+  justify-self: center;
+
+  display: flex;
+  flex-direction: column;
+
+  align-items: stretch;
+  justify-content: center;
+
+  gap: 4px;
+
+  width: 105px;
+  min-width: 0;
+
+  padding: 0;
+
+  background: transparent;
+}
+
+.training-record-status {
+  display: block;
+
+  width: 100%;
+
+  min-width: 0;
+
+  margin: 0;
+  padding: 0;
+
+  border: 0;
+
+  background: transparent;
+}
+
+.training-record-status
+.session-status-select {
+  display: block;
+
+  width: 100%;
+  height: 22px;
+
+  margin: 0;
+
+  padding:
+    2px
+    15px
+    2px
+    5px;
+
+  border: 1px solid #839099;
+  border-radius: 0;
+
+  background: #f5f6f6;
+
+  font-family: Arial, Helvetica, sans-serif;
+
+  font-size: 6px;
+  font-weight: bold;
+
+  text-transform: uppercase;
+}
+
+.training-open-button {
+  display: block;
+
+  width: 100%;
+  height: 22px;
+
+  margin: 0;
+  padding: 0;
+
+  border: 1px solid #7d8990;
+  border-radius: 0;
+
+  background: #f4f5f5;
+
+  color: #263e4e;
+
+  font-family: Arial, Helvetica, sans-serif;
+
+  font-size: 6px;
+  font-weight: bold;
+
+  text-transform: uppercase;
+
+  cursor: pointer;
+}
+
+.training-open-button:hover,
+.training-record.active
+.training-open-button {
+  border-color: #17364f;
+
+  background: #17364f;
+
+  color: #fff;
+}
+
+
+/* ==========================================================
+   ULTRAWIDE
+   Keep right-side utilities compact
+   ========================================================== */
+
+@media (min-width: 1500px) {
+
+  .training-record-utility {
+    grid-template-columns:
+      210px
+      160px
+      130px;
+
+    min-width: 500px;
+  }
+
+}
+
+
+/* ==========================================================
+   MOBILE
+   ========================================================== */
+
+@media (max-width: 600px) {
+
+  .training-record-controls {
+    flex-direction: row;
+
+    width: 100%;
+
+    padding: 4px;
+  }
+
+  .training-record-status {
+    flex: 1;
+  }
+
+  .training-open-button {
+    width: 55px;
+  }
+
+}
