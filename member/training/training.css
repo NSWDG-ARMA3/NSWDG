@@ -5289,7 +5289,7 @@ summary {
 }
 
 /* ==========================================================
-   TRAINING LIST RECORD REORGANIZATION
+   TRAINING LIST FINAL COMPACT LAYOUT
    ========================================================== */
 
 .training-record {
@@ -5297,105 +5297,47 @@ summary {
 
   grid-template-columns:
     58px
-    minmax(370px, 1fr)
-    210px
-    118px
-    58px;
+    minmax(360px, 1fr)
+    190px
+    116px
+    56px;
 
-  width: 100%;
+  min-height: 92px;
 
-  min-height: 98px;
+  background: #fff;
 
   border-bottom: 1px solid #b9c0c4;
+}
+
+
+/* ==========================================================
+   MAIN SESSION AREA
+   ========================================================== */
+
+.training-record-main {
+  display: block;
+
+  min-width: 0;
+
+  padding: 9px 11px;
+
+  border-right: 1px solid #cfd4d7;
 
   background: #fff;
 }
 
 
-/* ==========================================================
-   DATE
-   ========================================================== */
-
-.training-record-date {
-  display: flex;
-
-  flex-direction: column;
-
-  align-items: center;
-  justify-content: center;
-
-  padding: 8px 4px;
-
-  border-right: 1px solid #c5cbce;
-
-  background: #e6e9ea;
-}
-
-
-.training-record-date span {
-  margin-bottom: 3px;
-
-  color: #738088;
-
-  font-size: 7px;
-  font-weight: bold;
-
-  letter-spacing: 0.7px;
-}
-
-
-.training-record-date strong {
-  color: #17364f;
-
-  font-size: 22px;
-
-  line-height: 1;
-}
-
-
-/* ==========================================================
-   MAIN INFORMATION AREA
-   ========================================================== */
-
-.training-record-main {
-  display: grid;
-
-  grid-template-rows:
-    auto
-    42px;
+.training-record-heading {
+  display: block;
 
   min-width: 0;
 
   padding: 0;
-
-  border-right: 1px solid #cfd4d7;
-}
-
-
-/* ==========================================================
-   TITLE / LOCATION / HOST ROW
-   ========================================================== */
-
-.training-record-heading {
-  display: flex;
-
-  align-items: center;
-  justify-content: space-between;
-
-  gap: 20px;
-
-  min-width: 0;
-
-  padding: 9px 11px 7px;
-
-  background: #fff;
 }
 
 
 .training-record-heading-left {
   min-width: 0;
-
-  flex: 1;
 }
 
 
@@ -5406,156 +5348,96 @@ summary {
 
   gap: 6px;
 
-  margin-bottom: 4px;
+  margin: 0 0 4px;
 }
 
 
 .training-record-location {
-  overflow: hidden;
+  color: #6f7a81;
 
-  color: #69757d;
-
-  font-size: 8px;
-
-  white-space: nowrap;
-
-  text-overflow: ellipsis;
+  font-size: 7px;
 }
 
 
 .training-record-main h3 {
   margin: 0;
 
-  overflow: hidden;
-
   color: #17364f;
 
-  font-size: 11px;
+  font-size: 10px;
   font-weight: bold;
 
   line-height: 1.25;
-
-  white-space: nowrap;
-
-  text-overflow: ellipsis;
 }
 
 
 /* ==========================================================
-   HOST
-   ========================================================== */
-
-.training-record-host {
-  flex: 0 0 125px;
-
-  min-width: 0;
-
-  padding-left: 10px;
-
-  border-left: 1px solid #e0e3e5;
-
-  text-align: left;
-}
-
-
-.training-record-host span {
-  display: block;
-
-  margin-bottom: 2px;
-
-  color: #80898f;
-
-  font-size: 6px;
-  font-weight: bold;
-
-  letter-spacing: 0.55px;
-}
-
-
-.training-record-host strong {
-  display: block;
-
-  overflow: hidden;
-
-  color: #49575f;
-
-  font-size: 8px;
-
-  white-space: nowrap;
-
-  text-overflow: ellipsis;
-}
-
-
-/* ==========================================================
-   TIME BAR
+   COMPACT LOWER INFO LINE
    ========================================================== */
 
 .training-record-timebar {
-  display: grid;
+  display: flex;
 
-  grid-template-columns:
-    1fr
-    1fr;
+  align-items: flex-end;
 
-  min-width: 0;
+  gap: 18px;
 
-  border-top: 1px solid #d3d7d9;
+  width: auto;
 
-  background: #bfc5c8;
+  margin-top: 9px;
 
-  gap: 1px;
+  padding: 0;
+
+  border: 0;
+
+  background: transparent;
 }
 
 
 .training-record-time {
-  display: grid;
+  display: block;
 
-  grid-template-columns:
-    auto
-    auto
-    1fr;
+  min-width: 76px;
+  min-height: 0;
 
-  align-items: center;
+  padding: 0;
 
-  gap: 7px;
+  border: 0;
 
-  min-width: 0;
+  background: transparent !important;
 
-  min-height: 41px;
-
-  padding: 5px 9px;
-
-  background: #f1f3f3;
+  box-shadow: none !important;
 }
 
 
 .training-record-time.local {
-  box-shadow:
-    inset 3px 0 0 #1d3f5e;
+  padding-left: 7px;
 
-  background: #eaf0f3;
+  border-left: 2px solid #17364f;
 }
 
 
 .training-record-time.eastern {
-  background: #f3f3f1;
+  padding-left: 7px;
+
+  border-left: 1px solid #aeb5ba;
 }
 
 
 .training-record-time span {
   display: block;
 
+  margin-bottom: 2px;
+
   color: #78838a;
 
-  font-size: 6px;
+  font-size: 5.5px;
   font-weight: bold;
 
   line-height: 1;
 
-  letter-spacing: 0.5px;
-
-  white-space: nowrap;
+  text-transform: uppercase;
+  letter-spacing: 0.55px;
 }
 
 
@@ -5564,28 +5446,81 @@ summary {
 
   color: #17364f;
 
-  font-size: 13px;
+  font-size: 12px;
   font-weight: bold;
 
   line-height: 1;
-
-  white-space: nowrap;
 }
 
 
 .training-record-time.eastern strong {
-  color: #505c64;
+  color: #505b62;
 }
 
 
 .training-record-time small {
+  display: inline;
+
+  margin-left: 3px;
+
+  color: #899197;
+
+  font-size: 5.5px;
+}
+
+
+/* ==========================================================
+   HOST
+   ========================================================== */
+
+.training-record-host {
+  position: absolute;
+
+  top: 10px;
+  right: 10px;
+
+  width: 120px;
+
+  padding: 0;
+
+  border: 0;
+
+  text-align: right;
+}
+
+
+.training-record-main {
+  position: relative;
+
+  padding-right: 145px;
+}
+
+
+.training-record-host span {
+  display: block;
+
+  margin-bottom: 2px;
+
+  color: #858e93;
+
+  font-size: 5.5px;
+  font-weight: bold;
+
+  text-transform: uppercase;
+
+  letter-spacing: 0.5px;
+}
+
+
+.training-record-host strong {
   display: block;
 
   overflow: hidden;
 
-  color: #8a9297;
+  color: #4a575f;
 
-  font-size: 6px;
+  font-size: 7px;
+  font-weight: bold;
 
   white-space: nowrap;
 
@@ -5594,20 +5529,19 @@ summary {
 
 
 /* ==========================================================
-   ATTENDANCE
+   ATTENDANCE SIDE COLUMN
    ========================================================== */
 
 .training-record-attendance {
   display: grid;
 
-  grid-template-columns:
-    repeat(3, 1fr);
+  grid-template-columns: repeat(3, 1fr);
 
   min-width: 0;
 
   border-right: 1px solid #cfd4d7;
 
-  background: #f4f5f4;
+  background: #fafafa;
 }
 
 
@@ -5619,11 +5553,9 @@ summary {
   align-items: center;
   justify-content: center;
 
-  padding: 6px 3px;
+  padding: 5px 2px;
 
-  border-right: 1px solid #d8dcde;
-
-  text-align: center;
+  border-right: 1px solid #e0e3e5;
 }
 
 
@@ -5633,16 +5565,16 @@ summary {
 
 
 .training-attendance-value strong {
-  margin-bottom: 4px;
+  margin-bottom: 3px;
 
-  font-size: 14px;
+  font-size: 12px;
 }
 
 
 .training-attendance-value span {
-  color: #747d83;
+  color: #707a80;
 
-  font-size: 6px;
+  font-size: 5.5px;
   font-weight: bold;
 
   text-transform: uppercase;
@@ -5657,28 +5589,25 @@ summary {
   display: flex;
 
   align-items: center;
-  justify-content: center;
 
   padding: 7px;
 
   border-right: 1px solid #cfd4d7;
 
-  background: #f0f2f2;
+  background: #f4f5f4;
 }
 
 
 .training-record-status .session-status-select {
   width: 100%;
+  height: 27px;
 
-  min-width: 0;
-  height: 29px;
-
-  font-size: 7px;
+  font-size: 6.5px;
 }
 
 
 /* ==========================================================
-   OPEN
+   OPEN BUTTON
    ========================================================== */
 
 .training-record-action {
@@ -5689,60 +5618,15 @@ summary {
 
   padding: 6px;
 
-  background: #e5e8e9;
+  background: #eceeee;
 }
 
 
 .training-open-button {
-  width: 44px;
-  height: 30px;
+  width: 42px;
+  height: 28px;
 
-  border: 1px solid #7f8a91;
-
-  background: #f0f1f1;
-
-  color: #243a48;
-
-  font-size: 7px;
-  font-weight: bold;
-}
-
-
-/* ==========================================================
-   HOVER / ACTIVE
-   ========================================================== */
-
-.training-record:hover {
-  background: #f6f7f7;
-}
-
-
-.training-record.active {
-  box-shadow:
-    inset 4px 0 0 #17364f;
-}
-
-
-/* ==========================================================
-   MEDIUM SCREENS
-   ========================================================== */
-
-@media (max-width: 1200px) {
-
-  .training-record {
-    grid-template-columns:
-      56px
-      minmax(320px, 1fr)
-      185px
-      110px
-      54px;
-  }
-
-
-  .training-record-host {
-    flex-basis: 105px;
-  }
-
+  font-size: 6.5px;
 }
 
 
@@ -5753,80 +5637,62 @@ summary {
 @media (max-width: 700px) {
 
   .training-record {
-    display: grid;
-
     grid-template-columns:
-      54px
+      52px
       minmax(0, 1fr);
-
-    min-height: 0;
-
-    margin-bottom: 7px;
-
-    border: 1px solid #adb4b8;
   }
 
 
   .training-record-date {
-    grid-column: 1;
     grid-row: 1 / span 4;
   }
 
 
   .training-record-main {
     grid-column: 2;
-    grid-row: 1;
 
-    border-right: 0;
-  }
-
-
-  .training-record-heading {
-    display: block;
+    padding-right: 10px;
   }
 
 
   .training-record-host {
-    margin-top: 7px;
+    position: static;
 
-    padding-top: 6px;
-    padding-left: 0;
+    width: auto;
 
-    border-top: 1px solid #e0e3e5;
-    border-left: 0;
+    margin-top: 8px;
+
+    text-align: left;
   }
 
 
   .training-record-timebar {
-    grid-template-columns: 1fr;
+    gap: 12px;
   }
 
 
   .training-record-attendance {
     grid-column: 2;
-    grid-row: 2;
 
-    min-height: 55px;
+    min-height: 50px;
 
-    border-top: 1px solid #d3d7d9;
+    border-top: 1px solid #d5d9db;
     border-right: 0;
   }
 
 
   .training-record-status {
     grid-column: 2;
-    grid-row: 3;
 
-    border-top: 1px solid #d3d7d9;
+    border-top: 1px solid #d5d9db;
     border-right: 0;
   }
 
 
   .training-record-action {
     grid-column: 2;
-    grid-row: 4;
 
-    border-top: 1px solid #d3d7d9;
+    border-top: 1px solid #d5d9db;
   }
 
 
