@@ -1086,9 +1086,7 @@ function renderTrainingRecord(session) {
 
       <div class="training-record-layout">
 
-
         <div class="training-record-date">
-
           <span>
             ${escapeHtml(month)}
           </span>
@@ -1096,181 +1094,131 @@ function renderTrainingRecord(session) {
           <strong>
             ${escapeHtml(day)}
           </strong>
-
         </div>
 
 
-        <div class="training-record-info">
+        <div class="training-record-content">
 
-          <div class="training-record-topline">
+          <div class="training-record-primary">
 
-            ${categoryBadge(
-              session.category
-            )}
+            <div class="training-record-topline">
 
-            <span class="training-record-location">
+              ${categoryBadge(
+                session.category
+              )}
+
+              <span class="training-record-location">
+                ${escapeHtml(
+                  session.location || "-"
+                )}
+              </span>
+
+            </div>
+
+
+            <h3>
               ${escapeHtml(
-                session.location || "-"
+                session.title
               )}
-            </span>
+            </h3>
+
+
+            <div class="training-record-hostline">
+              <span>HOST</span>
+
+              <strong>
+                ${escapeHtml(
+                  getProfileName(
+                    session.host_id
+                  )
+                )}
+              </strong>
+            </div>
 
           </div>
 
 
-          <h3>
-            ${escapeHtml(
-              session.title
-            )}
-          </h3>
+          <div class="training-record-utility">
+
+            <div class="training-record-timepair">
+
+              <div class="training-record-timeitem local">
+                <span>YOUR TIME</span>
+
+                <strong>
+                  ${escapeHtml(localTime)}
+                </strong>
+
+                <small>
+                  ${escapeHtml(localZone)}
+                </small>
+              </div>
 
 
-          <div class="training-record-hostline">
+              <div class="training-record-timeitem eastern">
+                <span>EASTERN</span>
 
-            <span>
-              HOST
-            </span>
+                <strong>
+                  ${escapeHtml(easternTime)}
+                </strong>
 
-            <strong>
-              ${escapeHtml(
-                getProfileName(
-                  session.host_id
-                )
-              )}
-            </strong>
+                <small>ET</small>
+              </div>
+
+            </div>
+
+
+            <div class="training-record-attendance">
+
+              <div class="training-attendance-value attending">
+                <strong>
+                  ${counts.attending}
+                </strong>
+                <span>Attending</span>
+              </div>
+
+              <div class="training-attendance-value declined">
+                <strong>
+                  ${counts.notAttending}
+                </strong>
+                <span>Declined</span>
+              </div>
+
+              <div class="training-attendance-value loa">
+                <strong>
+                  ${counts.loaAbsent}
+                </strong>
+                <span>LOA</span>
+              </div>
+
+            </div>
+
+
+            <div class="training-record-controls">
+
+              <div class="training-record-status">
+                ${renderSessionStatusControl(
+                  session
+                )}
+              </div>
+
+              <button
+                type="button"
+                class="training-open-button"
+                data-open-session="${session.id}"
+              >
+                ${
+                  selected
+                    ? "CLOSE"
+                    : "OPEN"
+                }
+              </button>
+
+            </div>
 
           </div>
 
         </div>
-
-
-        <div class="training-record-times">
-
-          <div class="training-time-heading">
-            TIME REFERENCE
-          </div>
-
-
-          <div class="training-time-columns">
-
-            <div class="training-time-block local">
-
-              <span>
-                YOUR TIME
-              </span>
-
-              <strong>
-                ${escapeHtml(
-                  localTime
-                )}
-              </strong>
-
-              <small>
-                ${escapeHtml(
-                  localZone
-                )}
-              </small>
-
-            </div>
-
-
-            <div class="training-time-block eastern">
-
-              <span>
-                EASTERN TIME
-              </span>
-
-              <strong>
-                ${escapeHtml(
-                  easternTime
-                )}
-              </strong>
-
-              <small>
-                ET
-              </small>
-
-            </div>
-
-          </div>
-
-        </div>
-
-
-        <div class="training-record-operations">
-
-          <div class="training-operations-heading">
-            ATTENDANCE
-          </div>
-
-
-          <div class="training-record-attendance">
-
-            <div class="training-attendance-value attending">
-
-              <strong>
-                ${counts.attending}
-              </strong>
-
-              <span>
-                Attending
-              </span>
-
-            </div>
-
-
-            <div class="training-attendance-value declined">
-
-              <strong>
-                ${counts.notAttending}
-              </strong>
-
-              <span>
-                Declined
-              </span>
-
-            </div>
-
-
-            <div class="training-attendance-value loa">
-
-              <strong>
-                ${counts.loaAbsent}
-              </strong>
-
-              <span>
-                LOA
-              </span>
-
-            </div>
-
-          </div>
-
-
-          <div class="training-record-controls">
-
-            <div class="training-record-status">
-              ${renderSessionStatusControl(
-                session
-              )}
-            </div>
-
-
-            <button
-              type="button"
-              class="training-open-button"
-              data-open-session="${session.id}"
-            >
-              ${
-                selected
-                  ? "CLOSE"
-                  : "OPEN"
-              }
-            </button>
-
-          </div>
-
-        </div>
-
 
       </div>
 
