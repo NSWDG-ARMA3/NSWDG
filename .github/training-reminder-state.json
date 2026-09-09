@@ -20,6 +20,11 @@
       "type": "availability",
       "targetWeek": "2026-09-14",
       "sentAt": "2026-09-07T19:10:06.691Z"
+    },
+    "availability:2026-09-09": {
+      "type": "availability",
+      "targetWeek": "2026-09-14",
+      "sentAt": "2026-09-09T17:30:33.339Z"
     }
   }
 }
